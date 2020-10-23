@@ -1,0 +1,8 @@
+#ifndef MACRO_HELPERS_HPP
+#define MACRO_HELPERS_HPP
+
+#define AES_CONCAT_DETAIL(X, Y) X##Y
+#define AES_CONCAT(X, Y) AES_CONCAT_DETAIL(X, Y)
+#define AES_STRINGIFY(X) #X
+
+#endif
