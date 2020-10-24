@@ -33,8 +33,19 @@ LRESULT Window::windowProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			if (self->mouseMoveCallback) self->mouseMoveCallback(self->mouseX, self->mouseY);
 			break;
 		case WM_SIZE:
-			self->width = LOWORD(lParam);
-			self->height = HIWORD(lParam);
+		//	self->width = LOWORD(lParam);
+		//	self->height = HIWORD(lParam);
+			RECT rect;
+			if (GetClientRect(hwnd, &rect))
+			{
+				self->width = rect.right - rect.left;
+				self->height = rect.bottom - rect.top;
+			}
+			else
+			{
+				self->width = 0;
+				self->height = 0;
+			}
 			if (self->resizeCallback) self->resizeCallback(self->width, self->height);
 			break;
 		case WM_DESTROY: {
@@ -86,7 +97,7 @@ Window::Window(const char* name)
 	AES_ASSERT(handle != NULL);
 
 	RECT rect;
-	if (GetWindowRect(handle, &rect))
+	if (GetClientRect(handle, &rect))
 	{
 		width = rect.right - rect.left;
 		height = rect.bottom - rect.top;

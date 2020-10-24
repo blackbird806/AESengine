@@ -2,7 +2,6 @@
 #define D3D11SHADER_HPP
 
 #include <d3d11.h>
-#include <Eigen/Dense>
 
 namespace aes {
 

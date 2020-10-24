@@ -34,14 +34,22 @@ namespace aes {
 	/// 
 
 	private:
+		void createDevice();
+		void createSwapchain();
+		void createRenderTarget();
+		void createDepthStencil();
+		void setupRasterizerState();
+		void setupViewport();
 
 		Window* renderWindow;
 		bool destroyed = false;
 		bool vsyncEnabled = false;
 		int videoCardMemory;
 		char videoCardDescription[128];
-		IDXGISwapChain* swapChain;
+		
+		IDXGIFactory* factory;
 		ID3D11Device* device;
+		IDXGISwapChain* swapChain;
 		ID3D11DeviceContext* deviceContext;
 		ID3D11Texture2D* depthStencilBuffer;
 		ID3D11DepthStencilState* depthStencilState;

@@ -13,7 +13,6 @@ void D3D11Renderer::init(Window& window)
 
 	renderWindow = &window;
 
-	IDXGIFactory* factory;
 	// Create a DirectX graphics interface factory.
 	HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
 	if (FAILED(result))
@@ -100,9 +99,106 @@ void D3D11Renderer::init(Window& window)
 	adapter->Release();
 	adapter = nullptr;
 
-	// Release the factory.
+	createDevice();
+	createSwapchain();
+	createRenderTarget();
+	createDepthStencil();
+	setupRasterizerState();
+	setupViewport();
+
+	AES_LOG("D3D11 renderer initialized");
+
+	model.init(device);
+	shader.init(device);
+
+	cam.pos = {0.0, 0.0, 1.0};
+	cam.lookAt({0.0, 0.0, -1.0});
+
+	AES_LOG("D3D11 debugs initialized");
+}
+
+void D3D11Renderer::destroy()
+{
+	AES_PROFILE_FUNCTION();
+
+	AES_ASSERT(swapChain != nullptr);
+	AES_ASSERT(rasterState != nullptr);
+	AES_ASSERT(depthStencilView != nullptr);
+	AES_ASSERT(depthStencilState != nullptr);
+	AES_ASSERT(depthStencilBuffer != nullptr);
+	AES_ASSERT(renderTargetView != nullptr);
+	AES_ASSERT(deviceContext != nullptr);
+	AES_ASSERT(factory != nullptr);
+	AES_ASSERT(device != nullptr);
+	AES_ASSERT(swapChain != nullptr);
+
+	// Before shutting down set to windowed mode or when you release the swap chain it will throw an exception.
+	swapChain->SetFullscreenState(false, NULL);
+	rasterState->Release();
+	depthStencilView->Release();
+	depthStencilState->Release();
+	depthStencilBuffer->Release();
+	renderTargetView->Release();
+	deviceContext->Release();
 	factory->Release();
-	factory = nullptr;
+	device->Release();
+	swapChain->Release();
+}
+
+void D3D11Renderer::startFrame()
+{
+	AES_PROFILE_FUNCTION();
+
+	float color[4];
+
+	// Setup the color to clear the buffer to.
+	color[0] = 0.0f;
+	color[1] = 0.0f;
+	color[2] = 0.0f;
+	color[3] = 1.0f;
+
+	// Clear the back buffer.
+	deviceContext->ClearRenderTargetView(renderTargetView, color);
+
+	// Clear the depth buffer.
+	deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	
+	shader.render(deviceContext);
+	model.render(deviceContext);
+}
+
+void D3D11Renderer::endFrame()
+{
+	AES_PROFILE_FUNCTION();
+
+	// Present the back buffer to the screen since rendering is complete.
+	if (vsyncEnabled)
+	{
+		// Lock to screen refresh rate.
+		swapChain->Present(1, 0);
+	}
+	else
+	{
+		// Present as fast as possible.
+		swapChain->Present(0, 0);
+	}
+}
+
+void D3D11Renderer::createDevice()
+{
+	// Set the feature level to DirectX 11.
+	D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_1;
+	auto result = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, &featureLevel, 1, D3D11_SDK_VERSION, &device, NULL, &deviceContext);
+	if (FAILED(result))
+	{
+		throw Exception("failed to create D3D11 device");
+	}
+}
+
+void D3D11Renderer::createSwapchain()
+{
+	uint screenWidth, screenHeight;
+	renderWindow->getScreenSize(screenWidth, screenHeight);
 
 	DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
 
@@ -119,8 +215,9 @@ void D3D11Renderer::init(Window& window)
 	// Set the refresh rate of the back buffer.
 	if (vsyncEnabled)
 	{
-		swapChainDesc.BufferDesc.RefreshRate.Numerator = numerator;
-		swapChainDesc.BufferDesc.RefreshRate.Denominator = denominator;
+		throw Exception("Not implemented");
+		//swapChainDesc.BufferDesc.RefreshRate.Numerator = numerator;
+		//swapChainDesc.BufferDesc.RefreshRate.Denominator = denominator;
 	}
 	else
 	{
@@ -132,7 +229,7 @@ void D3D11Renderer::init(Window& window)
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 
 	// Set the handle for the window to render to.
-	swapChainDesc.OutputWindow = window.getHandle();
+	swapChainDesc.OutputWindow = renderWindow->getHandle();
 
 	// Turn multisampling off.
 	swapChainDesc.SampleDesc.Count = 1;
@@ -152,33 +249,42 @@ void D3D11Renderer::init(Window& window)
 
 	// Set the feature level to DirectX 11.
 	D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_1;
-
-	result = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, &featureLevel, 1,
-		D3D11_SDK_VERSION, &swapChainDesc, &swapChain, &device, NULL, &deviceContext);
+	
+	AES_ASSERT(factory);
+	auto result = factory->CreateSwapChain(device, &swapChainDesc, &swapChain);
 	if (FAILED(result))
 	{
-		fatalError("D3D11CreateDeviceAndSwapChain failed");
+		throw Exception("D3D11CreateDeviceAndSwapChain failed");
 	}
+}
 
+void D3D11Renderer::createRenderTarget()
+{
 	// Get the pointer to the back buffer.
 	ID3D11Texture2D* backBufferPtr;
-	result = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr);
+	auto result = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr);
 	if (FAILED(result))
 	{
-		fatalError("swapChain->GetBuffer failed");
+		throw Exception("swapChain->GetBuffer failed");
 	}
 
 	result = device->CreateRenderTargetView(backBufferPtr, NULL, &renderTargetView);
 	if (FAILED(result))
 	{
-		fatalError("device->CreateRenderTargetView failed");
+		throw Exception("device->CreateRenderTargetView failed");
 	}
 
 	backBufferPtr->Release();
 	backBufferPtr = nullptr;
+}
 
-	// Initialize the description of the depth buffer.
+void D3D11Renderer::createDepthStencil()
+{
+	uint screenWidth, screenHeight;
+	renderWindow->getScreenSize(screenWidth, screenHeight);
+	
 	D3D11_TEXTURE2D_DESC depthBufferDesc = {};
+	// Set up the description of the depth buffer.
 	depthBufferDesc.Width = screenWidth;
 	depthBufferDesc.Height = screenHeight;
 	depthBufferDesc.MipLevels = 1;
@@ -191,10 +297,10 @@ void D3D11Renderer::init(Window& window)
 	depthBufferDesc.CPUAccessFlags = 0;
 	depthBufferDesc.MiscFlags = 0;
 
-	result = device->CreateTexture2D(&depthBufferDesc, NULL, &depthStencilBuffer);
+	auto result = device->CreateTexture2D(&depthBufferDesc, NULL, &depthStencilBuffer);
 	if (FAILED(result))
 	{
-		fatalError("device->CreateTexture2D failed");
+		throw Exception("device depthStencilBuffer failed");
 	}
 
 	// Initialize the description of the stencil state.
@@ -221,13 +327,11 @@ void D3D11Renderer::init(Window& window)
 	result = device->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
 	if (FAILED(result))
 	{
-		fatalError("device->CreateDepthStencilState failed");
+		throw Exception("device->CreateDepthStencilState failed");
 	}
 
-	// Set the depth stencil state.
 	deviceContext->OMSetDepthStencilState(depthStencilState, 1);
 
-	// Initailze the depth stencil view.
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
 	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
@@ -236,11 +340,14 @@ void D3D11Renderer::init(Window& window)
 	result = device->CreateDepthStencilView(depthStencilBuffer, &depthStencilViewDesc, &depthStencilView);
 	if (FAILED(result))
 	{
-		fatalError("device->CreateDepthStencilView failed");
+		throw Exception("device->CreateDepthStencilView failed");
 	}
 
 	deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+}
 
+void D3D11Renderer::setupRasterizerState()
+{
 	D3D11_RASTERIZER_DESC rasterDesc;
 	rasterDesc.AntialiasedLineEnable = false;
 	rasterDesc.CullMode = D3D11_CULL_BACK;
@@ -253,13 +360,17 @@ void D3D11Renderer::init(Window& window)
 	rasterDesc.ScissorEnable = false;
 	rasterDesc.SlopeScaledDepthBias = 0.0f;
 
-	result = device->CreateRasterizerState(&rasterDesc, &rasterState);
+	auto result = device->CreateRasterizerState(&rasterDesc, &rasterState);
 	if (FAILED(result))
 	{
-		fatalError("device->rasterState failed");
+		throw Exception("device->rasterState failed");
 	}
+}
 
-	deviceContext->RSSetState(rasterState);
+void D3D11Renderer::setupViewport()
+{
+	uint screenWidth, screenHeight;
+	renderWindow->getScreenSize(screenWidth, screenHeight);
 
 	D3D11_VIEWPORT viewport;
 	// Setup the viewport for rendering.
@@ -271,83 +382,5 @@ void D3D11Renderer::init(Window& window)
 	viewport.TopLeftY = 0.0f;
 
 	deviceContext->RSSetViewports(1, &viewport);
-
-	AES_LOG("D3D11 renderer initialized");
-
-	model.init(device);
-	shader.init(device);
-
-	cam.pos = {0.0, 0.0, 1.0};
-	cam.lookAt({0.0, 0.0, -1.0});
-
-	AES_LOG("D3D11 debugs initialized");
-}
-
-void D3D11Renderer::destroy()
-{
-	AES_PROFILE_FUNCTION();
-
-	AES_ASSERT(swapChain != nullptr);
-	AES_ASSERT(rasterState != nullptr);
-	AES_ASSERT(depthStencilView != nullptr);
-	AES_ASSERT(depthStencilState != nullptr);
-	AES_ASSERT(depthStencilBuffer != nullptr);
-	AES_ASSERT(renderTargetView != nullptr);
-	AES_ASSERT(deviceContext != nullptr);
-	AES_ASSERT(device != nullptr);
-	AES_ASSERT(swapChain != nullptr);
-
-	// Before shutting down set to windowed mode or when you release the swap chain it will throw an exception.
-	swapChain->SetFullscreenState(false, NULL);
-	rasterState->Release();
-	depthStencilView->Release();
-	depthStencilState->Release();
-	depthStencilBuffer->Release();
-	renderTargetView->Release();
-	deviceContext->Release();
-	device->Release();
-	swapChain->Release();
-}
-
-void D3D11Renderer::startFrame()
-{
-	AES_PROFILE_FUNCTION();
-
-	float color[4];
-
-	// Setup the color to clear the buffer to.
-	color[0] = 0.0f;
-	color[1] = 0.0f;
-	color[2] = 0.0f;
-	color[3] = 1.0f;
-	
-
-	// Clear the back buffer.
-	deviceContext->ClearRenderTargetView(renderTargetView, color);
-
-	// Clear the depth buffer.
-	deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-	
-	//pmat = makePerspectiveMatrix(60, 0.001, 1000);
-	Eigen::Matrix4f pmat = makeOrthographicMatrix(-1.0, 1.0, 1.0, -1.0, 0.01, 1000);
-	shader.render(deviceContext);
-	model.render(deviceContext);
-}
-
-void D3D11Renderer::endFrame()
-{
-	AES_PROFILE_FUNCTION();
-
-	// Present the back buffer to the screen since rendering is complete.
-	if (vsyncEnabled)
-	{
-		// Lock to screen refresh rate.
-		swapChain->Present(1, 0);
-	}
-	else
-	{
-		// Present as fast as possible.
-		swapChain->Present(0, 0);
-	}
 }
 

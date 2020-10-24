@@ -19,25 +19,13 @@ void D3D11Model::init(ID3D11Device* device)
 
 	// Load the vertex array with data.
 	vertices[0].pos = { 0.0f, 0.5f, 0.0f };  // Bottom left.
-	vertices[0].color = { 0.0f, 0.0f, 1.0f, 1.0f };
+	vertices[0].color = { 1.0f, 0.0f, 0.0f, 1.0f };
 
 	vertices[1].pos = { 0.5f, -0.5f, 0.0f };  // Top middle.
-	vertices[1].color = {0.0f, 0.0f, 0.0f, 1.0f};
+	vertices[1].color = {0.0f, 1.0f, 0.0f, 1.0f};
 
-	vertices[2].pos = { -0.5f, -0.5f, .0f };  // Bottom right.
-	vertices[2].color = { 0.0f, 0.0f, 0.0f, 1.0f };
-	
-	//vertices[0].y = 0.5;
-	//vertices[0].g = 1;
-
-	//vertices[1].y = -0.5;
-	//vertices[1].x = 0.5;
-	//vertices[1].b = 1.0;
-
-	//vertices[2].y = -0.5;
-	//vertices[2].x = -0.5;
-	//vertices[2].r = 1.0;
-
+	vertices[2].pos = { -0.5f, -0.5f, 0.0f };  // Bottom right.
+	vertices[2].color = { 0.0f, 0.0f, 1.0f, 1.0f };
 
 	// Load the index array with data.
 	indices[0] = 0;  // Bottom left.

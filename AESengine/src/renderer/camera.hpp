@@ -1,7 +1,7 @@
 #ifndef CAMERA_HPP
 #define CAMERA_HPP
 
-#include <Eigen/Dense>
+#include <glm/glm.hpp>
 
 namespace aes {
 
@@ -9,9 +9,9 @@ namespace aes {
 	{
 	public:
 		
-		void lookAt(Eigen::Vector3f const& at);
-		Eigen::Vector3f pos;
-		Eigen::Matrix4f viewMatrix;
+		void lookAt(glm::vec3 const& at);
+		glm::vec3 pos;
+		glm::mat4 viewMatrix;
 	};
 
 }
