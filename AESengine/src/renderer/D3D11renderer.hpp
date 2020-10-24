@@ -21,6 +21,8 @@ namespace aes {
 
 	public:
 
+		static D3D11Renderer& Instance();
+
 		void init(Window& windowHandle);
 		void destroy();
 
@@ -34,12 +36,20 @@ namespace aes {
 	/// 
 
 	private:
+		static D3D11Renderer* instance;
+
 		void createDevice();
 		void createSwapchain();
 		void createRenderTarget();
 		void createDepthStencil();
 		void setupRasterizerState();
 		void setupViewport();
+
+		void resizeRender();
+
+		void destroySwapchain();
+		void destroyDepthStencil();
+		void destroyRenderTarget();
 
 		Window* renderWindow;
 		bool destroyed = false;

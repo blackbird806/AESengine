@@ -7,11 +7,27 @@
 
 using namespace aes;
 
+D3D11Renderer* D3D11Renderer::instance = nullptr;
+
+D3D11Renderer& D3D11Renderer::Instance()
+{
+	AES_ASSERT(instance != nullptr);
+	return *instance;
+}
+
 void D3D11Renderer::init(Window& window)
 {
 	AES_PROFILE_FUNCTION();
 
+	/// @Review
+	AES_ASSERT(instance == nullptr);
+	instance = this;
+	///
+	
 	renderWindow = &window;
+	window.setResizeCallback([](uint, uint) {
+			Instance().resizeRender();
+		});
 
 	// Create a DirectX graphics interface factory.
 	HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
@@ -121,28 +137,19 @@ void D3D11Renderer::destroy()
 {
 	AES_PROFILE_FUNCTION();
 
-	AES_ASSERT(swapChain != nullptr);
 	AES_ASSERT(rasterState != nullptr);
-	AES_ASSERT(depthStencilView != nullptr);
-	AES_ASSERT(depthStencilState != nullptr);
-	AES_ASSERT(depthStencilBuffer != nullptr);
 	AES_ASSERT(renderTargetView != nullptr);
 	AES_ASSERT(deviceContext != nullptr);
 	AES_ASSERT(factory != nullptr);
 	AES_ASSERT(device != nullptr);
-	AES_ASSERT(swapChain != nullptr);
 
-	// Before shutting down set to windowed mode or when you release the swap chain it will throw an exception.
-	swapChain->SetFullscreenState(false, NULL);
 	rasterState->Release();
-	depthStencilView->Release();
-	depthStencilState->Release();
-	depthStencilBuffer->Release();
-	renderTargetView->Release();
+	destroyDepthStencil();
+	destroyRenderTarget();
 	deviceContext->Release();
 	factory->Release();
 	device->Release();
-	swapChain->Release();
+	destroySwapchain();
 }
 
 void D3D11Renderer::startFrame()
@@ -384,3 +391,42 @@ void D3D11Renderer::setupViewport()
 	deviceContext->RSSetViewports(1, &viewport);
 }
 
+void D3D11Renderer::resizeRender()
+{
+	destroyDepthStencil();
+	destroyRenderTarget();
+	destroySwapchain();
+
+	createSwapchain();
+	createRenderTarget();
+	createDepthStencil();
+	setupViewport();
+}
+
+void D3D11Renderer::destroySwapchain()
+{
+	AES_ASSERT(swapChain != nullptr);
+	// Before shutting down set to windowed mode or when you release the swap chain it will throw an exception.
+	swapChain->SetFullscreenState(false, NULL);
+	swapChain->Release();
+	swapChain = nullptr;
+}
+
+void D3D11Renderer::destroyDepthStencil()
+{
+	AES_ASSERT(depthStencilView != nullptr);
+	AES_ASSERT(depthStencilState != nullptr);
+	AES_ASSERT(depthStencilBuffer != nullptr);
+	depthStencilView->Release();
+	depthStencilState->Release();
+	depthStencilBuffer->Release();
+	depthStencilView = nullptr;
+	depthStencilState = nullptr;
+	depthStencilBuffer = nullptr;
+}
+
+void D3D11Renderer::destroyRenderTarget()
+{
+	AES_ASSERT(renderTargetView);
+	renderTargetView->Release();
+}
