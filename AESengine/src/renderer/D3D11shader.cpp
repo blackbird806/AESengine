@@ -4,6 +4,7 @@
 
 #include "core/aes.hpp"
 #include "core/debug.hpp"
+#include "vertex.hpp"
 
 using namespace aes;
 
@@ -33,6 +34,13 @@ struct VS_OUTPUT
     float4 color : COLOR;
 };
 
+cbuffer UBO
+{
+	float4x4 worldMatrix;
+	float4x4 viewMatrix;
+	float4x4 projectionMatrix;
+};
+
 VS_OUTPUT main(VS_INPUT input)
 {
     VS_OUTPUT output;
@@ -41,10 +49,10 @@ VS_OUTPUT main(VS_INPUT input)
     input.position.w = 1.0f;
 
     // Calculate the position of the vertex against the world, view, and projection matrices.
-    //output.position = mul(input.position, worldMatrix);
-    //output.position = mul(output.position, viewMatrix);
-    //output.position = mul(output.position, projectionMatrix);
-    output.position = input.position;
+    output.position = mul(input.position, worldMatrix);
+    output.position = mul(output.position, viewMatrix);
+    output.position = mul(output.position, projectionMatrix);
+    //output.position = input.position;
 
     // Store the input color for the pixel shader to use.
     output.color = input.color;
@@ -120,6 +128,23 @@ void D3D11Shader::init(ID3D11Device* device)
 		return;
 	}
 
+	D3D11_BUFFER_DESC matrixBufferDesc = {};
+	// Setup the description of the dynamic matrix constant buffer that is in the vertex shader.
+	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	matrixBufferDesc.ByteWidth = sizeof(UBO);
+	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	matrixBufferDesc.MiscFlags = 0;
+	matrixBufferDesc.StructureByteStride = 0;
+
+	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
+	result = device->CreateBuffer(&matrixBufferDesc, NULL, &UBOBuffer);
+	if (FAILED(result))
+	{
+		throw Exception("failed to create UBO");
+	}
+
+
 	// Release the vertex shader buffer and pixel shader buffer since they are no longer needed.
 	vertexShaderBuffer->Release();
 	pixelShaderBuffer->Release();
@@ -136,9 +161,10 @@ void D3D11Shader::destroy()
 	layout->Release();
 	pixelShader->Release();
 	vertexShader->Release();
+	UBOBuffer->Release();
 }
 
-void D3D11Shader::render(ID3D11DeviceContext* deviceContext)
+void D3D11Shader::render(ID3D11DeviceContext* deviceContext, glm::mat4 world, glm::mat4 view, glm::mat4 proj)
 {
 	AES_PROFILE_FUNCTION();
 
@@ -148,4 +174,25 @@ void D3D11Shader::render(ID3D11DeviceContext* deviceContext)
 	// Set the vertex and pixel shaders that will be used to render this triangle.
 	deviceContext->VSSetShader(vertexShader, NULL, 0);
 	deviceContext->PSSetShader(pixelShader, NULL, 0);
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	// Lock the constant buffer so it can be written to.
+	auto result = deviceContext->Map(UBOBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(result))
+	{
+		throw Exception("failed to map UBO");
+	}
+
+	// Get a pointer to the data in the constant buffer.
+	UBO* dataPtr = (UBO*)mappedResource.pData;
+
+	// Copy the matrices into the constant buffer.
+	dataPtr->world = glm::transpose(world);
+	dataPtr->view = glm::transpose(view);
+	dataPtr->proj = glm::transpose(proj);
+
+	// Unlock the constant buffer.
+	deviceContext->Unmap(UBOBuffer, 0);
+
+	deviceContext->VSSetConstantBuffers(0, 1, &UBOBuffer);
 }

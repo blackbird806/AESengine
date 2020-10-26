@@ -4,6 +4,7 @@
 
 #include <cstdlib>
 #include <vector>
+#include <glm/gtc/matrix_transform.hpp>
 
 using namespace aes;
 
@@ -127,8 +128,8 @@ void D3D11Renderer::init(Window& window)
 	model.init(device);
 	shader.init(device);
 
-	cam.pos = {0.0, 0.0, 1.0};
-	cam.lookAt({0.0, 0.0, -1.0});
+	cam.pos = {0.0, 0, -5.0};
+	cam.lookAt({0.0, 0.0, 1.0});
 
 	AES_LOG("D3D11 debugs initialized");
 }
@@ -169,8 +170,11 @@ void D3D11Renderer::startFrame()
 
 	// Clear the depth buffer.
 	deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-	
-	shader.render(deviceContext);
+	static glm::mat4 m = glm::mat4(1.0);
+	m = glm::rotate(m, 0.0005f, glm::vec3{ 1.0, 0.0, 1.0 });
+	//cam.pos.y += 0.0005f;
+	//cam.lookAt({ 0.0, 0.0, 1.0 });
+	shader.render(deviceContext, m, cam.viewMatrix, glm::perspectiveLH_ZO(glm::radians(45.0f), 16.0f / 9.0f, 0.0001f, 1000.0f));
 	model.render(deviceContext);
 }
 

@@ -11,26 +11,61 @@ void D3D11Model::init(ID3D11Device* device)
 {
 	AES_PROFILE_FUNCTION();
 
-	vertexCount = 3;
-	indexCount = 3;
+	vertexCount = 8;
 
 	std::vector<Vertex> vertices(vertexCount);
-	std::vector<uint32_t> indices(indexCount);
 
-	// Load the vertex array with data.
-	vertices[0].pos = { 0.0f, 0.5f, 0.0f };  // Bottom left.
+	vertices[0].pos = { -1, -1,  1.0f };  
 	vertices[0].color = { 1.0f, 0.0f, 0.0f, 1.0f };
 
-	vertices[1].pos = { 0.5f, -0.5f, 0.0f };  // Top middle.
+	vertices[1].pos = { 1, -1,  1.0f };
 	vertices[1].color = {0.0f, 1.0f, 0.0f, 1.0f};
 
-	vertices[2].pos = { -0.5f, -0.5f, 0.0f };  // Bottom right.
+	vertices[2].pos = { -1,  1,  1.0f };
 	vertices[2].color = { 0.0f, 0.0f, 1.0f, 1.0f };
 
-	// Load the index array with data.
-	indices[0] = 0;  // Bottom left.
-	indices[1] = 1;  // Top middle.
-	indices[2] = 2;  // Bottom right.
+	vertices[3].pos = { 1,  1,  1.0f };
+	vertices[3].color = { 0.0f, 0.0f, 1.0f, 1.0f };
+
+	vertices[4].pos = { -1, -1, -1.0f };
+	vertices[4].color = { 0.0f, 1.0f, 1.0f, 1.0f };
+
+	vertices[5].pos = { 1, -1, -1.0f };
+	vertices[5].color = { 0.0f, 1.0f, 1.0f, 1.0f };
+
+	vertices[6].pos = { -1,  1, -1.0f };
+	vertices[6].color = { 0.0f, 1.0f, 0.0f, 1.0f };
+	
+	vertices[7].pos = { 1,  1, -1.0f };
+	vertices[7].color = { 1.0f, 0.0f, 1.0f, 1.0f };
+	
+	std::vector<uint32_t> indices = {
+		//Top
+		2, 7, 6,
+		3, 7, 2,
+
+		////Bottom
+		//0, 4, 5,
+		//0, 1, 5,
+
+		////Left
+		//0, 2, 6,
+		//0, 4, 6,
+
+		////Right
+		//1, 3, 7,
+		//1, 5, 7,
+
+		//Front
+		2, 1, 0,
+		0, 1, 3,
+
+		////Back
+		//4, 6, 7,
+		//4, 5, 7
+	};
+
+	indexCount = indices.size();
 
 	D3D11_BUFFER_DESC vertexBufferDesc;
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -48,8 +83,7 @@ void D3D11Model::init(ID3D11Device* device)
 	HRESULT result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &vertexBuffer);
 	if (FAILED(result))
 	{
-		AES_LOG_ERROR("failed to create vertex buffer");
-		return;
+		throw Exception("failed to create vertex buffer");
 	}
 	
 	D3D11_BUFFER_DESC indexBufferDesc;
@@ -68,8 +102,7 @@ void D3D11Model::init(ID3D11Device* device)
 	result = device->CreateBuffer(&indexBufferDesc, &indexData, &indexBuffer);
 	if (FAILED(result))
 	{
-		AES_LOG_ERROR("failed to create index buffer");
-		return;
+		throw Exception("failed to create index buffer");
 	}
 }
 

@@ -10,6 +10,7 @@ namespace aes {
 	public:
 		
 		void lookAt(glm::vec3 const& at);
+
 		glm::vec3 pos;
 		glm::mat4 viewMatrix;
 	};

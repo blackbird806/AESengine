@@ -7,5 +7,5 @@ using namespace aes;
 
 void Camera::lookAt(glm::vec3 const& at)
 {
-	viewMatrix = glm::lookAt(pos, {0.0f, 1.0f, 0.0f}, at);
+	viewMatrix = glm::lookAtLH(pos, {0.0f, -1.0f, 0.0f}, at);
 }
