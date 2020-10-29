@@ -46,7 +46,9 @@ LRESULT Window::windowProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				self->width = 0;
 				self->height = 0;
 			}
-			if (self->resizeCallback) self->resizeCallback(self->width, self->height);
+			// do not call callback onMinimize
+			if (self->resizeCallback && self->width > 0 && self->height > 0) 
+				self->resizeCallback(self->width, self->height);
 			break;
 		case WM_DESTROY: {
 			self->shouldClose_ = true;

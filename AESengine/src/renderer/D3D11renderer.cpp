@@ -171,7 +171,7 @@ void D3D11Renderer::startFrame()
 	// Clear the depth buffer.
 	deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 	static glm::mat4 m = glm::mat4(1.0);
-	m = glm::rotate(m, 0.0005f, glm::vec3{ 1.0, 0.0, 1.0 });
+	m = glm::rotate(m, 0.0005f, glm::vec3{ 1.0, 0.0, 0.0 });
 	//cam.pos.y += 0.0005f;
 	//cam.lookAt({ 0.0, 0.0, 1.0 });
 	shader.render(deviceContext, m, cam.viewMatrix, glm::perspectiveLH_ZO(glm::radians(45.0f), 16.0f / 9.0f, 0.0001f, 1000.0f));
