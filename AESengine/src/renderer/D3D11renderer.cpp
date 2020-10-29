@@ -126,6 +126,8 @@ void D3D11Renderer::init(Window& window)
 	AES_LOG("D3D11 renderer initialized");
 
 	model.init(getCubeVertices(), cubeIndices);
+	model.setSize({ 0.5f, 0.5f, 0.5f });
+
 	shader.init(device);
 
 	cam.pos = {0.0, 0, -5.0};
