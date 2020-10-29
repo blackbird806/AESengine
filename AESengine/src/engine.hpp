@@ -20,6 +20,7 @@ namespace aes {
 		void run();
 
 	private:
+
 		const char* appName;
 		Window mainWindow;
 		D3D11Renderer renderer;

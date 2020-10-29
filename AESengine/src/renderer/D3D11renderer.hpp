@@ -26,6 +26,9 @@ namespace aes {
 		void init(Window& windowHandle);
 		void destroy();
 
+		ID3D11Device* getDevice();
+		ID3D11DeviceContext* getDeviceContext();
+
 		void startFrame();
 		void endFrame();
 
@@ -36,6 +39,7 @@ namespace aes {
 	/// 
 
 	private:
+
 		static D3D11Renderer* instance;
 
 		void createDevice();

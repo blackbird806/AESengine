@@ -19,12 +19,14 @@ void Engine::init()
 void Engine::run()
 {
 	AES_PROFILE_FUNCTION();
+	
 	while (!mainWindow.shouldClose())
 	{
 		AES_PROFILE_FRAME();
 		mainWindow.pollEvents();
 
 		renderer.startFrame();
+
 		renderer.endFrame();
 	}
 }

@@ -2,20 +2,15 @@
 
 #include "core/debug.hpp"
 #include "core/aes.hpp"
-
-#include <vector>
+#include "D3D11renderer.hpp"
 
 using namespace aes;
 
-void D3D11Model::init(ID3D11Device* device)
+std::vector<Vertex> aes::getCubeVertices()
 {
-	AES_PROFILE_FUNCTION();
+	std::vector<Vertex> vertices(8);
 
-	vertexCount = 8;
-
-	std::vector<Vertex> vertices(vertexCount);
-
-	vertices[0].pos = { -1, -1,  1.0f };  
+	vertices[0].pos = { -1, -1,  1.0f };
 	vertices[0].color = { 1.0f, 0.0f, 0.0f, 1.0f };
 
 	vertices[1].pos = { 1, -1,  1.0f };
@@ -35,35 +30,18 @@ void D3D11Model::init(ID3D11Device* device)
 
 	vertices[6].pos = { -1,  1, -1.0f };
 	vertices[6].color = { 0.0f, 1.0f, 0.0f, 1.0f };
-	
+
 	vertices[7].pos = { 1,  1, -1.0f };
 	vertices[7].color = { 1.0f, 0.0f, 1.0f, 1.0f };
-	
-	std::vector<uint32_t> indices = {
-		//Top
-		2, 7, 6,
-		3, 7, 2,
 
-		////Bottom
-		0, 4, 5,
-		0, 5, 1,
+	return vertices;
+}
 
-		////Left
-		0, 2, 6,
-		0, 6, 4,
+void D3D11Model::init(std::span<Vertex const> vertices, std::span<uint32_t const> indices)
+{
+	AES_PROFILE_FUNCTION();
 
-		////Right
-		1, 7, 3,
-		1, 5, 7,
-
-		//Front
-		2, 0, 1,
-		2, 1, 3,
-
-		////Back
-		4, 6, 7,
-		4, 7, 5
-	};
+	vertexCount = vertices.size();
 
 	indexCount = indices.size();
 
@@ -80,6 +58,7 @@ void D3D11Model::init(ID3D11Device* device)
 	vertexData.SysMemPitch = 0;
 	vertexData.SysMemSlicePitch = 0;
 
+	ID3D11Device* device = D3D11Renderer::Instance().getDevice();
 	HRESULT result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &vertexBuffer);
 	if (FAILED(result))
 	{
@@ -114,6 +93,26 @@ void D3D11Model::destroy()
 	AES_ASSERT(indexBuffer != nullptr);
 	vertexBuffer->Release();
 	indexBuffer->Release();
+}
+
+void D3D11Model::setPos(glm::vec3 const& p)
+{
+	model = glm::translate(model, p);
+}
+
+void D3D11Model::setRot(glm::quat const& r)
+{
+	model *= glm::toMat4(r);
+}
+
+void D3D11Model::setSize(glm::vec3 const& s)
+{
+	model = glm::scale(model, s);
+}
+
+glm::mat4 D3D11Model::getModel() const
+{
+	return model;
 }
 
 void D3D11Model::render(ID3D11DeviceContext* deviceContext)
