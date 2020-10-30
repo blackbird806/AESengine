@@ -4,6 +4,7 @@
 
 #include "core/aes.hpp"
 #include "core/debug.hpp"
+#include "D3D11renderer.hpp"
 #include "vertex.hpp"
 
 using namespace aes;
@@ -34,11 +35,15 @@ struct VS_OUTPUT
     float4 color : COLOR;
 };
 
-cbuffer UBO
+cbuffer CameraBuffer
 {
-	float4x4 worldMatrix;
 	float4x4 viewMatrix;
 	float4x4 projectionMatrix;
+};
+
+cbuffer ModelBuffer
+{
+	float4x4 worldMatrix;
 };
 
 VS_OUTPUT main(VS_INPUT input)
@@ -60,7 +65,7 @@ VS_OUTPUT main(VS_INPUT input)
     return output;
 })";
 
-void D3D11Shader::init(ID3D11Device* device)
+void D3D11Shader::init()
 {
 	AES_PROFILE_FUNCTION();
 
@@ -68,6 +73,8 @@ void D3D11Shader::init(ID3D11Device* device)
 	ID3D10Blob* vertexShaderBuffer = nullptr;
 	ID3D10Blob* pixelShaderBuffer = nullptr;
 	
+	ID3D11Device* device = D3D11Renderer::Instance().getDevice();
+
 	// Compile the vertex shader code.
 	HRESULT result = D3DCompile(pxShader, sizeof(pxShader), "pixelShader", nullptr, nullptr, "main", "ps_5_0", 0, 0, &pixelShaderBuffer, &errorMessage);
 	if (FAILED(result))
@@ -128,26 +135,26 @@ void D3D11Shader::init(ID3D11Device* device)
 		return;
 	}
 
-	D3D11_BUFFER_DESC matrixBufferDesc = {};
-	// Setup the description of the dynamic matrix constant buffer that is in the vertex shader.
-	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	matrixBufferDesc.ByteWidth = sizeof(UBO);
-	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	matrixBufferDesc.MiscFlags = 0;
-	matrixBufferDesc.StructureByteStride = 0;
-
-	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	result = device->CreateBuffer(&matrixBufferDesc, NULL, &UBOBuffer);
-	if (FAILED(result))
-	{
-		throw Exception("failed to create UBO");
-	}
-
-
 	// Release the vertex shader buffer and pixel shader buffer since they are no longer needed.
 	vertexShaderBuffer->Release();
 	pixelShaderBuffer->Release();
+
+	D3D11_BUFFER_DESC cameraBufferDesc = {};
+	// Setup the description of the dynamic matrix constant buffer that is in the vertex shader.
+	cameraBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cameraBufferDesc.ByteWidth = sizeof(ModelBuffer);
+	cameraBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cameraBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cameraBufferDesc.MiscFlags = 0;
+	cameraBufferDesc.StructureByteStride = 0;
+
+	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
+	result = device->CreateBuffer(&cameraBufferDesc, NULL, &cameraBuffer);
+	if (FAILED(result))
+	{
+		throw Exception("failed to create Model buffer");
+	}
+
 }
 
 void D3D11Shader::destroy()
@@ -157,42 +164,42 @@ void D3D11Shader::destroy()
 	AES_ASSERT(layout != nullptr);
 	AES_ASSERT(pixelShader != nullptr);
 	AES_ASSERT(vertexShader != nullptr);
+	AES_ASSERT(cameraBuffer != nullptr);
 
 	layout->Release();
 	pixelShader->Release();
 	vertexShader->Release();
-	UBOBuffer->Release();
+	cameraBuffer->Release();
 }
 
-void D3D11Shader::render(ID3D11DeviceContext* deviceContext, glm::mat4 world, glm::mat4 view, glm::mat4 proj)
+void D3D11Shader::render(glm::mat4 view, glm::mat4 proj)
 {
 	AES_PROFILE_FUNCTION();
 
+	ID3D11DeviceContext* deviceContext = D3D11Renderer::Instance().getDeviceContext();
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	// Set the vertex input layout.
 	deviceContext->IASetInputLayout(layout);
 
-	// Set the vertex and pixel shaders that will be used to render this triangle.
-	deviceContext->VSSetShader(vertexShader, NULL, 0);
-	deviceContext->PSSetShader(pixelShader, NULL, 0);
-
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	// Lock the constant buffer so it can be written to.
-	auto result = deviceContext->Map(UBOBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	auto result = deviceContext->Map(cameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
 		throw Exception("failed to map UBO");
 	}
-
 	// Get a pointer to the data in the constant buffer.
-	UBO* dataPtr = (UBO*)mappedResource.pData;
+	CameraBuffer* dataPtr = (CameraBuffer*)mappedResource.pData;
 
 	// Copy the matrices into the constant buffer.
-	dataPtr->world = glm::transpose(world);
 	dataPtr->view = glm::transpose(view);
 	dataPtr->proj = glm::transpose(proj);
 
 	// Unlock the constant buffer.
-	deviceContext->Unmap(UBOBuffer, 0);
+	deviceContext->Unmap(cameraBuffer, 0);
 
-	deviceContext->VSSetConstantBuffers(0, 1, &UBOBuffer);
+	deviceContext->VSSetConstantBuffers(0, 1, &cameraBuffer);
+
+	// Set the vertex and pixel shaders that will be used to render this triangle.
+	deviceContext->VSSetShader(vertexShader, NULL, 0);
+	deviceContext->PSSetShader(pixelShader, NULL, 0);
 }

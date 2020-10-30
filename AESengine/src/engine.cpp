@@ -2,12 +2,19 @@
 #include "core/debug.hpp"
 
 #include <chrono>
+#include <glm/gtc/matrix_transform.hpp>
 
 using namespace aes;
 
 Engine::Engine(InitInfo const& info) : appName(info.appName), mainWindow(appName)
 {
 
+}
+
+Engine::~Engine()
+{
+	renderer.destroy();
+	mainWindow.close();
 }
 
 void Engine::init()
@@ -30,6 +37,7 @@ void Engine::init()
 		}
 
 		}, this });
+
 	renderer.init(mainWindow);
 	AES_LOG("engine initialized");
 }
@@ -42,16 +50,17 @@ void Engine::run()
 	double deltaTime = 0.0;
 
 	start();
+	mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), 16.0f / 9.0f, 0.0001f, 1000.0f);
 	while (!mainWindow.shouldClose())
 	{
 		AES_PROFILE_FRAME();
-		
 		auto start = std::chrono::high_resolution_clock::now();
 		
 		mainWindow.pollEvents();
-		renderer.startFrame();
+		renderer.startFrame(mainCamera);
 
 		update(deltaTime);
+		draw();
 
 		renderer.endFrame();
 		

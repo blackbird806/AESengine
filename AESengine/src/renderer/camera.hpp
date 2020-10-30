@@ -13,6 +13,7 @@ namespace aes {
 
 		glm::vec3 pos;
 		glm::mat4 viewMatrix;
+		glm::mat4 projMatrix;
 	};
 
 }

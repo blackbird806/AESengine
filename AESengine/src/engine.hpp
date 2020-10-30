@@ -19,6 +19,7 @@ namespace aes {
 		};
 
 		Engine(InitInfo const& info);
+		~Engine();
 	
 		void init();
 		void run();
@@ -27,6 +28,8 @@ namespace aes {
 
 		InputState getKeyState(Key k) noexcept;
 
+		Camera mainCamera;
+
 	private:
 
 		virtual void onKeyPressed(Key k) {};
@@ -34,6 +37,8 @@ namespace aes {
 
 		virtual void start() {}
 		virtual void update(double deltaTime) {}
+		virtual void draw() {}
+		virtual void end() {}
 
 		double time = 0.0;
 		uint64_t frameCount = 0;

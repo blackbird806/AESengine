@@ -18,6 +18,7 @@ Key aes::windowsToAESKey(int winKey)
 	case 0x41: return Key::A;
 	case 0x44: return Key::D;
 	case 0x45: return Key::E;
+	case 0x51: return Key::Q;
 	case 0x52: return Key::R;
 	case 0x53: return Key::S;
 	case 0x54: return Key::T;

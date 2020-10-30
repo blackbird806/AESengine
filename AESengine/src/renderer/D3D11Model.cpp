@@ -37,12 +37,18 @@ std::vector<Vertex> aes::getCubeVertices()
 	return vertices;
 }
 
+D3D11Model aes::createCube()
+{
+	D3D11Model cube;
+	cube.init(getCubeVertices(), cubeIndices);
+	return cube;
+}
+
 void D3D11Model::init(std::span<Vertex const> vertices, std::span<uint32_t const> indices)
 {
 	AES_PROFILE_FUNCTION();
 
 	vertexCount = vertices.size();
-
 	indexCount = indices.size();
 
 	D3D11_BUFFER_DESC vertexBufferDesc;
@@ -83,6 +89,23 @@ void D3D11Model::init(std::span<Vertex const> vertices, std::span<uint32_t const
 	{
 		throw Exception("failed to create index buffer");
 	}
+
+	D3D11_BUFFER_DESC modelBufferDesc = {};
+	// Setup the description of the dynamic matrix constant buffer that is in the vertex shader.
+	modelBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	modelBufferDesc.ByteWidth = sizeof(ModelBuffer);
+	modelBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	modelBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	modelBufferDesc.MiscFlags = 0;
+	modelBufferDesc.StructureByteStride = 0;
+
+	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
+	result = device->CreateBuffer(&modelBufferDesc, NULL, &modelBuffer);
+	if (FAILED(result))
+	{
+		throw Exception("failed to create Model buffer");
+	}
+
 }
 
 void D3D11Model::destroy()
@@ -91,17 +114,41 @@ void D3D11Model::destroy()
 
 	AES_ASSERT(vertexBuffer != nullptr);
 	AES_ASSERT(indexBuffer != nullptr);
+	AES_ASSERT(modelBuffer != nullptr);
+
+	modelBuffer->Release();
 	vertexBuffer->Release();
 	indexBuffer->Release();
 }
 
-void D3D11Model::render(ID3D11DeviceContext* deviceContext)
+void D3D11Model::render()
 {
 	AES_PROFILE_FUNCTION();
 
 	// Set vertex buffer stride and offset.
 	uint stride = sizeof(Vertex);
 	uint offset = 0;
+
+	ID3D11DeviceContext* deviceContext = D3D11Renderer::Instance().getDeviceContext();
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	// Lock the constant buffer so it can be written to.
+	auto result = deviceContext->Map(modelBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(result))
+	{
+		throw Exception("failed to map UBO");
+	}
+
+	// Get a pointer to the data in the constant buffer.
+	ModelBuffer* dataPtr = (ModelBuffer*)mappedResource.pData;
+
+	// Copy the matrices into the constant buffer.
+	dataPtr->world = glm::transpose(toWorld);
+
+	// Unlock the constant buffer.
+	deviceContext->Unmap(modelBuffer, 0);
+
+	deviceContext->VSSetConstantBuffers(1, 1, &modelBuffer);
 
 	// Set the vertex buffer to active in the input assembler so it can be rendered.
 	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);

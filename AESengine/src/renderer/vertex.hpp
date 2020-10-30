@@ -5,9 +5,13 @@
 
 namespace aes {
 
-	struct UBO
+	struct ModelBuffer
 	{
 		glm::mat4 world;
+	};
+
+	struct CameraBuffer
+	{
 		glm::mat4 view;
 		glm::mat4 proj;
 	};

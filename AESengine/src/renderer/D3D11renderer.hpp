@@ -10,7 +10,6 @@
 
 /// DEBUG
 #include "camera.hpp"
-#include "D3D11Model.hpp"
 #include "D3D11shader.hpp"
 /// ///
 
@@ -29,13 +28,11 @@ namespace aes {
 		ID3D11Device* getDevice();
 		ID3D11DeviceContext* getDeviceContext();
 
-		void startFrame();
+		void startFrame(Camera const& cam);
 		void endFrame();
 
 	/// debug
-		D3D11Model model;
 		D3D11Shader shader;
-		Camera cam;
 	/// 
 
 	private:

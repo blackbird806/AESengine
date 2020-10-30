@@ -4,7 +4,7 @@
 #include <d3d11.h>
 #include <span>
 #include <vector>
-#include <glm/gtx/quaternion.hpp>
+#include <glm/glm.hpp>
 #include "vertex.hpp"
 
 namespace aes {
@@ -55,13 +55,17 @@ namespace aes {
 		void init(std::span<Vertex const> vertices, std::span<uint32_t const> indices);
 		void destroy();
 
-		void render(ID3D11DeviceContext*);
+		void render();
 
 	private:
 
+		glm::mat4 toWorld;
 		ID3D11Buffer* vertexBuffer = nullptr, *indexBuffer = nullptr;
-		int vertexCount, indexCount;
+		ID3D11Buffer* modelBuffer;
+		size_t vertexCount, indexCount;
 	};
+
+	D3D11Model createCube();
 
 }
 
