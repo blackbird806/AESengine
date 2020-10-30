@@ -3,11 +3,13 @@
 
 #include "renderer/camera.hpp"
 #include "renderer/D3D11Model.hpp"
+#include <vector>
 
 namespace aes
 {
 	class Scene
 	{
+	public:
 
 	};
 }

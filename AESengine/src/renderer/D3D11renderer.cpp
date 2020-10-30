@@ -126,7 +126,6 @@ void D3D11Renderer::init(Window& window)
 	AES_LOG("D3D11 renderer initialized");
 
 	model.init(getCubeVertices(), cubeIndices);
-	model.setSize({ 0.5f, 0.5f, 0.5f });
 
 	shader.init(device);
 
@@ -182,7 +181,7 @@ void D3D11Renderer::startFrame()
 
 	// Clear the depth buffer.
 	deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-	shader.render(deviceContext, model.getModel(), cam.viewMatrix, glm::perspectiveLH_ZO(glm::radians(45.0f), 16.0f / 9.0f, 0.0001f, 1000.0f));
+	shader.render(deviceContext, glm::mat4(1.0f), cam.viewMatrix, glm::perspectiveLH_ZO(glm::radians(45.0f), 16.0f / 9.0f, 0.0001f, 1000.0f));
 	model.render(deviceContext);
 }
 

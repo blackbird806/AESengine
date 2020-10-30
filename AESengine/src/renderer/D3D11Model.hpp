@@ -53,19 +53,12 @@ namespace aes {
 	public:
 
 		void init(std::span<Vertex const> vertices, std::span<uint32_t const> indices);
-		 
 		void destroy();
-
-		void setPos(glm::vec3 const& p);
-		void setRot(glm::quat const& r);
-		void setSize(glm::vec3 const& s);
-		glm::mat4 getModel() const;
 
 		void render(ID3D11DeviceContext*);
 
 	private:
 
-		glm::mat4 model;
 		ID3D11Buffer* vertexBuffer = nullptr, *indexBuffer = nullptr;
 		int vertexCount, indexCount;
 	};

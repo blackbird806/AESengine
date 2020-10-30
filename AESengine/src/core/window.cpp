@@ -16,6 +16,12 @@ LRESULT Window::windowProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	Window* self = (Window*)GetPropW(hwnd, WINDOW_HANDLE_PROP_NAME);
 	switch (msg)
 	{
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONUP:
+		case WM_MBUTTONDOWN:
+		case WM_MBUTTONUP:
+		case WM_RBUTTONDOWN:
+		case WM_RBUTTONUP:
 		case WM_KEYDOWN:
 		case WM_SYSKEYDOWN:
 		case WM_KEYUP:

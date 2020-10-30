@@ -3,12 +3,28 @@
 
 #include "aes.hpp"
 #include "os.hpp"
+#include "input.hpp"
+#include <utility>
 
 namespace aes {
 
-	enum class InputAction {
-		Pressed,
-		Released
+	template<typename F>
+	struct ContextCallback
+	{
+		operator bool() const noexcept
+		{
+			return fn != nullptr;
+		}
+
+		template<typename ...Args>
+		auto operator()(Args&&... args)
+		{
+			AES_ASSERT(fn);
+			return fn(std::forward<Args>(args)..., userData);
+		}
+
+		F fn = nullptr;
+		void* userData = nullptr;
 	};
 
 	class Window
@@ -17,7 +33,7 @@ namespace aes {
 	public:
 
 		using ResizeCallbackT = void(*)(uint, uint);
-		using KeyCallbackT = void(*)(InputAction action, int key);
+		using KeyCallbackT = ContextCallback<void(*)(InputAction action, int key, void* userData)>;
 		using MouseMoveCallbackT = void(*)(int mouseX, int mouseY);
 
 		static LRESULT CALLBACK windowProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -43,7 +59,7 @@ namespace aes {
 
 		bool shouldClose_ = false;
 		HWND handle;
-		KeyCallbackT keyCallback = nullptr;
+		KeyCallbackT keyCallback;
 		ResizeCallbackT resizeCallback = nullptr;
 		MouseMoveCallbackT mouseMoveCallback = nullptr;
 		uint width, height;

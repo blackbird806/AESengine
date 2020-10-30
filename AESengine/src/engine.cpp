@@ -14,6 +14,22 @@ void Engine::init()
 {
 	AES_PROFILE_FUNCTION();
 	mainWindow.open();
+	mainWindow.setKeyCallback({ [](InputAction action, int key, void* userData) {
+
+		Engine& self = *(Engine*)userData;
+		Key k = windowsToAESKey(key);
+		if (action == InputAction::Pressed)
+		{
+			self.onKeyPressed(k);
+			self.keyStates[k] = InputState::Down;
+		}
+		else
+		{
+			self.onKeyReleased(k);
+			self.keyStates[k] = InputState::Up;
+		}
+
+		}, this });
 	renderer.init(mainWindow);
 	AES_LOG("engine initialized");
 }
@@ -24,8 +40,8 @@ void Engine::run()
 	AES_PROFILE_FUNCTION();
 
 	double deltaTime = 0.0;
-	double time = 0.0;
-	uint64_t frameCount = 0;
+
+	start();
 	while (!mainWindow.shouldClose())
 	{
 		AES_PROFILE_FRAME();
@@ -35,7 +51,7 @@ void Engine::run()
 		mainWindow.pollEvents();
 		renderer.startFrame();
 
-
+		update(deltaTime);
 
 		renderer.endFrame();
 		
@@ -45,4 +61,9 @@ void Engine::run()
 		time += deltaTime;
 		frameCount++;
 	}
+}
+
+InputState Engine::getKeyState(Key k) noexcept
+{
+	return keyStates[k];
 }

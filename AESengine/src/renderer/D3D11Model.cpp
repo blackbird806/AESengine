@@ -95,26 +95,6 @@ void D3D11Model::destroy()
 	indexBuffer->Release();
 }
 
-void D3D11Model::setPos(glm::vec3 const& p)
-{
-	model = glm::translate(model, p);
-}
-
-void D3D11Model::setRot(glm::quat const& r)
-{
-	model *= glm::toMat4(r);
-}
-
-void D3D11Model::setSize(glm::vec3 const& s)
-{
-	model = glm::scale(model, s);
-}
-
-glm::mat4 D3D11Model::getModel() const
-{
-	return model;
-}
-
 void D3D11Model::render(ID3D11DeviceContext* deviceContext)
 {
 	AES_PROFILE_FUNCTION();
