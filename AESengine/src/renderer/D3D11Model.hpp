@@ -57,9 +57,9 @@ namespace aes {
 
 		void render();
 
+		glm::mat4 toWorld;
 	private:
 
-		glm::mat4 toWorld;
 		ID3D11Buffer* vertexBuffer = nullptr, *indexBuffer = nullptr;
 		ID3D11Buffer* modelBuffer;
 		size_t vertexCount, indexCount;

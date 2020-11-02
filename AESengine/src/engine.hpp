@@ -27,6 +27,7 @@ namespace aes {
 	protected:
 
 		InputState getKeyState(Key k) noexcept;
+		void getMousePos(float& x, float& y) noexcept;
 
 		Camera mainCamera;
 
