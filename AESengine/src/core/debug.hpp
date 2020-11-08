@@ -12,6 +12,8 @@
 
 namespace aes {
 
+	// @TODO move these into error
+
 	// @Deprecated
 	void fatalError(const char* msg);
 

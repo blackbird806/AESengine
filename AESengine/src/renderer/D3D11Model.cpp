@@ -39,12 +39,14 @@ std::vector<Vertex> aes::getCubeVertices()
 
 D3D11Model aes::createCube()
 {
+	AES_PROFILE_FUNCTION();
+
 	D3D11Model cube;
 	cube.init(getCubeVertices(), cubeIndices);
 	return cube;
 }
 
-void D3D11Model::init(std::span<Vertex const> vertices, std::span<uint32_t const> indices)
+Result<void, RenderError> D3D11Model::init(std::span<Vertex const> vertices, std::span<uint32_t const> indices)
 {
 	AES_PROFILE_FUNCTION();
 
@@ -68,7 +70,8 @@ void D3D11Model::init(std::span<Vertex const> vertices, std::span<uint32_t const
 	HRESULT result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &vertexBuffer);
 	if (FAILED(result))
 	{
-		throw Exception("failed to create vertex buffer");
+		AES_THROW(Exception("failed to create Vertex buffer"));
+		return { RenderError::BufferCreationFailed };
 	}
 	
 	D3D11_BUFFER_DESC indexBufferDesc;
@@ -87,7 +90,8 @@ void D3D11Model::init(std::span<Vertex const> vertices, std::span<uint32_t const
 	result = device->CreateBuffer(&indexBufferDesc, &indexData, &indexBuffer);
 	if (FAILED(result))
 	{
-		throw Exception("failed to create index buffer");
+		AES_THROW(Exception("failed to create index buffer"));
+		return { RenderError::BufferCreationFailed };
 	}
 
 	D3D11_BUFFER_DESC modelBufferDesc = {};
@@ -103,9 +107,11 @@ void D3D11Model::init(std::span<Vertex const> vertices, std::span<uint32_t const
 	result = device->CreateBuffer(&modelBufferDesc, NULL, &modelBuffer);
 	if (FAILED(result))
 	{
-		throw Exception("failed to create Model buffer");
+		AES_THROW(Exception("failed to create Model buffer"));
+		return { RenderError::BufferCreationFailed };
 	}
 
+	return {};
 }
 
 void D3D11Model::destroy()
@@ -136,7 +142,7 @@ void D3D11Model::render()
 	auto result = deviceContext->Map(modelBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
-		throw Exception("failed to map UBO");
+		AES_THROW(Exception("failed to map UBO"));
 	}
 
 	// Get a pointer to the data in the constant buffer.

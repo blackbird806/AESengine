@@ -13,7 +13,7 @@ void aes::fatalError(const char* msg)
 {
 	AES_LOG_ERROR(msg);
 	MessageBox(NULL, aes::to_wstring(std::string(msg)).c_str(), L"Fatal error", MB_ICONERROR);
-	exit(AES_FATAL_ERROR);
+	exit(-1);
 }
 
 Exception::Exception(const char* msg_) noexcept : msg(msg_)

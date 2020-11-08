@@ -3,7 +3,6 @@
 #include "string_converter.hpp"
 
 #include <string>
-
 #include <windowsx.h>
 
 #define AES_CLASSNAME L"AES_CLASS"
@@ -16,12 +15,49 @@ LRESULT Window::windowProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	Window* self = (Window*)GetPropW(hwnd, WINDOW_HANDLE_PROP_NAME);
 	switch (msg)
 	{
+		// workaround TODO
 		case WM_LBUTTONDOWN:
-		case WM_LBUTTONUP:
-		case WM_MBUTTONDOWN:
-		case WM_MBUTTONUP:
+		{
+			if (self->keyCallback) {
+				self->keyCallback(InputAction::Pressed, VK_LBUTTON);
+			}
+			break;
+		}
 		case WM_RBUTTONDOWN:
+		{
+			if (self->keyCallback) {
+				self->keyCallback(InputAction::Pressed, VK_RBUTTON);
+			}
+			break;
+		}
+		case WM_MBUTTONDOWN:
+		{
+			if (self->keyCallback) {
+				self->keyCallback(InputAction::Pressed, VK_MBUTTON);
+			}
+			break;
+		}
+		case WM_LBUTTONUP:
+		{
+			if (self->keyCallback) {
+				self->keyCallback(InputAction::Released, VK_LBUTTON);
+			}
+			break;
+		}
+		case WM_MBUTTONUP:
+		{
+			if (self->keyCallback) {
+				self->keyCallback(InputAction::Released, VK_MBUTTON);
+			}
+			break;
+		}
 		case WM_RBUTTONUP:
+		{
+			if (self->keyCallback) {
+				self->keyCallback(InputAction::Released, VK_RBUTTON);
+			}
+			break;
+		}
 		case WM_KEYDOWN:
 		case WM_SYSKEYDOWN:
 		case WM_KEYUP:
@@ -31,8 +67,8 @@ LRESULT Window::windowProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				InputAction const action = (HIWORD(lParam) & KF_UP) ? InputAction::Released : InputAction::Pressed;
 				self->keyCallback(action, wParam);
 			}
-		}
 			break;
+		}
 		case WM_MOUSEMOVE:
 			self->mouseX = GET_X_LPARAM(lParam);
 			self->mouseY = GET_Y_LPARAM(lParam);
