@@ -17,7 +17,7 @@ namespace aes {
 
 		void destroy();
 
-		void render(glm::mat4 view, glm::mat4 proj);
+		void render(glm::mat4 const& view, glm::mat4 const& proj);
 
 	private:
 		ID3D11VertexShader* vertexShader;

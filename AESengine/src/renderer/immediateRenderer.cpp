@@ -119,10 +119,9 @@ void ImmediateRenderer2D::init()
 	polygonLayout[1].InstanceDataStepRate = 0;
 
 	// Get a count of the elements in the layout.
-	uint numElements = std::size(polygonLayout);
 	ID3D11InputLayout* layout;
 	// Create the vertex input layout.
-	result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &layout);
+	result = device->CreateInputLayout(polygonLayout, std::size(polygonLayout), vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &layout);
 	if (FAILED(result))
 	{
 		AES_LOG_ERROR("failed to create InputLayout");
@@ -132,10 +131,9 @@ void ImmediateRenderer2D::init()
 	// Release the vertex shader buffer and pixel shader buffer since they are no longer needed.
 	vertexShaderBuffer->Release();
 	pixelShaderBuffer->Release();
-
 }
 
-void ImmediateRenderer2D::drawLine(glm::vec2 const& p1, glm::vec2 const& p2, glm::vec4 col)
+void ImmediateRenderer2D::drawLine(glm::vec2 p1, glm::vec2 p2, glm::vec4 const& col)
 {
 	AES_PROFILE_FUNCTION();
 

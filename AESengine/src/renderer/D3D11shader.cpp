@@ -176,7 +176,7 @@ void D3D11Shader::destroy()
 	cameraBuffer->Release();
 }
 
-void D3D11Shader::render(glm::mat4 view, glm::mat4 proj)
+void D3D11Shader::render(glm::mat4 const& view, glm::mat4 const& proj)
 {
 	AES_PROFILE_FUNCTION();
 

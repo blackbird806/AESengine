@@ -52,7 +52,7 @@ namespace aes {
 
 		void init();
 
-		void drawLine(glm::vec2 const& p1, glm::vec2 const& p2, glm::vec4 col);
+		void drawLine(glm::vec2 p1, glm::vec2 p2, glm::vec4 const& col);
 
 		void updateBuffers();
 
