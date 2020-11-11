@@ -103,7 +103,7 @@ namespace aes {
 		}
 
 	private:
-		std::variant<bool, ErrorCodeType) value_;
+		std::variant<bool, ErrorCodeType> value_;
 	};
 
 }

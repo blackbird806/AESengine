@@ -3,6 +3,7 @@
 
 #include <d3d11.h>
 #include <glm/glm.hpp>
+#include <string_view>
 
 namespace aes {
 
@@ -12,6 +13,8 @@ namespace aes {
 	public:
 
 		void init();
+		void init(std::string_view vs, std::string_view ps);
+
 		void destroy();
 
 		void render(glm::mat4 view, glm::mat4 proj);

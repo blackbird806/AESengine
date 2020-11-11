@@ -6,46 +6,67 @@
 #include <d3d11.h>
 
 #include <glm/glm.hpp>
-#include "color.hpp"
 #include <vector>
+#include "geometry.hpp"
 
 namespace aes {
 
-	enum class PrimitiveType
-	{
-		Line,
-	};
-
-	struct ImVertex
-	{
-		glm::vec3 pos;
-		Color col;
-	};
-
-	struct DrawList
-	{
-		PrimitiveType type;
-		std::vector<ImVertex> vertices;
-	};
-
-	class ImmediateRenderer
+	class ImmediateRenderer2D
 	{
 
 	public:
+
+		struct Vertex
+		{
+			glm::vec2 pos;
+			glm::vec4 col;
+		};
+
+		struct Command
+		{
+			Command() {};
+			Command(Command const& other);
+
+			Command& operator=(Command const& other);
+
+			enum class Type
+			{
+				Line,
+				Rect,
+				FillRect,
+				Text,
+			};
+
+			Type type;
+			glm::vec4 col;
+			union
+			{
+				Line2D line;
+				Rect rect;
+			};
+		};
+
 		static uint32_t constexpr maxVertices = 1024;
 
-		static ImmediateRenderer& Instance();
+		static ImmediateRenderer2D& Instance();
 
 		void init();
 
-		void drawLine(glm::vec3 const& p1, glm::vec3 const& p2, Color col);
-		void submitDrawList(DrawList const& list);
+		void drawLine(glm::vec2 const& p1, glm::vec2 const& p2, glm::vec4 col);
+
+		void updateBuffers();
+
+		void draw();
+
+		void destroy();
 
 	private:
 
-		static ImmediateRenderer* instance;
-		DrawList lineList;
-		ID3D11Buffer* vertexBuffer;
+		std::vector<Command> commands;
+
+		ID3D11VertexShader* vertexShader = nullptr;
+		ID3D11PixelShader* pixelShader = nullptr;
+		ID3D11Buffer* vertexBuffer = nullptr;
 	};
 
 }

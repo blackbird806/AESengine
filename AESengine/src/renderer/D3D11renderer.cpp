@@ -312,7 +312,7 @@ void D3D11Renderer::createDepthStencil()
 	auto result = device->CreateTexture2D(&depthBufferDesc, NULL, &depthStencilBuffer);
 	if (FAILED(result))
 	{
-		throw Exception("device depthStencilBuffer failed");
+		AES_THROW(Exception("device depthStencilBuffer failed"));
 	}
 
 	// Initialize the description of the stencil state.
@@ -339,7 +339,7 @@ void D3D11Renderer::createDepthStencil()
 	result = device->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
 	if (FAILED(result))
 	{
-		throw Exception("device->CreateDepthStencilState failed");
+		AES_THROW(Exception("device->CreateDepthStencilState failed"));
 	}
 
 	deviceContext->OMSetDepthStencilState(depthStencilState, 1);
@@ -352,7 +352,7 @@ void D3D11Renderer::createDepthStencil()
 	result = device->CreateDepthStencilView(depthStencilBuffer, &depthStencilViewDesc, &depthStencilView);
 	if (FAILED(result))
 	{
-		throw Exception("device->CreateDepthStencilView failed");
+		AES_THROW(Exception("device->CreateDepthStencilView failed"));
 	}
 
 	deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
@@ -375,7 +375,7 @@ void D3D11Renderer::setupRasterizerState()
 	auto result = device->CreateRasterizerState(&rasterDesc, &rasterState);
 	if (FAILED(result))
 	{
-		throw Exception("device->rasterState failed");
+		AES_THROW(Exception("device->rasterState failed"));
 	}
 }
 
