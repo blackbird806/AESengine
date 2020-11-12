@@ -279,7 +279,7 @@ void D3D11Renderer::createRenderTarget()
 	{
 		throw Exception("swapChain->GetBuffer failed");
 	}
-
+	
 	result = device->CreateRenderTargetView(backBufferPtr, NULL, &renderTargetView);
 	if (FAILED(result))
 	{

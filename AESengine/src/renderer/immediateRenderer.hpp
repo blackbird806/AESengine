@@ -67,6 +67,7 @@ namespace aes {
 		ID3D11VertexShader* vertexShader = nullptr;
 		ID3D11PixelShader* pixelShader = nullptr;
 		ID3D11Buffer* vertexBuffer = nullptr;
+		ID3D11InputLayout* layout = nullptr;
 	};
 
 }

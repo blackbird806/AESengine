@@ -119,7 +119,6 @@ void ImmediateRenderer2D::init()
 	polygonLayout[1].InstanceDataStepRate = 0;
 
 	// Get a count of the elements in the layout.
-	ID3D11InputLayout* layout;
 	// Create the vertex input layout.
 	result = device->CreateInputLayout(polygonLayout, std::size(polygonLayout), vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &layout);
 	if (FAILED(result))
@@ -176,6 +175,7 @@ void ImmediateRenderer2D::destroy()
 {
 	AES_PROFILE_FUNCTION();
 
+	layout->Release();
 	vertexBuffer->Release();
 	pixelShader->Release();
 	vertexBuffer->Release();
@@ -192,6 +192,7 @@ void ImmediateRenderer2D::draw()
 	
 	uint stride = sizeof(Vertex);
 	uint vertexBufferOffset = 0;
+	ctx->IASetInputLayout(layout);
 	ctx->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &vertexBufferOffset);
 	
 	ctx->VSSetShader(vertexShader, NULL, 0);
