@@ -105,6 +105,8 @@ LRESULT Window::windowProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 Window::Window(const char* name)
 {
 	AES_PROFILE_FUNCTION();
+	
+	AES_ASSERT(name);
 
 	std::wstring windowName = to_wstring(std::string(name));
 

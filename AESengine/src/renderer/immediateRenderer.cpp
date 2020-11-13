@@ -207,7 +207,6 @@ void ImmediateRenderer2D::draw()
 			ctx->Draw(2, offset);
 			offset += 2;
 			break;
-
 		default:
 			break;
 		}
@@ -225,6 +224,9 @@ ImmediateRenderer2D::Command::Command(Command const& other) :
 	case Command::Type::Line:
 		line = other.line;
 		break;
+	case Command::Type::Rect:
+		rect = other.rect;
+		break;
 	default:
 		break;
 	}
@@ -241,6 +243,9 @@ ImmediateRenderer2D::Command& ImmediateRenderer2D::Command::operator=(Command co
 	{
 	case Command::Type::Line:
 		line = other.line;
+		break;
+	case Command::Type::Rect:
+		rect = other.rect;
 		break;
 	default:
 		break;

@@ -30,6 +30,7 @@ namespace aes {
 		void getMousePos(float& x, float& y) noexcept;
 
 		Camera mainCamera;
+		Window mainWindow;
 
 	private:
 
@@ -45,7 +46,6 @@ namespace aes {
 		uint64_t frameCount = 0;
 		
 		const char* appName;
-		Window mainWindow;
 		D3D11Renderer renderer;
 
 		std::unordered_map<Key, InputState> keyStates;

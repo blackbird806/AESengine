@@ -6,7 +6,7 @@
 
 using namespace aes;
 
-Engine::Engine(InitInfo const& info) : appName(info.appName), mainWindow(appName)
+Engine::Engine(InitInfo const& info) : appName(info.appName), mainWindow(info.appName)
 {
 
 }
@@ -50,7 +50,6 @@ void Engine::run()
 	double deltaTime = 0.0;
 
 	start();
-	mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), 16.0f / 9.0f, 0.0001f, 1000.0f);
 	while (!mainWindow.shouldClose())
 	{
 		AES_PROFILE_FRAME();

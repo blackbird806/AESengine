@@ -198,6 +198,8 @@ void D3D11Renderer::endFrame()
 
 void D3D11Renderer::createDevice()
 {
+	AES_PROFILE_FUNCTION();
+
 	// Set the feature level to DirectX 11.
 	D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_1;
 	auto result = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, &featureLevel, 1, D3D11_SDK_VERSION, &device, NULL, &deviceContext);
@@ -209,6 +211,8 @@ void D3D11Renderer::createDevice()
 
 void D3D11Renderer::createSwapchain()
 {
+	AES_PROFILE_FUNCTION();
+
 	uint screenWidth, screenHeight;
 	renderWindow->getScreenSize(screenWidth, screenHeight);
 
@@ -263,7 +267,7 @@ void D3D11Renderer::createSwapchain()
 	D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_1;
 	
 	AES_ASSERT(factory);
-	auto result = factory->CreateSwapChain(device, &swapChainDesc, &swapChain);
+	HRESULT result = factory->CreateSwapChain(device, &swapChainDesc, &swapChain);
 	if (FAILED(result))
 	{
 		throw Exception("D3D11CreateDeviceAndSwapChain failed");
@@ -272,9 +276,11 @@ void D3D11Renderer::createSwapchain()
 
 void D3D11Renderer::createRenderTarget()
 {
+	AES_PROFILE_FUNCTION();
+
 	// Get the pointer to the back buffer.
 	ID3D11Texture2D* backBufferPtr;
-	auto result = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr);
+	HRESULT result = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr);
 	if (FAILED(result))
 	{
 		throw Exception("swapChain->GetBuffer failed");
@@ -292,6 +298,8 @@ void D3D11Renderer::createRenderTarget()
 
 void D3D11Renderer::createDepthStencil()
 {
+	AES_PROFILE_FUNCTION();
+
 	uint screenWidth, screenHeight;
 	renderWindow->getScreenSize(screenWidth, screenHeight);
 	
@@ -360,6 +368,8 @@ void D3D11Renderer::createDepthStencil()
 
 void D3D11Renderer::setupRasterizerState()
 {
+	AES_PROFILE_FUNCTION();
+
 	D3D11_RASTERIZER_DESC rasterDesc;
 	rasterDesc.AntialiasedLineEnable = false;
 	rasterDesc.CullMode = D3D11_CULL_BACK;
@@ -372,7 +382,7 @@ void D3D11Renderer::setupRasterizerState()
 	rasterDesc.ScissorEnable = false;
 	rasterDesc.SlopeScaledDepthBias = 0.0f;
 
-	auto result = device->CreateRasterizerState(&rasterDesc, &rasterState);
+	HRESULT result = device->CreateRasterizerState(&rasterDesc, &rasterState);
 	if (FAILED(result))
 	{
 		AES_THROW(Exception("device->rasterState failed"));
@@ -381,6 +391,8 @@ void D3D11Renderer::setupRasterizerState()
 
 void D3D11Renderer::setupViewport()
 {
+	AES_PROFILE_FUNCTION();
+
 	uint screenWidth, screenHeight;
 	renderWindow->getScreenSize(screenWidth, screenHeight);
 
@@ -398,6 +410,8 @@ void D3D11Renderer::setupViewport()
 
 void D3D11Renderer::resizeRender()
 {
+	AES_PROFILE_FUNCTION();
+
 	destroyDepthStencil();
 	destroyRenderTarget();
 	destroySwapchain();
@@ -410,6 +424,8 @@ void D3D11Renderer::resizeRender()
 
 void D3D11Renderer::destroySwapchain()
 {
+	AES_PROFILE_FUNCTION();
+
 	AES_ASSERT(swapChain != nullptr);
 	// Before shutting down set to windowed mode or when you release the swap chain it will throw an exception.
 	swapChain->SetFullscreenState(false, NULL);
@@ -419,6 +435,8 @@ void D3D11Renderer::destroySwapchain()
 
 void D3D11Renderer::destroyDepthStencil()
 {
+	AES_PROFILE_FUNCTION();
+
 	AES_ASSERT(depthStencilView != nullptr);
 	AES_ASSERT(depthStencilState != nullptr);
 	AES_ASSERT(depthStencilBuffer != nullptr);
@@ -432,6 +450,8 @@ void D3D11Renderer::destroyDepthStencil()
 
 void D3D11Renderer::destroyRenderTarget()
 {
+	AES_PROFILE_FUNCTION();
+
 	AES_ASSERT(renderTargetView);
 	renderTargetView->Release();
 }
