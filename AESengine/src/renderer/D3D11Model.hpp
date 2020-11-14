@@ -6,7 +6,6 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include "core/error.hpp"
-#include "rendererError.hpp"
 #include "vertex.hpp"
 
 namespace aes {
@@ -54,7 +53,7 @@ namespace aes {
 	{
 	public:
 
-		Result<void, RenderError> init(std::span<Vertex const> vertices, std::span<uint32_t const> indices);
+		Result<void> init(std::span<Vertex const> vertices, std::span<uint32_t const> indices);
 		void destroy();
 
 		void render();

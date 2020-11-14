@@ -8,7 +8,15 @@
 
 namespace aes {
 
-	template<typename T, typename ErrorCode>
+	enum class AESError
+	{
+		Undefined,
+		GPUBufferCreationFailed,
+		GPUBufferMappingFailed,
+		FontInitFailed,
+	};
+
+	template<typename T, typename ErrorCode = AESError>
 	class Result
 	{
 	public:

@@ -46,7 +46,7 @@ D3D11Model aes::createCube()
 	return cube;
 }
 
-Result<void, RenderError> D3D11Model::init(std::span<Vertex const> vertices, std::span<uint32_t const> indices)
+Result<void> D3D11Model::init(std::span<Vertex const> vertices, std::span<uint32_t const> indices)
 {
 	AES_PROFILE_FUNCTION();
 
@@ -70,8 +70,7 @@ Result<void, RenderError> D3D11Model::init(std::span<Vertex const> vertices, std
 	HRESULT result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &vertexBuffer);
 	if (FAILED(result))
 	{
-		AES_THROW(Exception("failed to create Vertex buffer"));
-		return { RenderError::BufferCreationFailed };
+		return { AESError::GPUBufferCreationFailed };
 	}
 	
 	D3D11_BUFFER_DESC indexBufferDesc;
@@ -90,8 +89,7 @@ Result<void, RenderError> D3D11Model::init(std::span<Vertex const> vertices, std
 	result = device->CreateBuffer(&indexBufferDesc, &indexData, &indexBuffer);
 	if (FAILED(result))
 	{
-		AES_THROW(Exception("failed to create index buffer"));
-		return { RenderError::BufferCreationFailed };
+		return { AESError::GPUBufferCreationFailed };
 	}
 
 	D3D11_BUFFER_DESC modelBufferDesc = {};
@@ -107,8 +105,7 @@ Result<void, RenderError> D3D11Model::init(std::span<Vertex const> vertices, std
 	result = device->CreateBuffer(&modelBufferDesc, NULL, &modelBuffer);
 	if (FAILED(result))
 	{
-		AES_THROW(Exception("failed to create Model buffer"));
-		return { RenderError::BufferCreationFailed };
+		return { AESError::GPUBufferCreationFailed };
 	}
 
 	return {};

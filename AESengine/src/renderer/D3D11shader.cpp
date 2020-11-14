@@ -70,7 +70,7 @@ void D3D11Shader::init()
 	init(vShader, pxShader);
 }
 
-void aes::D3D11Shader::init(std::string_view vs, std::string_view ps)
+void D3D11Shader::init(std::string_view vs, std::string_view ps)
 {
 	AES_PROFILE_FUNCTION();
 
