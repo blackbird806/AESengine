@@ -21,28 +21,70 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\core\allocator.cpp" />
+    <ClCompile Include="src\core\console.cpp" />
     <ClCompile Include="src\core\debug.cpp" />
+    <ClCompile Include="src\core\input.cpp" />
     <ClCompile Include="src\core\maths.cpp" />
     <ClCompile Include="src\core\string_converter.cpp" />
+    <ClCompile Include="src\core\utility.cpp" />
     <ClCompile Include="src\core\window.cpp" />
     <ClCompile Include="src\engine.cpp" />
     <ClCompile Include="src\renderer\camera.cpp" />
     <ClCompile Include="src\renderer\D3D11Model.cpp" />
     <ClCompile Include="src\renderer\D3D11renderer.cpp" />
     <ClCompile Include="src\renderer\D3D11shader.cpp" />
+    <ClCompile Include="src\renderer\FontManager.cpp" />
+    <ClCompile Include="src\renderer\immediateRenderer.cpp" />
     <ClCompile Include="thirdParty\fmt\src\format.cc" />
     <ClCompile Include="thirdParty\fmt\src\os.cc" />
+    <ClCompile Include="thirdParty\stb\stb_truetype.cpp" />
     <ClCompile Include="thirdParty\tracy\TracyClient.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\binary.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\contrib\graphbuilder.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\contrib\graphbuilderadapter.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\convert.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\depthguard.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\directives.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\emit.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\emitfromevents.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\emitter.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\emitterstate.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\emitterutils.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\exceptions.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\exp.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\memory.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\node.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\nodebuilder.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\nodeevents.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\node_data.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\null.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\ostream_wrapper.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\parse.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\parser.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\regex_yaml.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\scanner.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\scanscalar.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\scantag.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\scantoken.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\simplekey.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\singledocparser.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\stream.cpp" />
+    <ClCompile Include="thirdParty\yaml-cpp\src\tag.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\aes.hpp" />
     <ClInclude Include="src\core\allocator.hpp" />
+    <ClInclude Include="src\core\console.hpp" />
     <ClInclude Include="src\core\debug.hpp" />
+    <ClInclude Include="src\core\debugMath.hpp" />
+    <ClInclude Include="src\core\error.hpp" />
+    <ClInclude Include="src\core\input.hpp" />
     <ClInclude Include="src\core\macro_helpers.hpp" />
     <ClInclude Include="src\core\maths.hpp" />
     <ClInclude Include="src\core\os.hpp" />
     <ClInclude Include="src\core\profiler.hpp" />
     <ClInclude Include="src\core\string_converter.hpp" />
+    <ClInclude Include="src\core\utility.hpp" />
     <ClInclude Include="src\core\window.hpp" />
     <ClInclude Include="src\engine.hpp" />
     <ClInclude Include="src\logic\scene.hpp" />
@@ -50,6 +92,10 @@
     <ClInclude Include="src\renderer\D3D11Model.hpp" />
     <ClInclude Include="src\renderer\D3D11renderer.hpp" />
     <ClInclude Include="src\renderer\D3D11shader.hpp" />
+    <ClInclude Include="src\renderer\D3D11Texture.hpp" />
+    <ClInclude Include="src\renderer\FontManager.hpp" />
+    <ClInclude Include="src\renderer\geometry.hpp" />
+    <ClInclude Include="src\renderer\immediateRenderer.hpp" />
     <ClInclude Include="src\renderer\vertex.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -134,7 +180,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;TRACY_ENABLE;GLM_FORCE_LEFT_HANDED;GLM_FORCE_DEPTH_ZERO_TO_ONE;GLM_FORCE_CTOR_INIT</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/yaml-cpp/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/yaml-cpp/include;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -153,7 +199,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;TRACY_ENABLE;GLM_FORCE_CTOR_INIT</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/yaml-cpp/include;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/yaml-cpp/include;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
     </ClCompile>
@@ -171,7 +217,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;TRACY_ENABLE;GLM_FORCE_LEFT_HANDED;GLM_FORCE_DEPTH_ZERO_TO_ONE;GLM_FORCE_CTOR_INIT</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/yaml-cpp/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/yaml-cpp/include;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -190,7 +236,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;TRACY_ENABLE;GLM_FORCE_CTOR_INIT</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/yaml-cpp/include;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/yaml-cpp/include;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
     </ClCompile>

@@ -22,6 +22,12 @@
     <Filter Include="ThirdParty\tracy">
       <UniqueIdentifier>{b67932b3-573c-430c-87ec-b4421133d089}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ThirdParty\yaml-cpp">
+      <UniqueIdentifier>{d14370e1-5405-414c-8e90-c05b5cc6ab1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\stb">
+      <UniqueIdentifier>{edc2130c-9a41-4e11-bb66-58818b3ad3ea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -65,6 +71,117 @@
     </ClCompile>
     <ClCompile Include="thirdParty\tracy\TracyClient.cpp">
       <Filter>ThirdParty\tracy</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\binary.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\convert.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\depthguard.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\directives.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\emit.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\emitfromevents.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\emitter.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\emitterstate.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\emitterutils.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\exceptions.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\exp.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\memory.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\node.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\node_data.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\nodebuilder.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\nodeevents.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\null.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\ostream_wrapper.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\parse.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\parser.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\regex_yaml.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\scanner.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\scanscalar.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\scantag.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\scantoken.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\simplekey.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\singledocparser.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\stream.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\tag.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\contrib\graphbuilder.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\yaml-cpp\src\contrib\graphbuilderadapter.cpp">
+      <Filter>ThirdParty\yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\immediateRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\console.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\stb\stb_truetype.cpp">
+      <Filter>ThirdParty\stb</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\FontManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\utility.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -114,6 +231,33 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\logic\scene.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\input.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\debugMath.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\immediateRenderer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\error.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\geometry.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\console.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\D3D11Texture.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\FontManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\utility.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
