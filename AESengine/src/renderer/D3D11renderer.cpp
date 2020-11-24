@@ -1,10 +1,7 @@
 #include "D3D11renderer.hpp"
 #include "core/debug.hpp"
-#include "core/maths.hpp"
 
-#include <cstdlib>
 #include <vector>
-#include <glm/gtc/matrix_transform.hpp>
 
 using namespace aes;
 
@@ -93,7 +90,7 @@ void D3D11Renderer::init(Window& window)
 	result = adapter->GetDesc(&adapterDesc);
 	if (FAILED(result))
 	{
-		fatalError("failed getDesc");
+		AES_ERROR("failed getDesc");
 	}
 
 	// Store the dedicated video card memory in megabytes.
@@ -101,10 +98,10 @@ void D3D11Renderer::init(Window& window)
 
 	// Convert the name of the video card to a character array and store it.
 	size_t stringLength;
-	int error = wcstombs_s(&stringLength, videoCardDescription, 128, adapterDesc.Description, 128);
+	int const error = wcstombs_s(&stringLength, videoCardDescription, 128, adapterDesc.Description, 128);
 	if (error != 0)
 	{
-		fatalError("failed to convert videocardName");
+		AES_ERROR("failed to convert videocardName");
 	}
 	AES_LOG("graphic card : {}\nvideo memory : {} MB", videoCardDescription, videoCardMemory);
 
@@ -263,9 +260,6 @@ void D3D11Renderer::createSwapchain()
 
 	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH; // allow full-screen switching
 
-	// Set the feature level to DirectX 11.
-	D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_1;
-	
 	AES_ASSERT(factory);
 	HRESULT result = factory->CreateSwapChain(device, &swapChainDesc, &swapChain);
 	if (FAILED(result))

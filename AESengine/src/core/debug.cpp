@@ -16,12 +16,8 @@ void aes::fatalError(const char* msg)
 	exit(-1);
 }
 
-Exception::Exception(const char* msg_) noexcept : msg(msg_)
+Exception::Exception(const char* msg_) noexcept : exception(msg_)
 {
 
 }
 
-const char* Exception::what() const noexcept
-{
-	return msg;
-}

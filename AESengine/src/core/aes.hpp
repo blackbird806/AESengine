@@ -21,15 +21,19 @@
 	#else
 		#define AES_DEBUG_BREAK()  raise(SIGTRAP) 
 	#endif
-		#define AES_ASSERT(x) if (!(x)) { AES_DEBUG_BREAK(); }
-
+	#define AES_ASSERT(x) if (x) {} else { AES_DEBUG_BREAK(); }
 #else
 	#ifdef _WIN32	
 		#define AES_ASSERT(x) __assume(x)
 	#else
-		#define AES_ASSERT(x) { false ? (void)(x) : (void)0; }
+		#define AES_ASSERT(x)
 	#endif
+#endif
 
+#ifdef _MSC_VER
+	#define AES_UNREACHABLE() __assume(0)
+#elif defined(__GNUC__) || defined(__clang__)
+	#define AES_UNREACHABLE() __builtin_unreachable()
 #endif
 
 using uint = unsigned int;

@@ -59,7 +59,7 @@ void ImmediateRenderer2D::init()
 	vertexBufferDesc.StructureByteStride = 0;
 
 	ID3D11Device* device = D3D11Renderer::Instance().getDevice();
-	HRESULT result = device->CreateBuffer(&vertexBufferDesc, NULL, &vertexBuffer);
+	HRESULT result = device->CreateBuffer(&vertexBufferDesc, nullptr, &vertexBuffer);
 	if (FAILED(result))
 	{
 		throw Exception("failed to create immediate vertex buffer");
@@ -84,7 +84,7 @@ void ImmediateRenderer2D::init()
 	}
 
 	// Create the vertex shader from the buffer.
-	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &vertexShader);
+	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), nullptr, &vertexShader);
 	if (FAILED(result))
 	{
 		AES_LOG_ERROR("failed to create vertex shader");
@@ -92,7 +92,7 @@ void ImmediateRenderer2D::init()
 	}
 
 	// Create the pixel shader from the buffer.
-	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &pixelShader);
+	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), nullptr, &pixelShader);
 	if (FAILED(result))
 	{
 		AES_LOG_ERROR("failed to create pixel shader");
@@ -154,7 +154,7 @@ void ImmediateRenderer2D::updateBuffers()
 	size_t offset = 0; // offset in vertices
 	for (auto const& cmd : commands)
 	{
-		Vertex* verticesData = ((Vertex*)mappedResource.pData) + offset;
+		Vertex* verticesData = static_cast<Vertex*>(mappedResource.pData) + offset;
 		switch (cmd.type)
 		{
 		case Command::Type::Line:
@@ -163,8 +163,7 @@ void ImmediateRenderer2D::updateBuffers()
 			offset += 2;
 			break;
 		default:
-			AES_ASSERT(false);
-			break;
+			AES_UNREACHABLE();
 		}
 	}
 

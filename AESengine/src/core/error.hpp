@@ -12,7 +12,10 @@ namespace aes {
 	{
 		Undefined,
 		GPUBufferCreationFailed,
+		GPUTextureCreationFailed,
 		GPUBufferMappingFailed,
+		ShaderCompilationFailed,
+		ShaderCreationFailed,
 		FontInitFailed,
 	};
 
