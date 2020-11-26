@@ -1,6 +1,7 @@
 #include "FontManager.hpp"
 #include <stb/stb_truetype.h>
 #include <vector>
+#include <algorithm>
 
 #include "core/debug.hpp"
 #include "core/utility.hpp"
@@ -21,6 +22,7 @@ SamplerState SampleType;
 float4 main(VS_OUTPUT input) : SV_TARGET
 {
     return shaderTexture.Sample(SampleType, input.texCoord);
+	//return float4(1.0, 0.0, 0.0, 1.0);
 }
 )";
 
@@ -48,6 +50,7 @@ VS_OUTPUT main(VS_INPUT input)
 
 using namespace aes;
 
+// @Redo
 static const char* getAsciiStr()
 {
 	static char asciiTable[256];
@@ -71,7 +74,7 @@ Result<void> FontManager::init()
 
 	uint const b_w = 512; /* bitmap width */
 	uint const b_h = 128; /* bitmap height */
-	uint const l_h = 64; /* line height */
+	uint const l_h = 64;  /* line height */
 
 	std::vector<uchar> bitmap(b_w * b_h);
 
@@ -110,6 +113,7 @@ Result<void> FontManager::init()
 		int kern = stbtt_GetCodepointKernAdvance(&info, alphabet[i], alphabet[i + 1]);
 		x += roundf(kern * scale);
 	}
+
 
 	ID3D11Device* device = D3D11Renderer::Instance().getDevice();
 
@@ -188,6 +192,21 @@ Result<void> FontManager::init()
 		return { AESError::GPUBufferCreationFailed };
 	}
 
+	D3D11_BUFFER_DESC indexBufferDesc;
+	indexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	indexBufferDesc.ByteWidth = sizeof(uint32_t) * 300; // @TODO
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	indexBufferDesc.MiscFlags = 0;
+	indexBufferDesc.StructureByteStride = 0;
+
+	result = device->CreateBuffer(&indexBufferDesc, nullptr, &indexBuffer);
+	if (FAILED(result))
+	{
+		AES_ERROR("Failed to create font index buffer");
+		return { AESError::GPUBufferCreationFailed };
+	}
+	
 	ID3D10Blob* errorMessage = nullptr;
 	ID3D10Blob* vertexShaderBuffer = nullptr;
 	ID3D10Blob* pixelShaderBuffer = nullptr;
@@ -250,16 +269,93 @@ Result<void> FontManager::init()
 		return { AESError::Undefined }; // 
 	}
 
-	// Release the vertex shader buffer and pixel shader buffer since they are no longer needed.
 	vertexShaderBuffer->Release();
 	pixelShaderBuffer->Release();
 
 	return {};
 }
 
+// http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-11-2d-text/
 void FontManager::drawString(GraphicString const& gstring)
 {
+	AES_PROFILE_FUNCTION();
+
+	float const size = gstring.textSize;
+	for (uint i = 0; i < gstring.str.size(); i++)
+	{
+		glm::vec2 const vertex_up_left = glm::vec2(gstring.pos.x + i * size, gstring.pos.y + size);
+		glm::vec2 const vertex_up_right = glm::vec2(gstring.pos.x + i * size + size, gstring.pos.y + size);
+		glm::vec2 const vertex_down_right = glm::vec2(gstring.pos.x + i * size + size, gstring.pos.y);
+		glm::vec2 const vertex_down_left = glm::vec2(gstring.pos.x + i * size, gstring.pos.y);
+
+		char const character = gstring.str[i];
+		float const uv_x = (character % 16) / 16.0f;
+		float const uv_y = (character / 16) / 16.0f;
+
+		//glm::vec2 const uv_up_left = glm::vec2(uv_x, 1.0f - uv_y);
+		//glm::vec2 const uv_up_right = glm::vec2(uv_x + 1.0f / 16.0f, 1.0f - uv_y);
+		//glm::vec2 const uv_down_right = glm::vec2(uv_x + 1.0f / 16.0f, 1.0f - (uv_y + 1.0f / 16.0f));
+		//glm::vec2 const uv_down_left = glm::vec2(uv_x, 1.0f - (uv_y + 1.0f / 16.0f));
+
+		glm::vec2 const uv_up_left = glm::vec2(0.0f, 0.0f);
+		glm::vec2 const uv_up_right = glm::vec2(1.0f, 0.0f);
+		glm::vec2 const uv_down_right = glm::vec2(1.0f,1.0f);
+		glm::vec2 const uv_down_left = glm::vec2(0.0f, 1.0f);
+
+		
+		vertices.push_back(Vertex{ vertex_up_left, uv_up_left });
+		vertices.push_back(Vertex{ vertex_down_left, uv_down_left });
+		vertices.push_back(Vertex{ vertex_up_right, uv_up_right });
+		vertices.push_back(Vertex{ vertex_down_right, uv_down_right });
+
+		indices.push_back(i + 2);
+		indices.push_back(i + 1);
+		indices.push_back(i + 0);
+
+		indices.push_back(i + 2);
+		indices.push_back(i + 3);
+		indices.push_back(i + 1);
+		break;
+	}
+}
+
+void FontManager::draw()
+{
+	AES_PROFILE_FUNCTION();
+	ID3D11DeviceContext* ctx = D3D11Renderer::Instance().getDeviceContext();
+
+	ctx->PSSetShaderResources(0, 1, &defaultFont.textureView);
+
+	{
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		ctx->Map(vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+		Vertex* dataPtr = (Vertex*)mappedResource.pData;
+		memcpy(dataPtr, vertices.data(), vertices.size() * sizeof(Vertex));
+
+		ctx->Unmap(vertexBuffer, 0);
+	}
+	{
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		ctx->Map(indexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+		uint32_t* dataPtr = (uint32_t*)mappedResource.pData;
+		memcpy(dataPtr, indices.data(), indices.size() * sizeof(uint32_t));
+
+		ctx->Unmap(indexBuffer, 0);
+	}
 	
+	ctx->VSSetShader(vertexShader, nullptr, 0);
+	ctx->PSSetShader(pixelShader, nullptr, 0);
+
+	uint stride = sizeof(Vertex);
+	uint offset = 0;
+	ctx->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+	ctx->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	ctx->DrawIndexed(indices.size(), 0, 0);
+	vertices.clear();
+	indices.clear();
 }
 
 

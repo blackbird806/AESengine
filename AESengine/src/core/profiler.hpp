@@ -3,6 +3,9 @@
 
 #undef min
 #undef max
+
+// Think about TRACY_ENABLE
+// TRACY eat ~200MB and "leaks" if profiler app is not connected
 #include "Tracy.hpp"
 
 #define AES_PROFILE_FUNCTION() ZoneScoped;

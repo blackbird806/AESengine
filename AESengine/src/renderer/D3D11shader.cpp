@@ -192,7 +192,7 @@ void D3D11Shader::render(glm::mat4 const& view, glm::mat4 const& proj)
 		throw Exception("failed to map UBO");
 	}
 	// Get a pointer to the data in the constant buffer.
-	CameraBuffer* dataPtr = (CameraBuffer*)mappedResource.pData;
+	CameraBuffer* dataPtr = static_cast<CameraBuffer*>(mappedResource.pData);
 
 	// Copy the matrices into the constant buffer.
 	dataPtr->view = glm::transpose(view);
@@ -204,6 +204,6 @@ void D3D11Shader::render(glm::mat4 const& view, glm::mat4 const& proj)
 	deviceContext->VSSetConstantBuffers(0, 1, &cameraBuffer);
 
 	// Set the vertex and pixel shaders that will be used to render this triangle.
-	deviceContext->VSSetShader(vertexShader, NULL, 0);
-	deviceContext->PSSetShader(pixelShader, NULL, 0);
+	deviceContext->VSSetShader(vertexShader, nullptr, 0);
+	deviceContext->PSSetShader(pixelShader, nullptr, 0);
 }

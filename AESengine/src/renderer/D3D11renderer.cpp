@@ -379,7 +379,7 @@ void D3D11Renderer::setupRasterizerState()
 	HRESULT result = device->CreateRasterizerState(&rasterDesc, &rasterState);
 	if (FAILED(result))
 	{
-		AES_THROW(Exception("device->rasterState failed"));
+		AES_ERROR("device->rasterState failed");
 	}
 }
 

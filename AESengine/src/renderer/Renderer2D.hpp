@@ -11,7 +11,7 @@
 
 namespace aes {
 
-	class ImmediateRenderer2D
+	class Renderer2D
 	{
 
 	public:
@@ -48,7 +48,7 @@ namespace aes {
 
 		static uint32_t constexpr maxVertices = 1024;
 
-		static ImmediateRenderer2D& Instance();
+		static Renderer2D& Instance();
 
 		void init();
 

@@ -145,23 +145,13 @@ void D3D11Model::render()
 	// Get a pointer to the data in the constant buffer.
 	ModelBuffer* dataPtr = (ModelBuffer*)mappedResource.pData;
 
-	// Copy the matrices into the constant buffer.
 	dataPtr->world = glm::transpose(toWorld);
 
-	// Unlock the constant buffer.
 	deviceContext->Unmap(modelBuffer, 0);
 
 	deviceContext->VSSetConstantBuffers(1, 1, &modelBuffer);
-
-	// Set the vertex buffer to active in the input assembler so it can be rendered.
 	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-
-	// Set the index buffer to active in the input assembler so it can be rendered.
 	deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	// Render the triangle.
 	deviceContext->DrawIndexed(indexCount, 0, 0);
 }

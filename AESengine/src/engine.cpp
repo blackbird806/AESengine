@@ -2,7 +2,6 @@
 #include "core/debug.hpp"
 
 #include <chrono>
-#include <glm/gtc/matrix_transform.hpp>
 
 using namespace aes;
 
@@ -23,8 +22,8 @@ void Engine::init()
 	mainWindow.open();
 	mainWindow.setKeyCallback({ [](InputAction action, int key, void* userData) {
 
-		Engine& self = *(Engine*)userData;
-		Key k = windowsToAESKey(key);
+		Engine& self = *static_cast<Engine*>(userData);
+		Key const k = windowsToAESKey(key);
 		if (action == InputAction::Pressed)
 		{
 			self.onKeyPressed(k);

@@ -4,7 +4,7 @@
 #include "core/debugMath.hpp"
 #include "engine.hpp"
 #include "renderer/D3D11Model.hpp"
-#include "renderer/immediateRenderer.hpp"
+#include "renderer/Renderer2D.hpp"
 #include "renderer/FontManager.hpp"
 
 class Game : public aes::Engine
@@ -17,17 +17,19 @@ public:
 	
 	}
 	aes::D3D11Model model, model2;
+	aes::FontManager fm;
 
 	void start() override
 	{
-		aes::FontManager fm;
-		auto r = fm.init();
+		AES_PROFILE_FUNCTION();
+		
+		aes::Result r = fm.init();
 		if (!r)
 			AES_WARN("fm init failed : {}", r.error());
 
 		AES_LOG("start");
 		model = aes::createCube();
-		//aes::ImmediateRenderer2D::Instance().init();
+		aes::Renderer2D::Instance().init();
 		model2 = aes::createCube();
 		model.toWorld = glm::scale(model.toWorld, { 1.0f, 2.0f, 1.0f });
 		model2.toWorld = glm::scale(model2.toWorld, { 2.0f, 1.0f, 1.0f });
@@ -43,6 +45,8 @@ public:
 
 	void update(double dt) override
 	{
+		AES_PROFILE_FUNCTION();
+
 		glm::vec4 movePos = { 0.0f, 0.f, 0.f, 0.0f };
 		if (getKeyState(aes::Key::W) == aes::InputState::Down)
 		{
@@ -110,28 +114,37 @@ public:
 
 		// draw crosshair
 		{
-			float ex = 0.0055f;
-			float csx = 0.025f;
+			float const ex = 0.0055f;
+			float const csx = 0.025f;
 
 			uint windowWidth, windowHeight;
 			mainWindow.getScreenSize(windowWidth, windowHeight);
-			float aspect = (float) windowWidth / (float) windowHeight;
+			float const aspect = (float) windowWidth / (float) windowHeight;
 			mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), aspect, 0.0001f, 1000.0f);
 
-			float ey = ex * aspect;
-			float csy = csx * aspect;
-			//aes::ImmediateRenderer2D::Instance().drawLine({ 0, ey }, { 0, ey + csy }, { 0.0f, 1.0f, 0.0f, 1.0f });
-			//aes::ImmediateRenderer2D::Instance().drawLine({ 0, -ey }, { 0, -ey - csy }, { 0.0f, 1.0f, 0.0f, 1.0f });
-			//aes::ImmediateRenderer2D::Instance().drawLine({ ex, 0 }, { ex + csx, 0 }, { 0.0f, 1.0f, 0.0f, 1.0f });
-			//aes::ImmediateRenderer2D::Instance().drawLine({ -ex, 0 }, { -ex - csx, 0 }, { 0.0f, 1.0f, 0.0f, 1.0f });
+			float const ey = ex * aspect;
+			float const csy = csx * aspect;
+			aes::Renderer2D::Instance().drawLine({ 0, ey }, { 0, ey + csy }, { 0.0f, 1.0f, 0.0f, 1.0f });
+			aes::Renderer2D::Instance().drawLine({ 0, -ey }, { 0, -ey - csy }, { 0.0f, 1.0f, 0.0f, 1.0f });
+			aes::Renderer2D::Instance().drawLine({ ex, 0 }, { ex + csx, 0 }, { 0.0f, 1.0f, 0.0f, 1.0f });
+			aes::Renderer2D::Instance().drawLine({ -ex, 0 }, { -ex - csx, 0 }, { 0.0f, 1.0f, 0.0f, 1.0f });
 		}
+		
+		fm.drawString(aes::GraphicString{
+			.str = "hello world", 
+			.pos = {-1.0f, -1.0f},
+			.color = {1.0f, 1.0f, 1.0f, 1.0f},
+			.textSize = 2.0f
+		});
 	}
 
 	void draw() override
 	{
+		AES_PROFILE_FUNCTION();
 		model.render();
 		model2.render();
-		//aes::ImmediateRenderer2D::Instance().draw();
+		fm.draw();
+		aes::Renderer2D::Instance().draw();
 	}
 
 };
@@ -139,7 +152,7 @@ public:
 int main()
 {
 	fmt::print("hello {}\n", "world");
-	Game game({ .appName = "aes cube" });
+	Game game({ .appName = "aes cubes" });
 	game.init();
 	game.run();
 }

@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include <string>
 #include <vector>
+#include <cstdint>
 #include "core/error.hpp"
 
 // https://loulou.developpez.com/tutoriels/moteur3d/partie6/
@@ -15,7 +16,7 @@ namespace aes {
 		std::string str;
 		glm::vec2 pos;
 		glm::vec4 color;
-		int size;
+		float textSize;
 	};
 
 	struct TextureFont
@@ -38,6 +39,7 @@ namespace aes {
 	public:
 		Result<void> init();
 		void drawString(GraphicString const& gstring);
+		void draw();
 
 	private:
 		TextureFont defaultFont;
@@ -45,9 +47,11 @@ namespace aes {
 		ID3D11VertexShader* vertexShader = nullptr;
 		ID3D11PixelShader* pixelShader = nullptr;
 		ID3D11Buffer* vertexBuffer = nullptr;
+		ID3D11Buffer* indexBuffer = nullptr;
 		ID3D11InputLayout* layout = nullptr;
 		
 		std::vector<Vertex> vertices;
+		std::vector<uint32_t> indices;
 	};
 
 }

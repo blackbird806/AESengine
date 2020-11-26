@@ -1,4 +1,4 @@
-#include "immediateRenderer.hpp"
+#include "Renderer2D.hpp"
 #include "core/debug.hpp"
 #include "D3D11renderer.hpp"
 
@@ -40,13 +40,13 @@ VS_OUTPUT main(VS_INPUT input)
 
 using namespace aes;
 
-ImmediateRenderer2D& aes::ImmediateRenderer2D::Instance()
+Renderer2D& aes::Renderer2D::Instance()
 {
-	static ImmediateRenderer2D instance;
+	static Renderer2D instance;
 	return instance;
 }
 
-void ImmediateRenderer2D::init()
+void Renderer2D::init()
 {
 	AES_PROFILE_FUNCTION();
 
@@ -132,7 +132,7 @@ void ImmediateRenderer2D::init()
 	pixelShaderBuffer->Release();
 }
 
-void ImmediateRenderer2D::drawLine(glm::vec2 p1, glm::vec2 p2, glm::vec4 const& col)
+void Renderer2D::drawLine(glm::vec2 p1, glm::vec2 p2, glm::vec4 const& col)
 {
 	AES_PROFILE_FUNCTION();
 
@@ -143,7 +143,7 @@ void ImmediateRenderer2D::drawLine(glm::vec2 p1, glm::vec2 p2, glm::vec4 const& 
 	commands.push_back(cmd);
 }
 
-void ImmediateRenderer2D::updateBuffers()
+void Renderer2D::updateBuffers()
 {
 	AES_PROFILE_FUNCTION();
 
@@ -170,7 +170,7 @@ void ImmediateRenderer2D::updateBuffers()
 	deviceContext->Unmap(vertexBuffer, 0);
 }
 
-void ImmediateRenderer2D::destroy()
+void Renderer2D::destroy()
 {
 	AES_PROFILE_FUNCTION();
 
@@ -180,7 +180,7 @@ void ImmediateRenderer2D::destroy()
 	vertexBuffer->Release();
 }
 
-void ImmediateRenderer2D::draw()
+void Renderer2D::draw()
 {
 	AES_PROFILE_FUNCTION();
 
@@ -203,7 +203,7 @@ void ImmediateRenderer2D::draw()
 		{
 		case Command::Type::Line:
 			ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-			ctx->Draw(2, offset);
+			ctx->Draw(2, offset); // @TODO instanciation ?
 			offset += 2;
 			break;
 		default:
@@ -213,7 +213,7 @@ void ImmediateRenderer2D::draw()
 	commands.clear();
 }
 
-ImmediateRenderer2D::Command::Command(Command const& other) :
+Renderer2D::Command::Command(Command const& other) :
 	type(other.type), col(other.col)
 {
 	AES_PROFILE_FUNCTION();
@@ -231,7 +231,7 @@ ImmediateRenderer2D::Command::Command(Command const& other) :
 	}
 }
 
-ImmediateRenderer2D::Command& ImmediateRenderer2D::Command::operator=(Command const& other)
+Renderer2D::Command& Renderer2D::Command::operator=(Command const& other)
 {
 	AES_PROFILE_FUNCTION();
 
