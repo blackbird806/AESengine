@@ -146,6 +146,23 @@ void Renderer2D::init()
 	// Release the vertex shader buffer and pixel shader buffer since they are no longer needed.
 	vertexShaderBuffer->Release();
 	pixelShaderBuffer->Release();
+	
+	D3D11_BLEND_DESC blendDesc = {};
+	blendDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = 0x0f;
+	
+	result = device->CreateBlendState(&blendDesc, &blendState);
+	if (FAILED(result))
+	{
+		AES_LOG_ERROR("failed to create blendstate");
+		return;
+	}
 }
 
 void Renderer2D::drawLine(glm::vec2 p1, glm::vec2 p2, glm::vec4 const& col)
@@ -234,6 +251,7 @@ void Renderer2D::destroy()
 	vertexBuffer->Release();
 	indexBuffer->Release();
 	pixelShader->Release();
+	blendState->Release();
 }
 
 void Renderer2D::draw()
@@ -248,7 +266,9 @@ void Renderer2D::draw()
 	ctx->IASetInputLayout(layout);
 	ctx->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &vertexBufferOffset);
 	ctx->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	
+
+	ctx->OMSetBlendState(blendState, nullptr, 0xffffffff);
+
 	ctx->VSSetShader(vertexShader, nullptr, 0);
 	ctx->PSSetShader(pixelShader, nullptr, 0);
 	

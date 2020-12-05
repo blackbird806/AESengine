@@ -63,7 +63,8 @@ namespace aes {
 	private:
 
 		std::vector<Command> commands;
-
+		
+		ID3D11BlendState* blendState = nullptr;
 		ID3D11VertexShader* vertexShader = nullptr;
 		ID3D11PixelShader* pixelShader = nullptr;
 		ID3D11Buffer* vertexBuffer = nullptr;
