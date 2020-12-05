@@ -65,7 +65,7 @@ Result<void> FontManager::init()
 	AES_PROFILE_FUNCTION();
 	
 	stbtt_fontinfo info;
-	std::vector<unsigned char> courierFontBuffer = readFileBin("assets/fonts/courier.ttf");
+	std::vector<uchar> courierFontBuffer = readFileBin("assets/fonts/courier.ttf");
 	if (!stbtt_InitFont(&info, courierFontBuffer.data(), 0))
 	{
 		AES_LOG_ERROR("failed to init default font");

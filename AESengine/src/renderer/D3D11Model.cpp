@@ -139,7 +139,8 @@ void D3D11Model::render()
 	auto result = deviceContext->Map(modelBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
-		AES_THROW(Exception("failed to map UBO"));
+		AES_ERROR("failed to map UBO");
+		return;
 	}
 
 	// Get a pointer to the data in the constant buffer.

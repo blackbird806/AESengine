@@ -94,7 +94,7 @@ void D3D11Renderer::init(Window& window)
 	}
 
 	// Store the dedicated video card memory in megabytes.
-	videoCardMemory = (int)(adapterDesc.DedicatedVideoMemory / 1024 / 1024);
+	videoCardMemory = static_cast<int>(adapterDesc.DedicatedVideoMemory / 1024 / 1024);
 
 	// Convert the name of the video card to a character array and store it.
 	size_t stringLength;

@@ -62,9 +62,25 @@ void Renderer2D::init()
 	HRESULT result = device->CreateBuffer(&vertexBufferDesc, nullptr, &vertexBuffer);
 	if (FAILED(result))
 	{
-		throw Exception("failed to create immediate vertex buffer");
+		AES_LOG_ERROR("failed to create immediate vertex buffer");
+		return;
 	}
 
+	D3D11_BUFFER_DESC indexBufferDesc;
+	indexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	indexBufferDesc.ByteWidth = sizeof(uint32_t) * maxIndices;
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	indexBufferDesc.MiscFlags = 0;
+	indexBufferDesc.StructureByteStride = 0;
+
+	result = device->CreateBuffer(&indexBufferDesc, nullptr, &indexBuffer);
+	if (FAILED(result))
+	{
+		AES_LOG_ERROR("failed to create immediate index buffer");
+		return;
+	}
+	
 	ID3D10Blob* errorMessage = nullptr;
 	ID3D10Blob* vertexShaderBuffer = nullptr;
 	ID3D10Blob* pixelShaderBuffer = nullptr;
@@ -136,9 +152,20 @@ void Renderer2D::drawLine(glm::vec2 p1, glm::vec2 p2, glm::vec4 const& col)
 {
 	AES_PROFILE_FUNCTION();
 
-	Command cmd = {};
+	Command cmd;
 	cmd.type = Command::Type::Line;
 	cmd.line = { p1, p2 };
+	cmd.col = col;
+	commands.push_back(cmd);
+}
+
+void Renderer2D::drawFillRect(Rect const& rect, glm::vec4 const& col)
+{
+	AES_PROFILE_FUNCTION();
+
+	Command cmd;
+	cmd.type = Command::Type::FillRect;
+	cmd.rect = rect;
 	cmd.col = col;
 	commands.push_back(cmd);
 }
@@ -148,19 +175,36 @@ void Renderer2D::updateBuffers()
 	AES_PROFILE_FUNCTION();
 
 	ID3D11DeviceContext* deviceContext = D3D11Renderer::Instance().getDeviceContext();
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	deviceContext->Map(vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	D3D11_MAPPED_SUBRESOURCE vertexMappedResource;
+	deviceContext->Map(vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &vertexMappedResource);
 
-	size_t offset = 0; // offset in vertices
+	D3D11_MAPPED_SUBRESOURCE indexMappedResource;
+	deviceContext->Map(indexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &indexMappedResource);
+	
+	size_t verticesOffset = 0; // offset in vertices
+	size_t indicesOffset = 0; // offset in uint32_t
 	for (auto const& cmd : commands)
 	{
-		Vertex* verticesData = static_cast<Vertex*>(mappedResource.pData) + offset;
+		Vertex* verticesData = static_cast<Vertex*>(vertexMappedResource.pData) + verticesOffset;
+		uint32_t* indicesData = static_cast<uint32_t*>(indexMappedResource.pData) + indicesOffset;
+		
 		switch (cmd.type)
 		{
 		case Command::Type::Line:
 			verticesData[0] = { cmd.line.from, cmd.col };
 			verticesData[1] = { cmd.line.to, cmd.col };
-			offset += 2;
+			indicesData[0] = 0;
+			indicesData[1] = 1;
+			
+			verticesOffset += 2;
+			indicesOffset += 2;
+			break;
+		case Command::Type::FillRect:
+			//RectBounds const bounds = cmd.rect.getBounds();
+			//verticesData[0] = { bounds.minL, cmd.col };
+			//verticesData[1] = { bounds.topL, cmd.col };
+			//verticesData[1] = { bounds.topL, cmd.col };
+			//verticesData[1] = { bounds.topL, cmd.col };
 			break;
 		default:
 			AES_UNREACHABLE();
@@ -168,6 +212,7 @@ void Renderer2D::updateBuffers()
 	}
 
 	deviceContext->Unmap(vertexBuffer, 0);
+	deviceContext->Unmap(indexBuffer, 0);
 }
 
 void Renderer2D::destroy()
@@ -176,8 +221,8 @@ void Renderer2D::destroy()
 
 	layout->Release();
 	vertexBuffer->Release();
+	indexBuffer->Release();
 	pixelShader->Release();
-	vertexBuffer->Release();
 }
 
 void Renderer2D::draw()
@@ -187,24 +232,26 @@ void Renderer2D::draw()
 	updateBuffers();
 	ID3D11DeviceContext* ctx = D3D11Renderer::Instance().getDeviceContext();
 
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	
 	uint stride = sizeof(Vertex);
 	uint vertexBufferOffset = 0;
 	ctx->IASetInputLayout(layout);
 	ctx->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &vertexBufferOffset);
+	ctx->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	
 	ctx->VSSetShader(vertexShader, NULL, 0);
 	ctx->PSSetShader(pixelShader, NULL, 0);
-	uint offset = 0; // offset in vertex
+	uint indicesOffset = 0;
+	uint verticesOffset = 0; 
 	for (uint i = 0; i < commands.size(); i++)
 	{
 		switch (commands[i].type)
 		{
 		case Command::Type::Line:
 			ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-			ctx->Draw(2, offset); // @TODO instanciation ?
-			offset += 2;
+			//ctx->Draw(2, offset); // @TODO instanciation ?
+			ctx->DrawIndexed(2, indicesOffset, verticesOffset); // @TODO instanciation ?
+			verticesOffset += 2;
+			indicesOffset += 2;
 			break;
 		default:
 			break;

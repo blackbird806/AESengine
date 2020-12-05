@@ -3,7 +3,6 @@
 
 #include <exception>
 #include <fmt/format.h>
-#include <fmt/compile.h>
 
 #include "aes.hpp"
 
@@ -15,10 +14,11 @@
 #define AES_LOG_ERROR(msg, ...) fmt::print(stderr,  fmt::format("{} line {} error : {}\n", __FUNCTION__, __LINE__, msg), __VA_ARGS__);
 
 #ifdef AES_DEBUG
-#define  AES_ERROR(msg, ...) AES_DEBUG_BREAK();
+#define AES_ERROR(msg, ...) AES_DEBUG_BREAK();
 #else
-#define  AES_ERROR(msg, ...)AES_LOG_ERROR(msg, __VA_ARGS__);
+#define  AES_ERROR(msg, ...) AES_LOG_ERROR(msg, __VA_ARGS__);
 #endif
+
 namespace aes {
 
 	// @TODO move these into error
