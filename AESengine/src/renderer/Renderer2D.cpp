@@ -199,12 +199,23 @@ void Renderer2D::updateBuffers()
 			verticesOffset += 2;
 			indicesOffset += 2;
 			break;
+		case Command::Type::Rect:
 		case Command::Type::FillRect:
-			//RectBounds const bounds = cmd.rect.getBounds();
-			//verticesData[0] = { bounds.minL, cmd.col };
-			//verticesData[1] = { bounds.topL, cmd.col };
-			//verticesData[1] = { bounds.topL, cmd.col };
-			//verticesData[1] = { bounds.topL, cmd.col };
+		{
+			RectBounds const bounds = cmd.rect.getBounds();
+			verticesData[0] = { bounds.minL, cmd.col };
+			verticesData[1] = { bounds.topL, cmd.col };
+			verticesData[2] = { bounds.topR, cmd.col };
+			verticesData[3] = { bounds.minR, cmd.col };
+
+			indicesData[0] = 0;
+			indicesData[1] = 1;
+			indicesData[2] = 3;
+			indicesData[3] = 2;
+			
+			verticesOffset += 4;
+			indicesOffset += 4;
+		}
 			break;
 		default:
 			AES_UNREACHABLE();
@@ -238,21 +249,29 @@ void Renderer2D::draw()
 	ctx->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &vertexBufferOffset);
 	ctx->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	
-	ctx->VSSetShader(vertexShader, NULL, 0);
-	ctx->PSSetShader(pixelShader, NULL, 0);
+	ctx->VSSetShader(vertexShader, nullptr, 0);
+	ctx->PSSetShader(pixelShader, nullptr, 0);
+	
 	uint indicesOffset = 0;
 	uint verticesOffset = 0; 
+
 	for (uint i = 0; i < commands.size(); i++)
 	{
 		switch (commands[i].type)
 		{
 		case Command::Type::Line:
 			ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-			//ctx->Draw(2, offset); // @TODO instanciation ?
 			ctx->DrawIndexed(2, indicesOffset, verticesOffset); // @TODO instanciation ?
 			verticesOffset += 2;
 			indicesOffset += 2;
 			break;
+		case Command::Type::FillRect:
+			ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+			ctx->DrawIndexed(4, indicesOffset, verticesOffset);
+			verticesOffset += 4;
+			indicesOffset += 4;
+			break;
+
 		default:
 			break;
 		}
@@ -271,6 +290,7 @@ Renderer2D::Command::Command(Command const& other) :
 		line = other.line;
 		break;
 	case Command::Type::Rect:
+	case Command::Type::FillRect:
 		rect = other.rect;
 		break;
 	default:
@@ -291,6 +311,7 @@ Renderer2D::Command& Renderer2D::Command::operator=(Command const& other)
 		line = other.line;
 		break;
 	case Command::Type::Rect:
+	case Command::Type::FillRect:
 		rect = other.rect;
 		break;
 	default:
