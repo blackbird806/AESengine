@@ -193,17 +193,32 @@ void D3D11Renderer::endFrame()
 	}
 }
 
+//https://seanmiddleditch.com/direct3d-11-debug-api-tricks/
 void D3D11Renderer::createDevice()
 {
 	AES_PROFILE_FUNCTION();
-
+	
 	// Set the feature level to DirectX 11.
 	D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_1;
-	auto result = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, &featureLevel, 1, D3D11_SDK_VERSION, &device, NULL, &deviceContext);
+	auto result = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL,
+#ifdef AES_DEBUG
+		D3D11_CREATE_DEVICE_DEBUG,
+#else
+		0,
+#endif
+		&featureLevel, 1, D3D11_SDK_VERSION, &device, NULL, &deviceContext);
 	if (FAILED(result))
 	{
-		throw Exception("failed to create D3D11 device");
+		AES_ERROR("failed to create D3D11 device");
 	}
+	
+#ifdef AES_DEBUG
+	result = device->QueryInterface(IID_PPV_ARGS(&debugInterface));
+	if (FAILED(result))
+	{
+		AES_ERROR("failed to query debug interface");
+	}
+#endif
 }
 
 void D3D11Renderer::createSwapchain()
@@ -376,11 +391,12 @@ void D3D11Renderer::setupRasterizerState()
 	rasterDesc.ScissorEnable = false;
 	rasterDesc.SlopeScaledDepthBias = 0.0f;
 
-	HRESULT result = device->CreateRasterizerState(&rasterDesc, &rasterState);
+	HRESULT const result = device->CreateRasterizerState(&rasterDesc, &rasterState);
 	if (FAILED(result))
 	{
 		AES_ERROR("device->rasterState failed");
 	}
+	deviceContext->RSSetState(rasterState);
 }
 
 void D3D11Renderer::setupViewport()

@@ -285,6 +285,7 @@ void Renderer2D::draw()
 			verticesOffset += 2;
 			indicesOffset += 2;
 			break;
+			
 		case Command::Type::FillRect:
 			ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 			ctx->DrawIndexed(4, indicesOffset, verticesOffset);

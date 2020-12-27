@@ -5,7 +5,7 @@
 
 #include <glm/glm.hpp>
 #include <vector>
-#include "geometry.hpp"
+#include "core/geometry.hpp"
 
 namespace aes {
 

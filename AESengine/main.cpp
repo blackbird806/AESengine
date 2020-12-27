@@ -1,5 +1,4 @@
 #include <fmt/format.h>
-#include <iostream>
 #include <glm/gtx/transform.hpp>
 #include "core/debugMath.hpp"
 #include "engine.hpp"
@@ -124,17 +123,19 @@ public:
 
 			float const ey = ex * aspect;
 			float const csy = csx * aspect;
-			aes::Renderer2D::Instance().drawLine({ 0, ey }, { 0, ey + csy }, { 0.0f, 1.0f, 0.0f, 1.0f });
-			aes::Renderer2D::Instance().drawLine({ 0, -ey }, { 0, -ey - csy }, { 0.0f, 1.0f, 0.0f, 1.0f });
-			aes::Renderer2D::Instance().drawLine({ ex, 0 }, { ex + csx, 0 }, { 0.0f, 1.0f, 0.0f, 1.0f });
-			aes::Renderer2D::Instance().drawLine({ -ex, 0 }, { -ex - csx, 0 }, { 0.0f, 1.0f, 0.0f, 1.0f });
+			//aes::Renderer2D::Instance().drawLine({ 0, ey }, { 0, ey + csy }, { 0.0f, 1.0f, 0.0f, 1.0f });
+			//aes::Renderer2D::Instance().drawLine({ 0, -ey }, { 0, -ey - csy }, { 0.0f, 1.0f, 0.0f, 1.0f });
+			//aes::Renderer2D::Instance().drawLine({ ex, 0 }, { ex + csx, 0 }, { 0.0f, 1.0f, 0.0f, 1.0f });
+			//aes::Renderer2D::Instance().drawLine({ -ex, 0 }, { -ex - csx, 0 }, { 0.0f, 1.0f, 0.0f, 1.0f });
+
+			//aes::Renderer2D::Instance().drawFillRect(aes::Rect{ {0.0f, 0.0f}, {0.5f, 0.5f} }, { 0.1f, 0.1f, 0.1f, 0.2f });
 		}
 		
 		fm.drawString(aes::GraphicString{
-			.str = "hello world", 
-			.pos = {-1.0f, -1.0f},
+			.str = "j", 
+			.pos = {-0.5f, -0.5f},
 			.color = {1.0f, 1.0f, 1.0f, 1.0f},
-			.textSize = 2.0f
+			.textSize = 1.0f
 		});
 	}
 
@@ -144,7 +145,7 @@ public:
 		model.render();
 		model2.render();
 		fm.draw();
-		aes::Renderer2D::Instance().draw();
+		//aes::Renderer2D::Instance().draw();
 	}
 
 };

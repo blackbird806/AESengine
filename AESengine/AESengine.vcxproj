@@ -29,6 +29,7 @@
     <ClCompile Include="src\core\utility.cpp" />
     <ClCompile Include="src\core\window.cpp" />
     <ClCompile Include="src\engine.cpp" />
+    <ClCompile Include="src\gui\gui.cpp" />
     <ClCompile Include="src\renderer\camera.cpp" />
     <ClCompile Include="src\renderer\D3D11Model.cpp" />
     <ClCompile Include="src\renderer\D3D11renderer.cpp" />
@@ -43,6 +44,7 @@
   <ItemGroup>
     <ClInclude Include="src\core\aes.hpp" />
     <ClInclude Include="src\core\allocator.hpp" />
+    <ClInclude Include="src\core\color.hpp" />
     <ClInclude Include="src\core\console.hpp" />
     <ClInclude Include="src\core\debug.hpp" />
     <ClInclude Include="src\core\debugMath.hpp" />
@@ -56,6 +58,7 @@
     <ClInclude Include="src\core\utility.hpp" />
     <ClInclude Include="src\core\window.hpp" />
     <ClInclude Include="src\engine.hpp" />
+    <ClInclude Include="src\gui\gui.hpp" />
     <ClInclude Include="src\logic\scene.hpp" />
     <ClInclude Include="src\renderer\camera.hpp" />
     <ClInclude Include="src\renderer\D3D11Model.hpp" />

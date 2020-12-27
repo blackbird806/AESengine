@@ -19,7 +19,7 @@ namespace aes {
 		};
 
 		Engine(InitInfo const& info);
-		~Engine();
+		virtual ~Engine();
 	
 		void init();
 		void run();

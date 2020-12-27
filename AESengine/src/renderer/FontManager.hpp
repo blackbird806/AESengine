@@ -22,7 +22,7 @@ namespace aes {
 	struct TextureFont
 	{
 		ID3D11Texture2D* texture;
-		//ID3D11SamplerState* sampleState;
+		ID3D11SamplerState* sampleState;
 		ID3D11ShaderResourceView* textureView;
 
 		glm::ivec2 charSize[256];
@@ -40,7 +40,8 @@ namespace aes {
 		Result<void> init();
 		void drawString(GraphicString const& gstring);
 		void draw();
-
+		void destroy();
+		
 	private:
 		TextureFont defaultFont;
 

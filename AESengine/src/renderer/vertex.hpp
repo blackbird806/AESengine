@@ -8,6 +8,7 @@ namespace aes {
 	struct ModelBuffer
 	{
 		glm::mat4 world;
+		glm::mat4 padding_;
 	};
 
 	struct CameraBuffer

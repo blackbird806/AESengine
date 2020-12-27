@@ -102,7 +102,7 @@ Result<void> D3D11Model::init(std::span<Vertex const> vertices, std::span<uint32
 	modelBufferDesc.StructureByteStride = 0;
 
 	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	result = device->CreateBuffer(&modelBufferDesc, NULL, &modelBuffer);
+	result = device->CreateBuffer(&modelBufferDesc, nullptr, &modelBuffer);
 	if (FAILED(result))
 	{
 		return { AESError::GPUBufferCreationFailed };

@@ -1,5 +1,5 @@
 #include "input.hpp"
-#include "debug.hpp"
+
 using namespace aes;
 
 Key aes::windowsToAESKey(int winKey)

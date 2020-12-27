@@ -60,6 +60,7 @@ namespace aes {
 		
 		IDXGIFactory* factory;
 		ID3D11Device* device;
+		ID3D11Debug* debugInterface;
 		IDXGISwapChain* swapChain;
 		ID3D11DeviceContext* deviceContext;
 		ID3D11Texture2D* depthStencilBuffer;

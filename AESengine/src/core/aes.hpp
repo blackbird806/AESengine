@@ -30,6 +30,8 @@
 	#endif
 #endif
 
+#define AES_NOT_IMPLEMENTED() AES_DEBUG_BREAK()
+
 #ifdef _MSC_VER
 	#define AES_UNREACHABLE() __assume(0)
 #elif defined(__GNUC__) || defined(__clang__)
