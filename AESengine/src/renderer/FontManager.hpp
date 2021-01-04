@@ -19,13 +19,21 @@ namespace aes {
 		float textSize;
 	};
 
+	struct PackedChar
+	{
+		glm::vec2 bmin;
+		glm::vec2 bmax;
+	};
+	
 	struct TextureFont
 	{
 		ID3D11Texture2D* texture;
 		ID3D11SamplerState* sampleState;
 		ID3D11ShaderResourceView* textureView;
 
-		glm::ivec2 charSize[256];
+
+		int width, height;
+		std::vector<PackedChar> packedChars;
 	};
 
 	class FontManager
@@ -39,10 +47,13 @@ namespace aes {
 	public:
 		Result<void> init();
 		void drawString(GraphicString const& gstring);
-		void draw();
+		void drawFontTexture(glm::vec2 pos = { -0.5f, -0.5f }, float size = 1.0f);
+		void render();
 		void destroy();
 		
 	private:
+		void addQuadIndices();
+
 		TextureFont defaultFont;
 
 		ID3D11VertexShader* vertexShader = nullptr;
@@ -53,6 +64,7 @@ namespace aes {
 		
 		std::vector<Vertex> vertices;
 		std::vector<uint32_t> indices;
+		uint32_t lastIndex = 0;
 	};
 
 }

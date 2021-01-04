@@ -57,8 +57,9 @@ using namespace aes;
 static const char* getAsciiStr()
 {
 	static char asciiTable[256];
-	for (int i = 0; i < std::size(asciiTable); i++)
-		asciiTable[i] = static_cast<char>(i);
+	for (int i = 0; i < std::size(asciiTable) - 1; i++)
+		asciiTable[i] = static_cast<char>(i+1);
+	asciiTable[255] = '\0';
 	return asciiTable;
 }
 
@@ -97,62 +98,96 @@ Result<void> FontManager::init()
 	}
 
 	int width, height, xOffset, yOffset;
-	uint8_t* data = stbtt_GetCodepointBitmap(&info, 0, stbtt_ScaleForPixelHeight(&info, 500.f), 'N', &width, &height, &xOffset, &yOffset);
-	std::vector<uint32_t> bitmap(width * height);
-	for (int i = 0; i < bitmap.size(); i++)
-	{
-		uint8_t alpha = data[i];
-		bitmap[i] = (alpha << 24) | (alpha << 16) | (alpha << 8) | (alpha << 0);
-	}
-	stbtt_FreeBitmap(data, nullptr);
-	//auto bitmap = createCheckboard(width, height);
+	//uint8_t* data = stbtt_GetCodepointBitmap(&info, 0, stbtt_ScaleForPixelHeight(&info, 500.f), 'N', &width, &height, &xOffset, &yOffset);
+	//std::vector<uint32_t> bitmap(width * height);
+	//for (int i = 0; i < bitmap.size(); i++)
+	//{
+	//	uint8_t alpha = data[i];
+	//	bitmap[i] = (alpha << 24) | (alpha << 16) | (alpha << 8) | (alpha << 0);
+	//}
+	//stbtt_FreeBitmap(data, nullptr);
+	//bitmap = createCheckboard(width, height);
 	//stbi_write_png("out.png", width, height, 1, bitmap.data(), width);
 
-	//uint const b_w = 512; /* bitmap width */
-	//uint const b_h = 128; /* bitmap height */
-	//uint const l_h = 64;  /* line height */
+	const char* alphabet = getAsciiStr();
 
-	//std::vector<uchar> bitmap(b_w * b_h);
+	int b_w = 1024; /* bitmap width */
+	int b_h = 1024; /* bitmap height */
+	int l_h = 64;	/* line height	*/
 
-	//float const scale = stbtt_ScaleForPixelHeight(&info, l_h);
+	width = b_w;
+	height = b_h;
+	std::vector<uint32_t> bitmap(width * height);
+	
+	/* create a bitmap for the phrase */
+	auto bitmap8 = std::vector<uint8_t>(b_w * b_h);
 
-	//const char* alphabet = "hello"; getAsciiStr();
+	stbtt_pack_context pack_context{};
+	stbtt_PackBegin(&pack_context, bitmap8.data(), width, height, 0, 1, nullptr); // stride 0 means tightly packed, leave 1 pixel padding around pixels
 
-	//int ascent, descent, lineGap;
-	//stbtt_GetFontVMetrics(&info, &ascent, &descent, &lineGap);
-	//ascent = roundf(ascent * scale);
-	//descent = roundf(descent * scale);
+	stbtt_PackSetOversampling(&pack_context, 2, 1);
 
-	//int x = 0;
-	//for (int i = 0; i < 5; ++i)
-	//{
-	//	/* how wide is this character */
-	//	int ax;
-	//	int lsb;
-	//	stbtt_GetCodepointHMetrics(&info, alphabet[i], &ax, &lsb);
+	std::vector<stbtt_packedchar> packedChars(127);
+	
+	stbtt_PackFontRange(&pack_context, courierFontBuffer.data(), 0, 64.0f, 0, 127, packedChars.data());
 
-	//	/* get bounding box for character (may be offset to account for chars that dip above or below the line */
-	//	int c_x1, c_y1, c_x2, c_y2;
-	//	stbtt_GetCodepointBitmapBox(&info, alphabet[i], scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
+	std::transform(packedChars.begin(), packedChars.end(), std::back_inserter(defaultFont.packedChars),
+		[](auto const& pc)
+		{
+			return PackedChar{ glm::vec2{pc.x0, pc.y0}, glm::vec2{pc.x1, pc.y1} };
+		});
+	
+	stbtt_PackEnd(&pack_context);
+#if 0
+	/* calculate font scaling */
+	float scale = stbtt_ScaleForPixelHeight(&info, l_h);
 
-	//	/* compute y (different characters have different heights */
-	//	int const y = ascent + c_y1;
+	int x = 0;
 
-	//	/* render character (stride and offset is important here) */
-	//	int const byteOffset = x + roundf(lsb * scale) + (y * b_w);
-	//	stbtt_MakeCodepointBitmap(&info, bitmap.data() + byteOffset, c_x2 - c_x1, c_y2 - c_y1, b_w, scale, scale, alphabet[i]);
+	int ascent, descent, lineGap;
+	stbtt_GetFontVMetrics(&info, &ascent, &descent, &lineGap);
 
-	//	/* advance x */
-	//	x += roundf(ax * scale);
+	ascent *= scale;
+	descent *= scale;
+	
+	for (int i = 0; i < strlen(alphabet); ++i)
+	{
+		/* get bounding box for character (may be offset to account for chars that dip above or below the line */
+		int c_x1, c_y1, c_x2, c_y2;
+		stbtt_GetCodepointBitmapBox(&info, alphabet[i], scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
 
-	//	/* add kerning */
-	//	int kern = stbtt_GetCodepointKernAdvance(&info, alphabet[i], alphabet[i + 1]);
-	//	x += roundf(kern * scale);
-	//}
-	//stbi_write_png("out.png", width, height, 4, bitmap.data(), width * 4);
+		int r = (float)(x) / (float)b_w;
+		
+		/* compute y (different characters have different heights */
+		int y = ascent + c_y1 + r * l_h;
+
+		/* render character (stride and offset is important here) */
+		int byteOffset = x + (y * b_w);
+		stbtt_MakeCodepointBitmap(&info, bitmap8.data() + byteOffset, c_x2 - c_x1, c_y2 - c_y1, b_w, scale, scale, alphabet[i]);
+
+		/* how wide is this character */
+		int ax;
+		stbtt_GetCodepointHMetrics(&info, alphabet[i], &ax, 0);
+		x += ax * scale;
+
+		/* add kerning */
+		int kern;
+		kern = stbtt_GetCodepointKernAdvance(&info, alphabet[i], alphabet[i + 1]);
+		x += kern * scale;
+	}
+#endif
+	for (int i = 0; i < bitmap.size(); i++)
+	{
+		uint8_t alpha = bitmap8[i];
+		//bitmap[i] = (alpha << 24) | (alpha << 16) | (alpha << 8) | (alpha << 0);
+		bitmap[i] = Color(alpha, alpha, alpha, alpha).rgba();
+	}
 	
 	ID3D11Device* device = D3D11Renderer::Instance().getDevice();
 
+	defaultFont.width = width;
+	defaultFont.height = height;
+	
 	D3D11_TEXTURE2D_DESC textureDesc = {};
 	textureDesc.Height = height;
 	textureDesc.Width = width;
@@ -308,12 +343,26 @@ Result<void> FontManager::init()
 	return {};
 }
 
+void FontManager::addQuadIndices()
+{
+	indices.push_back(lastIndex + 0);
+	indices.push_back(lastIndex + 2);
+	indices.push_back(lastIndex + 1);
+	
+	indices.push_back(lastIndex + 2);
+	indices.push_back(lastIndex + 3);
+	indices.push_back(lastIndex + 1);
+
+	lastIndex += 4;
+}
+
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-11-2d-text/
 void FontManager::drawString(GraphicString const& gstring)
 {
 	AES_PROFILE_FUNCTION();
 
 	float const size = gstring.textSize;
+	uint index = 0;
 	for (uint i = 0; i < gstring.str.size(); i++)
 	{
 		glm::vec2 const vertex_up_left = glm::vec2(gstring.pos.x + i * size, gstring.pos.y + size);
@@ -325,29 +374,58 @@ void FontManager::drawString(GraphicString const& gstring)
 		float const uv_x = (character % 16) / 16.0f;
 		float const uv_y = (character / 16) / 16.0f;
 
-		//glm::vec2 const uv_up_left = glm::vec2(uv_x, 1.0f - uv_y);
-		//glm::vec2 const uv_up_right = glm::vec2(uv_x + 1.0f / 16.0f, 1.0f - uv_y);
-		//glm::vec2 const uv_down_right = glm::vec2(uv_x + 1.0f / 16.0f, 1.0f - (uv_y + 1.0f / 16.0f));
-		//glm::vec2 const uv_down_left = glm::vec2(uv_x, 1.0f - (uv_y + 1.0f / 16.0f));
+		glm::vec2 uv_up_left = glm::vec2(uv_x, 1.0f - uv_y);
+		glm::vec2 uv_up_right = glm::vec2(uv_x + 1.0f / 16.0f, 1.0f - uv_y);
+		glm::vec2 uv_down_right = glm::vec2(uv_x + 1.0f / 16.0f, 1.0f - (uv_y + 1.0f / 16.0f));
+		glm::vec2 uv_down_left = glm::vec2(uv_x, uv_y);
 
-		glm::vec2 const uv_up_left = glm::vec2(0.0f, 0.0f);
-		glm::vec2 const uv_up_right = glm::vec2(1.0f, 0.0f);
-		glm::vec2 const uv_down_right = glm::vec2(1.0f, 1.0f);
-		glm::vec2 const uv_down_left = glm::vec2(0.0f, 1.0f);
+		uv_down_left.x = defaultFont.packedChars[(int)character].bmin.x / defaultFont.width;
+		uv_down_left.y = defaultFont.packedChars[(int)character].bmax.y / defaultFont.height;
+
+		uv_down_right.x = defaultFont.packedChars[(int)character].bmax.x / defaultFont.width;
+		uv_down_right.y = defaultFont.packedChars[(int)character].bmax.y / defaultFont.height;
+
+		uv_up_right.x = defaultFont.packedChars[(int)character].bmax.x / defaultFont.width;
+		uv_up_right.y = defaultFont.packedChars[(int)character].bmin.y / defaultFont.height;
+
+		uv_up_left.x = defaultFont.packedChars[(int)character].bmin.x / defaultFont.width;
+		uv_up_left.y = defaultFont.packedChars[(int)character].bmin.y / defaultFont.height;
+		
+		//glm::vec2 const uv_up_left = glm::vec2(0.0f, 0.0f);
+		//glm::vec2 const uv_up_right = glm::vec2(1.0f, 0.0f);
+		//glm::vec2 const uv_down_right = glm::vec2(1.0f, 1.0f);
+		//glm::vec2 const uv_down_left = glm::vec2(0.0f, 1.0f);
 
 		vertices.push_back(Vertex{ vertex_up_left, uv_up_left });
 		vertices.push_back(Vertex{ vertex_down_left, uv_down_left });
 		vertices.push_back(Vertex{ vertex_up_right, uv_up_right });
 		vertices.push_back(Vertex{ vertex_down_right, uv_down_right });
 
-		indices.push_back(i + 0);
-		indices.push_back(i + 2);
-		indices.push_back(i + 1);
-		indices.push_back(i + 3);
+		addQuadIndices();
 	}
 }
 
-void FontManager::draw()
+void FontManager::drawFontTexture(glm::vec2 pos, float size)
+{
+	glm::vec2 const vertex_up_left = glm::vec2(pos.x, pos.y + size);
+	glm::vec2 const vertex_up_right = glm::vec2(pos.x + size, pos.y + size);
+	glm::vec2 const vertex_down_right = glm::vec2(pos.x + size, pos.y);
+	glm::vec2 const vertex_down_left = glm::vec2(pos.x, pos.y);
+
+	glm::vec2 const uv_up_left = glm::vec2(0.0f, 0.0f);
+	glm::vec2 const uv_up_right = glm::vec2(1.0f, 0.0f);
+	glm::vec2 const uv_down_right = glm::vec2(1.0f, 1.0f);
+	glm::vec2 const uv_down_left = glm::vec2(0.0f, 1.0f);
+
+	vertices.push_back(Vertex{ vertex_up_left, uv_up_left });
+	vertices.push_back(Vertex{ vertex_down_left, uv_down_left });
+	vertices.push_back(Vertex{ vertex_up_right, uv_up_right });
+	vertices.push_back(Vertex{ vertex_down_right, uv_down_right });
+
+	addQuadIndices();
+}
+
+void FontManager::render()
 {
 	AES_PROFILE_FUNCTION();
 	ID3D11DeviceContext* ctx = D3D11Renderer::Instance().getDeviceContext();
@@ -381,10 +459,11 @@ void FontManager::draw()
 	uint offset = 0;
 	ctx->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 	ctx->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	ctx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	ctx->DrawIndexed(indices.size(), 0, 0);
 	vertices.clear();
 	indices.clear();
+	lastIndex = 0;
 }
 
 void FontManager::destroy()
