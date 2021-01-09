@@ -5,7 +5,7 @@
 
 using namespace aes;
 
-Engine::Engine(InitInfo const& info) : appName(info.appName), mainWindow(info.appName)
+Engine::Engine(InitInfo const& info) : mainWindow(info.appName), appName(info.appName)
 {
 
 }

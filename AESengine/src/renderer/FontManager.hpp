@@ -19,10 +19,15 @@ namespace aes {
 		float textSize;
 	};
 
-	struct PackedChar
+	struct BackedChars
 	{
 		glm::vec2 bmin;
 		glm::vec2 bmax;
+
+		float xoff, yoff, xadvance;
+		float xoff2, yoff2;
+		
+		glm::vec2 getSize() const;
 	};
 	
 	struct TextureFont
@@ -33,7 +38,7 @@ namespace aes {
 
 
 		int width, height;
-		std::vector<PackedChar> packedChars;
+		std::vector<BackedChars> backedChars;
 	};
 
 	class FontManager
