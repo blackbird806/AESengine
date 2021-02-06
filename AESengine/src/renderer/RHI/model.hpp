@@ -1,15 +1,15 @@
-#ifndef D3D11MODEL_HPP
-#define D3D11MODEL_HPP
+#ifndef MODEL_HPP
+#define MODEL_HPP
 
-#include <d3d11.h>
 #include <span>
 #include <vector>
 #include <glm/glm.hpp>
-#include "core/error.hpp"
-#include "vertex.hpp"
 
-namespace aes {
+#include "RHIBuffer.hpp"
+#include "renderer/vertex.hpp"
 
+namespace aes
+{
 	constexpr uint32_t cubeIndices[] = {
 		//Top
 		2, 7, 6,
@@ -48,26 +48,31 @@ namespace aes {
 	};
 
 	std::vector<Vertex> getCubeVertices();
-
-	class D3D11Model
+	
+	class Model
 	{
+		
 	public:
-
-		Result<void> init(std::span<Vertex const> vertices, std::span<uint32_t const> indices);
+		
+		Model() = default;
+		Model(Model&& rhs) noexcept = default;
+		Model& operator=(Model&& rhs) noexcept = default;
+		
+		Result<void> create(std::span<Vertex const> vertices, std::span<uint32_t const> indices);
+		
 		void destroy();
-
 		void render();
-
+		
 		glm::mat4 toWorld;
+		
 	private:
-
-		ID3D11Buffer* vertexBuffer = nullptr, *indexBuffer = nullptr;
-		ID3D11Buffer* modelBuffer;
+		
+		RHIBuffer vertexBuffer, indexBuffer;
+		RHIBuffer modelBuffer;
 		size_t vertexCount, indexCount;
 	};
 
-	D3D11Model createCube();
-
+	Model createCube();
 }
 
 #endif

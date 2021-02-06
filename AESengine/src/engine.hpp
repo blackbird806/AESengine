@@ -4,8 +4,9 @@
 #include "core/aes.hpp"
 #include "core/debug.hpp"
 #include "core/window.hpp"
-#include "renderer/D3D11renderer.hpp"
+#include "renderer/RHI/RHIRenderContext.hpp"
 #include <unordered_map>
+#include <memory>
 
 namespace aes {
 
@@ -27,10 +28,10 @@ namespace aes {
 	protected:
 
 		InputState getKeyState(Key k) noexcept;
-		void getMousePos(float& x, float& y) noexcept;
+		void getMousePos(float& x, float& y) const noexcept;
 
 		Camera mainCamera;
-		Window mainWindow;
+		std::unique_ptr<Window> mainWindow;
 
 	private:
 
@@ -46,7 +47,7 @@ namespace aes {
 		uint64_t frameCount = 0;
 		
 		const char* appName;
-		D3D11Renderer renderer;
+		RHIRenderContext renderer;
 
 		std::unordered_map<Key, InputState> keyStates;
 	};

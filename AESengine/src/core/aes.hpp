@@ -3,8 +3,8 @@
 
 #define AES_UNUSED(x) ((void)(x))
 
-#ifdef _WIN32
-	#define AES_DEBUG DEBUG_
+#ifndef AES_DEBUG
+	#define AES_RELEASE
 #endif
 
 #define AES_ENABLE_EXCEPTION
@@ -32,10 +32,15 @@
 
 #define AES_NOT_IMPLEMENTED() AES_DEBUG_BREAK()
 
-#ifdef _MSC_VER
-	#define AES_UNREACHABLE() __assume(0)
-#elif defined(__GNUC__) || defined(__clang__)
-	#define AES_UNREACHABLE() __builtin_unreachable()
+
+#ifdef AES_RELEASE
+	#ifdef _MSC_VER
+		#define AES_UNREACHABLE() __assume(0)
+	#elif defined(__GNUC__) || defined(__clang__)
+		#define AES_UNREACHABLE() __builtin_unreachable()
+	#endif
+#else
+	#define AES_UNREACHABLE() AES_ASSERT(false);
 #endif
 
 using uint = unsigned int;

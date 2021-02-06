@@ -2,7 +2,6 @@
 #define WINDOW_HPP
 
 #include "aes.hpp"
-#include "os.hpp"
 #include "input.hpp"
 #include <utility>
 
@@ -35,35 +34,43 @@ namespace aes {
 		using ResizeCallbackT = void(*)(uint, uint);
 		using KeyCallbackT = ContextCallback<void(*)(InputAction action, int key, void* userData)>;
 		using MouseMoveCallbackT = void(*)(int mouseX, int mouseY);
-
-		static LRESULT CALLBACK windowProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 		
-		explicit Window(const char* name);
+		virtual ~Window() {};
 
-		void setResizeCallback(ResizeCallbackT func);
-		void setKeyCallback(KeyCallbackT func);
-		void setMouseMoveCallback(MouseMoveCallbackT func);
-		void getMousePosition(int& mouseX, int& mouseY) const;
-		void getScreenSize(uint& sizeX, uint& sizeY) const;
+		virtual void setResizeCallback(ResizeCallbackT func);
+		virtual void setKeyCallback(KeyCallbackT func);
+		virtual void setMouseMoveCallback(MouseMoveCallbackT func);
+		virtual void getMousePosition(int& mouseX, int& mouseY) const;
+		virtual void getScreenSize(uint& sizeX, uint& sizeY) const;
+		virtual bool shouldClose() const;
+		
+		virtual void* getHandle() const = 0;
+		virtual void open() = 0;
+		virtual void setVisible(bool) = 0;
+		virtual void close() = 0;
+		virtual void pollEvents() = 0;
 
-		HWND getHandle() const;
-
-		void open();
-		void setVisible(bool);
-		void close();
-
-		void pollEvents();
-		bool shouldClose() const;
-
-	private:
+	protected:
 
 		bool shouldClose_ = false;
-		HWND handle;
 		KeyCallbackT keyCallback;
 		ResizeCallbackT resizeCallback = nullptr;
 		MouseMoveCallbackT mouseMoveCallback = nullptr;
 		uint width, height;
 		int mouseX, mouseY;
+	};
+
+	class EmptyWindow : public Window
+	{
+	public:
+		void* getHandle() const override
+		{
+			return nullptr;
+		}
+		void open() override {}
+		void setVisible(bool) override {}
+		void close() override {}
+		void pollEvents() override {}
 	};
 
 }

@@ -1,7 +1,11 @@
 #include "D3D11renderer.hpp"
 #include "core/debug.hpp"
+#include "renderer/RHI/RHIBuffer.hpp"
+#include "renderer/RHI/RHIElements.hpp"
 
 #include <vector>
+
+#include "D3D11Elements.hpp"
 
 using namespace aes;
 
@@ -146,6 +150,28 @@ void D3D11Renderer::destroy()
 	destroySwapchain();
 }
 
+void D3D11Renderer::bindBuffer(RHIBuffer& buffer, uint slot)
+{
+	ID3D11Buffer* handle = buffer.getHandle();
+	deviceContext->VSSetConstantBuffers(slot, 1, &handle);
+}
+
+void D3D11Renderer::bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset)
+{
+	ID3D11Buffer* handle = buffer.getHandle();
+	deviceContext->IASetVertexBuffers(0, 1, &handle, &stride, &offset);
+}
+
+void D3D11Renderer::bindIndexBuffer(RHIBuffer& buffer, TypeFormat typeFormat, uint offset)
+{
+	deviceContext->IASetIndexBuffer(buffer.getHandle(), rhiTypeFormatToApi(typeFormat), offset);
+}
+
+void D3D11Renderer::setDrawPrimitiveMode(DrawPrimitiveMode mode)
+{
+	deviceContext->IASetPrimitiveTopology(rhiPrimitiveModeToApi(mode));
+}
+
 ID3D11Device* D3D11Renderer::getDevice()
 {
 	return device;
@@ -154,6 +180,11 @@ ID3D11Device* D3D11Renderer::getDevice()
 ID3D11DeviceContext* D3D11Renderer::getDeviceContext()
 {
 	return deviceContext;
+}
+
+void D3D11Renderer::drawIndexed(uint indexCount)
+{
+	deviceContext->DrawIndexed(indexCount, 0, 0);
 }
 
 void D3D11Renderer::startFrame(Camera const& cam)
@@ -257,7 +288,7 @@ void D3D11Renderer::createSwapchain()
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 
 	// Set the handle for the window to render to.
-	swapChainDesc.OutputWindow = renderWindow->getHandle();
+	swapChainDesc.OutputWindow = (HWND)renderWindow->getHandle();
 
 	// Turn multisampling off.
 	swapChainDesc.SampleDesc.Count = 1;

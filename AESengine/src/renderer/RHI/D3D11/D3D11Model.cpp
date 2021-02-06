@@ -6,46 +6,6 @@
 
 using namespace aes;
 
-std::vector<Vertex> aes::getCubeVertices()
-{
-	std::vector<Vertex> vertices(8);
-
-	vertices[0].pos = { -1, -1,  1.0f };
-	vertices[0].color = { 1.0f, 0.0f, 0.0f, 1.0f };
-
-	vertices[1].pos = { 1, -1,  1.0f };
-	vertices[1].color = {0.0f, 1.0f, 0.0f, 1.0f};
-
-	vertices[2].pos = { -1,  1,  1.0f };
-	vertices[2].color = { 0.0f, 0.0f, 1.0f, 1.0f };
-
-	vertices[3].pos = { 1,  1,  1.0f };
-	vertices[3].color = { 0.0f, 0.0f, 1.0f, 1.0f };
-
-	vertices[4].pos = { -1, -1, -1.0f };
-	vertices[4].color = { 0.0f, 1.0f, 1.0f, 1.0f };
-
-	vertices[5].pos = { 1, -1, -1.0f };
-	vertices[5].color = { 0.0f, 1.0f, 1.0f, 1.0f };
-
-	vertices[6].pos = { -1,  1, -1.0f };
-	vertices[6].color = { 0.0f, 1.0f, 0.0f, 1.0f };
-
-	vertices[7].pos = { 1,  1, -1.0f };
-	vertices[7].color = { 1.0f, 0.0f, 1.0f, 1.0f };
-
-	return vertices;
-}
-
-D3D11Model aes::createCube()
-{
-	AES_PROFILE_FUNCTION();
-
-	D3D11Model cube;
-	cube.init(getCubeVertices(), cubeIndices);
-	return cube;
-}
-
 Result<void> D3D11Model::init(std::span<Vertex const> vertices, std::span<uint32_t const> indices)
 {
 	AES_PROFILE_FUNCTION();

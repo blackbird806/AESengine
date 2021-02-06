@@ -1,11 +1,21 @@
 #include "engine.hpp"
 #include "core/debug.hpp"
 
+#ifdef _WIN32
+	#include "core/win_window.hpp"
+#endif
+
 #include <chrono>
 
 using namespace aes;
 
-Engine::Engine(InitInfo const& info) : mainWindow(info.appName), appName(info.appName)
+Engine::Engine(InitInfo const& info) :
+#ifdef _WIN32
+	mainWindow(std::make_unique<Win_Window>(info.appName)),
+#else
+	mainWindow(std::make_unique<EmptyWindow>())
+#endif
+	appName(info.appName)
 {
 
 }
@@ -13,14 +23,14 @@ Engine::Engine(InitInfo const& info) : mainWindow(info.appName), appName(info.ap
 Engine::~Engine()
 {
 	renderer.destroy();
-	mainWindow.close();
+	mainWindow->close();
 }
 
 void Engine::init()
 {
 	AES_PROFILE_FUNCTION();
-	mainWindow.open();
-	mainWindow.setKeyCallback({ [](InputAction action, int key, void* userData) {
+	mainWindow->open();
+	mainWindow->setKeyCallback({ [](InputAction action, int key, void* userData) {
 
 		Engine& self = *static_cast<Engine*>(userData);
 		Key const k = windowsToAESKey(key);
@@ -37,7 +47,7 @@ void Engine::init()
 
 		}, this });
 
-	renderer.init(mainWindow);
+	renderer.init(*mainWindow);
 	AES_LOG("engine initialized");
 }
 
@@ -49,12 +59,12 @@ void Engine::run()
 	double deltaTime = 0.0;
 
 	start();
-	while (!mainWindow.shouldClose())
+	while (!mainWindow->shouldClose())
 	{
 		AES_PROFILE_FRAME();
 		auto start = std::chrono::high_resolution_clock::now();
 		
-		mainWindow.pollEvents();
+		mainWindow->pollEvents();
 		renderer.startFrame(mainCamera);
 
 		update(deltaTime);
@@ -78,12 +88,12 @@ InputState Engine::getKeyState(Key k) noexcept
 // return normalized mouse position
 // 0 0 is up left
 // 1 1 is down right
-void Engine::getMousePos(float& x, float& y) noexcept
+void Engine::getMousePos(float& x, float& y) const noexcept
 {
 	uint sx, sy;
-	mainWindow.getScreenSize(sx, sy);
+	mainWindow->getScreenSize(sx, sy);
 	int mx, my;
-	mainWindow.getMousePosition(mx, my);
+	mainWindow->getMousePosition(mx, my);
 	x = (float)mx / (float)sx;
 	y = (float)my / (float)sy;
 }

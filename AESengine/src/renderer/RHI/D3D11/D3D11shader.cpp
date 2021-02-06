@@ -5,7 +5,7 @@
 #include "core/aes.hpp"
 #include "core/debug.hpp"
 #include "D3D11renderer.hpp"
-#include "vertex.hpp"
+#include "renderer/vertex.hpp"
 
 using namespace aes;
 

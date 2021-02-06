@@ -2,7 +2,7 @@
 #include <glm/gtx/transform.hpp>
 #include "core/debugMath.hpp"
 #include "engine.hpp"
-#include "renderer/D3D11Model.hpp"
+#include "renderer/RHI/model.hpp"
 #include "renderer/Renderer2D.hpp"
 #include "renderer/FontManager.hpp"
 
@@ -15,7 +15,8 @@ public:
 	{
 	
 	}
-	aes::D3D11Model model, model2;
+	
+	aes::Model model, model2;
 	aes::FontManager fm;
 
 	void start() override
@@ -23,6 +24,7 @@ public:
 		AES_PROFILE_FUNCTION();
 		
 		aes::Result r = fm.init();
+		
 		if (!r)
 			AES_WARN("fm init failed : {}", r.error());
 
@@ -41,7 +43,7 @@ public:
 	float lastMousePosX, lastMousePosY;
 	glm::vec3 direction = {0.0, 0.0, 1.0};
 	float yaw = 91, pitch = 2;
-
+	
 	void update(double dt) override
 	{
 		AES_PROFILE_FUNCTION();
@@ -117,26 +119,28 @@ public:
 			float const csx = 0.025f;
 
 			uint windowWidth, windowHeight;
-			mainWindow.getScreenSize(windowWidth, windowHeight);
+			mainWindow->getScreenSize(windowWidth, windowHeight);
 			float const aspect = (float) windowWidth / (float) windowHeight;
 			mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), aspect, 0.0001f, 1000.0f);
 
 			float const ey = ex * aspect;
 			float const csy = csx * aspect;
-			//aes::Renderer2D::Instance().drawLine({ 0, ey }, { 0, ey + csy }, { 0.0f, 1.0f, 0.0f, 1.0f });
-			//aes::Renderer2D::Instance().drawLine({ 0, -ey }, { 0, -ey - csy }, { 0.0f, 1.0f, 0.0f, 1.0f });
-			//aes::Renderer2D::Instance().drawLine({ ex, 0 }, { ex + csx, 0 }, { 0.0f, 1.0f, 0.0f, 1.0f });
-			//aes::Renderer2D::Instance().drawLine({ -ex, 0 }, { -ex - csx, 0 }, { 0.0f, 1.0f, 0.0f, 1.0f });
+			aes::Renderer2D::Instance().drawLine({ 0, ey }, { 0, ey + csy }, { 0.0f, 1.0f, 0.0f, 1.0f });
+			aes::Renderer2D::Instance().drawLine({ 0, -ey }, { 0, -ey - csy }, { 0.0f, 1.0f, 0.0f, 1.0f });
+			aes::Renderer2D::Instance().drawLine({ ex, 0 }, { ex + csx, 0 }, { 0.0f, 1.0f, 0.0f, 1.0f });
+			aes::Renderer2D::Instance().drawLine({ -ex, 0 }, { -ex - csx, 0 }, { 0.0f, 1.0f, 0.0f, 1.0f });
 
-			//aes::Renderer2D::Instance().drawFillRect(aes::Rect{ {0.0f, 0.0f}, {0.5f, 0.5f} }, { 0.1f, 0.1f, 0.1f, 0.2f });
+			aes::Renderer2D::Instance().drawFillRect(aes::Rect{ {0.0f, 0.0f}, {0.5f, 0.5f} }, { 0.1f, 0.1f, 0.1f, 0.2f });
 		}
 		
 		fm.drawString(aes::GraphicString{
-			.str = "j", 
-			.pos = {-0.5f, -0.5f},
+			.str = fmt::format("\"dt [: {}\n]\t< `,+_", 12.05f),
+			.pos = {-0.7f, -0.5f},
 			.color = {1.0f, 1.0f, 1.0f, 1.0f},
-			.textSize = 1.0f
+			.textSize = 0.8f
 		});
+
+		fm.drawFontTexture();
 	}
 
 	void draw() override
@@ -144,10 +148,9 @@ public:
 		AES_PROFILE_FUNCTION();
 		model.render();
 		model2.render();
-		fm.draw();
-		//aes::Renderer2D::Instance().draw();
+		fm.render();
+		aes::Renderer2D::Instance().draw();
 	}
-
 };
 
 int main()
@@ -157,4 +160,3 @@ int main()
 	game.init();
 	game.run();
 }
-

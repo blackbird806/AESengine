@@ -3,17 +3,20 @@
 
 #include "core/aes.hpp"
 #include "core/window.hpp"
+#include "core/error.hpp"
+#include "renderer/RHI/RHIElements.hpp"
 
 #include <dxgi.h>
 #include <d3d11.h>
 
 /// DEBUG
-#include "camera.hpp"
+#include "renderer/camera.hpp"
 #include "D3D11shader.hpp"
 /// ///
 
 namespace aes {
-	
+	class RHIBuffer;
+
 	class D3D11Renderer
 	{
 
@@ -24,18 +27,24 @@ namespace aes {
 		void init(Window& windowHandle);
 		void destroy();
 
+		void bindBuffer(RHIBuffer& buffer, uint slot);
+		void bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset = 0);
+		void bindIndexBuffer(RHIBuffer& buffer, TypeFormat typeFormat, uint offset = 0);
+		
+		void setDrawPrimitiveMode(DrawPrimitiveMode mode);
+		void drawIndexed(uint indexCount);
+		
+		void startFrame(Camera const& cam);
+		void endFrame();
+		
 		ID3D11Device* getDevice();
 		ID3D11DeviceContext* getDeviceContext();
 
-		void startFrame(Camera const& cam);
-		void endFrame();
-
+	private:
+		
 	/// debug
 		D3D11Shader shader;
 	/// 
-
-	private:
-
 		static D3D11Renderer* instance;
 
 		void createDevice();
@@ -69,6 +78,7 @@ namespace aes {
 		ID3D11RenderTargetView* renderTargetView;
 	};
 
+	using RHIRenderContext = D3D11Renderer;
 }
 
 #endif
