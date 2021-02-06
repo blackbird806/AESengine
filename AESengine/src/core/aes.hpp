@@ -7,19 +7,11 @@
 	#define AES_RELEASE
 #endif
 
-#define AES_ENABLE_EXCEPTION
-
-#ifdef AES_ENABLE_EXCEPTION
-	#define AES_THROW(x) throw x;
-#else
-	#define AES_THROW(x)
-#endif
-
 #ifdef AES_DEBUG
 	#ifdef _WIN32
 		#define AES_DEBUG_BREAK() __debugbreak()
 	#else
-		#define AES_DEBUG_BREAK()  raise(SIGTRAP) 
+		#define AES_DEBUG_BREAK() __builtin_trap()
 	#endif
 	#define AES_ASSERT(x) if (x) {} else { AES_DEBUG_BREAK(); }
 #else

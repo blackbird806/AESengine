@@ -15,17 +15,14 @@ namespace aes
 
 		VglBuffer() {}
 		VglBuffer(VglBuffer&&) noexcept;
+		VglBuffer& operator=(VglBuffer&& rhs) noexcept;
 		~VglBuffer();
 
-		Result<void> create(BufferDescription const& desc)
-		{
-			glGenBuffers(1, &apiBuffer);
-		}
-
-		Result<void> bind(uint slot);
-		Result<void> unbind();
+		Result<void> create(BufferDescription const& desc);
 		Result<void*> map();
 		Result<void> unmap();
+
+		GLuint getHandle();
 
 	private:
 

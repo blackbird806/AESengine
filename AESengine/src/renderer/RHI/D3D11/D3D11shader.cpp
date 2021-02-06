@@ -157,7 +157,7 @@ void D3D11Shader::init(std::string_view vs, std::string_view ps)
 	result = device->CreateBuffer(&cameraBufferDesc, NULL, &cameraBuffer);
 	if (FAILED(result))
 	{
-		throw Exception("failed to create Model buffer");
+		AES_ERROR("failed to create Model buffer");
 	}
 }
 
@@ -189,7 +189,7 @@ void D3D11Shader::render(glm::mat4 const& view, glm::mat4 const& proj)
 	auto result = deviceContext->Map(cameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
-		throw Exception("failed to map UBO");
+		AES_ERROR("failed to map UBO");
 	}
 	// Get a pointer to the data in the constant buffer.
 	CameraBuffer* dataPtr = static_cast<CameraBuffer*>(mappedResource.pData);

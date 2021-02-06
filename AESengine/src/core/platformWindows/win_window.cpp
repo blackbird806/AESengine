@@ -1,6 +1,5 @@
 #include "win_window.hpp"
-#include "aes.hpp"
-#include "string_converter.hpp"
+#include "core/string_converter.hpp"
 
 #include <string>
 #include <windowsx.h>

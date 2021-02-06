@@ -3,6 +3,8 @@
 
 #include "core/window.hpp"
 #include "renderer/camera.hpp"
+#include "renderer/RHI/RHIElements.hpp"
+#include "renderer/RHI/RHIBuffer.hpp"
 
 namespace aes
 {
@@ -15,6 +17,13 @@ namespace aes
 
 			void startFrame(Camera const& cam);
 			void endFrame();
+			
+			void bindBuffer(RHIBuffer& buffer, uint slot);
+			void bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset = 0);
+			void bindIndexBuffer(RHIBuffer& buffer, TypeFormat typeFormat, uint offset = 0);
+
+			void setDrawPrimitiveMode(DrawPrimitiveMode mode);
+			void drawIndexed(uint indexCount);
 
 		private:
 

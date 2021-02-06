@@ -2,7 +2,7 @@
 #include "core/debug.hpp"
 
 #ifdef _WIN32
-	#include "core/win_window.hpp"
+	#include "core/platformWindows/win_window.hpp"
 #endif
 
 #include <chrono>

@@ -84,9 +84,6 @@
     <ClCompile Include="src\renderer\Renderer2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\gui\gui.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="thirdParty\tiny\tiny_obj_loader.cpp">
       <Filter>ThirdParty\tiny</Filter>
     </ClCompile>
@@ -105,9 +102,6 @@
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11Buffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\win_window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\renderer\RHI\VitaGL\vglRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -118,6 +112,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11Elements.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\platformWindows\win_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -158,9 +155,6 @@
     <ClInclude Include="src\core\macro_helpers.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\logic\scene.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\core\input.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -180,9 +174,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\Renderer2D.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\gui\gui.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\core\color.hpp">
@@ -215,9 +206,6 @@
     <ClInclude Include="src\renderer\RHI\RHI.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\win_window.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\renderer\RHI\VitaGL\vglBuffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -234,6 +222,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11Elements.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\platformWindows\win_window.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

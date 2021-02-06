@@ -35,7 +35,7 @@ void D3D11Renderer::init(Window& window)
 	HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
 	if (FAILED(result))
 	{
-		fatalError("failed to create CreateDXGIFactory");
+		AES_ERROR("failed to create CreateDXGIFactory");
 	}
 
 	// Use the factory to create an adapter for the primary graphics interface (video card).
@@ -43,7 +43,7 @@ void D3D11Renderer::init(Window& window)
 	result = factory->EnumAdapters(0, &adapter);
 	if (FAILED(result))
 	{
-		fatalError("failed to create IDXGIAdapter");
+		AES_ERROR("failed to create IDXGIAdapter");
 	}
 
 	// Enumerate the primary adapter output (monitor).
@@ -51,7 +51,7 @@ void D3D11Renderer::init(Window& window)
 	result = adapter->EnumOutputs(0, &adapterOutput);
 	if (FAILED(result))
 	{
-		fatalError("failed to create IDXGIOutput");
+		AES_ERROR("failed to create IDXGIOutput");
 	}
 
 	// Get the number of modes that fit the DXGI_FORMAT_R8G8B8A8_UNORM display format for the adapter output (monitor).
@@ -59,7 +59,7 @@ void D3D11Renderer::init(Window& window)
 	result = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, NULL);
 	if (FAILED(result))
 	{
-		fatalError("failed to get DisplayModeList");
+		AES_ERROR("failed to get DisplayModeList");
 	}
 
 	// Create a list to hold all the possible display modes for this monitor/video card combination.
@@ -69,7 +69,7 @@ void D3D11Renderer::init(Window& window)
 	result = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, displayModeList.data());
 	if (FAILED(result))
 	{
-		fatalError("failed to get DisplayModeList");
+		AES_ERROR("failed to get DisplayModeList");
 	}
 
 	// Now go through all the display modes and find the one that matches the screen width and height.
@@ -274,7 +274,7 @@ void D3D11Renderer::createSwapchain()
 	// Set the refresh rate of the back buffer.
 	if (vsyncEnabled)
 	{
-		throw Exception("Not implemented");
+		AES_ERROR("Not implemented");
 		//swapChainDesc.BufferDesc.RefreshRate.Numerator = numerator;
 		//swapChainDesc.BufferDesc.RefreshRate.Denominator = denominator;
 	}
@@ -310,7 +310,7 @@ void D3D11Renderer::createSwapchain()
 	HRESULT result = factory->CreateSwapChain(device, &swapChainDesc, &swapChain);
 	if (FAILED(result))
 	{
-		throw Exception("D3D11CreateDeviceAndSwapChain failed");
+		AES_ERROR("D3D11CreateDeviceAndSwapChain failed");
 	}
 }
 
@@ -323,13 +323,13 @@ void D3D11Renderer::createRenderTarget()
 	HRESULT result = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr);
 	if (FAILED(result))
 	{
-		throw Exception("swapChain->GetBuffer failed");
+		AES_ERROR("swapChain->GetBuffer failed");
 	}
 	
 	result = device->CreateRenderTargetView(backBufferPtr, NULL, &renderTargetView);
 	if (FAILED(result))
 	{
-		throw Exception("device->CreateRenderTargetView failed");
+		AES_ERROR("device->CreateRenderTargetView failed");
 	}
 
 	backBufferPtr->Release();
@@ -360,7 +360,7 @@ void D3D11Renderer::createDepthStencil()
 	auto result = device->CreateTexture2D(&depthBufferDesc, NULL, &depthStencilBuffer);
 	if (FAILED(result))
 	{
-		AES_THROW(Exception("device depthStencilBuffer failed"));
+		AES_ERROR("device depthStencilBuffer failed");
 	}
 
 	// Initialize the description of the stencil state.
@@ -387,7 +387,7 @@ void D3D11Renderer::createDepthStencil()
 	result = device->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
 	if (FAILED(result))
 	{
-		AES_THROW(Exception("device->CreateDepthStencilState failed"));
+		AES_ERROR("device->CreateDepthStencilState failed");
 	}
 
 	deviceContext->OMSetDepthStencilState(depthStencilState, 1);
@@ -400,7 +400,7 @@ void D3D11Renderer::createDepthStencil()
 	result = device->CreateDepthStencilView(depthStencilBuffer, &depthStencilViewDesc, &depthStencilView);
 	if (FAILED(result))
 	{
-		AES_THROW(Exception("device->CreateDepthStencilView failed"));
+		AES_ERROR("device->CreateDepthStencilView failed");
 	}
 
 	deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);

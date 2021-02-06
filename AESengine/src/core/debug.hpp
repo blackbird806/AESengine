@@ -1,18 +1,27 @@
 #ifndef DEBUG_HPP
 #define DEBUG_HPP
 
-#include <exception>
 #include <fmt/format.h>
 
-#include "aes.hpp"
-
 // Deprecated
-#define AES_ENSURE(x) if (!(x)) { throw ::aes::Exception("Ensure error experssion: " #x " is false"); }
+#define AES_ENSURE(x) if (!(x)) { AES_ERROR("Ensure error experssion: " #x " is false"); }
 
-#define AES_LOG(msg, ...) fmt::print("info : " msg "\n", __VA_ARGS__);
-#define AES_WARN(msg, ...) fmt::print("warn : " msg "\n", __VA_ARGS__);
-#define AES_LOG_ERROR(msg, ...) fmt::print(stderr,  fmt::format("{} line {} error : {}\n", __FUNCTION__, __LINE__, msg), __VA_ARGS__);
+#ifndef AES_PLATFORM_VITA
 
+#define AES_LOG(msg, ...) fmt::print("info : " msg "\n", __VA_ARGS__)
+#define AES_WARN(msg, ...) fmt::print("warn : " msg "\n", __VA_ARGS__)
+#define AES_LOG_ERROR(msg, ...) fmt::print(stderr,  fmt::format("{} line {} error : {}\n", __FUNCTION__, __LINE__, msg), __VA_ARGS__)
+
+#else
+
+//#define AES_LOG(msg, ...) fmt::print("info : " msg "\n" __VA_OPT__(,) __VA_ARGS__)
+#define AES_LOG(msg, ...) 
+#define AES_WARN(msg, ...) 
+#define AES_LOG_ERROR(msg, ...)
+
+#endif
+
+// @Review
 #ifdef AES_DEBUG
 #define AES_ERROR(msg, ...) AES_DEBUG_BREAK();
 #else
@@ -21,16 +30,6 @@
 
 namespace aes {
 
-	// @TODO move these into error
-	// @Deprecated
-	void fatalError(const char* msg);
-
-	class Exception : std::exception
-	{
-	public:
-
-		Exception(const char* msg) noexcept;
-	};
 
 }
 

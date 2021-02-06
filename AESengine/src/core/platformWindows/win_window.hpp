@@ -1,9 +1,9 @@
 #ifndef WIN_WINDOW_HPP
 #define WIN_WINDOW_HPP
 
-#include "aes.hpp"
-#include "os.hpp"
-#include "window.hpp"
+#include "core/aes.hpp"
+#include "core/os.hpp"
+#include "core/window.hpp"
 
 namespace aes {
 

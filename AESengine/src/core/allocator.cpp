@@ -2,6 +2,10 @@
 #include "profiler.hpp"
 
 #include <new>
+#include <cstdlib>
+
+// @TODO
+#ifndef AES_PLATFORM_VITA
 
 void* operator new(size_t count)
 {
@@ -38,3 +42,5 @@ void operator delete(void* ptr) noexcept
 	AES_PROFILE_MEMORY_DELETE(ptr);
 	free(ptr);
 }
+
+#endif

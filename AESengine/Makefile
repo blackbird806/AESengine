@@ -7,7 +7,8 @@ MACRO_DEFINES := -D AES_DEBUG -D AES_PLATFORM_VITA -D GLM_FORCE_CTOR_INIT
 LIBS = -lvitaGL -lc -lSceCommonDialog_stub -lm -lSceGxm_stub -lSceDisplay_stub -lmathneon -lSceAppMgr_stub
 
 # CPPFILES := $(foreach dir,$(SOURCES), $(wildcard $(dir)/*.cpp))
-CPPFILES:= $(shell find $(root_folder) -name *.cpp)
+# CPPFILES:= $(shell find $(root_folder) -type f \( -name "*.cpp" -o -name "*.cc" \) )
+# CPPFILES := $(shell find $(root_folder) -type d \( -name "platformWindows" -o -name "D3D11" -o -path name \) -prune -o -type f \( -name "*.cpp" -o -name "*.cc" \) )
 BINFILES := $(foreach dir,$(DATA), $(wildcard $(dir)/*.bin))
 OBJS     := $(addsuffix .o,$(BINFILES)) $(CFILES:.c=.o) $(CPPFILES:.cpp=.o) 
 

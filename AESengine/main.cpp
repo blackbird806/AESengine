@@ -3,8 +3,6 @@
 #include "core/debugMath.hpp"
 #include "engine.hpp"
 #include "renderer/RHI/model.hpp"
-#include "renderer/Renderer2D.hpp"
-#include "renderer/FontManager.hpp"
 
 class Game : public aes::Engine
 {
@@ -17,20 +15,13 @@ public:
 	}
 	
 	aes::Model model, model2;
-	aes::FontManager fm;
 
 	void start() override
 	{
 		AES_PROFILE_FUNCTION();
-		
-		aes::Result r = fm.init();
-		
-		if (!r)
-			AES_WARN("fm init failed : {}", r.error());
 
 		AES_LOG("start");
 		model = aes::createCube();
-		aes::Renderer2D::Instance().init();
 		model2 = aes::createCube();
 		model.toWorld = glm::scale(model.toWorld, { 1.0f, 2.0f, 1.0f });
 		model2.toWorld = glm::scale(model2.toWorld, { 2.0f, 1.0f, 1.0f });
@@ -120,27 +111,9 @@ public:
 
 			uint windowWidth, windowHeight;
 			mainWindow->getScreenSize(windowWidth, windowHeight);
-			float const aspect = (float) windowWidth / (float) windowHeight;
+			float const aspect = (float)windowWidth / (float)windowHeight;
 			mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), aspect, 0.0001f, 1000.0f);
-
-			float const ey = ex * aspect;
-			float const csy = csx * aspect;
-			aes::Renderer2D::Instance().drawLine({ 0, ey }, { 0, ey + csy }, { 0.0f, 1.0f, 0.0f, 1.0f });
-			aes::Renderer2D::Instance().drawLine({ 0, -ey }, { 0, -ey - csy }, { 0.0f, 1.0f, 0.0f, 1.0f });
-			aes::Renderer2D::Instance().drawLine({ ex, 0 }, { ex + csx, 0 }, { 0.0f, 1.0f, 0.0f, 1.0f });
-			aes::Renderer2D::Instance().drawLine({ -ex, 0 }, { -ex - csx, 0 }, { 0.0f, 1.0f, 0.0f, 1.0f });
-
-			aes::Renderer2D::Instance().drawFillRect(aes::Rect{ {0.0f, 0.0f}, {0.5f, 0.5f} }, { 0.1f, 0.1f, 0.1f, 0.2f });
 		}
-		
-		fm.drawString(aes::GraphicString{
-			.str = fmt::format("\"dt [: {}\n]\t< `,+_", 12.05f),
-			.pos = {-0.7f, -0.5f},
-			.color = {1.0f, 1.0f, 1.0f, 1.0f},
-			.textSize = 0.8f
-		});
-
-		fm.drawFontTexture();
 	}
 
 	void draw() override
@@ -148,8 +121,6 @@ public:
 		AES_PROFILE_FUNCTION();
 		model.render();
 		model2.render();
-		fm.render();
-		aes::Renderer2D::Instance().draw();
 	}
 };
 
