@@ -26,7 +26,7 @@ Result<void> D3D11Model::init(std::span<Vertex const> vertices, std::span<uint32
 	vertexData.SysMemPitch = 0;
 	vertexData.SysMemSlicePitch = 0;
 
-	ID3D11Device* device = D3D11Renderer::Instance().getDevice();
+	ID3D11Device* device = D3D11Renderer::instance().getDevice();
 	HRESULT result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &vertexBuffer);
 	if (FAILED(result))
 	{
@@ -92,7 +92,7 @@ void D3D11Model::render()
 	uint stride = sizeof(Vertex);
 	uint offset = 0;
 
-	ID3D11DeviceContext* deviceContext = D3D11Renderer::Instance().getDeviceContext();
+	ID3D11DeviceContext* deviceContext = D3D11Renderer::instance().getDeviceContext();
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	// Lock the constant buffer so it can be written to.

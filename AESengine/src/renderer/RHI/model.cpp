@@ -94,7 +94,7 @@ void Model::render()
 	AES_PROFILE_FUNCTION();
 
 	modelBuffer.setData(glm::transpose(toWorld));
-	RHIRenderContext& renderContext = RHIRenderContext::Instance();
+	RHIRenderContext& renderContext = RHIRenderContext::instance();
 	renderContext.bindBuffer(modelBuffer, 1);
 	renderContext.bindVertexBuffer(vertexBuffer, sizeof(Vertex));
 	renderContext.bindIndexBuffer(indexBuffer, TypeFormat::Uint32);

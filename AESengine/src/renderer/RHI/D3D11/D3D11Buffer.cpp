@@ -39,7 +39,7 @@ Result<void> D3D11Buffer::create(BufferDescription const& desc)
 	bufferDesc.CPUAccessFlags = rhiCPUAccessFlagToApi(desc.cpuAccessFlags);
 	bufferDesc.MiscFlags = 0;
 	bufferDesc.StructureByteStride = 0;
-	ID3D11Device* device = D3D11Renderer::Instance().getDevice();
+	ID3D11Device* device = D3D11Renderer::instance().getDevice();
 	
 	HRESULT result;
 	if (desc.initialData)
@@ -70,7 +70,7 @@ ID3D11Buffer* D3D11Buffer::getHandle() noexcept
 
 Result<void*> D3D11Buffer::map()
 {
-	ID3D11DeviceContext* deviceContext = D3D11Renderer::Instance().getDeviceContext();
+	ID3D11DeviceContext* deviceContext = D3D11Renderer::instance().getDeviceContext();
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	auto const result = deviceContext->Map(apiBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -83,7 +83,7 @@ Result<void*> D3D11Buffer::map()
 
 Result<void> D3D11Buffer::unmap()
 {
-	ID3D11DeviceContext* deviceContext = D3D11Renderer::Instance().getDeviceContext();
+	ID3D11DeviceContext* deviceContext = D3D11Renderer::instance().getDeviceContext();
 	deviceContext->Unmap(apiBuffer, 0);
 	return {};
 }

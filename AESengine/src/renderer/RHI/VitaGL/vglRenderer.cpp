@@ -2,6 +2,12 @@
 
 using namespace aes;
 
+VglRenderer& VglRenderer::instance()
+{
+	static VglRenderer instance;
+	return instance;
+}
+
 void VglRenderer::init(Window& windowHandle)
 {
 	AES_PROFILE_FUNCTION();

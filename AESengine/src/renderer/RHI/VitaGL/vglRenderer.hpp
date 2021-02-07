@@ -12,6 +12,8 @@ namespace aes
 	{
 		public:
 
+			static VglRenderer& instance();
+		
 			void init(Window& windowHandle);
 			void destroy();
 

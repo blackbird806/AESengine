@@ -3,6 +3,8 @@
 
 #ifdef _WIN32
 	#include "core/platformWindows/win_window.hpp"
+#else
+	#include "core/Window.hpp"
 #endif
 
 #include <chrono>
@@ -13,7 +15,7 @@ Engine::Engine(InitInfo const& info) :
 #ifdef _WIN32
 	mainWindow(std::make_unique<Win_Window>(info.appName)),
 #else
-	mainWindow(std::make_unique<EmptyWindow>())
+	mainWindow(std::make_unique<EmptyWindow>()),
 #endif
 	appName(info.appName)
 {

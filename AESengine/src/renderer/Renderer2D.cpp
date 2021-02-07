@@ -58,7 +58,7 @@ void Renderer2D::init()
 	vertexBufferDesc.MiscFlags = 0;
 	vertexBufferDesc.StructureByteStride = 0;
 
-	ID3D11Device* device = D3D11Renderer::Instance().getDevice();
+	ID3D11Device* device = D3D11Renderer::instance().getDevice();
 	HRESULT result = device->CreateBuffer(&vertexBufferDesc, nullptr, &vertexBuffer);
 	if (FAILED(result))
 	{
@@ -191,7 +191,7 @@ void Renderer2D::updateBuffers()
 {
 	AES_PROFILE_FUNCTION();
 
-	ID3D11DeviceContext* deviceContext = D3D11Renderer::Instance().getDeviceContext();
+	ID3D11DeviceContext* deviceContext = D3D11Renderer::instance().getDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE vertexMappedResource;
 	deviceContext->Map(vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &vertexMappedResource);
 
@@ -259,7 +259,7 @@ void Renderer2D::draw()
 	AES_PROFILE_FUNCTION();
 
 	updateBuffers();
-	ID3D11DeviceContext* ctx = D3D11Renderer::Instance().getDeviceContext();
+	ID3D11DeviceContext* ctx = D3D11Renderer::instance().getDeviceContext();
 
 	uint stride = sizeof(Vertex);
 	uint vertexBufferOffset = 0;

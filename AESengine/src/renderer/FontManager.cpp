@@ -147,7 +147,7 @@ Result<void> FontManager::init()
 		bitmap[i] = Color(alpha, alpha, alpha, alpha).rgba();
 	}
 	
-	ID3D11Device* device = D3D11Renderer::Instance().getDevice();
+	ID3D11Device* device = D3D11Renderer::instance().getDevice();
 
 	defaultFont.width = width;
 	defaultFont.height = height;
@@ -408,7 +408,7 @@ void FontManager::drawFontTexture(glm::vec2 pos, float size)
 void FontManager::render()
 {
 	AES_PROFILE_FUNCTION();
-	ID3D11DeviceContext* ctx = D3D11Renderer::Instance().getDeviceContext();
+	ID3D11DeviceContext* ctx = D3D11Renderer::instance().getDeviceContext();
 
 	{
 		D3D11_MAPPED_SUBRESOURCE mappedResource;

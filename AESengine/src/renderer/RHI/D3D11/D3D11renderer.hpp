@@ -22,7 +22,7 @@ namespace aes {
 
 	public:
 
-		static D3D11Renderer& Instance();
+		static D3D11Renderer& instance();
 
 		void init(Window& windowHandle);
 		void destroy();
@@ -45,8 +45,6 @@ namespace aes {
 	/// debug
 		D3D11Shader shader;
 	/// 
-		static D3D11Renderer* instance;
-
 		void createDevice();
 		void createSwapchain();
 		void createRenderTarget();

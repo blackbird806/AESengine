@@ -9,26 +9,19 @@
 
 using namespace aes;
 
-D3D11Renderer* D3D11Renderer::instance = nullptr;
-
-D3D11Renderer& D3D11Renderer::Instance()
+D3D11Renderer& D3D11Renderer::instance()
 {
-	AES_ASSERT(instance != nullptr);
-	return *instance;
+	static D3D11Renderer instance;
+	return instance;
 }
 
 void D3D11Renderer::init(Window& window)
 {
 	AES_PROFILE_FUNCTION();
 
-	/// @Review
-	AES_ASSERT(instance == nullptr);
-	instance = this;
-	///
-	
 	renderWindow = &window;
 	window.setResizeCallback([](uint, uint) {
-			Instance().resizeRender();
+			instance().resizeRender();
 		});
 
 	// Create a DirectX graphics interface factory.

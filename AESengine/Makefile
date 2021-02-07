@@ -8,7 +8,8 @@ LIBS = -lvitaGL -lc -lSceCommonDialog_stub -lm -lSceGxm_stub -lSceDisplay_stub -
 
 # CPPFILES := $(foreach dir,$(SOURCES), $(wildcard $(dir)/*.cpp))
 # CPPFILES:= $(shell find $(root_folder) -type f \( -name "*.cpp" -o -name "*.cc" \) )
-# CPPFILES := $(shell find $(root_folder) -type d \( -name "platformWindows" -o -name "D3D11" -o -path name \) -prune -o -type f \( -name "*.cpp" -o -name "*.cc" \) )
+CPPFILES := main.cpp $(wildcard src/*.cpp) $(wildcard src/core/*.cpp) src/renderer/camera.cpp $(wildcard src/renderer/RHI/*.cpp) $(wildcard src/renderer/VitaGL/*.cpp)
+CPPFILES += $(wildcard thirdParty/fmt/src/*.cc) $(wildcard thirdParty/stb/*.cpp) $(wildcard thirdParty/tiny/*.cpp) $(wildcard thirdParty/tracy/*.cpp)
 BINFILES := $(foreach dir,$(DATA), $(wildcard $(dir)/*.bin))
 OBJS     := $(addsuffix .o,$(BINFILES)) $(CFILES:.c=.o) $(CPPFILES:.cpp=.o) 
 

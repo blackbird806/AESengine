@@ -78,7 +78,7 @@ void D3D11Shader::init(std::string_view vs, std::string_view ps)
 	ID3D10Blob* vertexShaderBuffer = nullptr;
 	ID3D10Blob* pixelShaderBuffer = nullptr;
 
-	ID3D11Device* device = D3D11Renderer::Instance().getDevice();
+	ID3D11Device* device = D3D11Renderer::instance().getDevice();
 
 	// Compile the vertex shader code.
 	HRESULT result = D3DCompile(ps.data(), sizeof(char) * ps.size(), "pixelShader", nullptr, nullptr, "main", "ps_5_0", 0, 0, &pixelShaderBuffer, &errorMessage);
@@ -180,7 +180,7 @@ void D3D11Shader::render(glm::mat4 const& view, glm::mat4 const& proj)
 {
 	AES_PROFILE_FUNCTION();
 
-	ID3D11DeviceContext* deviceContext = D3D11Renderer::Instance().getDeviceContext();
+	ID3D11DeviceContext* deviceContext = D3D11Renderer::instance().getDeviceContext();
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	// Set the vertex input layout.
