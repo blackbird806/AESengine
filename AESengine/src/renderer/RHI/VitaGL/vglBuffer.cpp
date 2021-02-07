@@ -1,4 +1,5 @@
 #include "vglBuffer.hpp"
+#include "core/error.hpp"
 
 using namespace aes;
 
@@ -16,6 +17,7 @@ VglBuffer& VglBuffer::operator=(VglBuffer&& rhs)
 	apiBuffer = rhs.apiBuffer;
 	size = rhs.size;
 	rhs.apiBuffer = 0;
+	return *this;
 }
 
 Result<void> VglBuffer::create(BufferDescription const& desc)
@@ -27,13 +29,13 @@ Result<void> VglBuffer::create(BufferDescription const& desc)
 
 Result<void*> VglBuffer::map()
 {
-	return { Error::GPUBufferMappingFailed };
+	return { AESError::GPUBufferMappingFailed };
 }
 
 
-Result<void*> VglBuffer::unmap()
+Result<void> VglBuffer::unmap()
 {
-	return { Error::GPUBufferMappingFailed };
+	return { AESError::GPUBufferMappingFailed };
 }
 
 VglBuffer::~VglBuffer()

@@ -1,12 +1,13 @@
 #ifndef DEBUG_HPP
 #define DEBUG_HPP
 
-#include <fmt/format.h>
 
 // Deprecated
 #define AES_ENSURE(x) if (!(x)) { AES_ERROR("Ensure error experssion: " #x " is false"); }
 
 #ifndef AES_PLATFORM_VITA
+
+#include <fmt/format.h>
 
 #define AES_LOG(msg, ...) fmt::print("info : " msg "\n", __VA_ARGS__)
 #define AES_WARN(msg, ...) fmt::print("warn : " msg "\n", __VA_ARGS__)

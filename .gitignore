@@ -1,5 +1,12 @@
 thirdParty/
 
+# ignore bin and vita build files 
+*.elf
+*.velf
+*.vpk
+*.bin
+*.sfo
+
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudio,c++
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudio,c++
 

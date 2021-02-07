@@ -5,8 +5,8 @@
 
 namespace aes
 {
-	std::wstring to_wstring(const std::string_view str);
-	std::string to_string(const std::wstring_view wstr);
+	std::wstring to_wstring(std::string_view str);
+	std::string to_string(std::wstring_view wstr);
 }
 
 #endif // !UTILITY_HPP

@@ -5,8 +5,9 @@
 
 #include <clocale>
 #include <cwchar>
+#include <string>
 
-std::wstring aes::to_wstring(const std::string_view in)
+std::wstring aes::to_wstring(std::string_view in)
 {
 	std::wstring out{};
 	out.reserve(in.length());
@@ -25,7 +26,7 @@ std::wstring aes::to_wstring(const std::string_view in)
 	return out;
 }
 
-std::string aes::to_string(const std::wstring_view in)
+std::string aes::to_string(std::wstring_view in)
 {
 	std::string out{};
 	out.reserve(MB_CUR_MAX * in.length());

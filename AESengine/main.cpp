@@ -1,4 +1,3 @@
-#include <fmt/format.h>
 #include <glm/gtx/transform.hpp>
 #include "core/debugMath.hpp"
 #include "engine.hpp"
@@ -126,7 +125,6 @@ public:
 
 int main()
 {
-	fmt::print("hello {}\n", "world");
 	Game game({ .appName = "aes cubes" });
 	game.init();
 	game.run();
