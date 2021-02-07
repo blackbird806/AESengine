@@ -28,9 +28,6 @@
     <Filter Include="ThirdParty\tiny">
       <UniqueIdentifier>{5766d58f-d333-4445-bc83-5b104d05f63d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ThirdParty\glad">
-      <UniqueIdentifier>{59882720-30ca-4e85-bf67-03084c4a3210}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -86,9 +83,6 @@
     </ClCompile>
     <ClCompile Include="thirdParty\tiny\tiny_obj_loader.cpp">
       <Filter>ThirdParty\tiny</Filter>
-    </ClCompile>
-    <ClCompile Include="thirdParty\glad\src\glad.c">
-      <Filter>ThirdParty\glad</Filter>
     </ClCompile>
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11shader.cpp">
       <Filter>Source Files</Filter>

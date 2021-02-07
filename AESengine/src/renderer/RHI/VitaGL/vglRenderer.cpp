@@ -2,16 +2,21 @@
 
 using namespace aes;
 
+VglRenderer* VglRenderer::pinstance = nullptr;
+
 VglRenderer& VglRenderer::instance()
 {
-	static VglRenderer instance;
-	return instance;
+	AES_ASSERT(pinstance != nullptr);
+	return *pinstance;
 }
 
 void VglRenderer::init(Window& windowHandle)
 {
 	AES_PROFILE_FUNCTION();
 	AES_UNUSED(windowHandle);
+
+	AES_ASSERT(pinstance == nullptr);
+	pinstance = this;
 	
 	// Initializing graphics device
 	// @Review
@@ -53,11 +58,11 @@ void VglRenderer::bindIndexBuffer(RHIBuffer& buffer, TypeFormat format, uint off
 {
 }
 
-void setDrawPrimitiveMode(DrawPrimitiveMode mode)
+void VglRenderer::setDrawPrimitiveMode(DrawPrimitiveMode mode)
 {
 }
 
-void drawIndexed(uint indexCount)
+void VglRenderer::drawIndexed(uint indexCount)
 {
 
 }

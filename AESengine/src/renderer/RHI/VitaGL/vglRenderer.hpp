@@ -28,7 +28,7 @@ namespace aes
 			void drawIndexed(uint indexCount);
 
 		private:
-
+			static VglRenderer* pinstance;
 	};
 	
 	using RHIRenderContext = VglRenderer;

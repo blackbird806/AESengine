@@ -3,7 +3,6 @@
 
 #include "core/aes.hpp"
 #include "core/window.hpp"
-#include "core/error.hpp"
 #include "renderer/RHI/RHIElements.hpp"
 
 #include <dxgi.h>
@@ -45,6 +44,8 @@ namespace aes {
 	/// debug
 		D3D11Shader shader;
 	/// 
+		static D3D11Renderer* pinstance;
+
 		void createDevice();
 		void createSwapchain();
 		void createRenderTarget();

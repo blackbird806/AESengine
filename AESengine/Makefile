@@ -8,8 +8,8 @@ LIBS = -lvitaGL -lc -lSceCommonDialog_stub -lm -lSceGxm_stub -lSceDisplay_stub -
 
 # CPPFILES := $(foreach dir,$(SOURCES), $(wildcard $(dir)/*.cpp))
 # CPPFILES:= $(shell find $(root_folder) -type f \( -name "*.cpp" -o -name "*.cc" \) )
-CPPFILES := main.cpp $(wildcard src/*.cpp) $(wildcard src/core/*.cpp) src/renderer/camera.cpp $(wildcard src/renderer/RHI/*.cpp) $(wildcard src/renderer/VitaGL/*.cpp)
-CPPFILES += $(wildcard thirdParty/fmt/src/*.cc) $(wildcard thirdParty/stb/*.cpp) $(wildcard thirdParty/tiny/*.cpp) $(wildcard thirdParty/tracy/*.cpp)
+CPPFILES := main.cpp $(wildcard src/*.cpp) $(wildcard src/core/*.cpp) src/renderer/camera.cpp $(wildcard src/renderer/RHI/*.cpp) $(wildcard src/renderer/RHI/VitaGL/*.cpp)
+CPPFILES += $(wildcard thirdParty/stb/*.cpp) $(wildcard thirdParty/tiny/*.cpp) 
 BINFILES := $(foreach dir,$(DATA), $(wildcard $(dir)/*.bin))
 OBJS     := $(addsuffix .o,$(BINFILES)) $(CFILES:.c=.o) $(CPPFILES:.cpp=.o) 
 
@@ -32,7 +32,10 @@ eboot.bin: $(TARGET).velf
 	vita-elf-create $< $@
 	
 $(TARGET).elf: $(OBJS)
-	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
-	
-clean:
-	@rm -rf *.velf *.elf *.vpk $(OBJS) param.sfo eboot.bin
+	$(CXX) $(CFLAGS) $^ $(LIBS) -o $@
+
+
+#clean:
+#	@rm -rf *.velf *.elf *.vpk $(OBJS) param.sfo eboot.bin
+#
+

@@ -9,16 +9,23 @@
 
 using namespace aes;
 
+D3D11Renderer* D3D11Renderer::pinstance = nullptr;
+
 D3D11Renderer& D3D11Renderer::instance()
 {
-	static D3D11Renderer instance;
-	return instance;
+	AES_ASSERT(pinstance != nullptr);
+	return *pinstance;
 }
 
 void D3D11Renderer::init(Window& window)
 {
 	AES_PROFILE_FUNCTION();
 
+	/// @Review
+	AES_ASSERT(pinstance == nullptr);
+	pinstance = this;
+	///
+	
 	renderWindow = &window;
 	window.setResizeCallback([](uint, uint) {
 			instance().resizeRender();
