@@ -1,6 +1,8 @@
 #ifndef RHI_ELEMENTS_HPP
 #define RHI_ELEMENTS_HPP
 
+#include <cstddef>
+
 namespace aes
 {
 	enum class CPUAcessFlags

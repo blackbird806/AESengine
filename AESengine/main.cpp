@@ -3,6 +3,10 @@
 #include "engine.hpp"
 #include "renderer/RHI/model.hpp"
 
+#ifdef __vita__
+#include <vitasdk.h>
+#endif
+
 class Game : public aes::Engine
 {
 
@@ -125,7 +129,14 @@ public:
 
 int main()
 {
-	Game game({ .appName = "aes cubes" });
-	game.init();
-	game.run();
+#ifdef __vita__
+	SceUID fd = sceIoOpen("ux0:/out.txt", SCE_O_WRONLY | SCE_O_CREAT, 0777);
+	//auto str = fmt::format("hello {}", "world");
+	const char* str = "hello";
+	sceIoWrite(fd, (void*)str, 5);
+	sceIoClose(fd);
+#endif
+	//Game game({ .appName = "aes cubes" });
+	//game.init();
+	//game.run();
 }

@@ -5,7 +5,8 @@
 // Deprecated
 #define AES_ENSURE(x) if (!(x)) { AES_ERROR("Ensure error experssion: " #x " is false"); }
 
-#ifndef AES_PLATFORM_VITA
+// TODO: true logging system
+#ifndef __vita__
 
 #include <fmt/format.h>
 

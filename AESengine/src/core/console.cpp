@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-//#include <fmt/format.h>
+#include <fmt/format.h>
 
 using namespace aes;
 
@@ -51,6 +51,6 @@ void Console::processCurrentLine()
 	}
 	else
 	{
-		//outStream << fmt::format("error command \"{}\" not found !\n", cmdName);
+		outStream << fmt::format("error command \"{}\" not found !\n", cmdName);
 	}
 }

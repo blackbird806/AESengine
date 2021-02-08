@@ -1,3 +1,6 @@
+# cmake generated files
+AESengine/build
+
 thirdParty/
 
 # ignore bin and vita build files 

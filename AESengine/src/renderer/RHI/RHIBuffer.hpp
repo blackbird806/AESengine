@@ -2,11 +2,13 @@
 #define RHIBUFFER_HPP
 
 #include "renderer/RHI/RHI.hpp"
+#include <cstring>
+#include <cstddef>
 
 #ifdef AES_GRAPHIC_API_D3D11
 	#include "renderer/RHI/D3D11/D3D11Buffer.hpp"
-#elif defined(AES_GRAPHIC_API_VITAGL)
-	#include "renderer/RHI/VitaGL/vglBuffer.hpp"
+#elif defined(__vita__)
+	#include "renderer/RHI/SceGxm/gxmBuffer.hpp"
 #endif
 
 namespace aes

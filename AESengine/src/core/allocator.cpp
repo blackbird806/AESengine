@@ -5,7 +5,7 @@
 #include <cstdlib>
 
 // @TODO
-#ifndef AES_PLATFORM_VITA
+#ifndef __vita__
 
 void* operator new(size_t count)
 {

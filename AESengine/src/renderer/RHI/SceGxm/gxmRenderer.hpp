@@ -1,5 +1,5 @@
-#ifndef VGLRENDERER_HPP
-#define VGLRENDERER_HPP
+#ifndef GXMRENDERER_HPP
+#define GXMRENDERER_HPP
 
 #include "core/window.hpp"
 #include "renderer/camera.hpp"
@@ -8,11 +8,11 @@
 
 namespace aes
 {
-	class VglRenderer
+	class GxmRenderer
 	{
 		public:
 
-			static VglRenderer& instance();
+			static GxmRenderer& instance();
 		
 			void init(Window& windowHandle);
 			void destroy();
@@ -28,10 +28,10 @@ namespace aes
 			void drawIndexed(uint indexCount);
 
 		private:
-			static VglRenderer* pinstance;
+			static GxmRenderer* pinstance;
 	};
 	
-	using RHIRenderContext = VglRenderer;
+	using RHIRenderContext = GxmRenderer;
 }
 
 #endif

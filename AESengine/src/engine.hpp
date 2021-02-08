@@ -5,6 +5,7 @@
 #include "core/debug.hpp"
 #include "core/window.hpp"
 #include "renderer/RHI/RHIRenderContext.hpp"
+#include "renderer/camera.hpp"
 #include <unordered_map>
 #include <memory>
 

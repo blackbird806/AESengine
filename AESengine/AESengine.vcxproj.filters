@@ -96,9 +96,6 @@
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11Buffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\RHI\VitaGL\vglRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\renderer\RHI\model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -200,16 +197,10 @@
     <ClInclude Include="src\renderer\RHI\RHI.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\RHI\VitaGL\vglBuffer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\renderer\RHI\RHIElements.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\RHI\RHIRenderContext.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\RHI\VitaGL\vglRenderer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\RHI\model.hpp">
