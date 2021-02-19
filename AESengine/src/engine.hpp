@@ -26,6 +26,8 @@ namespace aes {
 		void init();
 		void run();
 
+		static Logger& getLogger() noexcept;
+		
 	protected:
 
 		InputState getKeyState(Key k) noexcept;
@@ -46,7 +48,7 @@ namespace aes {
 
 		double time = 0.0;
 		uint64_t frameCount = 0;
-		
+
 		const char* appName;
 		RHIRenderContext renderer;
 

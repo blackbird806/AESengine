@@ -72,7 +72,7 @@ namespace aes
 		size_t vertexCount, indexCount;
 	};
 
-	Model createCube();
+	Result<Model> createCube();
 }
 
 #endif

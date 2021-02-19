@@ -6,6 +6,10 @@
 	#define WINDOWS_LEAN_AND_MEAN
 	#include <windows.h>
 
+#elif defined(__vita__)
+
+	#include <vitasdk.c>
+
 #endif
 
 #endif

@@ -26,7 +26,7 @@ namespace aes {
 		using ValueType = T;
 		using ErrorCodeType = ErrorCode;
 
-		Result(T&& val) noexcept  : value_(val)
+		Result(T&& val) noexcept : value_(std::forward<T>(val))
 		{
 
 		}

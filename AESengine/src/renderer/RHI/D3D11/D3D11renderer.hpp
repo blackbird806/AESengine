@@ -30,7 +30,7 @@ namespace aes {
 		void bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset = 0);
 		void bindIndexBuffer(RHIBuffer& buffer, TypeFormat typeFormat, uint offset = 0);
 		
-		void setDrawPrimitiveMode(DrawPrimitiveMode mode);
+		void setDrawPrimitiveMode(DrawPrimitiveType mode);
 		void drawIndexed(uint indexCount);
 		
 		void startFrame(Camera const& cam);

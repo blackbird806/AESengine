@@ -26,6 +26,7 @@ Engine::~Engine()
 {
 	renderer.destroy();
 	mainWindow->close();
+	AES_LOG("engine destroyed");
 }
 
 void Engine::init()
@@ -81,6 +82,7 @@ void Engine::run()
 		frameCount++;
 	}
 }
+
 
 InputState Engine::getKeyState(Key k) noexcept
 {

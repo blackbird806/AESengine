@@ -167,9 +167,9 @@ void D3D11Renderer::bindIndexBuffer(RHIBuffer& buffer, TypeFormat typeFormat, ui
 	deviceContext->IASetIndexBuffer(buffer.getHandle(), rhiTypeFormatToApi(typeFormat), offset);
 }
 
-void D3D11Renderer::setDrawPrimitiveMode(DrawPrimitiveMode mode)
+void D3D11Renderer::setDrawPrimitiveMode(DrawPrimitiveType mode)
 {
-	deviceContext->IASetPrimitiveTopology(rhiPrimitiveModeToApi(mode));
+	deviceContext->IASetPrimitiveTopology(rhiPrimitiveTypeToApi(mode));
 }
 
 ID3D11Device* D3D11Renderer::getDevice()

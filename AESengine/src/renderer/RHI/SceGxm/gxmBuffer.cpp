@@ -18,6 +18,7 @@ GxmBuffer& GxmBuffer::operator=(GxmBuffer&& rhs) noexcept
 
 Result<void> GxmBuffer::create(BufferDescription const& desc)
 {
+
 	return {};
 }
 

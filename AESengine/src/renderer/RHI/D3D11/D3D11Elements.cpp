@@ -41,19 +41,19 @@ D3D11_BIND_FLAG aes::rhiBufferBindFlagsToApi(BindFlags flags)
 	AES_UNREACHABLE();
 }
 
-D3D_PRIMITIVE_TOPOLOGY aes::rhiPrimitiveModeToApi(DrawPrimitiveMode primitiveMode)
+D3D_PRIMITIVE_TOPOLOGY aes::rhiPrimitiveTypeToApi(DrawPrimitiveType primitiveMode)
 {
 	switch (primitiveMode)
 	{
-	case DrawPrimitiveMode::Lines: 
+	case DrawPrimitiveType::Lines: 
 		return D3D_PRIMITIVE_TOPOLOGY_LINELIST;
-	case DrawPrimitiveMode::LineStrip:
+	case DrawPrimitiveType::LineStrip:
 		return D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
-	case DrawPrimitiveMode::Triangles:
+	case DrawPrimitiveType::Triangles:
 		return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	case DrawPrimitiveMode::TriangleStrip:
+	case DrawPrimitiveType::TriangleStrip:
 		return D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
-	case DrawPrimitiveMode::Points:
+	case DrawPrimitiveType::Points:
 		return D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
 	}
 	AES_UNREACHABLE();

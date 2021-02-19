@@ -35,13 +35,15 @@ std::vector<Vertex> aes::getCubeVertices()
 	return vertices;
 }
 
-Model aes::createCube()
+Result<Model> aes::createCube()
 {
 	AES_PROFILE_FUNCTION();
 
 	Model cube;
-	cube.create(getCubeVertices(), cubeIndices);
-	return cube;
+	auto const result = cube.create(getCubeVertices(), cubeIndices);
+	if (!result)
+		return { result.error() };
+	return { std::move(cube) };
 }
 
 Result<void> Model::create(std::span<Vertex const> vertices, std::span<uint32_t const> indices)
@@ -98,6 +100,6 @@ void Model::render()
 	renderContext.bindBuffer(modelBuffer, 1);
 	renderContext.bindVertexBuffer(vertexBuffer, sizeof(Vertex));
 	renderContext.bindIndexBuffer(indexBuffer, TypeFormat::Uint32);
-	renderContext.setDrawPrimitiveMode(DrawPrimitiveMode::Triangles);
+	renderContext.setDrawPrimitiveMode(DrawPrimitiveType::Triangles);
 	renderContext.drawIndexed(indexCount);
 }

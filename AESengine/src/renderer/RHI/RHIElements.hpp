@@ -27,7 +27,7 @@ namespace aes
 		UniformBuffer,
 	};
 
-	enum class DrawPrimitiveMode
+	enum class DrawPrimitiveType
 	{
 		Lines,
 		LineStrip,

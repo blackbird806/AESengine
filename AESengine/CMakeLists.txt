@@ -58,7 +58,8 @@ file(
   GLOB
 
   source_files 
-
+  
+  main.cpp
   src/*
   src/core/*
   src/renderer/camera.cpp
@@ -70,6 +71,7 @@ file(
   thirdParty/stb/*
   thirdParty/tiny/*
   thirdParty/tracy/*
+  thirdParty/psvDebugScreen/debugScreen.c
 )
 
 add_executable(${PROJECT_NAME}
@@ -78,11 +80,12 @@ add_executable(${PROJECT_NAME}
 
 # Library to link to (drop the -l prefix). This will mostly be stubs.
 target_link_libraries(${PROJECT_NAME}
-  SceLibKernel_stub # this line is only for demonstration. It's not needed as
-                    # the most common stubs are automatically included.
+
   stdc++
   pthread
   SceDisplay_stub
+  SceGxm_stub
+  SceNet_stub
 )
 
 ## Create Vita files

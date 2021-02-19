@@ -17,26 +17,21 @@ void GxmRenderer::init(Window& windowHandle)
 
 	AES_ASSERT(pinstance == nullptr);
 	pinstance = this;
-	
-
 }
 
 void GxmRenderer::destroy()
 {
 	AES_PROFILE_FUNCTION();
-
 }
 
 void GxmRenderer::startFrame(Camera const& cam)
 {
 	AES_PROFILE_FUNCTION();
-
 }
 
 void GxmRenderer::endFrame()
 {
 	AES_PROFILE_FUNCTION();
-
 }
 
 void GxmRenderer::bindBuffer(RHIBuffer& buffer, uint slot)
@@ -53,7 +48,7 @@ void GxmRenderer::bindIndexBuffer(RHIBuffer& buffer, TypeFormat format, uint off
 {
 }
 
-void GxmRenderer::setDrawPrimitiveMode(DrawPrimitiveMode mode)
+void GxmRenderer::setDrawPrimitiveMode(DrawPrimitiveType mode)
 {
 }
 
