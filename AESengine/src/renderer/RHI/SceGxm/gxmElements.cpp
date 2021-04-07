@@ -17,3 +17,23 @@ SceGxmPrimitiveType aes::rhiPrimitiveTypeToApi(DrawPrimitiveType type)
 
 	AES_UNREACHABLE();
 }
+
+SceGxmMemoryAttribFlags aes::rhiCPUAccessFlagsToApi(CPUAcessFlags flags)
+{
+	SceGxmMemoryAttribFlags apiFlags;
+	if (flags & CPUAcessFlags::Read)
+		apiFlags |= SCE_GXM_MEMORY_ATTRIB_READ;
+	if (flags & CPUAcessFlags::write)
+		apiFlags |= SCE_GXM_MEMORY_ATTRIB_Write;
+	return apiFlags;
+}
+
+SceGxmIndexFormat rhiIndexFormatToApi(TypeFormat format)
+{
+	if (format == TypeFormat::Uint32)
+		return SCE_GXM_INDEX_FORMAT_U32;
+	if (format == TypeFormat::Uint16)
+		return SCE_GXM_INDEX_FORMAT_U16;
+	AES_ASSERT(false); // unsupported format type
+}
+

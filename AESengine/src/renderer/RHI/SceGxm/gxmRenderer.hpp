@@ -6,7 +6,7 @@
 #include "renderer/RHI/RHIElements.hpp"
 #include "renderer/RHI/RHIBuffer.hpp"
 
-#include <psp2/gxm.h>
+#include <vitasdk.h>
 #include "gxmCompatibilty.h"
 
 namespace aes
@@ -20,9 +20,26 @@ namespace aes
 	auto constexpr vita_msaa_mode = SCE_GXM_MULTISAMPLE_NONE;
 	auto constexpr vita_display_max_pending_swaps = 2;
 
+	// allocate memory for GPU use
+	void* graphicsAlloc(SceKernelMemBlockType type, uint32_t size, uint32_t alignement, uint32_t attribs, SceUID* uid, const char* name = "default");
+	void graphicsFree(SceUID uid);
+
+	struct BasicVertex {
+		float x;
+		float y;
+		float z;
+		uint32_t color;
+	};
+
 	class GxmRenderer
 	{
 		public:
+
+			struct State
+			{
+				DrawPrimitiveType primitiveType;
+				IndexBufferInfo indexBufferInfo;
+			};
 
 			static GxmRenderer& instance();
 		
@@ -40,7 +57,16 @@ namespace aes
 			void drawIndexed(uint indexCount);
 
 		private:
+
+			struct IndexBufferInfo
+			{
+				TypeFormat typeFormat;
+				void* buffer;
+			};
+			State currentState;
+
 			SceGxmContext* context;
+			void* hostMem;
 			SceGxmRenderTarget* renderTarget;
 			SceUID vdmRingBufferUid, vertexRingBufferUid, fragmentRingBufferUid, fragmentUsseRingBufferUid;
 
@@ -67,12 +93,19 @@ namespace aes
 			SceUID clearVerticesUid;
 			SceUID clearIndicesUid;
 
+			glm::vec2* clearVertices;
+			uint16_t* clearIndices;
+			BasicVertex* basicVertices;
+			uint16_t* basicIndices;
+			SceGxmProgramParameter const* wvpParam;
+
 			SceGxmVertexProgram* basicVertexProgram = nullptr;
 			SceGxmFragmentProgram* basicFragmentProgram = nullptr;
 
+			SceUID basicVerticesUid, basicIndiceUid;
+
 			uint32_t backBufferIndex = 0;
 			uint32_t frontBufferIndex = 0;
-
 	};
 	
 	using RHIRenderContext = GxmRenderer;

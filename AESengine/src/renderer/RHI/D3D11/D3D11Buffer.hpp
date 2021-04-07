@@ -26,7 +26,6 @@ namespace aes
 
 	protected:
 
-
 		BindFlags bindFlags;
 		ID3D11Buffer* apiBuffer;
 		size_t size;

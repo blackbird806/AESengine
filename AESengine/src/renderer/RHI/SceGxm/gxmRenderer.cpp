@@ -3,7 +3,7 @@
 
 using namespace aes;
 
-void* graphicsAlloc(SceKernelMemBlockType type, uint32_t size, uint32_t alignement, uint32_t attribs, SceUID* uid)
+void* aes::graphicsAlloc(SceKernelMemBlockType type, uint32_t size, uint32_t alignement, uint32_t attribs, SceUID* uid, const char* name)
 {
 	AES_ASSERT(uid != nullptr);
 	
@@ -16,13 +16,13 @@ void* graphicsAlloc(SceKernelMemBlockType type, uint32_t size, uint32_t aligneme
 	} 
 	else
 	{
-		// LPDDR memblocks must be 4 Kib aligned
-		AES_ASSERT(alignement <= 256 * 1024);
-		size = aes::align(size, 256 * 1024);
+		// LPDDR memblocks must be 4KiB aligned
+		AES_ASSERT(alignment <= 4 * 1024);
+		size = ALIGN(size, 4 * 1024);
 	}
 	
-	SceGxmErrorCode err = SCE_OK;
-	*uid = sceKernelAllocMemBlock("basic", type, size, nullptr);
+	uint32_t err = SCE_OK;
+	*uid = sceKernelAllocMemBlock(name, type, size, nullptr);
 	AES_ASSERT(*uid > SCE_OK);
 
 	void* mem = nullptr;
@@ -36,7 +36,7 @@ void* graphicsAlloc(SceKernelMemBlockType type, uint32_t size, uint32_t aligneme
 	return mem;
 }
 
-static void* fragmentUsseAlloc(uint32_t size, SceUID* uid, uint32_t* usseOffset)
+void* fragmentUsseAlloc(uint32_t size, SceUID* uid, uint32_t* usseOffset)
 {
 	// align to memblock alignment for LPDDR
 	size = aes::align(size, 4096);
@@ -47,7 +47,7 @@ static void* fragmentUsseAlloc(uint32_t size, SceUID* uid, uint32_t* usseOffset)
 
 	// grab the base address
 	void* mem = nullptr;
-	auto err = sceKernelGetMemBlockBase(*uid, &mem);
+	uint32_t err = sceKernelGetMemBlockBase(*uid, &mem);
 	AES_ASSERT(err == SCE_OK);
 
 	// map as fragment USSE code for the GPU
@@ -79,11 +79,11 @@ static void* vertexUsseAlloc(uint32_t size, SceUID* uid, uint32_t* usseOffset)
 	return mem;
 }
 
-static void graphicsFree(SceUID uid)
+void aes::graphicsFree(SceUID uid)
 {
 	// grab the base address
 	void* mem = nullptr;
-	SceGxmErrorCode err = sceKernelGetMemBlockBase(uid, &mem);
+	uint32_t err = sceKernelGetMemBlockBase(uid, &mem);
 	AES_ASSERT(err == SCE_OK);
 
 	// unmap memory
@@ -99,7 +99,7 @@ static void vertexUsseFree(SceUID uid)
 {
 	// grab the base address
 	void* mem = nullptr;
-	SceGxmErrorCode err = sceKernelGetMemBlockBase(uid, &mem);
+	uint32_t err = sceKernelGetMemBlockBase(uid, &mem);
 	AES_ASSERT(err == SCE_OK);
 
 	// unmap memory
@@ -115,7 +115,7 @@ static void fragmentUsseFree(SceUID uid)
 {
 	// grab the base address
 	void* mem = nullptr;
-	SceGxmErrorCode err = sceKernelGetMemBlockBase(uid, &mem);
+	uint32_t err = sceKernelGetMemBlockBase(uid, &mem);
 	AES_ASSERT(err == SCE_OK);
 
 	// unmap memory
@@ -125,6 +125,18 @@ static void fragmentUsseFree(SceUID uid)
 	// free the memory block
 	err = sceKernelFreeMemBlock(uid);
 	AES_ASSERT(err == SCE_OK);
+}
+
+static void* patcherHostAlloc(void* userData, uint32_t size)
+{
+	AES_UNUSED(userData);
+	return malloc(size);
+}
+
+static void patcherHostFree(void* userData, void* mem)
+{
+	AES_UNUSED(userData);
+	free(mem);
 }
 
 GxmRenderer& GxmRenderer::instance()
@@ -203,8 +215,9 @@ void GxmRenderer::init(Window& windowHandle)
 		&fragmentUsseRingBufferOffset);
 
 	// create the gxm context
+	hostMem = malloc(SCE_GXM_MINIMUM_CONTEXT_HOST_MEM_SIZE);
 	SceGxmContextParams contextParams {};
-	contextParams.hostMem = malloc(SCE_GXM_MINIMUM_CONTEXT_HOST_MEM_SIZE);
+	contextParams.hostMem = hostMem;
 	contextParams.hostMemSize = SCE_GXM_MINIMUM_CONTEXT_HOST_MEM_SIZE;
 	contextParams.vdmRingBufferMem = vdmRingBuffer;
 	contextParams.vdmRingBufferMemSize = SCE_GXM_DEFAULT_VDM_RING_BUFFER_SIZE;
@@ -407,14 +420,14 @@ void GxmRenderer::init(Window& windowHandle)
 	AES_ASSERT(err == SCE_OK);
 
 	// create the clear triangle vertex/index data
-	glm::vec2* const clearVertices = (glm::vec2*)graphicsAlloc(
+	clearVertices = (glm::vec2*)graphicsAlloc(
 		SCE_KERNEL_MEMBLOCK_TYPE_USER_RWDATA_UNCACHE,
 		3 * sizeof(glm::vec2),
 		4,
 		SCE_GXM_MEMORY_ATTRIB_READ,
 		&clearVerticesUid);
 
-	uint16_t* const clearIndices = (uint16_t*)graphicsAlloc(
+	clearIndices = (uint16_t*)graphicsAlloc(
 		SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
 		3 * sizeof(uint16_t),
 		2,
@@ -439,12 +452,6 @@ void GxmRenderer::init(Window& windowHandle)
 	const SceGxmProgramParameter* paramBasicColorAttribute = sceGxmProgramFindParameterByName(basicShaderGxp_vs, "aColor");
 	AES_ASSERT(paramBasicColorAttribute && (sceGxmProgramParameterGetCategory(paramBasicColorAttribute) == SCE_GXM_PARAMETER_CATEGORY_ATTRIBUTE));
 
-	struct BasicVertex {
-		float x;
-		float y;
-		float z;
-		uint32_t color;
-	};
 	
 	// create shaded triangle vertex format
 	SceGxmVertexAttribute basicVertexAttributes[2];
@@ -483,19 +490,18 @@ void GxmRenderer::init(Window& windowHandle)
 	AES_ASSERT(err == SCE_OK);
 
 	// find vertex uniforms by name and cache parameter information
-	const SceGxmProgramParameter* wvpParam = sceGxmProgramFindParameterByName(basicShaderGxp_vs, "wvp");
+	wvpParam = sceGxmProgramFindParameterByName(basicShaderGxp_vs, "wvp");
 	AES_ASSERT(wvpParam && (sceGxmProgramParameterGetCategory(wvpParam) == SCE_GXM_PARAMETER_CATEGORY_UNIFORM));
 
 	// create shaded triangle vertex/index data
-	SceUID basicVerticesUid;
-	SceUID basicIndiceUid;
-	BasicVertex* const basicVertices = (BasicVertex*)graphicsAlloc(
+	basicVertices = (BasicVertex*)graphicsAlloc(
 		SCE_KERNEL_MEMBLOCK_TYPE_USER_RWDATA_UNCACHE,
 		3 * sizeof(BasicVertex),
 		4,
 		SCE_GXM_MEMORY_ATTRIB_READ,
 		&basicVerticesUid);
-	uint16_t* const basicIndices = (uint16_t*)graphicsAlloc(
+
+	basicIndices = (uint16_t*)graphicsAlloc(
 		SCE_KERNEL_MEMBLOCK_TYPE_USER_RWDATA_UNCACHE,
 		3 * sizeof(uint16_t),
 		2,
@@ -540,8 +546,7 @@ void GxmRenderer::destroy()
 	graphicsFree(clearVerticesUid);
 
 	// wait until display queue is finished before deallocating display buffers
-	err = sceGxmDisplayQueueFinish();
-	AES_ASSERT(err == SCE_OK);
+	sceGxmDisplayQueueFinish();
 
 	// clean up display queue
 	graphicsFree(depthBufferUid);
@@ -573,7 +578,7 @@ void GxmRenderer::destroy()
 	graphicsFree(fragmentRingBufferUid);
 	graphicsFree(vertexRingBufferUid);
 	graphicsFree(vdmRingBufferUid);
-	free(contextParams.hostMem);
+	free(hostMem);
 
 	// terminate libgxm
 	sceGxmTerminate();
@@ -584,6 +589,7 @@ void GxmRenderer::startFrame(Camera const& cam)
 	AES_PROFILE_FUNCTION();
 
 	// update triangle angle
+	static float rotationAngle = 0;
 	rotationAngle += 6.28 / 60.0f;
 	if (rotationAngle > 6.28)
 		rotationAngle -= 6.28;
@@ -671,24 +677,32 @@ void GxmRenderer::endFrame()
 void GxmRenderer::bindBuffer(RHIBuffer& buffer, uint slot)
 {
 	AES_PROFILE_FUNCTION();
+	
 }
 
 void GxmRenderer::bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset)
 {
 	AES_PROFILE_FUNCTION();
+	sceGxmSetVertexStream(context, (uint32_t)offset, buffer.getHandle());
 }
 
 void GxmRenderer::bindIndexBuffer(RHIBuffer& buffer, TypeFormat format, uint offset)
 {
+	currentState.indexBufferInfo.typeFormat = format;
+	currentState.indexBufferInfo.buffer = buffer.handle();
 }
 
 void GxmRenderer::setDrawPrimitiveMode(DrawPrimitiveType mode)
 {
+	currentState.primitiveType = mode;
 }
 
 void GxmRenderer::drawIndexed(uint indexCount)
 {
-
+	sceGxmDraw(context, rhiPrimitiveTypeToApi(currentState.primitiveType, 
+				rhiIndexFormatToApi(currentState.indexBufferInfo.typeFormat), 
+				currentState.indexBufferInfo.buffer,
+				(uint32_t)indexCount);
 }
 
 
