@@ -39,7 +39,6 @@ namespace aes {
 
 	class Logger
 	{
-		
 	public:
 
 		static Logger& instance();

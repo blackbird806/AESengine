@@ -19,7 +19,6 @@ void Logger::addSink(std::unique_ptr<Sink> sink)
 {
 	AES_ASSERT(sink);
 	sinks.push_back(std::move(sink));
-
 }
 
 void Logger::log(std::string&& message)
@@ -33,6 +32,7 @@ void Logger::log(std::string&& message)
 
 StreamSink::StreamSink(std::ostream& stream_) : stream(stream_)
 {
+	
 }
 
 void StreamSink::dispatch_log(const char* message)

@@ -2,7 +2,6 @@
 #define RHIBUFFER_HPP
 
 #include "renderer/RHI/RHI.hpp"
-#include <cstring>
 #include <cstddef>
 
 #ifdef AES_GRAPHIC_API_D3D11

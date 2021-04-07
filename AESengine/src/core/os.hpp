@@ -8,7 +8,7 @@
 
 #elif defined(__vita__)
 
-	#include <vitasdk.c>
+	#include <vitasdk.h>
 
 #endif
 

@@ -5,6 +5,8 @@
 
 #include <glm/vec4.hpp>
 
+namespace aes
+{
 struct Color
 {
 	Color() {}
@@ -41,5 +43,6 @@ struct Color
 		WHITE = 0xffFFffFF
 	};
 };
+}
 
 #endif

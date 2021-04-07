@@ -56,7 +56,7 @@ void D3D11Renderer::init(Window& window)
 
 	// Get the number of modes that fit the DXGI_FORMAT_R8G8B8A8_UNORM display format for the adapter output (monitor).
 	uint numModes;
-	result = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, NULL);
+	result = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, nullptr);
 	if (FAILED(result))
 	{
 		AES_ERROR("failed to get DisplayModeList");
@@ -231,13 +231,13 @@ void D3D11Renderer::createDevice()
 	
 	// Set the feature level to DirectX 11.
 	D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_1;
-	auto result = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL,
+	auto result = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
 #ifdef AES_DEBUG
 		D3D11_CREATE_DEVICE_DEBUG,
 #else
 		0,
 #endif
-		&featureLevel, 1, D3D11_SDK_VERSION, &device, NULL, &deviceContext);
+		&featureLevel, 1, D3D11_SDK_VERSION, &device, nullptr, &deviceContext);
 	if (FAILED(result))
 	{
 		AES_ERROR("failed to create D3D11 device");
@@ -274,7 +274,7 @@ void D3D11Renderer::createSwapchain()
 	// Set the refresh rate of the back buffer.
 	if (vsyncEnabled)
 	{
-		AES_ERROR("Not implemented");
+		AES_NOT_IMPLEMENTED();
 		//swapChainDesc.BufferDesc.RefreshRate.Numerator = numerator;
 		//swapChainDesc.BufferDesc.RefreshRate.Denominator = denominator;
 	}
@@ -326,7 +326,7 @@ void D3D11Renderer::createRenderTarget()
 		AES_ERROR("swapChain->GetBuffer failed");
 	}
 	
-	result = device->CreateRenderTargetView(backBufferPtr, NULL, &renderTargetView);
+	result = device->CreateRenderTargetView(backBufferPtr, nullptr, &renderTargetView);
 	if (FAILED(result))
 	{
 		AES_ERROR("device->CreateRenderTargetView failed");
@@ -469,7 +469,7 @@ void D3D11Renderer::destroySwapchain()
 
 	AES_ASSERT(swapChain != nullptr);
 	// Before shutting down set to windowed mode or when you release the swap chain it will throw an exception.
-	swapChain->SetFullscreenState(false, NULL);
+	swapChain->SetFullscreenState(false, nullptr);
 	swapChain->Release();
 	swapChain = nullptr;
 }
