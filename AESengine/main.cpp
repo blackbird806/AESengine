@@ -1,10 +1,14 @@
 #include <glm/gtx/transform.hpp>
 #include <iostream>
+#include <numbers>
 #include <fstream>
 #include "core/debugMath.hpp"
 #include "engine.hpp"
 #include "renderer/RHI/model.hpp"
+#include "core/utility.hpp"
 #include "core/os.hpp"
+
+#include "core/color.hpp"
 
 class Game : public aes::Engine
 {
@@ -50,7 +54,6 @@ public:
 	void update(double dt) override
 	{
 		AES_PROFILE_FUNCTION();
-		return;
 		glm::vec4 movePos = { 0.0f, 0.f, 0.f, 0.0f };
 		if (getKeyState(aes::Key::W) == aes::InputState::Down)
 		{
@@ -125,170 +128,241 @@ public:
 			float const aspect = (float)windowWidth / (float)windowHeight;
 			mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), aspect, 0.0001f, 1000.0f);
 		}
+
+		//fm.drawString({ "hello wordl : 45.45f", {0.1, 0.1}, {1.0, 0.0, 0.0, 1.0}, 64.0f });
 	}
 
 	void draw() override
 	{
 		AES_PROFILE_FUNCTION();
+		model.render();
+		//fm.render();
 	}
 };
 
 #ifdef __vita__
-#define DISPLAY_WIDTH			960
-#define DISPLAY_HEIGHT			544
-#define DISPLAY_STRIDE_IN_PIXELS	960
-#define DISPLAY_COLOR_FORMAT		SCE_GXM_COLOR_FORMAT_A8B8G8R8
-#define DISPLAY_PIXEL_FORMAT		SCE_DISPLAY_PIXELFORMAT_A8B8G8R8
-#define DISPLAY_BUFFER_COUNT		3
-#define DISPLAY_MAX_PENDING_SWAPS	2
-#define DEFAULT_TEMP_POOL_SIZE		(1 * 1024 * 1024)
 
-void* gpu_alloc(SceKernelMemBlockType type, unsigned int size, unsigned int alignment, unsigned int attribs, SceUID* uid)
+auto constexpr vita_display_width = 960;
+auto constexpr vita_display_height = 544;
+auto constexpr vita_display_stride_in_pixels = 1024;
+auto constexpr vita_display_pixel_format = SCE_DISPLAY_PIXELFORMAT_A8B8G8R8;
+auto constexpr vita_display_color_format = SCE_GXM_COLOR_FORMAT_A8B8G8R8;
+auto constexpr vita_display_buffer_count = 3;
+auto constexpr vita_msaa_mode = SCE_GXM_MULTISAMPLE_NONE;
+auto constexpr vita_display_max_pending_swaps = 2;
+#define SCE_UID_INVALID_UID (static_cast<SceUID>(0xFFFFFFFF))
+#define SCE_KERNEL_MEMBLOCK_TYPE_USER_RWDATA_UNCACHE SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE
+#define SCE_KERNEL_MEMBLOCK_TYPE_USER_CDRAM_RWDATA SCE_KERNEL_MEMBLOCK_TYPE_USER_CDRAM_RW
+#define SCE_MATH_TWOPI (2.0 * std::numbers::pi)
+
+#define SCE_DISPLAY_UPDATETIMING_NEXTHSYNC	0
+#define SCE_DISPLAY_UPDATETIMING_NEXTVSYNC	1
+
+void* graphicsAlloc(SceKernelMemBlockType type, uint32_t size, uint32_t alignement, uint32_t attribs, SceUID* uid)
 {
-	void* mem;
-
-	if (type == SCE_KERNEL_MEMBLOCK_TYPE_USER_CDRAM_RW) {
-		size = ALIGN(size, 256 * 1024);
+	AES_ASSERT(uid != nullptr);
+	
+	// Page align the size
+	if (type == SCE_KERNEL_MEMBLOCK_TYPE_USER_CDRAM_RW)
+	{
+		// 	CDRAM memblock must be 256Kib aligned
+		AES_ASSERT(alignement <= 256 * 1024);
+		size = aes::align(size, 256 * 1024);
+	} 
+	else
+	{
+		// LPDDR memblocks must be 4 Kib aligned
+		AES_ASSERT(alignement <= 256 * 1024);
+		size = aes::align(size, 256 * 1024);
 	}
-	else {
-		size = ALIGN(size, 4 * 1024);
-	}
+	
+	auto err = SCE_OK;
+	*uid = sceKernelAllocMemBlock("basic", type, size, nullptr);
+	AES_ASSERT(*uid > SCE_OK);
 
-	*uid = sceKernelAllocMemBlock("gpu_mem", type, size, NULL);
+	void* mem = nullptr;
+	err = (decltype(err))sceKernelGetMemBlockBase(*uid, &mem);
+	AES_ASSERT(err == SCE_OK);
 
-	if (*uid < 0)
-		return NULL;
+	// map for the GPU
+	err = (decltype(err))sceGxmMapMemory(mem, size, (SceGxmMemoryAttribFlags)attribs);
+	AES_ASSERT(err == SCE_OK);
+	
+	return mem;
+}
 
-	if (sceKernelGetMemBlockBase(*uid, &mem) < 0)
-		return NULL;
+static void* fragmentUsseAlloc(uint32_t size, SceUID* uid, uint32_t* usseOffset)
+{
+	// align to memblock alignment for LPDDR
+	size = aes::align(size, 4096);
 
-	if (sceGxmMapMemory(mem, size, attribs) < 0)
-		return NULL;
+	// allocate some memory
+	*uid = sceKernelAllocMemBlock("basic", SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE, size, nullptr);
+	AES_ASSERT(*uid >= SCE_OK);
+
+	// grab the base address
+	void* mem = nullptr;
+	auto err = sceKernelGetMemBlockBase(*uid, &mem);
+	AES_ASSERT(err == SCE_OK);
+
+	// map as fragment USSE code for the GPU
+	err = sceGxmMapFragmentUsseMemory(mem, size, usseOffset);
+	AES_ASSERT(err == SCE_OK);
+
+	// done
+	return mem;
+}
+
+static void* vertexUsseAlloc(uint32_t size, SceUID* uid, uint32_t* usseOffset)
+{
+	// align to memblock alignment for LPDDR
+	size = aes::align(size, 4096);
+
+	// allocate some memory
+	*uid = sceKernelAllocMemBlock("basic", SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE, size, nullptr);
+	AES_ASSERT(*uid >= SCE_OK);
+
+	// grab the base address
+	void* mem = nullptr;
+	auto err = sceKernelGetMemBlockBase(*uid, &mem);
+	AES_ASSERT(err == SCE_OK);
+
+	// map as vertex USSE code for the GPU
+	err = sceGxmMapVertexUsseMemory(mem, size, usseOffset);
+	AES_ASSERT(err == SCE_OK);
 
 	return mem;
 }
 
-void gpu_free(SceUID uid)
+static void graphicsFree(SceUID uid)
 {
-	void* mem = NULL;
-	if (sceKernelGetMemBlockBase(uid, &mem) < 0)
-		return;
-	sceGxmUnmapMemory(mem);
-	sceKernelFreeMemBlock(uid);
+	// grab the base address
+	void* mem = nullptr;
+	auto err = sceKernelGetMemBlockBase(uid, &mem);
+	AES_ASSERT(err == SCE_OK);
+
+	// unmap memory
+	err = sceGxmUnmapMemory(mem);
+	AES_ASSERT(err == SCE_OK);
+
+	// free the memory block
+	err = sceKernelFreeMemBlock(uid);
+	AES_ASSERT(err == SCE_OK);
 }
 
-typedef struct vita2d_display_data {
+static void vertexUsseFree(SceUID uid)
+{
+	// grab the base address
+	void* mem = NULL;
+	auto err = sceKernelGetMemBlockBase(uid, &mem);
+	AES_ASSERT(err == SCE_OK);
+
+	// unmap memory
+	err = sceGxmUnmapVertexUsseMemory(mem);
+	AES_ASSERT(err == SCE_OK);
+
+	// free the memory block
+	err = sceKernelFreeMemBlock(uid);
+	AES_ASSERT(err == SCE_OK);
+}
+
+static void fragmentUsseFree(SceUID uid)
+{
+	// grab the base address
+	void* mem = NULL;
+	auto err = sceKernelGetMemBlockBase(uid, &mem);
+	AES_ASSERT(err == SCE_OK);
+
+	// unmap memory
+	err = sceGxmUnmapFragmentUsseMemory(mem);
+	AES_ASSERT(err == SCE_OK);
+
+	// free the memory block
+	err = sceKernelFreeMemBlock(uid);
+	AES_ASSERT(err == SCE_OK);
+}
+
+static void* patcherHostAlloc(void* userData, uint32_t size)
+{
+	AES_UNUSED(userData);
+	return malloc(size);
+}
+
+static void patcherHostFree(void* userData, void* mem)
+{
+	AES_UNUSED(userData);
+	free(mem);
+}
+
+struct DisplayData
+{
 	void* address;
-} vita2d_display_data;
+};
 
-
-static void display_callback(const void* callback_data)
+void displayCallback(void const* callbackData)
 {
-	SceDisplayFrameBuf framebuf;
-	const vita2d_display_data* display_data = (const vita2d_display_data*)callback_data;
+	DisplayData const* displayData = (DisplayData const*)callbackData;
+	SceDisplayFrameBuf frameBuf {
+		.size = sizeof(SceDisplayFrameBuf),
+		.base = displayData->address,
+		.pitch = vita_display_stride_in_pixels,
+		.pixelformat = vita_display_pixel_format,
+		.width = vita_display_width,
+		.height = vita_display_height
+	};
 
-	memset(&framebuf, 0x00, sizeof(SceDisplayFrameBuf));
-	framebuf.size = sizeof(SceDisplayFrameBuf);
-	framebuf.base = display_data->address;
-	framebuf.pitch = DISPLAY_STRIDE_IN_PIXELS;
-	framebuf.pixelformat = DISPLAY_PIXEL_FORMAT;
-	framebuf.width = DISPLAY_WIDTH;
-	framebuf.height = DISPLAY_HEIGHT;
-	sceDisplaySetFrameBuf(&framebuf, SCE_DISPLAY_SETBUF_NEXTFRAME);
-
-	if (vblank_wait) {
-		sceDisplayWaitVblankStart();
-	}
-}
-
-void* fragment_usse_alloc(unsigned int size, SceUID* uid, unsigned int* usse_offset)
-{
-	void* mem = NULL;
-
-	size = ALIGN(size, 4096);
-	*uid = sceKernelAllocMemBlock("fragment_usse", SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE, size, NULL);
-
-	if (sceKernelGetMemBlockBase(*uid, &mem) < 0)
-		return NULL;
-	if (sceGxmMapFragmentUsseMemory(mem, size, usse_offset) < 0)
-		return NULL;
-
-	return mem;
-}
-
-void fragment_usse_free(SceUID uid)
-{
-	void* mem = NULL;
-	if (sceKernelGetMemBlockBase(uid, &mem) < 0)
-		return;
-	sceGxmUnmapFragmentUsseMemory(mem);
-	sceKernelFreeMemBlock(uid);
-}
-
-#endif
-
-int main()
-{
-#ifdef __vita__
-	std::ofstream logFile("ux0:log/AES_log.txt");
-	aes::Logger::instance().addSink(std::make_unique<aes::PsvDebugScreenSink>());
-#else
-	std::ofstream logFile("AES_log.txt");
-	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(std::clog));
-#endif
-	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(logFile));
-
-#ifdef __vita__
-	SceUID vdmRingBufferUid;
-	SceUID vertexRingBufferUid;
-	SceUID fragmentRingBufferUid;
-	SceUID fragmentUsseRingBufferUid;
+	auto err = sceDisplaySetFrameBuf(&frameBuf, (SceDisplaySetBufSync) SCE_DISPLAY_UPDATETIMING_NEXTVSYNC);
+	AES_ASSERT(err == SCE_OK);
 	
-	SceAppMgrBudgetInfo info;
-	info.size = sizeof(SceAppMgrBudgetInfo);
-	if (!sceAppMgrGetBudgetInfo(&info)) 
-		system_app_mode = 1;
+	err = sceDisplayWaitVblankStart();
+	AES_ASSERT(err == SCE_OK);
+}
 
-	SceGxmInitializeParams initializeParams;
-	memset(&initializeParams, 0, sizeof(SceGxmInitializeParams));
-	initializeParams.flags = system_app_mode ? 0x0A : 0;
-	initializeParams.displayQueueMaxPendingCount = DISPLAY_MAX_PENDING_SWAPS;
-	initializeParams.displayQueueCallback = display_callback;
-	initializeParams.displayQueueCallbackDataSize = sizeof(vita2d_display_data);
-	initializeParams.parameterBufferSize = system_app_mode ? 2 * 1024 * 1024 : SCE_GXM_DEFAULT_PARAMETER_BUFFER_SIZE;
+void initGxm()
+{
+	SceGxmInitializeParams initializeParams = {
+		.flags = 0,
+		.displayQueueMaxPendingCount = vita_display_max_pending_swaps,
+		.displayQueueCallback = displayCallback,
+		.displayQueueCallbackDataSize = sizeof(DisplayData),
+		.parameterBufferSize = SCE_GXM_DEFAULT_PARAMETER_BUFFER_SIZE
+	};
 
-	auto err = system_app_mode ? sceGxmVshInitialize(&initializeParams) : sceGxmInitialize(&initializeParams);
-	AES_LOG("sceGxmInitialize err : {}", err);
+	auto err = sceGxmInitialize(&initializeParams);
+	AES_ASSERT(err == SCE_OK);
 	
-	// allocate ring buffer memory using default sizes
-	void* vdmRingBuffer = gpu_alloc(
+	SceUID vdmRingBufferUid, vertexRingBufferUid, fragmentRingBufferUid, fragmentUsseRingBufferUid;
+	
+	// Allocate ring buffer memory using default sizes
+	void* vdmRingBuffer = graphicsAlloc(
 		SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
 		SCE_GXM_DEFAULT_VDM_RING_BUFFER_SIZE,
 		4,
 		SCE_GXM_MEMORY_ATTRIB_READ,
 		&vdmRingBufferUid);
-
-	void* vertexRingBuffer = gpu_alloc(
+	
+	void* vertexRingBuffer = graphicsAlloc(
 		SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
 		SCE_GXM_DEFAULT_VERTEX_RING_BUFFER_SIZE,
 		4,
 		SCE_GXM_MEMORY_ATTRIB_READ,
 		&vertexRingBufferUid);
-
-	void* fragmentRingBuffer = gpu_alloc(
+	
+	void* fragmentRingBuffer = graphicsAlloc(
 		SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
 		SCE_GXM_DEFAULT_FRAGMENT_RING_BUFFER_SIZE,
 		4,
 		SCE_GXM_MEMORY_ATTRIB_READ,
 		&fragmentRingBufferUid);
-
-	unsigned int fragmentUsseRingBufferOffset;
-	void* fragmentUsseRingBuffer = fragment_usse_alloc(
+	
+	uint32_t fragmentUsseRingBufferOffset;
+	void* fragmentUsseRingBuffer = fragmentUsseAlloc(
 		SCE_GXM_DEFAULT_FRAGMENT_USSE_RING_BUFFER_SIZE,
 		&fragmentUsseRingBufferUid,
 		&fragmentUsseRingBufferOffset);
-
-	memset(&contextParams, 0, sizeof(SceGxmContextParams));
+	
+	// Set up parameters
+	SceGxmContextParams contextParams {};
 	contextParams.hostMem = malloc(SCE_GXM_MINIMUM_CONTEXT_HOST_MEM_SIZE);
 	contextParams.hostMemSize = SCE_GXM_MINIMUM_CONTEXT_HOST_MEM_SIZE;
 	contextParams.vdmRingBufferMem = vdmRingBuffer;
@@ -301,141 +375,177 @@ int main()
 	contextParams.fragmentUsseRingBufferMemSize = SCE_GXM_DEFAULT_FRAGMENT_USSE_RING_BUFFER_SIZE;
 	contextParams.fragmentUsseRingBufferOffset = fragmentUsseRingBufferOffset;
 
-	err = sceGxmCreateContext(&contextParams, &_vita2d_context);
-	AES_LOG("sceGxmCreateContext(): {}\n", err);
+	// Create the context
+	SceGxmContext* context = nullptr;
+	err = sceGxmCreateContext(&contextParams, &context);
+	AES_ASSERT(err == SCE_OK);
 
 	// set up parameters
-	SceGxmRenderTargetParams renderTargetParams;
-	memset(&renderTargetParams, 0, sizeof(SceGxmRenderTargetParams));
+	SceGxmRenderTargetParams renderTargetParams {};
 	renderTargetParams.flags = 0;
-	renderTargetParams.width = DISPLAY_WIDTH;
-	renderTargetParams.height = DISPLAY_HEIGHT;
+	renderTargetParams.width = vita_display_width;
+	renderTargetParams.height = vita_display_height;
 	renderTargetParams.scenesPerFrame = 1;
-	renderTargetParams.multisampleMode = msaa;
+	renderTargetParams.multisampleMode = vita_msaa_mode;
 	renderTargetParams.multisampleLocations = 0;
-	renderTargetParams.driverMemBlock = -1; // Invalid UID
+	renderTargetParams.driverMemBlock = SCE_UID_INVALID_UID;
+
+	SceGxmRenderTarget* renderTarget;
 	err = sceGxmCreateRenderTarget(&renderTargetParams, &renderTarget);
-	AES_LOG("sceGxmCreateRenderTarget(): {}\n", err);
+	AES_ASSERT(err == SCE_OK);
 
-	for (i = 0; i < DISPLAY_BUFFER_COUNT; i++) {
+	/* ---------------------------------------------------------------------
+	5. Allocate display buffers and sync objects
 
+	We will allocate our back buffers in CDRAM, and create a color
+	surface for each of them.
+
+	To allow display operations done by the CPU to be synchronized with
+	rendering done by the GPU, we also create a SceGxmSyncObject for each
+	display buffer.  This sync object will be used with each scene that
+	renders to that buffer and when queueing display flips that involve
+	that buffer (either flipping from or to).
+   --------------------------------------------------------------------- */
+
+   	// allocate memory and sync objects for display buffers
+	void* displayBufferData[vita_display_buffer_count];
+	SceUID displayBufferUid[vita_display_buffer_count];
+	SceGxmColorSurface displaySurface[vita_display_buffer_count];
+	SceGxmSyncObject* displayBufferSync[vita_display_buffer_count];
+	for (uint32_t i = 0; i < vita_display_buffer_count; ++i) {
 		// allocate memory for display
-		if (!system_app_mode) {
-			displayBufferData[i] = gpu_alloc(
-				SCE_KERNEL_MEMBLOCK_TYPE_USER_CDRAM_RW,
-				4 * DISPLAY_STRIDE_IN_PIXELS * DISPLAY_HEIGHT,
-				SCE_GXM_COLOR_SURFACE_ALIGNMENT,
-				SCE_GXM_MEMORY_ATTRIB_READ | SCE_GXM_MEMORY_ATTRIB_WRITE,
-				&displayBufferUid[i]);
+		displayBufferData[i] = graphicsAlloc(
+			SCE_KERNEL_MEMBLOCK_TYPE_USER_CDRAM_RW,
+			4 * vita_display_stride_in_pixels * vita_display_height,
+			SCE_GXM_COLOR_SURFACE_ALIGNMENT,
+			SCE_GXM_MEMORY_ATTRIB_READ | SCE_GXM_MEMORY_ATTRIB_WRITE,
+			&displayBufferUid[i]);
 
-			// memset the buffer to black
-			for (y = 0; y < DISPLAY_HEIGHT; y++) {
-				unsigned int* row = (unsigned int*)displayBufferData[i] + y * DISPLAY_STRIDE_IN_PIXELS;
-				for (x = 0; x < DISPLAY_WIDTH; x++) {
-					row[x] = 0xff000000;
-				}
+		// memset the buffer to black
+		for (uint32_t y = 0; y < vita_display_height; ++y) {
+			uint32_t* row = (uint32_t*)displayBufferData[i] + y * vita_display_stride_in_pixels;
+			for (uint32_t x = 0; x < vita_display_width; ++x) {
+				row[x] = 0xff000000;
 			}
 		}
 
 		// initialize a color surface for this display buffer
 		err = sceGxmColorSurfaceInit(
 			&displaySurface[i],
-			DISPLAY_COLOR_FORMAT,
+			vita_display_color_format,
 			SCE_GXM_COLOR_SURFACE_LINEAR,
-			(msaa == SCE_GXM_MULTISAMPLE_NONE) ? SCE_GXM_COLOR_SURFACE_SCALE_NONE : SCE_GXM_COLOR_SURFACE_SCALE_MSAA_DOWNSCALE,
+			(vita_msaa_mode == SCE_GXM_MULTISAMPLE_NONE) ? SCE_GXM_COLOR_SURFACE_SCALE_NONE : SCE_GXM_COLOR_SURFACE_SCALE_MSAA_DOWNSCALE,
 			SCE_GXM_OUTPUT_REGISTER_SIZE_32BIT,
-			DISPLAY_WIDTH,
-			DISPLAY_HEIGHT,
-			DISPLAY_STRIDE_IN_PIXELS,
+			vita_display_width,
+			vita_display_height,
+			vita_display_stride_in_pixels,
 			displayBufferData[i]);
+		AES_ASSERT(err == SCE_OK);
 
 		// create a sync object that we will associate with this buffer
 		err = sceGxmSyncObjectCreate(&displayBufferSync[i]);
+		AES_ASSERT(err == SCE_OK);
 	}
 
+	/* ---------------------------------------------------------------------
+		6. Allocate a depth buffer
+
+		Note that since this sample renders in a strictly back-to-front order,
+		a depth buffer is not strictly required.  However, since it is usually
+		necessary to create one to handle partial renders, we will create one
+		now.  Note that we do not enable force load or store, so this depth
+		buffer will not actually be read or written by the GPU when this
+		sample is executed, so will have zero performance impact.
+	   --------------------------------------------------------------------- */
+
 	// compute the memory footprint of the depth buffer
-	const unsigned int alignedWidth = ALIGN(DISPLAY_WIDTH, SCE_GXM_TILE_SIZEX);
-	const unsigned int alignedHeight = ALIGN(DISPLAY_HEIGHT, SCE_GXM_TILE_SIZEY);
-	unsigned int sampleCount = alignedWidth * alignedHeight;
-	unsigned int depthStrideInSamples = alignedWidth;
-	if (msaa == SCE_GXM_MULTISAMPLE_4X) {
+	const uint32_t alignedWidth = aes::align(vita_display_width, SCE_GXM_TILE_SIZEX);
+	const uint32_t alignedHeight = aes::align(vita_display_height, SCE_GXM_TILE_SIZEY);
+	uint32_t sampleCount = alignedWidth * alignedHeight;
+	uint32_t depthStrideInSamples = alignedWidth;
+	if (vita_msaa_mode == SCE_GXM_MULTISAMPLE_4X) {
 		// samples increase in X and Y
 		sampleCount *= 4;
 		depthStrideInSamples *= 2;
 	}
-	else if (msaa == SCE_GXM_MULTISAMPLE_2X) {
+	else if (vita_msaa_mode == SCE_GXM_MULTISAMPLE_2X) {
 		// samples increase in Y only
 		sampleCount *= 2;
 	}
 
-	// allocate the depth buffer
-	depthBufferData = gpu_alloc(
+	// allocate it
+	SceUID depthBufferUid;
+	void* depthBufferData = graphicsAlloc(
 		SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
 		4 * sampleCount,
 		SCE_GXM_DEPTHSTENCIL_SURFACE_ALIGNMENT,
 		SCE_GXM_MEMORY_ATTRIB_READ | SCE_GXM_MEMORY_ATTRIB_WRITE,
 		&depthBufferUid);
 
-	// allocate the stencil buffer
-	stencilBufferData = gpu_alloc(
-		SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
-		4 * sampleCount,
-		SCE_GXM_DEPTHSTENCIL_SURFACE_ALIGNMENT,
-		SCE_GXM_MEMORY_ATTRIB_READ | SCE_GXM_MEMORY_ATTRIB_WRITE,
-		&stencilBufferUid);
-
 	// create the SceGxmDepthStencilSurface structure
+	SceGxmDepthStencilSurface depthSurface;
 	err = sceGxmDepthStencilSurfaceInit(
 		&depthSurface,
 		SCE_GXM_DEPTH_STENCIL_FORMAT_S8D24,
 		SCE_GXM_DEPTH_STENCIL_SURFACE_TILED,
 		depthStrideInSamples,
 		depthBufferData,
-		stencilBufferData);
+		nullptr);
+	AES_ASSERT(err == SCE_OK);
 
-	// set the stencil test reference (this is currently assumed to always remain 1 after here for region clipping)
-	sceGxmSetFrontStencilRef(_vita2d_context, 1);
-	// set the stencil function (this wouldn't actually be needed, as the set clip rectangle function has to call this at the begginning of every scene)
-	sceGxmSetFrontStencilFunc(
-		_vita2d_context,
-		SCE_GXM_STENCIL_FUNC_ALWAYS,
-		SCE_GXM_STENCIL_OP_KEEP,
-		SCE_GXM_STENCIL_OP_KEEP,
-		SCE_GXM_STENCIL_OP_KEEP,
-		0xFF,
-		0xFF);
+	/* ---------------------------------------------------------------------
+		7. Create a shader patcher and register programs
 
-	// set buffer sizes for this sample
-	const unsigned int patcherBufferSize = 64 * 1024;
-	const unsigned int patcherVertexUsseSize = 64 * 1024;
-	const unsigned int patcherFragmentUsseSize = 64 * 1024;
+		A shader patcher object is required to produce vertex and fragment
+		programs from the shader compiler output.  First we create a shader
+		patcher instance, using callback functions to allow it to allocate
+		and free host memory for internal state.
+
+		We will use the shader patcher's internal heap to handle buffer
+		memory and USSE memory for the final programs.  To do this, we
+		leave the callback functions as NULL, but provide static memory
+		blocks.
+
+		In order to create vertex and fragment programs for a particular
+		shader, the compiler output must first be registered to obtain an ID
+		for that shader.  Within a single ID, vertex and fragment programs
+		are reference counted and could be shared if created with identical
+		parameters.  To maximise this sharing, programs should only be
+		registered with the shader patcher once if possible, so we will do
+		this now.
+	   --------------------------------------------------------------------- */
+
+	   // set buffer sizes for this sample
+	const uint32_t patcherBufferSize = 64 * 1024;
+	const uint32_t patcherVertexUsseSize = 64 * 1024;
+	const uint32_t patcherFragmentUsseSize = 64 * 1024;
 
 	// allocate memory for buffers and USSE code
-	void* patcherBuffer = gpu_alloc(
+	SceUID patcherBufferUid;
+	void* patcherBuffer = graphicsAlloc(
 		SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
 		patcherBufferSize,
 		4,
 		SCE_GXM_MEMORY_ATTRIB_READ | SCE_GXM_MEMORY_ATTRIB_WRITE,
 		&patcherBufferUid);
-
-	unsigned int patcherVertexUsseOffset;
-	void* patcherVertexUsse = vertex_usse_alloc(
+	SceUID patcherVertexUsseUid;
+	uint32_t patcherVertexUsseOffset;
+	void* patcherVertexUsse = vertexUsseAlloc(
 		patcherVertexUsseSize,
 		&patcherVertexUsseUid,
 		&patcherVertexUsseOffset);
-
-	unsigned int patcherFragmentUsseOffset;
-	void* patcherFragmentUsse = fragment_usse_alloc(
+	SceUID patcherFragmentUsseUid;
+	uint32_t patcherFragmentUsseOffset;
+	void* patcherFragmentUsse = fragmentUsseAlloc(
 		patcherFragmentUsseSize,
 		&patcherFragmentUsseUid,
 		&patcherFragmentUsseOffset);
 
 	// create a shader patcher
-	SceGxmShaderPatcherParams patcherParams;
-	memset(&patcherParams, 0, sizeof(SceGxmShaderPatcherParams));
+	SceGxmShaderPatcherParams patcherParams {};
 	patcherParams.userData = NULL;
-	patcherParams.hostAllocCallback = &patcher_host_alloc;
-	patcherParams.hostFreeCallback = &patcher_host_free;
+	patcherParams.hostAllocCallback = &patcherHostAlloc;
+	patcherParams.hostFreeCallback = &patcherHostFree;
 	patcherParams.bufferAllocCallback = NULL;
 	patcherParams.bufferFreeCallback = NULL;
 	patcherParams.bufferMem = patcherBuffer;
@@ -451,70 +561,54 @@ int main()
 	patcherParams.fragmentUsseMemSize = patcherFragmentUsseSize;
 	patcherParams.fragmentUsseOffset = patcherFragmentUsseOffset;
 
+	SceGxmShaderPatcher* shaderPatcher = NULL;
 	err = sceGxmShaderPatcherCreate(&patcherParams, &shaderPatcher);
-	DEBUG("sceGxmShaderPatcherCreate(): 0x%08X\n", err);
+	AES_ASSERT(err == SCE_OK);
 
-	// check the shaders
-	err = sceGxmProgramCheck(clearVertexProgramGxp);
-	DEBUG("clear_v sceGxmProgramCheck(): 0x%08X\n", err);
-	err = sceGxmProgramCheck(clearFragmentProgramGxp);
-	DEBUG("clear_f sceGxmProgramCheck(): 0x%08X\n", err);
-	err = sceGxmProgramCheck(colorVertexProgramGxp);
-	DEBUG("color_v sceGxmProgramCheck(): 0x%08X\n", err);
-	err = sceGxmProgramCheck(colorFragmentProgramGxp);
-	DEBUG("color_f sceGxmProgramCheck(): 0x%08X\n", err);
-	err = sceGxmProgramCheck(textureVertexProgramGxp);
-	DEBUG("texture_v sceGxmProgramCheck(): 0x%08X\n", err);
-	err = sceGxmProgramCheck(textureFragmentProgramGxp);
-	DEBUG("texture_f sceGxmProgramCheck(): 0x%08X\n", err);
-	err = sceGxmProgramCheck(textureTintFragmentProgramGxp);
-	DEBUG("texture_tint_f sceGxmProgramCheck(): 0x%08X\n", err);
+	auto const clearShaderData_vs = aes::readFileBin("app0:assets/shaders/vita/clear_vs.gxp");
+	auto const clearShaderData_fs = aes::readFileBin("app0:assets/shaders/vita/clear_fs.gxp");
+	auto const basicShaderData_fs = aes::readFileBin("app0:assets/shaders/vita/basic_fs.gxp");
+	auto const basicShaderData_vs = aes::readFileBin("app0:assets/shaders/vita/basic_vs.gxp");
+	
+	SceGxmProgram const* clearShaderGxp_vs = reinterpret_cast<SceGxmProgram const*>(clearShaderData_vs.data());
+	SceGxmProgram const* clearShaderGxp_fs = reinterpret_cast<SceGxmProgram const*>(clearShaderData_fs.data());
+	SceGxmProgram const* basicShaderGxp_vs = reinterpret_cast<SceGxmProgram const*>(basicShaderData_vs.data());
+	SceGxmProgram const* basicShaderGxp_fs = reinterpret_cast<SceGxmProgram const*>(basicShaderData_fs.data());
 
 	// register programs with the patcher
-	err = sceGxmShaderPatcherRegisterProgram(shaderPatcher, clearVertexProgramGxp, &clearVertexProgramId);
-	DEBUG("clear_v sceGxmShaderPatcherRegisterProgram(): 0x%08X\n", err);
+	SceGxmShaderPatcherId clearVertexProgramId;
+	SceGxmShaderPatcherId clearFragmentProgramId;
+	SceGxmShaderPatcherId basicVertexProgramId;
+	SceGxmShaderPatcherId basicFragmentProgramId;
+	
+	err = sceGxmShaderPatcherRegisterProgram(shaderPatcher, clearShaderGxp_vs, &clearVertexProgramId);
+	AES_ASSERT(err == SCE_OK);
+	err = sceGxmShaderPatcherRegisterProgram(shaderPatcher, clearShaderGxp_fs, &clearFragmentProgramId);
+	AES_ASSERT(err == SCE_OK);
+	err = sceGxmShaderPatcherRegisterProgram(shaderPatcher, basicShaderGxp_vs, &basicVertexProgramId);
+	AES_ASSERT(err == SCE_OK);
+	err = sceGxmShaderPatcherRegisterProgram(shaderPatcher, basicShaderGxp_fs, &basicFragmentProgramId);
+	AES_ASSERT(err == SCE_OK);
 
-	err = sceGxmShaderPatcherRegisterProgram(shaderPatcher, clearFragmentProgramGxp, &clearFragmentProgramId);
-	DEBUG("clear_f sceGxmShaderPatcherRegisterProgram(): 0x%08X\n", err);
 
-	err = sceGxmShaderPatcherRegisterProgram(shaderPatcher, colorVertexProgramGxp, &colorVertexProgramId);
-	DEBUG("color_v sceGxmShaderPatcherRegisterProgram(): 0x%08X\n", err);
+	/* ---------------------------------------------------------------------
+		8. Create the programs and data for the clear
 
-	err = sceGxmShaderPatcherRegisterProgram(shaderPatcher, colorFragmentProgramGxp, &colorFragmentProgramId);
-	DEBUG("color_f sceGxmShaderPatcherRegisterProgram(): 0x%08X\n", err);
+		On SGX hardware, vertex programs must perform the unpack operations
+		on vertex data, so we must define our vertex formats in order to
+		create the vertex program.  Similarly, fragment programs must be
+		specialized based on how they output their pixels and MSAA mode.
 
-	err = sceGxmShaderPatcherRegisterProgram(shaderPatcher, textureVertexProgramGxp, &textureVertexProgramId);
-	DEBUG("texture_v sceGxmShaderPatcherRegisterProgram(): 0x%08X\n", err);
+		We define the clear geometry vertex format here and create the vertex
+		and fragment program.
 
-	err = sceGxmShaderPatcherRegisterProgram(shaderPatcher, textureFragmentProgramGxp, &textureFragmentProgramId);
-	DEBUG("texture_f sceGxmShaderPatcherRegisterProgram(): 0x%08X\n", err);
-
-	err = sceGxmShaderPatcherRegisterProgram(shaderPatcher, textureTintFragmentProgramGxp, &textureTintFragmentProgramId);
-	DEBUG("texture_tint_f sceGxmShaderPatcherRegisterProgram(): 0x%08X\n", err);
-
-	// Fill SceGxmBlendInfo
-	static const SceGxmBlendInfo blend_info = {
-		.colorFunc = SCE_GXM_BLEND_FUNC_ADD,
-		.alphaFunc = SCE_GXM_BLEND_FUNC_ADD,
-		.colorSrc = SCE_GXM_BLEND_FACTOR_SRC_ALPHA,
-		.colorDst = SCE_GXM_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
-		.alphaSrc = SCE_GXM_BLEND_FACTOR_SRC_ALPHA,
-		.alphaDst = SCE_GXM_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
-		.colorMask = SCE_GXM_COLOR_MASK_ALL
-	};
-
-	static const SceGxmBlendInfo blend_info_add = {
-		.colorFunc = SCE_GXM_BLEND_FUNC_ADD,
-		.alphaFunc = SCE_GXM_BLEND_FUNC_ADD,
-		.colorSrc = SCE_GXM_BLEND_FACTOR_ONE,
-		.colorDst = SCE_GXM_BLEND_FACTOR_ONE,
-		.alphaSrc = SCE_GXM_BLEND_FACTOR_ONE,
-		.alphaDst = SCE_GXM_BLEND_FACTOR_ONE,
-		.colorMask = SCE_GXM_COLOR_MASK_ALL
-	};
+		The clear vertex and index data is static, we allocate and write the
+		data here.
+	   --------------------------------------------------------------------- */
 
 	// get attributes by name to create vertex format bindings
-	const SceGxmProgramParameter* paramClearPositionAttribute = sceGxmProgramFindParameterByName(clearVertexProgramGxp, "aPosition");
+	const SceGxmProgramParameter* paramClearPositionAttribute = sceGxmProgramFindParameterByName(clearShaderGxp_vs, "aPosition");
+	AES_ASSERT(paramClearPositionAttribute && (sceGxmProgramParameterGetCategory(paramClearPositionAttribute) == SCE_GXM_PARAMETER_CATEGORY_ATTRIBUTE));
 
 	// create clear vertex format
 	SceGxmVertexAttribute clearVertexAttributes[1];
@@ -524,10 +618,12 @@ int main()
 	clearVertexAttributes[0].format = SCE_GXM_ATTRIBUTE_FORMAT_F32;
 	clearVertexAttributes[0].componentCount = 2;
 	clearVertexAttributes[0].regIndex = sceGxmProgramParameterGetResourceIndex(paramClearPositionAttribute);
-	clearVertexStreams[0].stride = sizeof(vita2d_clear_vertex);
+	clearVertexStreams[0].stride = sizeof(glm::vec2);
 	clearVertexStreams[0].indexSource = SCE_GXM_INDEX_SOURCE_INDEX_16BIT;
 
 	// create clear programs
+	SceGxmVertexProgram* clearVertexProgram = NULL;
+	SceGxmFragmentProgram* clearFragmentProgram = NULL;
 	err = sceGxmShaderPatcherCreateVertexProgram(
 		shaderPatcher,
 		clearVertexProgramId,
@@ -536,42 +632,34 @@ int main()
 		clearVertexStreams,
 		1,
 		&clearVertexProgram);
-
-	DEBUG("clear sceGxmShaderPatcherCreateVertexProgram(): 0x%08X\n", err);
-
+	AES_ASSERT(err == SCE_OK);
+	
 	err = sceGxmShaderPatcherCreateFragmentProgram(
 		shaderPatcher,
 		clearFragmentProgramId,
 		SCE_GXM_OUTPUT_REGISTER_FORMAT_UCHAR4,
-		msaa,
+		vita_msaa_mode,
 		NULL,
-		clearVertexProgramGxp,
+		clearShaderGxp_vs,
 		&clearFragmentProgram);
-
-	DEBUG("clear sceGxmShaderPatcherCreateFragmentProgram(): 0x%08X\n", err);
+	AES_ASSERT(err == SCE_OK);
 
 	// create the clear triangle vertex/index data
-	clearVertices = (vita2d_clear_vertex*)gpu_alloc(
-		SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
-		3 * sizeof(vita2d_clear_vertex),
+	SceUID clearVerticesUid;
+	SceUID clearIndicesUid;
+	glm::vec2* const clearVertices = (glm::vec2*)graphicsAlloc(
+		SCE_KERNEL_MEMBLOCK_TYPE_USER_RWDATA_UNCACHE,
+		3 * sizeof(glm::vec2),
 		4,
 		SCE_GXM_MEMORY_ATTRIB_READ,
 		&clearVerticesUid);
 
-	// Allocate a 64k * 2 bytes = 128 KiB buffer and store all possible
-	// 16-bit indices in linear ascending order, so we can use this for
-	// all drawing operations where we don't want to use indexing.
-	linearIndices = (uint16_t*)gpu_alloc(
+	uint16_t* const clearIndices = (uint16_t*)graphicsAlloc(
 		SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
-		UINT16_MAX * sizeof(uint16_t),
-		sizeof(uint16_t),
+		3 * sizeof(uint16_t),
+		2,
 		SCE_GXM_MEMORY_ATTRIB_READ,
-		&linearIndicesUid);
-
-	// Range of i must be greater than uint16_t, this doesn't endless-loop
-	for (uint32_t i = 0; i <= UINT16_MAX; ++i) {
-		linearIndices[i] = i;
-	}
+		&clearIndicesUid);
 
 	clearVertices[0].x = -1.0f;
 	clearVertices[0].y = -1.0f;
@@ -580,128 +668,355 @@ int main()
 	clearVertices[2].x = -1.0f;
 	clearVertices[2].y = 3.0f;
 
-	const SceGxmProgramParameter* paramColorPositionAttribute = sceGxmProgramFindParameterByName(colorVertexProgramGxp, "aPosition");
-	DEBUG("aPosition sceGxmProgramFindParameterByName(): %p\n", paramColorPositionAttribute);
+	clearIndices[0] = 0;
+	clearIndices[1] = 1;
+	clearIndices[2] = 2;
 
-	const SceGxmProgramParameter* paramColorColorAttribute = sceGxmProgramFindParameterByName(colorVertexProgramGxp, "aColor");
-	DEBUG("aColor sceGxmProgramFindParameterByName(): %p\n", paramColorColorAttribute);
+	/* ---------------------------------------------------------------------
+	9. Create the programs and data for the spinning triangle
 
-	// create color vertex format
-	SceGxmVertexAttribute colorVertexAttributes[2];
-	SceGxmVertexStream colorVertexStreams[1];
-	/* x,y,z: 3 float 32 bits */
-	colorVertexAttributes[0].streamIndex = 0;
-	colorVertexAttributes[0].offset = 0;
-	colorVertexAttributes[0].format = SCE_GXM_ATTRIBUTE_FORMAT_F32;
-	colorVertexAttributes[0].componentCount = 3; // (x, y, z)
-	colorVertexAttributes[0].regIndex = sceGxmProgramParameterGetResourceIndex(paramColorPositionAttribute);
-	/* color: 4 unsigned char  = 32 bits */
-	colorVertexAttributes[1].streamIndex = 0;
-	colorVertexAttributes[1].offset = 12; // (x, y, z) * 4 = 12 bytes
-	colorVertexAttributes[1].format = SCE_GXM_ATTRIBUTE_FORMAT_U8N;
-	colorVertexAttributes[1].componentCount = 4; // (color)
-	colorVertexAttributes[1].regIndex = sceGxmProgramParameterGetResourceIndex(paramColorColorAttribute);
-	// 16 bit (short) indices
-	colorVertexStreams[0].stride = sizeof(vita2d_color_vertex);
-	colorVertexStreams[0].indexSource = SCE_GXM_INDEX_SOURCE_INDEX_16BIT;
+	We define the spinning triangle vertex format here and create the
+	vertex and fragment program.
 
-	// create color shaders
+	The vertex and index data is static, we allocate and write the data
+	here too.
+   --------------------------------------------------------------------- */
+
+   // get attributes by name to create vertex format bindings
+   // first retrieve the underlying program to extract binding information
+	const SceGxmProgramParameter* paramBasicPositionAttribute = sceGxmProgramFindParameterByName(basicShaderGxp_vs, "aPosition");
+	AES_ASSERT(paramBasicPositionAttribute && (sceGxmProgramParameterGetCategory(paramBasicPositionAttribute) == SCE_GXM_PARAMETER_CATEGORY_ATTRIBUTE));
+	const SceGxmProgramParameter* paramBasicColorAttribute = sceGxmProgramFindParameterByName(basicShaderGxp_vs, "aColor");
+	AES_ASSERT(paramBasicColorAttribute && (sceGxmProgramParameterGetCategory(paramBasicColorAttribute) == SCE_GXM_PARAMETER_CATEGORY_ATTRIBUTE));
+
+	typedef struct BasicVertex {
+		float x;
+		float y;
+		float z;
+		uint32_t color;
+	} BasicVertex;
+	
+	// create shaded triangle vertex format
+	SceGxmVertexAttribute basicVertexAttributes[2];
+	SceGxmVertexStream basicVertexStreams[1];
+	basicVertexAttributes[0].streamIndex = 0;
+	basicVertexAttributes[0].offset = 0;
+	basicVertexAttributes[0].format = SCE_GXM_ATTRIBUTE_FORMAT_F32;
+	basicVertexAttributes[0].componentCount = 3;
+	basicVertexAttributes[0].regIndex = sceGxmProgramParameterGetResourceIndex(paramBasicPositionAttribute);
+	basicVertexAttributes[1].streamIndex = 0;
+	basicVertexAttributes[1].offset = 12;
+	basicVertexAttributes[1].format = SCE_GXM_ATTRIBUTE_FORMAT_U8N;
+	basicVertexAttributes[1].componentCount = 4;
+	basicVertexAttributes[1].regIndex = sceGxmProgramParameterGetResourceIndex(paramBasicColorAttribute);
+	basicVertexStreams[0].stride = sizeof(BasicVertex);
+	basicVertexStreams[0].indexSource = SCE_GXM_INDEX_SOURCE_INDEX_16BIT;
+
+	// create shaded triangle shaders
+	SceGxmVertexProgram* basicVertexProgram = NULL;
+	SceGxmFragmentProgram* basicFragmentProgram = NULL;
 	err = sceGxmShaderPatcherCreateVertexProgram(
 		shaderPatcher,
-		colorVertexProgramId,
-		colorVertexAttributes,
+		basicVertexProgramId,
+		basicVertexAttributes,
 		2,
-		colorVertexStreams,
+		basicVertexStreams,
 		1,
-		&_vita2d_colorVertexProgram);
-
-	DEBUG("color sceGxmShaderPatcherCreateVertexProgram(): 0x%08X\n", err);
-
-
-	const SceGxmProgramParameter* paramTexturePositionAttribute = sceGxmProgramFindParameterByName(textureVertexProgramGxp, "aPosition");
-	DEBUG("aPosition sceGxmProgramFindParameterByName(): %p\n", paramTexturePositionAttribute);
-
-	const SceGxmProgramParameter* paramTextureTexcoordAttribute = sceGxmProgramFindParameterByName(textureVertexProgramGxp, "aTexcoord");
-	DEBUG("aTexcoord sceGxmProgramFindParameterByName(): %p\n", paramTextureTexcoordAttribute);
-
-	// create texture vertex format
-	SceGxmVertexAttribute textureVertexAttributes[2];
-	SceGxmVertexStream textureVertexStreams[1];
-	/* x,y,z: 3 float 32 bits */
-	textureVertexAttributes[0].streamIndex = 0;
-	textureVertexAttributes[0].offset = 0;
-	textureVertexAttributes[0].format = SCE_GXM_ATTRIBUTE_FORMAT_F32;
-	textureVertexAttributes[0].componentCount = 3; // (x, y, z)
-	textureVertexAttributes[0].regIndex = sceGxmProgramParameterGetResourceIndex(paramTexturePositionAttribute);
-	/* u,v: 2 floats 32 bits */
-	textureVertexAttributes[1].streamIndex = 0;
-	textureVertexAttributes[1].offset = 12; // (x, y, z) * 4 = 12 bytes
-	textureVertexAttributes[1].format = SCE_GXM_ATTRIBUTE_FORMAT_F32;
-	textureVertexAttributes[1].componentCount = 2; // (u, v)
-	textureVertexAttributes[1].regIndex = sceGxmProgramParameterGetResourceIndex(paramTextureTexcoordAttribute);
-	// 16 bit (short) indices
-	textureVertexStreams[0].stride = sizeof(vita2d_texture_vertex);
-	textureVertexStreams[0].indexSource = SCE_GXM_INDEX_SOURCE_INDEX_16BIT;
-
-	// create texture shaders
-	err = sceGxmShaderPatcherCreateVertexProgram(
+		&basicVertexProgram);
+	AES_ASSERT(err == SCE_OK);
+	err = sceGxmShaderPatcherCreateFragmentProgram(
 		shaderPatcher,
-		textureVertexProgramId,
-		textureVertexAttributes,
-		2,
-		textureVertexStreams,
-		1,
-		&_vita2d_textureVertexProgram);
-
-	DEBUG("texture sceGxmShaderPatcherCreateVertexProgram(): 0x%08X\n", err);
-
-	// Create variations of the fragment program based on blending mode
-	_vita2d_make_fragment_programs(&_vita2d_fragmentPrograms.blend_mode_normal, &blend_info, msaa);
-	_vita2d_make_fragment_programs(&_vita2d_fragmentPrograms.blend_mode_add, &blend_info_add, msaa);
-
-	// Default to "normal" blending mode (non-additive)
-	vita2d_set_blend_mode_add(0);
+		basicFragmentProgramId,
+		SCE_GXM_OUTPUT_REGISTER_FORMAT_UCHAR4,
+		vita_msaa_mode,
+		NULL,
+		basicShaderGxp_vs,
+		&basicFragmentProgram);
+	AES_ASSERT(err == SCE_OK);
 
 	// find vertex uniforms by name and cache parameter information
-	_vita2d_clearClearColorParam = sceGxmProgramFindParameterByName(clearFragmentProgramGxp, "uClearColor");
-	DEBUG("_vita2d_clearClearColorParam sceGxmProgramFindParameterByName(): %p\n", _vita2d_clearClearColorParam);
+	const SceGxmProgramParameter* wvpParam = sceGxmProgramFindParameterByName(basicShaderGxp_vs, "wvp");
+	AES_ASSERT(wvpParam && (sceGxmProgramParameterGetCategory(wvpParam) == SCE_GXM_PARAMETER_CATEGORY_UNIFORM));
 
-	_vita2d_colorWvpParam = sceGxmProgramFindParameterByName(colorVertexProgramGxp, "wvp");
-	DEBUG("color wvp sceGxmProgramFindParameterByName(): %p\n", _vita2d_colorWvpParam);
-
-	_vita2d_textureWvpParam = sceGxmProgramFindParameterByName(textureVertexProgramGxp, "wvp");
-	DEBUG("texture wvp sceGxmProgramFindParameterByName(): %p\n", _vita2d_textureWvpParam);
-
-	_vita2d_textureTintColorParam = sceGxmProgramFindParameterByName(textureTintFragmentProgramGxp, "uTintColor");
-	DEBUG("texture wvp sceGxmProgramFindParameterByName(): %p\n", _vita2d_textureWvpParam);
-
-	// Allocate memory for the memory pool
-	pool_size = temp_pool_size;
-	pool_addr = gpu_alloc(
-		SCE_KERNEL_MEMBLOCK_TYPE_USER_RW,
-		pool_size,
-		sizeof(void*),
+	// create shaded triangle vertex/index data
+	SceUID basicVerticesUid;
+	SceUID basicIndiceUid;
+	BasicVertex* const basicVertices = (BasicVertex*)graphicsAlloc(
+		SCE_KERNEL_MEMBLOCK_TYPE_USER_RWDATA_UNCACHE,
+		3 * sizeof(BasicVertex),
+		4,
 		SCE_GXM_MEMORY_ATTRIB_READ,
-		&poolUid);
+		&basicVerticesUid);
+	uint16_t* const basicIndices = (uint16_t*)graphicsAlloc(
+		SCE_KERNEL_MEMBLOCK_TYPE_USER_RWDATA_UNCACHE,
+		3 * sizeof(uint16_t),
+		2,
+		SCE_GXM_MEMORY_ATTRIB_READ,
+		&basicIndiceUid);
 
+	basicVertices[0].x = -0.5f;
+	basicVertices[0].y = -0.5f;
+	basicVertices[0].z = 0.0f;
+	basicVertices[0].color = 0xff0000ff;
+	basicVertices[1].x = 0.5f;
+	basicVertices[1].y = -0.5f;
+	basicVertices[1].z = 0.0f;
+	basicVertices[1].color = 0xff00ff00;
+	basicVertices[2].x = -0.5f;
+	basicVertices[2].y = 0.5f;
+	basicVertices[2].z = 0.0f;
+	basicVertices[2].color = 0xffff0000;
 
-	matrix_init_orthographic(_vita2d_ortho_matrix, 0.0f, DISPLAY_WIDTH, DISPLAY_HEIGHT, 0.0f, 0.0f, 1.0f);
+	basicIndices[0] = 0;
+	basicIndices[1] = 1;
+	basicIndices[2] = 2;
 
-	backBufferIndex = 0;
-	frontBufferIndex = 0;
+	/* ---------------------------------------------------------------------
+	10. Start the main loop
 
-	pgf_module_was_loaded = sceSysmoduleIsLoaded(SCE_SYSMODULE_PGF);
+	Now that everything has been initialized, we can start the main
+	rendering loop of the sample.
+   	--------------------------------------------------------------------- */
 
-	if (pgf_module_was_loaded != SCE_SYSMODULE_LOADED)
-		sceSysmoduleLoadModule(SCE_SYSMODULE_PGF);
-	
-	return;
+    // initialize controller data
+	SceCtrlData ctrlData = {};
+
+	// message for SDK sample auto test
+	AES_LOG("## api_libgxm/basic: INIT SUCCEEDED ##\n");
+
+	// loop until exit
+	uint32_t backBufferIndex = 0;
+	uint32_t frontBufferIndex = 0;
+	float rotationAngle = 0.0f;
+	bool quit = false;
+	while (!quit) 
+	{
+		/* -----------------------------------------------------------------
+		11. Update step
+
+		Firstly, we check the control data for quit.
+
+		Next, we perform the update step for this sample.  We advance the
+		triangle angle by a fixed amount and update its matrix data.
+	   ----------------------------------------------------------------- */
+
+		// check control data
+		sceCtrlPeekBufferPositive(0, &ctrlData, 1);
+		quit = ctrlData.buttons & SCE_CTRL_CIRCLE;
+		
+		// update triangle angle
+		rotationAngle += SCE_MATH_TWOPI / 60.0f;
+		if (rotationAngle > SCE_MATH_TWOPI)
+			rotationAngle -= SCE_MATH_TWOPI;
+
+		// set up a 4x4 matrix for a rotation
+		float constexpr aspectRatio = (float)vita_display_width / (float)vita_display_height;
+
+		float const s = sin(rotationAngle);
+		float const c = cos(rotationAngle);
+
+		float wvpData[16];
+		wvpData[0] = c / aspectRatio;
+		wvpData[1] = s;
+		wvpData[2] = 0.0f;
+		wvpData[3] = 0.0f;
+
+		wvpData[4] = -s / aspectRatio;
+		wvpData[5] = c;
+		wvpData[6] = 0.0f;
+		wvpData[7] = 0.0f;
+
+		wvpData[8] = 0.0f;
+		wvpData[9] = 0.0f;
+		wvpData[10] = 1.0f;
+		wvpData[11] = 0.0f;
+
+		wvpData[12] = 0.0f;
+		wvpData[13] = 0.0f;
+		wvpData[14] = 0.0f;
+		wvpData[15] = 1.0f;
+
+		/* -----------------------------------------------------------------
+		12. Rendering step
+
+		This sample renders a single scene containing the two triangles,
+		the clear triangle followed by the spinning triangle.  Before
+		any drawing can take place, a scene must be started.  We render
+		to the back buffer, so it is also important to use a sync object
+		to ensure that these rendering operations are synchronized with
+		display operations.
+
+		The clear triangle shaders do not declare any uniform variables,
+		so this may be rendered immediately after setting the vertex and
+		fragment program.
+
+		The spinning triangle vertex program declares a matrix parameter,
+		so this forms part of the vertex default uniform buffer and must
+		be written before the triangle can be drawn.
+
+		Once both triangles have been drawn the scene can be ended, which
+		submits it for rendering on the GPU.
+	   ----------------------------------------------------------------- */
+
+	   // start rendering to the main render target
+		err = sceGxmBeginScene(
+			context,
+			0,
+			renderTarget,
+			NULL,
+			NULL,
+			displayBufferSync[backBufferIndex],
+			&displaySurface[backBufferIndex],
+			&depthSurface);
+		
+		// set clear shaders
+		sceGxmSetVertexProgram(context, clearVertexProgram);
+		sceGxmSetFragmentProgram(context, clearFragmentProgram);
+
+		// draw the clear triangle
+		sceGxmSetVertexStream(context, 0, clearVertices);
+		err = sceGxmDraw(context, SCE_GXM_PRIMITIVE_TRIANGLES, SCE_GXM_INDEX_FORMAT_U16, clearIndices, 3);
+		// render the rotating triangle
+		sceGxmSetVertexProgram(context, basicVertexProgram);
+		sceGxmSetFragmentProgram(context, basicFragmentProgram);
+		
+		// set the vertex program constants
+		void* vertexDefaultBuffer;
+		sceGxmReserveVertexDefaultUniformBuffer(context, &vertexDefaultBuffer);
+		sceGxmSetUniformDataF(vertexDefaultBuffer, wvpParam, 0, 16, wvpData);
+
+		// draw the spinning triangle
+		sceGxmSetVertexStream(context, 0, basicVertices);
+		err = sceGxmDraw(context, SCE_GXM_PRIMITIVE_TRIANGLES, SCE_GXM_INDEX_FORMAT_U16, basicIndices, 3);
+		
+		// end the scene on the main render target, submitting rendering work to the GPU
+		err = sceGxmEndScene(context, NULL, NULL);
+		// PA heartbeat to notify end of frame
+		err = sceGxmPadHeartbeat(&displaySurface[backBufferIndex], displayBufferSync[backBufferIndex]);
+
+		/* -----------------------------------------------------------------
+			13. Flip operation
+
+			Now we have finished submitting rendering work for this frame it
+			is time to submit a flip operation.  As part of specifying this
+			flip operation we must provide the sync objects for both the old
+			buffer and the new buffer.  This is to allow synchronization both
+			ways: to not flip until rendering is complete, but also to ensure
+			that future rendering to these buffers does not start until the
+			flip operation is complete.
+
+			The callback function will be called from an internal thread once
+			queued GPU operations involving the sync objects is complete.
+			Assuming we have not reached our maximum number of queued frames,
+			this function returns immediately.
+
+			Once we have queued our flip, we manually cycle through our back
+			buffers before starting the next frame.
+		   ----------------------------------------------------------------- */
+		// queue the display swap for this frame
+		DisplayData displayData;
+		displayData.address = displayBufferData[backBufferIndex];
+		err = sceGxmDisplayQueueAddEntry(
+			displayBufferSync[frontBufferIndex],	// front buffer is OLD buffer
+			displayBufferSync[backBufferIndex],		// back buffer is NEW buffer
+			&displayData);
+
+		// update buffer indices
+		frontBufferIndex = backBufferIndex;
+		backBufferIndex = (backBufferIndex + 1) % vita_display_buffer_count;
+	}
+
+	/* ---------------------------------------------------------------------
+		14. Wait for rendering to complete and shut down
+
+		Since there could be many queued operations not yet completed it is
+		important to wait until the GPU has finished before destroying
+		resources.  We do this by calling sceGxmFinish for our rendering
+		context.
+
+		Once the GPU is finished, we release all our programs, deallocate
+		all our memory, destroy all object and finally terminate libgxm.
+	   --------------------------------------------------------------------- */
+
+	// wait until rendering is done
+	sceGxmFinish(context);
+
+	// clean up allocations
+	sceGxmShaderPatcherReleaseFragmentProgram(shaderPatcher, basicFragmentProgram);
+	sceGxmShaderPatcherReleaseVertexProgram(shaderPatcher, basicVertexProgram);
+	sceGxmShaderPatcherReleaseFragmentProgram(shaderPatcher, clearFragmentProgram);
+	sceGxmShaderPatcherReleaseVertexProgram(shaderPatcher, clearVertexProgram);
+	graphicsFree(basicIndiceUid);
+	graphicsFree(basicVerticesUid);
+	graphicsFree(clearIndicesUid);
+	graphicsFree(clearVerticesUid);
+
+	// wait until display queue is finished before deallocating display buffers
+	err = sceGxmDisplayQueueFinish();
+	AES_ASSERT(err == SCE_OK);
+
+	// clean up display queue
+	graphicsFree(depthBufferUid);
+	for (uint32_t i = 0; i < vita_display_buffer_count; ++i) {
+		// clear the buffer then deallocate
+		memset(displayBufferData[i], 0, vita_display_height * vita_display_stride_in_pixels * 4);
+		graphicsFree(displayBufferUid[i]);
+
+		// destroy the sync object
+		sceGxmSyncObjectDestroy(displayBufferSync[i]);
+	}
+
+	// unregister programs and destroy shader patcher
+	sceGxmShaderPatcherUnregisterProgram(shaderPatcher, basicFragmentProgramId);
+	sceGxmShaderPatcherUnregisterProgram(shaderPatcher, basicVertexProgramId);
+	sceGxmShaderPatcherUnregisterProgram(shaderPatcher, clearFragmentProgramId);
+	sceGxmShaderPatcherUnregisterProgram(shaderPatcher, clearVertexProgramId);
+	sceGxmShaderPatcherDestroy(shaderPatcher);
+	fragmentUsseFree(patcherFragmentUsseUid);
+	vertexUsseFree(patcherVertexUsseUid);
+	graphicsFree(patcherBufferUid);
+
+	// destroy the render target
+	sceGxmDestroyRenderTarget(renderTarget);
+
+	// destroy the context
+	sceGxmDestroyContext(context);
+	fragmentUsseFree(fragmentUsseRingBufferUid);
+	graphicsFree(fragmentRingBufferUid);
+	graphicsFree(vertexRingBufferUid);
+	graphicsFree(vdmRingBufferUid);
+	free(contextParams.hostMem);
+
+	// terminate libgxm
+	sceGxmTerminate();
+
+	AES_LOG("## api_libgxm/basic: FINISHED ##\n");
+}
+
+#endif
+
+int main()
+{
+#ifdef __vita__
+	std::ofstream logFile("ux0:log/AES_log.txt");
+	//aes::Logger::instance().addSink(std::make_unique<aes::PsvDebugScreenSink>());
+#else
+	std::ofstream logFile("AES_log.txt");
+	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(std::cout));
+#endif
+	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(logFile));
+
+#ifdef __vita__
+	initGxm();
+	return 0;
 #endif
 	
 	Game game({
 		.appName = "aes cubes"
 	});
-	
+
 	game.init();
 	game.run();
+
+	return 0;
 }
