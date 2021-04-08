@@ -5,7 +5,7 @@
 
 namespace aes
 {
-	enum class CPUAcessFlags
+	enum class CPUAccessFlags
 	{
 		None = 0x0,
 		Read = 0x1,
@@ -48,7 +48,7 @@ namespace aes
 		size_t sizeInBytes;
 		Usage bufferUsage;
 		BindFlags bindFlags;
-		CPUAcessFlags cpuAccessFlags = CPUAcessFlags::None;
+		CPUAccessFlags cpuAccessFlags = CPUAccessFlags::None;
 		void* initialData = nullptr;
 	};
 

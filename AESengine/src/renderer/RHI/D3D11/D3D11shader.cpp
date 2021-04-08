@@ -95,7 +95,7 @@ void D3D11Shader::init(std::string_view vs, std::string_view ps)
 	}
 
 	// Create the vertex shader from the buffer.
-	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &vertexShader);
+	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), nullptr, &vertexShader);
 	if (FAILED(result))
 	{
 		AES_LOG_ERROR("failed to create vertex shader");
@@ -103,7 +103,7 @@ void D3D11Shader::init(std::string_view vs, std::string_view ps)
 	}
 
 	// Create the pixel shader from the buffer.
-	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &pixelShader);
+	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), nullptr, &pixelShader);
 	if (FAILED(result))
 	{
 		AES_LOG_ERROR("failed to create pixel shader");
@@ -129,11 +129,8 @@ void D3D11Shader::init(std::string_view vs, std::string_view ps)
 	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[1].InstanceDataStepRate = 0;
 
-	// Get a count of the elements in the layout.
-	uint numElements = std::size(polygonLayout);
-
 	// Create the vertex input layout.
-	result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &layout);
+	result = device->CreateInputLayout(polygonLayout, std::size(polygonLayout), vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &layout);
 	if (FAILED(result))
 	{
 		AES_LOG_ERROR("failed to create InputLayout");
@@ -154,7 +151,7 @@ void D3D11Shader::init(std::string_view vs, std::string_view ps)
 	cameraBufferDesc.StructureByteStride = 0;
 
 	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-	result = device->CreateBuffer(&cameraBufferDesc, NULL, &cameraBuffer);
+	result = device->CreateBuffer(&cameraBufferDesc, nullptr, &cameraBuffer);
 	if (FAILED(result))
 	{
 		AES_ERROR("failed to create Model buffer");

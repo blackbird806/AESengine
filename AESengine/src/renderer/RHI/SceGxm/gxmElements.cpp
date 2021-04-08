@@ -2,6 +2,8 @@
 
 #include "core/aes.hpp"
 
+using namespace aes;
+
 SceGxmPrimitiveType aes::rhiPrimitiveTypeToApi(DrawPrimitiveType type)
 {
 	switch (type)
@@ -18,17 +20,18 @@ SceGxmPrimitiveType aes::rhiPrimitiveTypeToApi(DrawPrimitiveType type)
 	AES_UNREACHABLE();
 }
 
-SceGxmMemoryAttribFlags aes::rhiCPUAccessFlagsToApi(CPUAcessFlags flags)
+// @Review
+SceGxmMemoryAttribFlags aes::rhiCPUAccessFlagsToApi(CPUAccessFlags flags)
 {
 	SceGxmMemoryAttribFlags apiFlags;
-	if (flags & CPUAcessFlags::Read)
-		apiFlags |= SCE_GXM_MEMORY_ATTRIB_READ;
-	if (flags & CPUAcessFlags::write)
-		apiFlags |= SCE_GXM_MEMORY_ATTRIB_Write;
-	return apiFlags;
+	if (flags == CPUAccessFlags::Read)
+		return SCE_GXM_MEMORY_ATTRIB_READ;
+	if (flags == CPUAccessFlags::Write)
+		return SCE_GXM_MEMORY_ATTRIB_WRITE;
+	return (SceGxmMemoryAttribFlags)0;
 }
 
-SceGxmIndexFormat rhiIndexFormatToApi(TypeFormat format)
+SceGxmIndexFormat aes::rhiIndexFormatToApi(TypeFormat format)
 {
 	if (format == TypeFormat::Uint32)
 		return SCE_GXM_INDEX_FORMAT_U32;

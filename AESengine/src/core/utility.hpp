@@ -22,6 +22,11 @@ namespace aes {
 	{
 		return (n > 0 && ((n & (n - 1)) == 0));
 	}
+
+	constexpr bool isAligned(uintptr_t p, uint32_t a)
+	{
+		return p % a == 0;
+	}
 	
 	template<typename F>
 	struct Scope

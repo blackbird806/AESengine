@@ -1,7 +1,8 @@
 #include "gxmBuffer.hpp"
 #include "core/error.hpp"
 
-#include "RHIRenderContext.hpp"
+#include "gxmRenderer.hpp"
+#include "gxmElements.hpp"
 
 using namespace aes;
 
@@ -24,7 +25,7 @@ Result<void> GxmBuffer::create(BufferDescription const& desc)
 		desc.sizeInBytes,
 		0 /* @Review*/,
 		rhiCPUAccessFlagsToApi(desc.cpuAccessFlags),
-		&memId);
+		&memID);
 	return {};
 }
 
@@ -43,7 +44,7 @@ GxmBuffer::~GxmBuffer()
 {
 	// @Review 
 	// no need for sceKernelGetMemBlockBase here ?
-	aes::graphicsFree(memId);
+	aes::graphicsFree(memID);
 }
 
 void* GxmBuffer::getHandle()

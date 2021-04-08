@@ -1,5 +1,6 @@
 #include "gxmRenderer.hpp"
 #include "core/utility.hpp"
+#include "gxmElements.hpp"
 
 using namespace aes;
 
@@ -18,7 +19,7 @@ void* aes::graphicsAlloc(SceKernelMemBlockType type, uint32_t size, uint32_t ali
 	{
 		// LPDDR memblocks must be 4KiB aligned
 		AES_ASSERT(alignment <= 4 * 1024);
-		size = ALIGN(size, 4 * 1024);
+		size = aes::align(size, 4 * 1024);
 	}
 	
 	uint32_t err = SCE_OK;
@@ -493,6 +494,14 @@ void GxmRenderer::init(Window& windowHandle)
 	wvpParam = sceGxmProgramFindParameterByName(basicShaderGxp_vs, "wvp");
 	AES_ASSERT(wvpParam && (sceGxmProgramParameterGetCategory(wvpParam) == SCE_GXM_PARAMETER_CATEGORY_UNIFORM));
 
+	BufferDescription bufferInfo = {
+		.sizeInBytes = 16 * sizeof(float),
+		.bufferUsage = Usage::Dynamic,
+		.bindFlags = BindFlags::UniformBuffer,
+		.cpuAccessFlags = CPUAccessFlags::Write
+	};
+	wvpBuffer.create(bufferInfo);
+
 	// create shaded triangle vertex/index data
 	basicVertices = (BasicVertex*)graphicsAlloc(
 		SCE_KERNEL_MEMBLOCK_TYPE_USER_RWDATA_UNCACHE,
@@ -524,7 +533,7 @@ void GxmRenderer::init(Window& windowHandle)
 	basicIndices[0] = 0;
 	basicIndices[1] = 1;
 	basicIndices[2] = 2;
-
+	
 	AES_LOG("GXM initialized successfully");
 }
 
@@ -643,9 +652,12 @@ void GxmRenderer::startFrame(Camera const& cam)
 	sceGxmSetFragmentProgram(context, basicFragmentProgram);
 	
 	// set the vertex program constants
-	void* vertexDefaultBuffer;
-	sceGxmReserveVertexDefaultUniformBuffer(context, &vertexDefaultBuffer);
-	sceGxmSetUniformDataF(vertexDefaultBuffer, wvpParam, 0, 16, wvpData);
+//	void* vertexDefaultBuffer;
+//	sceGxmReserveVertexDefaultUniformBuffer(context, &vertexDefaultBuffer);
+//	sceGxmSetUniformDataF(vertexDefaultBuffer, wvpParam, 0, 16, wvpData);
+	wvpBuffer.setData(wvpData);	
+	AES_ASSERT(isAligned(wvpBuffer.getHandle(), 64));
+	sceGxmSetVertexUniformBuffer(context, 0, wvpBuffer.getHandle());
 
 	// draw the spinning triangle
 	sceGxmSetVertexStream(context, 0, basicVertices);
@@ -689,7 +701,7 @@ void GxmRenderer::bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset)
 void GxmRenderer::bindIndexBuffer(RHIBuffer& buffer, TypeFormat format, uint offset)
 {
 	currentState.indexBufferInfo.typeFormat = format;
-	currentState.indexBufferInfo.buffer = buffer.handle();
+	currentState.indexBufferInfo.buffer = buffer.getHandle();
 }
 
 void GxmRenderer::setDrawPrimitiveMode(DrawPrimitiveType mode)
@@ -699,13 +711,10 @@ void GxmRenderer::setDrawPrimitiveMode(DrawPrimitiveType mode)
 
 void GxmRenderer::drawIndexed(uint indexCount)
 {
-	sceGxmDraw(context, rhiPrimitiveTypeToApi(currentState.primitiveType, 
+	sceGxmDraw(context, rhiPrimitiveTypeToApi(currentState.primitiveType), 
 				rhiIndexFormatToApi(currentState.indexBufferInfo.typeFormat), 
 				currentState.indexBufferInfo.buffer,
 				(uint32_t)indexCount);
 }
-
-
-
 
 

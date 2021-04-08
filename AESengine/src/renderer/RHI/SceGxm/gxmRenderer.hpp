@@ -6,6 +6,7 @@
 #include "renderer/RHI/RHIElements.hpp"
 #include "renderer/RHI/RHIBuffer.hpp"
 
+#include "../RHIBuffer.hpp"
 #include <vitasdk.h>
 #include "gxmCompatibilty.h"
 
@@ -33,6 +34,12 @@ namespace aes
 
 	class GxmRenderer
 	{
+			struct IndexBufferInfo
+			{
+				TypeFormat typeFormat;
+				void* buffer;
+			};
+
 		public:
 
 			struct State
@@ -58,11 +65,6 @@ namespace aes
 
 		private:
 
-			struct IndexBufferInfo
-			{
-				TypeFormat typeFormat;
-				void* buffer;
-			};
 			State currentState;
 
 			SceGxmContext* context;
@@ -98,6 +100,7 @@ namespace aes
 			BasicVertex* basicVertices;
 			uint16_t* basicIndices;
 			SceGxmProgramParameter const* wvpParam;
+			RHIBuffer wvpBuffer;
 
 			SceGxmVertexProgram* basicVertexProgram = nullptr;
 			SceGxmFragmentProgram* basicFragmentProgram = nullptr;
