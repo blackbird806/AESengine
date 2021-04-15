@@ -19,7 +19,7 @@ namespace aes {
 	{
 		glm::vec2 min, max;
 
-		[[nodiscard]] RectBounds getBounds() const noexcept
+		RectBounds getBounds() const noexcept
 		{
 			return {
 				.topL = { min.x, max.y },

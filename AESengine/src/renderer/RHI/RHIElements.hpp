@@ -2,10 +2,18 @@
 #define RHI_ELEMENTS_HPP
 
 #include <cstddef>
+#include <cstdint>
 
 namespace aes
 {
-	enum class CPUAccessFlags
+	enum class CPUAccessFlags : uint8_t
+	{
+		None = 0x0,
+		Read = 0x1,
+		Write = 0x2
+	};
+
+	enum class GPUAccessFlags : uint8_t
 	{
 		None = 0x0,
 		Read = 0x1,
@@ -48,7 +56,8 @@ namespace aes
 		size_t sizeInBytes;
 		Usage bufferUsage;
 		BindFlags bindFlags;
-		CPUAccessFlags cpuAccessFlags = CPUAccessFlags::None;
+		uint8_t cpuAccessFlags = (uint8_t)CPUAccessFlags::None;
+		uint8_t gpuAccessFlags = (uint8_t)GPUAccessFlags::None;
 		void* initialData = nullptr;
 	};
 

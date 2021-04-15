@@ -70,7 +70,7 @@ LRESULT Win_Window::windowProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPa
 		}
 		case WM_MOUSEMOVE:
 			self->mouseX = GET_X_LPARAM(lParam);
-			self->mouseY = GET_Y_LPARAM(lParam);
+			self->mouseY = self->height - GET_Y_LPARAM(lParam); // 0 is down
 			if (self->mouseMoveCallback) self->mouseMoveCallback(self->mouseX, self->mouseY);
 			break;
 		case WM_SIZE:
@@ -107,12 +107,12 @@ Win_Window::Win_Window(const char* name)
 	
 	AES_ASSERT(name);
 
-	std::wstring windowName = to_wstring(std::string(name));
+	std::wstring const windowName = to_wstring(std::string(name));
 
 	WNDCLASSEX wc = { };
 	
-	HINSTANCE hInstance = GetModuleHandle(NULL);
-	WNDPROC winPRoc = (WNDPROC)windowProcess;
+	HINSTANCE const hInstance = GetModuleHandle(NULL);
+	WNDPROC const winPRoc = (WNDPROC)windowProcess;
 	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.lpfnWndProc = winPRoc;
 	wc.hInstance = hInstance;

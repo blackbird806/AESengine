@@ -36,7 +36,7 @@ Result<void> D3D11Buffer::create(BufferDescription const& desc)
 	bufferDesc.Usage = rhiBufferUsageToApi(desc.bufferUsage);
 	bufferDesc.ByteWidth = size;
 	bufferDesc.BindFlags = rhiBufferBindFlagsToApi(bindFlags);
-	bufferDesc.CPUAccessFlags = rhiCPUAccessFlagToApi(desc.cpuAccessFlags);
+	bufferDesc.CPUAccessFlags = rhiCPUAccessFlagsToApi(desc.cpuAccessFlags);
 	bufferDesc.MiscFlags = 0;
 	bufferDesc.StructureByteStride = 0;
 	ID3D11Device* device = D3D11Renderer::instance().getDevice();

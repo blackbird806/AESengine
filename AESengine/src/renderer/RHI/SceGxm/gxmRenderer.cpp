@@ -498,7 +498,7 @@ void GxmRenderer::init(Window& windowHandle)
 		.sizeInBytes = 16 * sizeof(float),
 		.bufferUsage = Usage::Dynamic,
 		.bindFlags = BindFlags::UniformBuffer,
-		.cpuAccessFlags = CPUAccessFlags::Write
+		.gpuAccessFlags = (uint8_t)CPUAccessFlags::Write | (uint8_t)CPUAccessFlags::Read
 	};
 	wvpBuffer.create(bufferInfo);
 
@@ -655,7 +655,10 @@ void GxmRenderer::startFrame(Camera const& cam)
 //	void* vertexDefaultBuffer;
 //	sceGxmReserveVertexDefaultUniformBuffer(context, &vertexDefaultBuffer);
 //	sceGxmSetUniformDataF(vertexDefaultBuffer, wvpParam, 0, 16, wvpData);
-	wvpBuffer.setData(wvpData);	
+	AES_ONCE(AES_LOG("writting wvp"));
+	wvpBuffer.setData(wvpData, sizeof(float) * 16);
+	AES_ONCE(AES_LOG("end writting wvp"));
+
 	AES_ASSERT(isAligned(wvpBuffer.getHandle(), 64));
 	sceGxmSetVertexUniformBuffer(context, 0, wvpBuffer.getHandle());
 

@@ -60,18 +60,14 @@ D3D_PRIMITIVE_TOPOLOGY aes::rhiPrimitiveTypeToApi(DrawPrimitiveType primitiveMod
 }
 
 // @Review
-D3D11_CPU_ACCESS_FLAG aes::rhiCPUAccessFlagToApi(CPUAccessFlags flag)
+UINT aes::rhiCPUAccessFlagsToApi(uint8_t flags)
 {
-	switch(flag)
-	{
-	case CPUAccessFlags::None:
-		return (D3D11_CPU_ACCESS_FLAG)0;
-	case CPUAccessFlags::Read:
-		return D3D11_CPU_ACCESS_READ;
-	case CPUAccessFlags::Write:
-		return D3D11_CPU_ACCESS_WRITE;
-	}
-	AES_UNREACHABLE();
+	UINT result = 0;
+	if((flags & (uint8_t)CPUAccessFlags::Read) == (uint8_t)CPUAccessFlags::Read)
+		result |= D3D11_CPU_ACCESS_READ;
+	if ((flags & (uint8_t)CPUAccessFlags::Write) == (uint8_t)CPUAccessFlags::Write)
+		result |= D3D11_CPU_ACCESS_WRITE;
+	return result;
 }
 
 

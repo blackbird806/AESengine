@@ -21,14 +21,14 @@ SceGxmPrimitiveType aes::rhiPrimitiveTypeToApi(DrawPrimitiveType type)
 }
 
 // @Review
-SceGxmMemoryAttribFlags aes::rhiCPUAccessFlagsToApi(CPUAccessFlags flags)
+uint8_t aes::rhiGPUAccessFlagsToApi(uint8_t flags)
 {
-	SceGxmMemoryAttribFlags apiFlags;
-	if (flags == CPUAccessFlags::Read)
-		return SCE_GXM_MEMORY_ATTRIB_READ;
-	if (flags == CPUAccessFlags::Write)
-		return SCE_GXM_MEMORY_ATTRIB_WRITE;
-	return (SceGxmMemoryAttribFlags)0;
+	uint8_t apiFlags;
+	if ((flags & (uint8_t)GPUAccessFlags::Read) == (uint8_t)GPUAccessFlags::Read)
+		apiFlags |= SCE_GXM_MEMORY_ATTRIB_READ;
+	if ((flags & (uint8_t)GPUAccessFlags::Write) == (uint8_t)GPUAccessFlags::Write)
+		apiFlags |= SCE_GXM_MEMORY_ATTRIB_WRITE;
+	return apiFlags;
 }
 
 SceGxmIndexFormat aes::rhiIndexFormatToApi(TypeFormat format)

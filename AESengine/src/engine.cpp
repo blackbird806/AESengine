@@ -89,10 +89,7 @@ InputState Engine::getKeyState(Key k) noexcept
 	return keyStates[k];
 }
 
-// return normalized mouse position
-// 0 0 is up left
-// 1 1 is down right
-void Engine::getMousePos(float& x, float& y) const noexcept
+void Engine::getViewportMousePos(float& x, float& y) const noexcept
 {
 	uint sx, sy;
 	mainWindow->getScreenSize(sx, sy);
@@ -100,4 +97,9 @@ void Engine::getMousePos(float& x, float& y) const noexcept
 	mainWindow->getMousePosition(mx, my);
 	x = (float)mx / (float)sx;
 	y = (float)my / (float)sy;
+}
+
+void Engine::getScreenMousePos(int& x, int& y) const noexcept
+{
+	mainWindow->getMousePosition(x, y);
 }

@@ -1,0 +1,8 @@
+info : Game initialized
+info : graphic card : NVIDIA GeForce RTX 2070
+video memory : 8031 MB
+info : D3D11 renderer initialized
+info : D3D11 debugs initialized
+info : engine initialized
+info : start
+info : engine destroyed

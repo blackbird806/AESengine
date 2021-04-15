@@ -21,10 +21,11 @@ GxmBuffer& GxmBuffer::operator=(GxmBuffer&& rhs) noexcept
 
 Result<void> GxmBuffer::create(BufferDescription const& desc)
 {
-	buffer = aes::graphicsAlloc(SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE /*@Review*/,
+	// @TODO vram memory manager
+	buffer = aes::graphicsAlloc(SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
 		desc.sizeInBytes,
-		0 /* @Review*/,
-		rhiCPUAccessFlagsToApi(desc.cpuAccessFlags),
+		0,
+		rhiGPUAccessFlagsToApi(desc.gpuAccessFlags),
 		&memID);
 	return {};
 }

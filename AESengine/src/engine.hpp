@@ -27,11 +27,30 @@ namespace aes {
 		void run();
 
 		static Logger& getLogger() noexcept;
-		
+
 	protected:
 
 		InputState getKeyState(Key k) noexcept;
-		void getMousePos(float& x, float& y) const noexcept;
+
+		/*
+		 *0;1
+		 * ---------- 1;1
+		 * |		|
+		 * |		|
+		 * ----------
+		 * 0;0		1;0
+		 */
+		void getViewportMousePos(float& x, float& y) const noexcept;
+
+		/*
+		 * 0;h
+		 * ---------- w;h
+		 * |		|
+		 * |		|
+		 * ----------
+		 * 0;0		w;0
+		 */
+		void getScreenMousePos(int& x, int& y) const noexcept;
 
 		Camera mainCamera;
 		std::unique_ptr<Window> mainWindow;

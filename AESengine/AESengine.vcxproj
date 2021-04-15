@@ -48,6 +48,7 @@
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11shader.cpp" />
     <ClCompile Include="src\renderer\RHI\model.cpp" />
     <ClCompile Include="src\renderer\RHI\RHIBuffer.cpp" />
+    <ClCompile Include="src\UI\UI.cpp" />
     <ClCompile Include="thirdParty\fmt\src\format.cc" />
     <ClCompile Include="thirdParty\fmt\src\os.cc" />
     <ClCompile Include="thirdParty\stb\stb_truetype.cpp" />
@@ -62,6 +63,7 @@
     <ClInclude Include="src\core\debug.hpp" />
     <ClInclude Include="src\core\debugMath.hpp" />
     <ClInclude Include="src\core\error.hpp" />
+    <ClInclude Include="src\core\geometry.hpp" />
     <ClInclude Include="src\core\input.hpp" />
     <ClInclude Include="src\core\macro_helpers.hpp" />
     <ClInclude Include="src\core\maths.hpp" />
@@ -88,6 +90,7 @@
     <ClInclude Include="src\renderer\RHI\model.hpp" />
     <ClInclude Include="src\renderer\RHI\RHIRenderContext.hpp" />
     <ClInclude Include="src\renderer\vertex.hpp" />
+    <ClInclude Include="src\UI\UI.hpp" />
     <ClInclude Include="thirdParty\tiny\tiny_obj_loader.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -208,6 +211,7 @@
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>false</ExceptionHandling>
+      <SupportJustMyCode>true</SupportJustMyCode>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -226,6 +230,7 @@
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>false</ExceptionHandling>
+      <SupportJustMyCode>true</SupportJustMyCode>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -286,6 +291,7 @@
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>false</ExceptionHandling>
+      <SupportJustMyCode>true</SupportJustMyCode>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

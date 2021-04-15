@@ -58,6 +58,7 @@ Result<void> Model::create(std::span<Vertex const> vertices, std::span<uint32_t 
 	vertexBufferInfo.bufferUsage = Usage::Default;
 	vertexBufferInfo.sizeInBytes = vertices.size_bytes();
 	vertexBufferInfo.initialData = (void*)vertices.data();
+	vertexBufferInfo.gpuAccessFlags = (uint8_t)GPUAccessFlags::Read;
 	
 	auto err = vertexBuffer.create(vertexBufferInfo);
 	if (!err)
@@ -68,6 +69,7 @@ Result<void> Model::create(std::span<Vertex const> vertices, std::span<uint32_t 
 	indexBufferInfo.bufferUsage = Usage::Default;
 	indexBufferInfo.sizeInBytes = indices.size_bytes();
 	indexBufferInfo.initialData = (void*)indices.data();
+	indexBufferInfo.gpuAccessFlags = (uint8_t)GPUAccessFlags::Read;
 
 	err = indexBuffer.create(indexBufferInfo);
 	if (!err)
@@ -77,7 +79,7 @@ Result<void> Model::create(std::span<Vertex const> vertices, std::span<uint32_t 
 	modelBufferInfo.bindFlags = BindFlags::UniformBuffer;
 	modelBufferInfo.bufferUsage = Usage::Dynamic;
 	modelBufferInfo.sizeInBytes = sizeof(ModelBuffer);
-	modelBufferInfo.cpuAccessFlags = CPUAccessFlags::Write;
+	modelBufferInfo.cpuAccessFlags = (uint8_t)CPUAccessFlags::Write;
 
 	err = modelBuffer.create(modelBufferInfo);
 	if (!err)

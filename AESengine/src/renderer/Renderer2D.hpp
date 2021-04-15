@@ -37,6 +37,7 @@ namespace aes {
 
 			Type type;
 			glm::vec4 col;
+			// @TODO use variant here
 			union
 			{
 				Line2D line;
@@ -54,14 +55,13 @@ namespace aes {
 		void drawLine(glm::vec2 p1, glm::vec2 p2, glm::vec4 const& col);
 		void drawFillRect(Rect const& rect, glm::vec4 const& col);
 
-		void updateBuffers();
-
 		void draw();
 
 		void destroy();
 
 	private:
 
+		void updateBuffers();
 		std::vector<Command> commands;
 		
 		ID3D11BlendState* blendState = nullptr;
