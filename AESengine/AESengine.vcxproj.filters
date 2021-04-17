@@ -84,7 +84,7 @@
     <ClCompile Include="thirdParty\tiny\tiny_obj_loader.cpp">
       <Filter>ThirdParty\tiny</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\RHI\D3D11\D3D11shader.cpp">
+    <ClCompile Include="src\renderer\RHI\D3D11\D3D11Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11renderer.cpp">
@@ -109,6 +109,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\UI\UI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\draw2d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -182,7 +185,7 @@
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11Texture.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\RHI\D3D11\D3D11shader.hpp">
+    <ClInclude Include="src\renderer\RHI\D3D11\D3D11Shader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11renderer.hpp">
@@ -219,6 +222,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\UI\UI.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\draw2d.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\RHI\RHIShader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -8,8 +8,8 @@
 namespace aes
 {
 	SceGxmPrimitiveType rhiPrimitiveTypeToApi(DrawPrimitiveType type);
-	uint8_t rhiGPUAccessFlagsToApi(uint8_t flags);
 	SceGxmIndexFormat rhiIndexFormatToApi(TypeFormat format);
+	uint8_t rhiBufferUsageToApi(BufferUsage usage);
 }
 
 

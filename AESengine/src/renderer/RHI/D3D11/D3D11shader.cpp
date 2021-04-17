@@ -1,4 +1,4 @@
-#include "D3D11shader.hpp"
+#include "D3D11Shader.hpp"
 
 #include <d3dcompiler.h>
 
@@ -65,12 +65,12 @@ VS_OUTPUT main(VS_INPUT input)
     return output;
 })";
 
-void D3D11Shader::init()
+void D3D11ShaderLegacy::init()
 {
 	init(vShader, pxShader);
 }
 
-void D3D11Shader::init(std::string_view vs, std::string_view ps)
+void D3D11ShaderLegacy::init(std::string_view vs, std::string_view ps)
 {
 	AES_PROFILE_FUNCTION();
 
@@ -158,7 +158,7 @@ void D3D11Shader::init(std::string_view vs, std::string_view ps)
 	}
 }
 
-void D3D11Shader::destroy()
+void D3D11ShaderLegacy::destroy()
 {
 	AES_PROFILE_FUNCTION();
 
@@ -173,7 +173,7 @@ void D3D11Shader::destroy()
 	cameraBuffer->Release();
 }
 
-void D3D11Shader::render(glm::mat4 const& view, glm::mat4 const& proj)
+void D3D11ShaderLegacy::render(glm::mat4 const& view, glm::mat4 const& proj)
 {
 	AES_PROFILE_FUNCTION();
 
@@ -203,4 +203,60 @@ void D3D11Shader::render(glm::mat4 const& view, glm::mat4 const& proj)
 	// Set the vertex and pixel shaders that will be used to render this triangle.
 	deviceContext->VSSetShader(vertexShader, nullptr, 0);
 	deviceContext->PSSetShader(pixelShader, nullptr, 0);
+}
+
+Result<void> D3D11VertexShader::init(ShaderDescription const& desc)
+{
+	AES_PROFILE_FUNCTION();
+
+	ID3D10Blob* errorMessage = nullptr;
+	ID3D10Blob* vertexShaderBuffer = nullptr;
+
+	ID3D11Device* device = D3D11Renderer::instance().getDevice();
+
+	
+	auto result = D3DCompile(desc.source.data(), sizeof(char) * desc.source.size(), "vertexShader", nullptr, nullptr, "main", "vs_5_0", 0, 0, &vertexShaderBuffer, &errorMessage);
+	if (FAILED(result))
+	{
+		AES_LOG_ERROR("failed to compile vertex shader : {}", (char*)errorMessage->GetBufferPointer());
+		return { AESError::ShaderCompilationFailed };
+	}
+
+	// Create the vertex shader from the buffer.
+	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), nullptr, &vertexShader);
+	if (FAILED(result))
+	{
+		AES_LOG_ERROR("failed to create vertex shader");
+		return { AESError::ShaderCreationFailed };
+	}
+
+	// Now setup the layout of the data that goes into the shader.
+	// This setup needs to match the VertexType stucture in the ModelClass and in the shader.
+	D3D11_INPUT_ELEMENT_DESC polygonLayout[2];
+	polygonLayout[0].SemanticName = "POSITION";
+	polygonLayout[0].SemanticIndex = 0;
+	polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	polygonLayout[0].InputSlot = 0;
+	polygonLayout[0].AlignedByteOffset = 0;
+	polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[0].InstanceDataStepRate = 0;
+
+	polygonLayout[1].SemanticName = "COLOR";
+	polygonLayout[1].SemanticIndex = 0;
+	polygonLayout[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	polygonLayout[1].InputSlot = 0;
+	polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[1].InstanceDataStepRate = 0;
+
+	// Create the vertex input layout.
+	result = device->CreateInputLayout(polygonLayout, std::size(polygonLayout), vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &layout);
+	if (FAILED(result))
+	{
+		AES_LOG_ERROR("failed to create InputLayout");
+		return { AESError::ShaderCreationFailed };
+	}
+	
+	// Release the vertex shader buffer and pixel shader buffer since they are no longer needed.
+	vertexShaderBuffer->Release();
 }

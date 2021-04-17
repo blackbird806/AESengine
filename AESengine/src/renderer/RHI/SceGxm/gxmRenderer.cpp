@@ -496,9 +496,8 @@ void GxmRenderer::init(Window& windowHandle)
 
 	BufferDescription bufferInfo = {
 		.sizeInBytes = 16 * sizeof(float),
-		.bufferUsage = Usage::Dynamic,
+		.bufferUsage = BufferUsage::Dynamic,
 		.bindFlags = BindFlags::UniformBuffer,
-		.gpuAccessFlags = (uint8_t)CPUAccessFlags::Write | (uint8_t)CPUAccessFlags::Read
 	};
 	wvpBuffer.create(bufferInfo);
 
@@ -655,13 +654,11 @@ void GxmRenderer::startFrame(Camera const& cam)
 //	void* vertexDefaultBuffer;
 //	sceGxmReserveVertexDefaultUniformBuffer(context, &vertexDefaultBuffer);
 //	sceGxmSetUniformDataF(vertexDefaultBuffer, wvpParam, 0, 16, wvpData);
-	AES_ONCE(AES_LOG("writting wvp"));
 	wvpBuffer.setData(wvpData, sizeof(float) * 16);
-	AES_ONCE(AES_LOG("end writting wvp"));
-
-	AES_ASSERT(isAligned(wvpBuffer.getHandle(), 64));
-	sceGxmSetVertexUniformBuffer(context, 0, wvpBuffer.getHandle());
-
+	auto err = sceGxmSetVertexUniformBuffer(context, 0, wvpBuffer.getHandle());
+	
+	AES_ONCE(AES_LOG("sceGxmSetVertexDefaultUniformBuffer : {}", err));
+	AES_ASSERT(err == SCE_OK);
 	// draw the spinning triangle
 	sceGxmSetVertexStream(context, 0, basicVertices);
 	sceGxmDraw(context, SCE_GXM_PRIMITIVE_TRIANGLES, SCE_GXM_INDEX_FORMAT_U16, basicIndices, 3);

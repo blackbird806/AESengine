@@ -24,8 +24,8 @@ Result<void> GxmBuffer::create(BufferDescription const& desc)
 	// @TODO vram memory manager
 	buffer = aes::graphicsAlloc(SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
 		desc.sizeInBytes,
-		0,
-		rhiGPUAccessFlagsToApi(desc.gpuAccessFlags),
+		0 /* alignement */,
+		rhiBufferUsageToApi(desc.bufferUsage),
 		&memID);
 	return {};
 }

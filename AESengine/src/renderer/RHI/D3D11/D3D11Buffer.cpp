@@ -63,6 +63,13 @@ Result<void> D3D11Buffer::create(BufferDescription const& desc)
 	return {};
 }
 
+Result<void> D3D11Buffer::copyTo(D3D11Buffer& dest)
+{
+	ID3D11DeviceContext* deviceContext = D3D11Renderer::instance().getDeviceContext();
+	deviceContext->CopyResource(dest.getHandle(), apiBuffer);
+	return {};
+}
+
 ID3D11Buffer* D3D11Buffer::getHandle() noexcept
 {
 	return apiBuffer;
@@ -86,4 +93,14 @@ Result<void> D3D11Buffer::unmap()
 	ID3D11DeviceContext* deviceContext = D3D11Renderer::instance().getDeviceContext();
 	deviceContext->Unmap(apiBuffer, 0);
 	return {};
+}
+
+size_t D3D11Buffer::getSize() const
+{
+	return size;
+}
+
+bool D3D11Buffer::isValid() const
+{
+	return size != 0;
 }

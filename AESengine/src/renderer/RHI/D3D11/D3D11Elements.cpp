@@ -18,14 +18,14 @@ DXGI_FORMAT aes::rhiTypeFormatToApi(TypeFormat format)
 	AES_UNREACHABLE();
 }
 
-D3D11_USAGE aes::rhiBufferUsageToApi(Usage u)
+D3D11_USAGE aes::rhiBufferUsageToApi(BufferUsage u)
 {
 	switch (u)
 	{
-	case Usage::Default: return D3D11_USAGE_DEFAULT;
-	case Usage::Immutable: return D3D11_USAGE_IMMUTABLE;
-	case Usage::Dynamic: return D3D11_USAGE_DYNAMIC;
-	case Usage::Staging: return D3D11_USAGE_STAGING;
+	case BufferUsage::Default: return D3D11_USAGE_DEFAULT;
+	case BufferUsage::Immutable: return D3D11_USAGE_IMMUTABLE;
+	case BufferUsage::Dynamic: return D3D11_USAGE_DYNAMIC;
+	case BufferUsage::Staging: return D3D11_USAGE_STAGING;
 	}
 	AES_UNREACHABLE();
 }

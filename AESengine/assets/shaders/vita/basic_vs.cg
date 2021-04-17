@@ -1,7 +1,8 @@
-﻿void main(
+﻿uniform float4x4 wvp : BUFFER0;
+
+void main(
 	float3 aPosition,
 	float4 aColor,
-	uniform float4x4 wvp : BUFFER[0],
 	float4 out vPosition : POSITION,
 	float4 out vColor : TEXCOORD0)
 {

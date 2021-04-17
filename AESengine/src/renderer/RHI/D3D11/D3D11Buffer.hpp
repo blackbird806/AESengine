@@ -18,17 +18,20 @@ namespace aes
 		~D3D11Buffer();
 		
 		Result<void> create(BufferDescription const& desc);
-
-		ID3D11Buffer* getHandle() noexcept;
+		Result<void> copyTo(D3D11Buffer& dest);
 		
+		ID3D11Buffer* getHandle() noexcept;
 		Result<void*> map();
 		Result<void> unmap();
-
+		
+		size_t getSize() const;
+		bool isValid() const;
+		
 	protected:
 
 		BindFlags bindFlags;
 		ID3D11Buffer* apiBuffer;
-		size_t size;
+		size_t size = 0;
 	};
 	
 	using RHIBufferBase = D3D11Buffer;

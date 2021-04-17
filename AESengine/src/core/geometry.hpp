@@ -19,6 +19,11 @@ namespace aes {
 	{
 		glm::vec2 min, max;
 
+		static Rect createHalfCenter(glm::vec2 center, glm::vec2 halfSize)
+		{
+			return Rect{ center - halfSize, center + halfSize };
+		}
+		
 		RectBounds getBounds() const noexcept
 		{
 			return {
@@ -29,7 +34,6 @@ namespace aes {
 			};
 		}
 	};
-
 }
 
 #endif // !GEOMETRY_HPP

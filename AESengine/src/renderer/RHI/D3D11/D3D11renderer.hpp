@@ -8,9 +8,10 @@
 #include <dxgi.h>
 #include <d3d11.h>
 
+#include "D3D11Shader.hpp"
+
 /// DEBUG
 #include "renderer/camera.hpp"
-#include "D3D11shader.hpp"
 /// ///
 
 namespace aes {
@@ -42,7 +43,7 @@ namespace aes {
 	private:
 		
 	/// debug
-		D3D11Shader shader;
+		D3D11ShaderLegacy shader;
 	/// 
 		static D3D11Renderer* pinstance;
 

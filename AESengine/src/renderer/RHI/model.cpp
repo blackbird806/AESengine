@@ -55,10 +55,9 @@ Result<void> Model::create(std::span<Vertex const> vertices, std::span<uint32_t 
 
 	BufferDescription vertexBufferInfo{};
 	vertexBufferInfo.bindFlags = BindFlags::VertexBuffer;
-	vertexBufferInfo.bufferUsage = Usage::Default;
+	vertexBufferInfo.bufferUsage = BufferUsage::Immutable;
 	vertexBufferInfo.sizeInBytes = vertices.size_bytes();
 	vertexBufferInfo.initialData = (void*)vertices.data();
-	vertexBufferInfo.gpuAccessFlags = (uint8_t)GPUAccessFlags::Read;
 	
 	auto err = vertexBuffer.create(vertexBufferInfo);
 	if (!err)
@@ -66,10 +65,9 @@ Result<void> Model::create(std::span<Vertex const> vertices, std::span<uint32_t 
 	
 	BufferDescription indexBufferInfo{};
 	indexBufferInfo.bindFlags = BindFlags::IndexBuffer;
-	indexBufferInfo.bufferUsage = Usage::Default;
+	indexBufferInfo.bufferUsage = BufferUsage::Immutable;
 	indexBufferInfo.sizeInBytes = indices.size_bytes();
 	indexBufferInfo.initialData = (void*)indices.data();
-	indexBufferInfo.gpuAccessFlags = (uint8_t)GPUAccessFlags::Read;
 
 	err = indexBuffer.create(indexBufferInfo);
 	if (!err)
@@ -77,7 +75,7 @@ Result<void> Model::create(std::span<Vertex const> vertices, std::span<uint32_t 
 
 	BufferDescription modelBufferInfo {};
 	modelBufferInfo.bindFlags = BindFlags::UniformBuffer;
-	modelBufferInfo.bufferUsage = Usage::Dynamic;
+	modelBufferInfo.bufferUsage = BufferUsage::Dynamic;
 	modelBufferInfo.sizeInBytes = sizeof(ModelBuffer);
 	modelBufferInfo.cpuAccessFlags = (uint8_t)CPUAccessFlags::Write;
 

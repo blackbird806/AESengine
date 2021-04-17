@@ -20,17 +20,6 @@ SceGxmPrimitiveType aes::rhiPrimitiveTypeToApi(DrawPrimitiveType type)
 	AES_UNREACHABLE();
 }
 
-// @Review
-uint8_t aes::rhiGPUAccessFlagsToApi(uint8_t flags)
-{
-	uint8_t apiFlags;
-	if ((flags & (uint8_t)GPUAccessFlags::Read) == (uint8_t)GPUAccessFlags::Read)
-		apiFlags |= SCE_GXM_MEMORY_ATTRIB_READ;
-	if ((flags & (uint8_t)GPUAccessFlags::Write) == (uint8_t)GPUAccessFlags::Write)
-		apiFlags |= SCE_GXM_MEMORY_ATTRIB_WRITE;
-	return apiFlags;
-}
-
 SceGxmIndexFormat aes::rhiIndexFormatToApi(TypeFormat format)
 {
 	if (format == TypeFormat::Uint32)
@@ -40,3 +29,16 @@ SceGxmIndexFormat aes::rhiIndexFormatToApi(TypeFormat format)
 	AES_ASSERT(false); // unsupported format type
 }
 
+uint8_t aes::rhiBufferUsageToApi(BufferUsage usage)
+{
+	switch(usage)
+	{
+		case BufferUsage::Default:
+		case BufferUsage::Staging:
+			return SCE_GXM_MEMORY_ATTRIB_READ | SCE_GXM_MEMORY_ATTRIB_WRITE;
+		case BufferUsage::Dynamic:
+		case BufferUsage::Immutable:
+			return SCE_GXM_MEMORY_ATTRIB_READ;
+	}
+	AES_UNREACHABLE();
+}
