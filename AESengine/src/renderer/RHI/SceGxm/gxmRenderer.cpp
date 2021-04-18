@@ -437,13 +437,6 @@ void GxmRenderer::init(Window& windowHandle)
 	clearIndices[1] = 1;
 	clearIndices[2] = 2;
 
-	// get attributes by name to create vertex format bindings
-   	// first retrieve the underlying program to extract binding information
-   	const SceGxmProgramParameter* paramBasicPositionAttribute = sceGxmProgramFindParameterByName(basicShaderGxp_vs, "aPosition");
-	AES_ASSERT(paramBasicPositionAttribute && (sceGxmProgramParameterGetCategory(paramBasicPositionAttribute) == SCE_GXM_PARAMETER_CATEGORY_ATTRIBUTE));
-	const SceGxmProgramParameter* paramBasicColorAttribute = sceGxmProgramFindParameterByName(basicShaderGxp_vs, "aColor");
-	AES_ASSERT(paramBasicColorAttribute && (sceGxmProgramParameterGetCategory(paramBasicColorAttribute) == SCE_GXM_PARAMETER_CATEGORY_ATTRIBUTE));
-
 	AES_LOG("GXM initialized successfully");
 }
 
@@ -475,8 +468,6 @@ void GxmRenderer::destroy()
 	}
 
 	// unregister programs and destroy shader patcher
-	sceGxmShaderPatcherUnregisterProgram(shaderPatcher, basicFragmentProgramId);
-	sceGxmShaderPatcherUnregisterProgram(shaderPatcher, basicVertexProgramId);
 	sceGxmShaderPatcherUnregisterProgram(shaderPatcher, clearFragmentProgramId);
 	sceGxmShaderPatcherUnregisterProgram(shaderPatcher, clearVertexProgramId);
 	sceGxmShaderPatcherDestroy(shaderPatcher);
@@ -564,8 +555,21 @@ void GxmRenderer::bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset)
 
 void GxmRenderer::bindIndexBuffer(RHIBuffer& buffer, TypeFormat format, uint offset)
 {
+	AES_PROFILE_FUNCTION();
 	currentState.indexBufferInfo.typeFormat = format;
 	currentState.indexBufferInfo.buffer = buffer.getHandle();
+}
+
+void GxmRenderer::setFragmentShader(RHIFragmentShader& fs)
+{
+	AES_PROFILE_FUNCTION();
+	sceGxmSetFragmentProgram(context, fs.getHandle());
+}
+
+void GxmRenderer::setVertexShader(RHIVertexShader& vs)
+{
+	AES_PROFILE_FUNCTION();
+	sceGxmSetVertexProgram(context, vs.getHandle());
 }
 
 void GxmRenderer::setDrawPrimitiveMode(DrawPrimitiveType mode)
@@ -581,4 +585,8 @@ void GxmRenderer::drawIndexed(uint indexCount)
 				(uint32_t)indexCount);
 }
 
+SceGxmShaderPatcher* GxmRenderer::getShaderPatcher() const
+{
+	return shaderPatcher;
+}
 

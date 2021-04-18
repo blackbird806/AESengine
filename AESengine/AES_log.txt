@@ -4,4 +4,5 @@ video memory : 8031 MB
 info : D3D11 renderer initialized
 info : engine initialized
 info : start
-info : engine destroyed
+info : uniform buffer reflect CameraBuffer - index: 0 - size: 128
+info : uniform buffer reflect ModelBuffer - index: 1 - size: 64

@@ -23,7 +23,7 @@ namespace aes {
 
 		void render(glm::mat4 const& view, glm::mat4 const& proj);
 
-	//private:
+	private:
 		
 		ID3D11VertexShader* vertexShader;
 		ID3D11PixelShader* pixelShader;
@@ -34,7 +34,11 @@ namespace aes {
 	class D3D11Shader
 	{
 	public:
+		D3D11Shader() = default;
+		D3D11Shader(D3D11Shader&& rhs) noexcept;
+		D3D11Shader& operator=(D3D11Shader&& rhs) noexcept;
 		std::vector<UniformBufferReflectionInfo> getUniformBufferInfos() const;
+		~D3D11Shader();
 	protected:
 		ID3D11ShaderReflection* reflector;
 	};

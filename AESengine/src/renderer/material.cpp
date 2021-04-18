@@ -1,9 +1,9 @@
 #include "material.hpp"
 #include "RHI/RHIRenderContext.hpp"
 
-
 aes::Result<void> aes::Material::init(RHIVertexShader* vs, RHIFragmentShader* fs)
 {
+	AES_PROFILE_FUNCTION()
 	AES_ASSERT(vs);
 	AES_ASSERT(fs);
 	
@@ -14,6 +14,7 @@ aes::Result<void> aes::Material::init(RHIVertexShader* vs, RHIFragmentShader* fs
 	for (auto const& bufferInfo : vsbufferInfos)
 	{
 		vsUniformBufferSlots[bufferInfo.name] = bufferInfo.index;
+		AES_LOG("uniform buffer reflect {} - index: {} - size: {}", bufferInfo.name, bufferInfo.index, bufferInfo.size);
 	}
 
 	auto fsbufferInfos = fragmentShader->getUniformBufferInfos();
@@ -27,7 +28,9 @@ aes::Result<void> aes::Material::init(RHIVertexShader* vs, RHIFragmentShader* fs
 
 void aes::Material::bind(BindInfo const& bindInfos)
 {
-	auto context = RHIRenderContext::instance();
+	AES_PROFILE_FUNCTION()
+
+	auto& context = RHIRenderContext::instance();
 	
 	context.setVertexShader(*vertexShader);
 	for (auto const& [bufferName, buffer] : bindInfos.vsBuffers)

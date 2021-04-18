@@ -21,13 +21,17 @@ namespace aes
 		Result<void*> map();
 		Result<void> unmap();
 		
+		bool isValid() const;
+		size_t getSize() const;
+		Result<void> copyTo(GxmBuffer& dest);
+
 		void* getHandle();
 
 	private:
 
 		BindFlags bindFlags;
 		SceUID memID;
-		void* buffer;
+		void* buffer = nullptr;
 		size_t size;
 	};
 

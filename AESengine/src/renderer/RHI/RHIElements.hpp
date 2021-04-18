@@ -5,6 +5,9 @@
 #include <cstdint>
 #include <string>
 #include <span>
+#include <variant>
+
+#include "core/aes.hpp"
 
 namespace aes
 {
@@ -41,11 +44,34 @@ namespace aes
 
 	enum class TypeFormat
 	{
-		Uint32,
-		Uint16,
+		Float16,
+		Float32,
+
 		Uint8,
+		Uint16,
+		Uint32,
 	};
 
+	enum class SemanticType
+	{
+		Position,
+		Normal,
+		Color,
+		TexCoord
+	};
+
+	inline const char* getSemanticName(SemanticType e)
+	{
+		switch (e)
+		{
+		case SemanticType::Position: return "POSITION";
+		case SemanticType::Normal: return "NORMAL";
+		case SemanticType::Color: return "COLOR";
+		case SemanticType::TexCoord: return "TEXCOORD";
+		}
+		AES_UNREACHABLE();
+	}
+	
 	struct BufferDescription
 	{
 		size_t sizeInBytes;
@@ -68,14 +94,14 @@ namespace aes
 	
 	struct VertexInputLayout
 	{
-		std::string semanticName;
+		SemanticType semantic;
 		RHIFormat format;
 		uint32_t offset;
 	};
 
 	struct ShaderDescription
 	{
-		std::string source;
+		std::variant<std::string, uint8_t*> source;
 	};
 
 	struct VertexShaderDescription : public ShaderDescription

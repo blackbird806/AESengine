@@ -7,6 +7,7 @@
 #include "renderer/RHI/RHIBuffer.hpp"
 
 #include "../RHIBuffer.hpp"
+#include "../RHIShader.hpp"
 #include <vitasdk.h>
 #include "gxmCompatibilty.h"
 
@@ -54,8 +55,13 @@ namespace aes
 			void bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset = 0);
 			void bindIndexBuffer(RHIBuffer& buffer, TypeFormat typeFormat, uint offset = 0);
 
+			void setFragmentShader(RHIFragmentShader& fs);
+			void setVertexShader(RHIVertexShader& vs);
+
 			void setDrawPrimitiveMode(DrawPrimitiveType mode);
 			void drawIndexed(uint indexCount);
+
+			SceGxmShaderPatcher* getShaderPatcher() const;
 
 		private:
 

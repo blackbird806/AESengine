@@ -9,6 +9,8 @@ namespace aes
 {
 	SceGxmPrimitiveType rhiPrimitiveTypeToApi(DrawPrimitiveType type);
 	SceGxmIndexFormat rhiIndexFormatToApi(TypeFormat format);
+	SceGxmAttributeFormat rhiAttributeFormatToApi(TypeFormat format);
+	SceGxmParameterSemantic rhiSemanticTypeToApi(SemanticType type);
 	uint8_t rhiBufferUsageToApi(BufferUsage usage);
 }
 
