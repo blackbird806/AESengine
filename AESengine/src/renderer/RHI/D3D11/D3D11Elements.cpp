@@ -18,6 +18,24 @@ DXGI_FORMAT aes::rhiTypeFormatToApi(TypeFormat format)
 	AES_UNREACHABLE();
 }
 
+DXGI_FORMAT aes::rhiFormatToApi(RHIFormat format)
+{
+	switch (format)
+	{
+	case RHIFormat::R16G16_Float:
+		return DXGI_FORMAT_R16G16_FLOAT;
+	case RHIFormat::R32G32_Float:
+		return DXGI_FORMAT_R32G32_FLOAT;
+	case RHIFormat::R32G32B32_Float:
+		return DXGI_FORMAT_R32G32B32_FLOAT;
+	case RHIFormat::R16G16B16A16_Float:
+		return DXGI_FORMAT_R16G16B16A16_FLOAT;
+	case RHIFormat::R32G32B32A32_Float:
+		return DXGI_FORMAT_R32G32B32A32_FLOAT;
+	}
+	AES_UNREACHABLE();
+}
+
 D3D11_USAGE aes::rhiBufferUsageToApi(BufferUsage u)
 {
 	switch (u)

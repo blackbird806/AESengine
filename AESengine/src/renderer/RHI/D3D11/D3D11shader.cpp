@@ -2,6 +2,8 @@
 
 #include <d3dcompiler.h>
 
+
+#include "D3D11Elements.hpp"
 #include "core/aes.hpp"
 #include "core/debug.hpp"
 #include "D3D11renderer.hpp"
@@ -205,7 +207,7 @@ void D3D11ShaderLegacy::render(glm::mat4 const& view, glm::mat4 const& proj)
 	deviceContext->PSSetShader(pixelShader, nullptr, 0);
 }
 
-Result<void> D3D11VertexShader::init(ShaderDescription const& desc)
+Result<void> D3D11VertexShader::init(VertexShaderDescription const& desc)
 {
 	AES_PROFILE_FUNCTION();
 
@@ -214,7 +216,6 @@ Result<void> D3D11VertexShader::init(ShaderDescription const& desc)
 
 	ID3D11Device* device = D3D11Renderer::instance().getDevice();
 
-	
 	auto result = D3DCompile(desc.source.data(), sizeof(char) * desc.source.size(), "vertexShader", nullptr, nullptr, "main", "vs_5_0", 0, 0, &vertexShaderBuffer, &errorMessage);
 	if (FAILED(result))
 	{
@@ -231,32 +232,136 @@ Result<void> D3D11VertexShader::init(ShaderDescription const& desc)
 	}
 
 	// Now setup the layout of the data that goes into the shader.
-	// This setup needs to match the VertexType stucture in the ModelClass and in the shader.
-	D3D11_INPUT_ELEMENT_DESC polygonLayout[2];
-	polygonLayout[0].SemanticName = "POSITION";
-	polygonLayout[0].SemanticIndex = 0;
-	polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	polygonLayout[0].InputSlot = 0;
-	polygonLayout[0].AlignedByteOffset = 0;
-	polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[0].InstanceDataStepRate = 0;
-
-	polygonLayout[1].SemanticName = "COLOR";
-	polygonLayout[1].SemanticIndex = 0;
-	polygonLayout[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	polygonLayout[1].InputSlot = 0;
-	polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	polygonLayout[1].InstanceDataStepRate = 0;
+	// This setup needs to match the VertexType stucture in the shader.
+	std::vector<D3D11_INPUT_ELEMENT_DESC> polygonLayout(desc.verticesLayout.size());
+	for (int i = 0; auto const& layout : desc.verticesLayout)
+	{
+		polygonLayout[i].SemanticName = layout.semanticName.c_str();
+		polygonLayout[i].SemanticIndex = 0;
+		polygonLayout[i].Format = rhiFormatToApi(layout.format);
+		polygonLayout[i].InputSlot = 0;
+		polygonLayout[i].AlignedByteOffset = layout.offset;
+		polygonLayout[i].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+		polygonLayout[i].InstanceDataStepRate = 0;
+		i++;
+	}
 
 	// Create the vertex input layout.
-	result = device->CreateInputLayout(polygonLayout, std::size(polygonLayout), vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &layout);
+	result = device->CreateInputLayout(polygonLayout.data(), std::size(polygonLayout), vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &layout);
 	if (FAILED(result))
 	{
 		AES_LOG_ERROR("failed to create InputLayout");
 		return { AESError::ShaderCreationFailed };
 	}
+
+	D3DReflect(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&reflector);
 	
-	// Release the vertex shader buffer and pixel shader buffer since they are no longer needed.
 	vertexShaderBuffer->Release();
+}
+
+D3D11VertexShader::D3D11VertexShader(D3D11VertexShader&& rhs) noexcept : vertexShader(rhs.vertexShader), layout(rhs.layout)
+{
+	rhs.vertexShader = nullptr;
+	rhs.layout = nullptr;
+}
+
+D3D11VertexShader& D3D11VertexShader::operator=(D3D11VertexShader&& rhs) noexcept
+{
+	vertexShader = rhs.vertexShader;
+	layout = rhs.layout;
+	reflector = rhs.reflector;
+	rhs.vertexShader = nullptr;
+	rhs.layout = nullptr;
+	rhs.reflector = nullptr;
+	return *this;
+}
+
+D3D11VertexShader::~D3D11VertexShader()
+{
+	if (vertexShader) // if shader is valid so is layout and reflector
+	{
+		vertexShader->Release();
+		layout->Release();
+		reflector->Release();
+	}
+}
+
+std::vector<UniformBufferReflectionInfo> D3D11Shader::getUniformBufferInfos() const
+{
+	D3D11_SHADER_DESC shaderDesc;
+	reflector->GetDesc(&shaderDesc);
+
+	std::vector<UniformBufferReflectionInfo> bufferInfos(shaderDesc.ConstantBuffers);
+	for (uint i = 0; i < shaderDesc.ConstantBuffers; i++)
+	{
+		ID3D11ShaderReflectionConstantBuffer* D3DbufferInfo = reflector->GetConstantBufferByIndex(i);
+		D3D11_SHADER_BUFFER_DESC bufferDesc;
+		D3DbufferInfo->GetDesc(&bufferDesc);
+
+		bufferInfos[i].name = bufferDesc.Name;
+		bufferInfos[i].size = bufferDesc.Size;
+		bufferInfos[i].index = i;
+	}
+
+	return bufferInfos;
+}
+
+ID3D11VertexShader* D3D11VertexShader::getHandle()
+{
+	return vertexShader;
+}
+
+Result<void> D3D11FragmentShader::init(FragmentShaderDescription const& desc)
+{
+	AES_PROFILE_FUNCTION();
+
+	ID3D10Blob* errorMessage = nullptr;
+	ID3D10Blob* pixelShaderBuffer = nullptr;
+
+	ID3D11Device* device = D3D11Renderer::instance().getDevice();
+
+	HRESULT result = D3DCompile(desc.source.data(), sizeof(char) * desc.source.size(), "pixelShader", nullptr, nullptr, "main", "ps_5_0", 0, 0, &pixelShaderBuffer, &errorMessage);
+	if (FAILED(result))
+	{
+		AES_LOG_ERROR("failed to compile pixed shader : {}", (char*)errorMessage->GetBufferPointer());
+		return { AESError::ShaderCompilationFailed };
+	}
+
+	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), nullptr, &pixelShader);
+	if (FAILED(result))
+	{
+		AES_LOG_ERROR("failed to create pixel shader");
+		return { AESError::ShaderCreationFailed };
+	}
+	
+	D3DReflect(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&reflector);
+	pixelShaderBuffer->Release();
+}
+
+D3D11FragmentShader::D3D11FragmentShader(D3D11FragmentShader&& rhs) noexcept : pixelShader(rhs.pixelShader)
+{
+	rhs.pixelShader = nullptr;
+}
+
+D3D11FragmentShader& D3D11FragmentShader::operator=(D3D11FragmentShader&& rhs) noexcept
+{
+	pixelShader = rhs.pixelShader;
+	reflector = rhs.reflector;
+	rhs.pixelShader = nullptr;
+	rhs.reflector = nullptr;
+	return *this;
+}
+
+D3D11FragmentShader::~D3D11FragmentShader()
+{
+	if (pixelShader)
+	{
+		pixelShader->Release();
+		reflector->Release();
+	}
+}
+
+ID3D11PixelShader* D3D11FragmentShader::getHandle()
+{
+	return pixelShader;
 }

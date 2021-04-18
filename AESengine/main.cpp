@@ -3,15 +3,78 @@
 #include <fstream>
 #include "core/debugMath.hpp"
 #include "engine.hpp"
-#include "renderer/RHI/model.hpp"
+#include "renderer/model.hpp"
+#include "renderer/material.hpp"
 #include "core/os.hpp"
 
 #include "core/color.hpp"
+
+const char pxShader[] = R"(
+struct VS_OUTPUT
+{
+    float4 position : SV_POSITION;
+    float4 color : COLOR;
+};
+
+float4 main(VS_OUTPUT input) : SV_TARGET
+{
+    return input.color;
+}
+)";
+
+const char vShader[] = R"(
+struct VS_INPUT
+{
+    float4 position : POSITION;
+    float4 color : COLOR;
+};
+
+struct VS_OUTPUT
+{
+    float4 position : SV_POSITION;
+    float4 color : COLOR;
+};
+
+cbuffer CameraBuffer
+{
+	float4x4 viewMatrix;
+	float4x4 projectionMatrix;
+};
+
+cbuffer ModelBuffer
+{
+	float4x4 worldMatrix;
+};
+
+VS_OUTPUT main(VS_INPUT input)
+{
+    VS_OUTPUT output;
+
+    // Change the position vector to be 4 units for proper matrix calculations.
+    input.position.w = 1.0f;
+
+    // Calculate the position of the vertex against the world, view, and projection matrices.
+    output.position = mul(input.position, worldMatrix);
+    output.position = mul(output.position, viewMatrix);
+    output.position = mul(output.position, projectionMatrix);
+    //output.position = input.position;
+
+    // Store the input color for the pixel shader to use.
+    output.color = input.color;
+    
+    return output;
+})";
+
 
 class Game : public aes::Engine
 {
 
 public:
+
+	aes::RHIFragmentShader fragmentShader;
+	aes::RHIVertexShader vertexShader;
+	aes::Material defaultMtrl;
+	aes::Model model;
 	
 	Game(InitInfo const& info) : Engine(info)
 	{
@@ -22,6 +85,31 @@ public:
 	{
 		AES_PROFILE_FUNCTION();
 		AES_LOG("start");
+
+		aes::FragmentShaderDescription fragmentShaderDescription;
+		fragmentShaderDescription.source = pxShader;
+		fragmentShader.init(fragmentShaderDescription);
+
+		aes::VertexShaderDescription vertexShaderDescription;
+		vertexShaderDescription.source = vShader;
+		vertexShaderDescription.verticesStride = sizeof(aes::Vertex);
+
+		aes::VertexInputLayout vertexInputLayout[2];
+		vertexInputLayout[0].semanticName = "POSITION";
+		vertexInputLayout[0].offset = 0;
+		vertexInputLayout[0].format = aes::RHIFormat::R32G32B32A32_Float;
+
+		vertexInputLayout[1].semanticName = "COLOR";
+		vertexInputLayout[1].offset = sizeof(glm::vec4);
+		vertexInputLayout[1].format = aes::RHIFormat::R32G32B32A32_Float;
+
+		vertexShaderDescription.verticesLayout = vertexInputLayout;
+
+		vertexShader.init(vertexShaderDescription);
+
+		defaultMtrl.init(&vertexShader, &fragmentShader);
+
+		model = aes::createCube(&defaultMtrl).value();
 
 		mainCamera.pos = { 0.0, 0.0, -5.0 };
 		getViewportMousePos(lastMousePosX, lastMousePosY);
@@ -35,7 +123,7 @@ public:
 	void update(double dt) override
 	{
 		 AES_PROFILE_FUNCTION();
-		/*
+		
 		 glm::vec4 movePos = { 0.0f, 0.f, 0.f, 0.0f };
 		 if (getKeyState(aes::Key::W) == aes::InputState::Down)
 		 {
@@ -109,12 +197,14 @@ public:
 		 	float const aspect = (float)windowWidth / (float)windowHeight;
 		 	mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), aspect, 0.0001f, 1000.0f);
 		 }
-		 */
+
+		 model.toWorld = glm::rotate(model.toWorld, 1.5f * (float)dt, glm::vec3(0.0f, 1.0f, 1.0f));
 	}
 
 	void draw() override
 	{
 		AES_PROFILE_FUNCTION();
+		model.render();
 	}
 };
 

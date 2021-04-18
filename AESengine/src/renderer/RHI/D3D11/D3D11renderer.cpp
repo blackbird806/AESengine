@@ -124,11 +124,9 @@ void D3D11Renderer::init(Window& window)
 	setupRasterizerState();
 	setupViewport();
 
-	AES_LOG("D3D11 renderer initialized");
-
 	shader.init();
 
-	AES_LOG("D3D11 debugs initialized");
+	AES_LOG("D3D11 renderer initialized");
 }
 
 void D3D11Renderer::destroy()
@@ -150,10 +148,16 @@ void D3D11Renderer::destroy()
 	destroySwapchain();
 }
 
-void D3D11Renderer::bindBuffer(RHIBuffer& buffer, uint slot)
+void D3D11Renderer::bindVSUniformBuffer(RHIBuffer& buffer, uint slot)
 {
 	ID3D11Buffer* handle = buffer.getHandle();
 	deviceContext->VSSetConstantBuffers(slot, 1, &handle);
+}
+
+void D3D11Renderer::bindFSUniformBuffer(RHIBuffer& buffer, uint slot)
+{
+	ID3D11Buffer* handle = buffer.getHandle();
+	deviceContext->PSSetConstantBuffers(slot, 1, &handle);
 }
 
 void D3D11Renderer::bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset)
@@ -165,6 +169,16 @@ void D3D11Renderer::bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset
 void D3D11Renderer::bindIndexBuffer(RHIBuffer& buffer, TypeFormat typeFormat, uint offset)
 {
 	deviceContext->IASetIndexBuffer(buffer.getHandle(), rhiTypeFormatToApi(typeFormat), offset);
+}
+
+void D3D11Renderer::setFragmentShader(RHIFragmentShader& fs)
+{
+	deviceContext->PSSetShader(fs.getHandle(), nullptr, 0);
+}
+
+void D3D11Renderer::setVertexShader(RHIVertexShader& vs)
+{
+	deviceContext->VSSetShader(vs.getHandle(), nullptr, 0);
 }
 
 void D3D11Renderer::setDrawPrimitiveMode(DrawPrimitiveType mode)
@@ -357,7 +371,7 @@ void D3D11Renderer::createDepthStencil()
 	depthBufferDesc.CPUAccessFlags = 0;
 	depthBufferDesc.MiscFlags = 0;
 
-	auto result = device->CreateTexture2D(&depthBufferDesc, NULL, &depthStencilBuffer);
+	auto result = device->CreateTexture2D(&depthBufferDesc, nullptr, &depthStencilBuffer);
 	if (FAILED(result))
 	{
 		AES_ERROR("device depthStencilBuffer failed");

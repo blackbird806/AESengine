@@ -25,13 +25,6 @@ namespace aes
 	void* graphicsAlloc(SceKernelMemBlockType type, uint32_t size, uint32_t alignement, uint32_t attribs, SceUID* uid, const char* name = "default");
 	void graphicsFree(SceUID uid);
 
-	struct BasicVertex {
-		float x;
-		float y;
-		float z;
-		uint32_t color;
-	};
-
 	class GxmRenderer
 	{
 			struct IndexBufferInfo
@@ -56,7 +49,8 @@ namespace aes
 			void startFrame(Camera const& cam);
 			void endFrame();
 			
-			void bindBuffer(RHIBuffer& buffer, uint slot);
+			void bindVSUniformBuffer(RHIBuffer& buffer, uint slot);
+			void bindFSUniformBuffer(RHIBuffer& buffer, uint slot);
 			void bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset = 0);
 			void bindIndexBuffer(RHIBuffer& buffer, TypeFormat typeFormat, uint offset = 0);
 
@@ -87,8 +81,6 @@ namespace aes
 
 			SceGxmShaderPatcherId clearVertexProgramId;
 			SceGxmShaderPatcherId clearFragmentProgramId;
-			SceGxmShaderPatcherId basicVertexProgramId;
-			SceGxmShaderPatcherId basicFragmentProgramId;
 
 			SceGxmVertexProgram* clearVertexProgram = nullptr;
 			SceGxmFragmentProgram* clearFragmentProgram = nullptr;
@@ -97,15 +89,6 @@ namespace aes
 
 			glm::vec2* clearVertices;
 			uint16_t* clearIndices;
-			BasicVertex* basicVertices;
-			uint16_t* basicIndices;
-			SceGxmProgramParameter const* wvpParam;
-			RHIBuffer wvpBuffer;
-
-			SceGxmVertexProgram* basicVertexProgram = nullptr;
-			SceGxmFragmentProgram* basicFragmentProgram = nullptr;
-
-			SceUID basicVerticesUid, basicIndiceUid;
 
 			uint32_t backBufferIndex = 0;
 			uint32_t frontBufferIndex = 0;

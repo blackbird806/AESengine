@@ -316,8 +316,7 @@ void GxmRenderer::init(Window& windowHandle)
 		nullptr);
 	AES_ASSERT(err == SCE_OK);
 
-
-	// @Reviwe buffer sizes
+	// @Review buffer sizes
 	uint32_t const patcherBufferSize 		= 64 * 1024;
 	uint32_t const patcherVertexUsseSize 	= 64 * 1024;
 	uint32_t const patcherFragmentUsseSize 	= 64 * 1024;
@@ -367,21 +366,13 @@ void GxmRenderer::init(Window& windowHandle)
 
 	auto const clearShaderData_vs = aes::readFileBin("app0:assets/shaders/vita/clear_vs.gxp");
 	auto const clearShaderData_fs = aes::readFileBin("app0:assets/shaders/vita/clear_fs.gxp");
-	auto const basicShaderData_fs = aes::readFileBin("app0:assets/shaders/vita/basic_fs.gxp");
-	auto const basicShaderData_vs = aes::readFileBin("app0:assets/shaders/vita/basic_vs.gxp");
 	
 	SceGxmProgram const* clearShaderGxp_vs = reinterpret_cast<SceGxmProgram const*>(clearShaderData_vs.data());
 	SceGxmProgram const* clearShaderGxp_fs = reinterpret_cast<SceGxmProgram const*>(clearShaderData_fs.data());
-	SceGxmProgram const* basicShaderGxp_vs = reinterpret_cast<SceGxmProgram const*>(basicShaderData_vs.data());
-	SceGxmProgram const* basicShaderGxp_fs = reinterpret_cast<SceGxmProgram const*>(basicShaderData_fs.data());
 
 	err = sceGxmShaderPatcherRegisterProgram(shaderPatcher, clearShaderGxp_vs, &clearVertexProgramId);
 	AES_ASSERT(err == SCE_OK);
 	err = sceGxmShaderPatcherRegisterProgram(shaderPatcher, clearShaderGxp_fs, &clearFragmentProgramId);
-	AES_ASSERT(err == SCE_OK);
-	err = sceGxmShaderPatcherRegisterProgram(shaderPatcher, basicShaderGxp_vs, &basicVertexProgramId);
-	AES_ASSERT(err == SCE_OK);
-	err = sceGxmShaderPatcherRegisterProgram(shaderPatcher, basicShaderGxp_fs, &basicFragmentProgramId);
 	AES_ASSERT(err == SCE_OK);
 
 	// get attributes by name to create vertex format bindings
@@ -453,86 +444,6 @@ void GxmRenderer::init(Window& windowHandle)
 	const SceGxmProgramParameter* paramBasicColorAttribute = sceGxmProgramFindParameterByName(basicShaderGxp_vs, "aColor");
 	AES_ASSERT(paramBasicColorAttribute && (sceGxmProgramParameterGetCategory(paramBasicColorAttribute) == SCE_GXM_PARAMETER_CATEGORY_ATTRIBUTE));
 
-	
-	// create shaded triangle vertex format
-	SceGxmVertexAttribute basicVertexAttributes[2];
-	SceGxmVertexStream basicVertexStreams[1];
-	basicVertexAttributes[0].streamIndex = 0;
-	basicVertexAttributes[0].offset = 0;
-	basicVertexAttributes[0].format = SCE_GXM_ATTRIBUTE_FORMAT_F32;
-	basicVertexAttributes[0].componentCount = 3;
-	basicVertexAttributes[0].regIndex = sceGxmProgramParameterGetResourceIndex(paramBasicPositionAttribute);
-	basicVertexAttributes[1].streamIndex = 0;
-	basicVertexAttributes[1].offset = 12;
-	basicVertexAttributes[1].format = SCE_GXM_ATTRIBUTE_FORMAT_U8N;
-	basicVertexAttributes[1].componentCount = 4;
-	basicVertexAttributes[1].regIndex = sceGxmProgramParameterGetResourceIndex(paramBasicColorAttribute);
-	basicVertexStreams[0].stride = sizeof(BasicVertex);
-	basicVertexStreams[0].indexSource = SCE_GXM_INDEX_SOURCE_INDEX_16BIT;
-
-	err = sceGxmShaderPatcherCreateVertexProgram(
-		shaderPatcher,
-		basicVertexProgramId,
-		basicVertexAttributes,
-		2,
-		basicVertexStreams,
-		1,
-		&basicVertexProgram);
-	AES_ASSERT(err == SCE_OK);
-
-	err = sceGxmShaderPatcherCreateFragmentProgram(
-		shaderPatcher,
-		basicFragmentProgramId,
-		SCE_GXM_OUTPUT_REGISTER_FORMAT_UCHAR4,
-		vita_msaa_mode,
-		NULL,
-		basicShaderGxp_vs,
-		&basicFragmentProgram);
-	AES_ASSERT(err == SCE_OK);
-
-	// find vertex uniforms by name and cache parameter information
-	wvpParam = sceGxmProgramFindParameterByName(basicShaderGxp_vs, "wvp");
-	AES_ASSERT(wvpParam && (sceGxmProgramParameterGetCategory(wvpParam) == SCE_GXM_PARAMETER_CATEGORY_UNIFORM));
-
-	BufferDescription bufferInfo = {
-		.sizeInBytes = 16 * sizeof(float),
-		.bufferUsage = BufferUsage::Dynamic,
-		.bindFlags = BindFlags::UniformBuffer,
-	};
-	wvpBuffer.create(bufferInfo);
-
-	// create shaded triangle vertex/index data
-	basicVertices = (BasicVertex*)graphicsAlloc(
-		SCE_KERNEL_MEMBLOCK_TYPE_USER_RWDATA_UNCACHE,
-		3 * sizeof(BasicVertex),
-		4,
-		SCE_GXM_MEMORY_ATTRIB_READ,
-		&basicVerticesUid);
-
-	basicIndices = (uint16_t*)graphicsAlloc(
-		SCE_KERNEL_MEMBLOCK_TYPE_USER_RWDATA_UNCACHE,
-		3 * sizeof(uint16_t),
-		2,
-		SCE_GXM_MEMORY_ATTRIB_READ,
-		&basicIndiceUid);
-
-	basicVertices[0].x = -0.5f;
-	basicVertices[0].y = -0.5f;
-	basicVertices[0].z = 0.0f;
-	basicVertices[0].color = 0xff0000ff;
-	basicVertices[1].x = 0.5f;
-	basicVertices[1].y = -0.5f;
-	basicVertices[1].z = 0.0f;
-	basicVertices[1].color = 0xff00ff00;
-	basicVertices[2].x = -0.5f;
-	basicVertices[2].y = 0.5f;
-	basicVertices[2].z = 0.0f;
-	basicVertices[2].color = 0xffff0000;
-
-	basicIndices[0] = 0;
-	basicIndices[1] = 1;
-	basicIndices[2] = 2;
-	
 	AES_LOG("GXM initialized successfully");
 }
 
@@ -544,12 +455,8 @@ void GxmRenderer::destroy()
 	sceGxmFinish(context);
 
 	// clean up allocations
-	sceGxmShaderPatcherReleaseFragmentProgram(shaderPatcher, basicFragmentProgram);
-	sceGxmShaderPatcherReleaseVertexProgram(shaderPatcher, basicVertexProgram);
 	sceGxmShaderPatcherReleaseFragmentProgram(shaderPatcher, clearFragmentProgram);
 	sceGxmShaderPatcherReleaseVertexProgram(shaderPatcher, clearVertexProgram);
-	graphicsFree(basicIndiceUid);
-	graphicsFree(basicVerticesUid);
 	graphicsFree(clearIndicesUid);
 	graphicsFree(clearVerticesUid);
 
@@ -596,39 +503,6 @@ void GxmRenderer::startFrame(Camera const& cam)
 {
 	AES_PROFILE_FUNCTION();
 
-	// update triangle angle
-	static float rotationAngle = 0;
-	rotationAngle += 6.28 / 60.0f;
-	if (rotationAngle > 6.28)
-		rotationAngle -= 6.28;
-
-	// set up a 4x4 matrix for a rotation
-	float constexpr aspectRatio = (float)vita_display_width / (float)vita_display_height;
-
-	float const s = sin(rotationAngle);
-	float const c = cos(rotationAngle);
-
-	float wvpData[16];
-	wvpData[0] = c / aspectRatio;
-	wvpData[1] = s;
-	wvpData[2] = 0.0f;
-	wvpData[3] = 0.0f;
-
-	wvpData[4] = -s / aspectRatio;
-	wvpData[5] = c;
-	wvpData[6] = 0.0f;
-	wvpData[7] = 0.0f;
-
-	wvpData[8] = 0.0f;
-	wvpData[9] = 0.0f;
-	wvpData[10] = 1.0f;
-	wvpData[11] = 0.0f;
-
-	wvpData[12] = 0.0f;
-	wvpData[13] = 0.0f;
-	wvpData[14] = 0.0f;
-	wvpData[15] = 1.0f;
-
 	sceGxmBeginScene(
 		context,
 		0,
@@ -646,22 +520,6 @@ void GxmRenderer::startFrame(Camera const& cam)
 	// draw the clear triangle
 	sceGxmSetVertexStream(context, 0, clearVertices);
 	sceGxmDraw(context, SCE_GXM_PRIMITIVE_TRIANGLES, SCE_GXM_INDEX_FORMAT_U16, clearIndices, 3);
-	// render the rotating triangle
-	sceGxmSetVertexProgram(context, basicVertexProgram);
-	sceGxmSetFragmentProgram(context, basicFragmentProgram);
-	
-	// set the vertex program constants
-//	void* vertexDefaultBuffer;
-//	sceGxmReserveVertexDefaultUniformBuffer(context, &vertexDefaultBuffer);
-//	sceGxmSetUniformDataF(vertexDefaultBuffer, wvpParam, 0, 16, wvpData);
-	wvpBuffer.setData(wvpData, sizeof(float) * 16);
-	auto err = sceGxmSetVertexUniformBuffer(context, 0, wvpBuffer.getHandle());
-	
-	AES_ONCE(AES_LOG("sceGxmSetVertexDefaultUniformBuffer : {}", err));
-	AES_ASSERT(err == SCE_OK);
-	// draw the spinning triangle
-	sceGxmSetVertexStream(context, 0, basicVertices);
-	sceGxmDraw(context, SCE_GXM_PRIMITIVE_TRIANGLES, SCE_GXM_INDEX_FORMAT_U16, basicIndices, 3);
 }
 
 void GxmRenderer::endFrame()
@@ -686,10 +544,16 @@ void GxmRenderer::endFrame()
 	backBufferIndex = (backBufferIndex + 1) % vita_display_buffer_count;
 }
 
-void GxmRenderer::bindBuffer(RHIBuffer& buffer, uint slot)
+void GxmRenderer::bindVSUniformBuffer(RHIBuffer& buffer, uint slot)
 {
 	AES_PROFILE_FUNCTION();
-	
+	sceGxmSetVertexUniformBuffer(context, slot, buffer.getHandle());
+}
+
+void GxmRenderer::bindFSUniformBuffer(RHIBuffer& buffer, uint slot)
+{
+	AES_PROFILE_FUNCTION();
+	sceGxmSetFragmentUniformBuffer(context, slot, buffer.getHandle());
 }
 
 void GxmRenderer::bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset)

@@ -1,6 +1,6 @@
 #include "model.hpp"
 #include "core/debug.hpp"
-#include "RHIRenderContext.hpp"
+#include "RHI/RHIRenderContext.hpp"
 
 using namespace aes;
 
@@ -35,21 +35,23 @@ std::vector<Vertex> aes::getCubeVertices()
 	return vertices;
 }
 
-Result<Model> aes::createCube()
+Result<Model> aes::createCube(Material* mtrl)
 {
 	AES_PROFILE_FUNCTION();
 
 	Model cube;
-	auto const result = cube.create(getCubeVertices(), cubeIndices);
+	auto const result = cube.create(getCubeVertices(), cubeIndices, mtrl);
 	if (!result)
 		return { result.error() };
 	return { std::move(cube) };
 }
 
-Result<void> Model::create(std::span<Vertex const> vertices, std::span<uint32_t const> indices)
+Result<void> Model::create(std::span<Vertex const> vertices, std::span<uint32_t const> indices, Material* mtrl)
 {
 	AES_PROFILE_FUNCTION();
 
+	material = mtrl;
+	
 	vertexCount = vertices.size();
 	indexCount = indices.size();
 
@@ -96,8 +98,12 @@ void Model::render()
 	AES_PROFILE_FUNCTION();
 
 	modelBuffer.setData(glm::transpose(toWorld));
+
+	Material::BindInfo bindInfo;
+	bindInfo.vsBuffers.push_back(std::make_pair("ModelBuffer", &modelBuffer));
+	material->bind(bindInfo);
+
 	RHIRenderContext& renderContext = RHIRenderContext::instance();
-	renderContext.bindBuffer(modelBuffer, 1);
 	renderContext.bindVertexBuffer(vertexBuffer, sizeof(Vertex));
 	renderContext.bindIndexBuffer(indexBuffer, TypeFormat::Uint32);
 	renderContext.setDrawPrimitiveMode(DrawPrimitiveType::Triangles);

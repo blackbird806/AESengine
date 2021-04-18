@@ -5,6 +5,7 @@
 #include "core/window.hpp"
 #include "renderer/RHI/RHIElements.hpp"
 
+#include <string_view>
 #include <dxgi.h>
 #include <d3d11.h>
 
@@ -27,9 +28,14 @@ namespace aes {
 		void init(Window& windowHandle);
 		void destroy();
 
-		void bindBuffer(RHIBuffer& buffer, uint slot);
+		void bindVSUniformBuffer(RHIBuffer& buffer, uint slot);
+		void bindFSUniformBuffer(RHIBuffer& buffer, uint slot);
+
 		void bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset = 0);
 		void bindIndexBuffer(RHIBuffer& buffer, TypeFormat typeFormat, uint offset = 0);
+
+		void setFragmentShader(RHIFragmentShader& fs);
+		void setVertexShader(RHIVertexShader& vs);
 		
 		void setDrawPrimitiveMode(DrawPrimitiveType mode);
 		void drawIndexed(uint indexCount);

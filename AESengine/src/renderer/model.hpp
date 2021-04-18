@@ -5,8 +5,9 @@
 #include <vector>
 #include <glm/glm.hpp>
 
-#include "RHIBuffer.hpp"
-#include "renderer/vertex.hpp"
+#include "RHI/RHIBuffer.hpp"
+#include "material.hpp"
+#include "vertex.hpp"
 
 namespace aes
 {
@@ -58,7 +59,7 @@ namespace aes
 		Model(Model&& rhs) noexcept = default;
 		Model& operator=(Model&& rhs) noexcept = default;
 		
-		Result<void> create(std::span<Vertex const> vertices, std::span<uint32_t const> indices);
+		Result<void> create(std::span<Vertex const> vertices, std::span<uint32_t const> indices, Material* mtrl);
 		
 		void destroy();
 		void render();
@@ -69,10 +70,11 @@ namespace aes
 		
 		RHIBuffer vertexBuffer, indexBuffer;
 		RHIBuffer modelBuffer;
+		Material* material;
 		size_t vertexCount, indexCount;
 	};
 
-	Result<Model> createCube();
+	Result<Model> createCube(Material* mtrl);
 }
 
 #endif

@@ -41,13 +41,14 @@
     <ClCompile Include="src\renderer\camera.cpp" />
     <ClCompile Include="src\renderer\draw2d.cpp" />
     <ClCompile Include="src\renderer\FontManager.cpp" />
+    <ClCompile Include="src\renderer\material.cpp" />
+    <ClCompile Include="src\renderer\model.cpp" />
     <ClCompile Include="src\renderer\Renderer2D.cpp" />
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11Buffer.cpp" />
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11Elements.cpp" />
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11Model.cpp" />
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11renderer.cpp" />
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11Shader.cpp" />
-    <ClCompile Include="src\renderer\RHI\model.cpp" />
     <ClCompile Include="src\renderer\RHI\RHIBuffer.cpp" />
     <ClCompile Include="src\UI\UI.cpp" />
     <ClCompile Include="thirdParty\fmt\src\format.cc" />
@@ -79,6 +80,8 @@
     <ClInclude Include="src\renderer\camera.hpp" />
     <ClInclude Include="src\renderer\draw2d.hpp" />
     <ClInclude Include="src\renderer\FontManager.hpp" />
+    <ClInclude Include="src\renderer\material.hpp" />
+    <ClInclude Include="src\renderer\model.hpp" />
     <ClInclude Include="src\renderer\Renderer2D.hpp" />
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11Buffer.hpp" />
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11Elements.hpp" />
@@ -89,9 +92,10 @@
     <ClInclude Include="src\renderer\RHI\RHI.hpp" />
     <ClInclude Include="src\renderer\RHI\RHIBuffer.hpp" />
     <ClInclude Include="src\renderer\RHI\RHIElements.hpp" />
-    <ClInclude Include="src\renderer\RHI\model.hpp" />
     <ClInclude Include="src\renderer\RHI\RHIRenderContext.hpp" />
     <ClInclude Include="src\renderer\RHI\RHIShader.hpp" />
+    <ClInclude Include="src\renderer\RHI\RHIShaderReflection.hpp" />
+    <ClInclude Include="src\renderer\RHI\RHIVertexInputLayout.hpp" />
     <ClInclude Include="src\renderer\vertex.hpp" />
     <ClInclude Include="src\UI\UI.hpp" />
     <ClInclude Include="thirdParty\tiny\tiny_obj_loader.h" />
@@ -219,7 +223,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;d3dcompiler.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -238,7 +242,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;d3dcompiler.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -299,7 +303,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;d3dcompiler.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

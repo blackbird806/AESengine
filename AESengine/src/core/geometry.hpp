@@ -24,7 +24,7 @@ namespace aes {
 			return Rect{ center - halfSize, center + halfSize };
 		}
 		
-		RectBounds getBounds() const noexcept
+		RectBounds getBounds() const
 		{
 			return {
 				.topL = { min.x, max.y },

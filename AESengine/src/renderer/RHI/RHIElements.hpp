@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <string>
+#include <span>
 
 namespace aes
 {
@@ -56,27 +57,18 @@ namespace aes
 
 	enum class RHIFormat
 	{
-		R8G8_FLOAT,
-		R16G16_FLOAT,
-		R32G32_FLOAT,
+		R16G16_Float,
+		R32G32_Float,
 		
-		R8G8B8_FLOAT,
-		R16G16B16_FLOAT,
-		R32G32B32_FLOAT,
+		R32G32B32_Float,
 
-		R8G8B8A8_FLOAT,
-		R16G16B16A16_FLOAT,
-		R32G32B32A32_FLOAT,
+		R16G16B16A16_Float,
+		R32G32B32A32_Float,
 	};
 	
-	struct VertexInputBindingDescription
+	struct VertexInputLayout
 	{
-		std::string name;
-		uint32_t stride;
-	};
-
-	struct VertexInputAttributeDescription
-	{
+		std::string semanticName;
 		RHIFormat format;
 		uint32_t offset;
 	};
@@ -85,6 +77,17 @@ namespace aes
 	{
 		std::string source;
 	};
+
+	struct VertexShaderDescription : public ShaderDescription
+	{
+		std::span<VertexInputLayout> verticesLayout;
+		uint32_t verticesStride;
+	};
+
+	struct FragmentShaderDescription : public ShaderDescription
+	{
+		
+	};	
 }
 
 #endif
