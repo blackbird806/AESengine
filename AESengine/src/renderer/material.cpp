@@ -1,9 +1,8 @@
 #include "material.hpp"
 #include "RHI/RHIRenderContext.hpp"
 
-using namespace aes;
 
-Result<void> Material::init(RHIVertexShader* vs, RHIFragmentShader* fs)
+aes::Result<void> aes::Material::init(RHIVertexShader* vs, RHIFragmentShader* fs)
 {
 	AES_ASSERT(vs);
 	AES_ASSERT(fs);
@@ -26,7 +25,7 @@ Result<void> Material::init(RHIVertexShader* vs, RHIFragmentShader* fs)
 	return {};
 }
 
-void Material::bind(BindInfo const& bindInfos)
+void aes::Material::bind(BindInfo const& bindInfos)
 {
 	auto context = RHIRenderContext::instance();
 	

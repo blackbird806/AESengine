@@ -73,6 +73,7 @@ public:
 
 	aes::RHIFragmentShader fragmentShader;
 	aes::RHIVertexShader vertexShader;
+	aes::RHIBuffer viewBuffer;
 	aes::Material defaultMtrl;
 	aes::Model model;
 	
@@ -100,7 +101,7 @@ public:
 		vertexInputLayout[0].format = aes::RHIFormat::R32G32B32A32_Float;
 
 		vertexInputLayout[1].semanticName = "COLOR";
-		vertexInputLayout[1].offset = sizeof(glm::vec4);
+		vertexInputLayout[1].offset = sizeof(glm::vec3);
 		vertexInputLayout[1].format = aes::RHIFormat::R32G32B32A32_Float;
 
 		vertexShaderDescription.verticesLayout = vertexInputLayout;
@@ -111,6 +112,13 @@ public:
 
 		model = aes::createCube(&defaultMtrl).value();
 
+		aes::BufferDescription viewDesc;
+		viewDesc.bindFlags = aes::BindFlags::UniformBuffer;
+		viewDesc.bufferUsage = aes::BufferUsage::Dynamic;
+		viewDesc.cpuAccessFlags = (uint8_t)aes::CPUAccessFlags::Write;
+		viewDesc.sizeInBytes = sizeof(aes::CameraBuffer);
+		viewBuffer.create(viewDesc);
+		
 		mainCamera.pos = { 0.0, 0.0, -5.0 };
 		getViewportMousePos(lastMousePosX, lastMousePosY);
 	}
@@ -198,12 +206,18 @@ public:
 		 	mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), aspect, 0.0001f, 1000.0f);
 		 }
 
-		 model.toWorld = glm::rotate(model.toWorld, 1.5f * (float)dt, glm::vec3(0.0f, 1.0f, 1.0f));
+		model.toWorld = glm::rotate(model.toWorld, 1.5f * (float)dt, glm::vec3(0.0f, 1.0f, 1.0f));
+		aes::CameraBuffer const camBuf { glm::transpose(mainCamera.viewMatrix), glm::transpose(mainCamera.projMatrix) };
+		viewBuffer.setData(camBuf);
 	}
 
 	void draw() override
 	{
 		AES_PROFILE_FUNCTION();
+		aes::Material::BindInfo bindInfo;
+		bindInfo.vsBuffers.push_back(std::make_pair("ModelBuffer", &model.modelBuffer));
+		bindInfo.vsBuffers.push_back(std::make_pair("CameraBuffer", &viewBuffer));
+		defaultMtrl.bind(bindInfo);
 		model.render();
 	}
 };

@@ -23,7 +23,7 @@ namespace aes {
 
 		void render(glm::mat4 const& view, glm::mat4 const& proj);
 
-	private:
+	//private:
 		
 		ID3D11VertexShader* vertexShader;
 		ID3D11PixelShader* pixelShader;
@@ -50,7 +50,7 @@ namespace aes {
 		D3D11VertexShader& operator=(D3D11VertexShader const&) = delete;
 		~D3D11VertexShader();
 
-
+		ID3D11InputLayout* getInputLayout();
 		ID3D11VertexShader* getHandle();
 		
 	private:

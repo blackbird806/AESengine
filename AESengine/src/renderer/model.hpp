@@ -66,10 +66,10 @@ namespace aes
 		
 		glm::mat4 toWorld;
 		
+		RHIBuffer modelBuffer;
 	private:
 		
 		RHIBuffer vertexBuffer, indexBuffer;
-		RHIBuffer modelBuffer;
 		Material* material;
 		size_t vertexCount, indexCount;
 	};

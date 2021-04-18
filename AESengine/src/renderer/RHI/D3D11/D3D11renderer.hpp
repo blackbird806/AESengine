@@ -36,7 +36,7 @@ namespace aes {
 
 		void setFragmentShader(RHIFragmentShader& fs);
 		void setVertexShader(RHIVertexShader& vs);
-		
+
 		void setDrawPrimitiveMode(DrawPrimitiveType mode);
 		void drawIndexed(uint indexCount);
 		
@@ -48,9 +48,6 @@ namespace aes {
 
 	private:
 		
-	/// debug
-		D3D11ShaderLegacy shader;
-	/// 
 		static D3D11Renderer* pinstance;
 
 		void createDevice();

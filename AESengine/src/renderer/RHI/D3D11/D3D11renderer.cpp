@@ -2,10 +2,8 @@
 #include "core/debug.hpp"
 #include "renderer/RHI/RHIBuffer.hpp"
 #include "renderer/RHI/RHIElements.hpp"
-
-#include <vector>
-
 #include "D3D11Elements.hpp"
+#include <vector>
 
 using namespace aes;
 
@@ -124,8 +122,6 @@ void D3D11Renderer::init(Window& window)
 	setupRasterizerState();
 	setupViewport();
 
-	shader.init();
-
 	AES_LOG("D3D11 renderer initialized");
 }
 
@@ -178,6 +174,7 @@ void D3D11Renderer::setFragmentShader(RHIFragmentShader& fs)
 
 void D3D11Renderer::setVertexShader(RHIVertexShader& vs)
 {
+	deviceContext->IASetInputLayout(vs.getInputLayout());
 	deviceContext->VSSetShader(vs.getHandle(), nullptr, 0);
 }
 
@@ -218,7 +215,6 @@ void D3D11Renderer::startFrame(Camera const& cam)
 
 	// Clear the depth buffer.
 	deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-	shader.render(cam.viewMatrix, cam.projMatrix);
 }
 
 void D3D11Renderer::endFrame()

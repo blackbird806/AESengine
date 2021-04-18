@@ -29,6 +29,8 @@ D3D11Buffer::~D3D11Buffer()
 
 Result<void> D3D11Buffer::create(BufferDescription const& desc)
 {
+	AES_ASSERT(desc.sizeInBytes != 0);
+	
 	size = desc.sizeInBytes;
 	bindFlags = desc.bindFlags;
 	

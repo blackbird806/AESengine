@@ -146,7 +146,7 @@ void D3D11ShaderLegacy::init(std::string_view vs, std::string_view ps)
 	D3D11_BUFFER_DESC cameraBufferDesc = {};
 	// Setup the description of the dynamic matrix constant buffer that is in the vertex shader.
 	cameraBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	cameraBufferDesc.ByteWidth = sizeof(ModelBuffer);
+	cameraBufferDesc.ByteWidth = sizeof(CameraBuffer);
 	cameraBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	cameraBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	cameraBufferDesc.MiscFlags = 0;
@@ -284,6 +284,11 @@ D3D11VertexShader::~D3D11VertexShader()
 		layout->Release();
 		reflector->Release();
 	}
+}
+
+ID3D11InputLayout* D3D11VertexShader::getInputLayout()
+{
+	return layout;
 }
 
 std::vector<UniformBufferReflectionInfo> D3D11Shader::getUniformBufferInfos() const

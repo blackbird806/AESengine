@@ -99,10 +99,6 @@ void Model::render()
 
 	modelBuffer.setData(glm::transpose(toWorld));
 
-	Material::BindInfo bindInfo;
-	bindInfo.vsBuffers.push_back(std::make_pair("ModelBuffer", &modelBuffer));
-	material->bind(bindInfo);
-
 	RHIRenderContext& renderContext = RHIRenderContext::instance();
 	renderContext.bindVertexBuffer(vertexBuffer, sizeof(Vertex));
 	renderContext.bindIndexBuffer(indexBuffer, TypeFormat::Uint32);
