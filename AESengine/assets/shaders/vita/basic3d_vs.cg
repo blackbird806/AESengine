@@ -1,0 +1,25 @@
+﻿struct VS_INPUT
+{
+    float4 position : POSITION;
+    float4 color : COLOR;
+};
+
+uniform float4x4 viewMatrix 		: BUFFER0;
+uniform float4x4 projectionMatrix 	: BUFFER0;
+uniform float4x4 worldMatrix 		: BUFFER1;
+
+void main(VS_INPUT input,
+	out float4 position : POSITION,
+	out float4 color : COLOR)
+{
+    // Change the position vector to be 4 units for proper matrix calculations.
+    input.position.w = 1.0f;
+
+    // Calculate the position of the vertex against the world, view, and projection matrices.
+    position = mul(input.position, worldMatrix);
+    position = mul(position, viewMatrix);
+    position = mul(position, projectionMatrix);
+
+    // Store the input color for the pixel shader to use.
+    color = input.color;
+}

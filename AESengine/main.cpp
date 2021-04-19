@@ -6,6 +6,7 @@
 #include "renderer/model.hpp"
 #include "renderer/material.hpp"
 #include "core/os.hpp"
+#include "core/utility.hpp"
 
 #include "core/color.hpp"
 
@@ -65,7 +66,6 @@ VS_OUTPUT main(VS_INPUT input)
     return output;
 })";
 
-
 class Game : public aes::Engine
 {
 
@@ -87,12 +87,17 @@ public:
 		AES_PROFILE_FUNCTION();
 		AES_LOG("start");
 
+		auto vpGxp = aes::readFileBin("app0:assets/shaders/vita/basic3d_fs.gxp");
+		auto fpGxp = aes::readFileBin("app0:assets/shaders/vita/basic3d_vs.gxp");
+		AES_LOG("shader read success");
+
 		aes::FragmentShaderDescription fragmentShaderDescription;
-		fragmentShaderDescription.source = pxShader;
+		fragmentShaderDescription.source = fpGxp.data();
 		fragmentShader.init(fragmentShaderDescription);
+		AES_LOG("fragment shader created");
 
 		aes::VertexShaderDescription vertexShaderDescription;
-		vertexShaderDescription.source = vShader;
+		vertexShaderDescription.source = vpGxp.data();
 		vertexShaderDescription.verticesStride = sizeof(aes::Vertex);
 
 		aes::VertexInputLayout vertexInputLayout[2];
@@ -107,10 +112,13 @@ public:
 		vertexShaderDescription.verticesLayout = vertexInputLayout;
 
 		vertexShader.init(vertexShaderDescription);
+		AES_LOG("vertex shader created");
 
 		defaultMtrl.init(&vertexShader, &fragmentShader);
+		AES_LOG("material created");
 
 		model = aes::createCube(&defaultMtrl).value();
+		AES_LOG("cube created");
 
 		aes::BufferDescription viewDesc;
 		viewDesc.bindFlags = aes::BindFlags::UniformBuffer;
@@ -118,9 +126,10 @@ public:
 		viewDesc.cpuAccessFlags = (uint8_t)aes::CPUAccessFlags::Write;
 		viewDesc.sizeInBytes = sizeof(aes::CameraBuffer);
 		viewBuffer.create(viewDesc);
-		
+		AES_LOG("view buffer created");
+
 		mainCamera.pos = { 0.0, 0.0, -5.0 };
-		getViewportMousePos(lastMousePosX, lastMousePosY);
+		//getViewportMousePos(lastMousePosX, lastMousePosY);
 	}
 
 	float speed = 5.0f, sensitivity = 50.f;
@@ -165,7 +174,7 @@ public:
 
 		 mainCamera.pos += glm::vec3(movePos * mainCamera.viewMatrix);
 		 float mx, my;
-		 getViewportMousePos(mx, my);
+		 //getViewportMousePos(mx, my);
 		
 		 if (getKeyState(aes::Key::RClick) == aes::InputState::Down)
 		 {
@@ -192,7 +201,7 @@ public:
 		 }
 		 else
 		 {
-		 	getViewportMousePos(lastMousePosX, lastMousePosY);
+		 	//getViewportMousePos(lastMousePosX, lastMousePosY);
 		 }
 		 mainCamera.lookAt(mainCamera.pos + glm::normalize(direction));
 
@@ -200,8 +209,8 @@ public:
 		 	float const ex = 0.0055f;
 		 	float const csx = 0.025f;
 
-		 	uint windowWidth, windowHeight;
-		 	mainWindow->getScreenSize(windowWidth, windowHeight);
+		 	uint windowWidth = 960, windowHeight = 544;
+		 	//mainWindow->getScreenSize(windowWidth, windowHeight);
 		 	float const aspect = (float)windowWidth / (float)windowHeight;
 		 	mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), aspect, 0.0001f, 1000.0f);
 		 }

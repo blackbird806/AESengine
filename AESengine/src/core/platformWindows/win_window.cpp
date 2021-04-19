@@ -5,7 +5,7 @@
 #include <windowsx.h>
 
 #define AES_CLASSNAME L"AES_CLASS"
-#define WINDOW_HANDLE_PROP_NAME L"WinHandle"
+#define WINDOW_HANDLE_PROP_NAME L"AES_WinHandle"
 
 using namespace aes;
 
@@ -125,8 +125,8 @@ Win_Window::Win_Window(const char* name)
 	
 	handle = CreateWindowEx(
 		0,                          // Optional window styles.
-		AES_CLASSNAME,				//Window class
-		windowName.c_str(),			//Window text
+		AES_CLASSNAME,				// Window class
+		windowName.c_str(),			// Window text
 		WS_OVERLAPPEDWINDOW,        // Window style
 
 		// Size and position
@@ -140,7 +140,7 @@ Win_Window::Win_Window(const char* name)
 
 	SetPropW(handle, WINDOW_HANDLE_PROP_NAME, this);
 	AES_ASSERT(handle != NULL);
-
+	
 	RECT rect;
 	if (GetClientRect(handle, &rect))
 	{

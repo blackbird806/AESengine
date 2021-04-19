@@ -7,11 +7,15 @@ using namespace aes;
 
 GxmShader::GxmShader(GxmShader&& rhs) noexcept : gxpShader(rhs.gxpShader), id(rhs.id)
 {
+	AES_PROFILE_FUNCTION();
+
 	rhs.gxpShader = nullptr;
 }
 
 GxmShader& GxmShader::operator=(GxmShader&& rhs) noexcept
 {
+	AES_PROFILE_FUNCTION();
+
 	gxpShader = rhs.gxpShader;
 	id = rhs.id;
 	rhs.gxpShader = nullptr;
@@ -20,16 +24,23 @@ GxmShader& GxmShader::operator=(GxmShader&& rhs) noexcept
 
 GxmShader::~GxmShader()
 {
+	AES_PROFILE_FUNCTION();
+
 	sceGxmShaderPatcherUnregisterProgram(RHIRenderContext::instance().getShaderPatcher(), id);
 }
 
 std::vector<UniformBufferReflectionInfo> GxmShader::getUniformBufferInfos() const
 {
+	AES_PROFILE_FUNCTION();
+
+	AES_LOG("get getUniformBufferInfos start");
 	uint32_t const paramsCount = sceGxmProgramGetParameterCount(gxpShader);
 	std::vector<UniformBufferReflectionInfo> uniformBuffersInfos;
 	for (uint32_t i = 0; i < paramsCount; i++)
 	{
 		SceGxmProgramParameter const* param = sceGxmProgramGetParameter(gxpShader, i);
+		AES_LOG("param {} {}", i, sceGxmProgramParameterGetName(param));
+
 		if (sceGxmProgramParameterGetCategory(param) == SCE_GXM_PARAMETER_CATEGORY_UNIFORM_BUFFER)
 		{
 			uniformBuffersInfos.push_back({ .name = std::string(sceGxmProgramParameterGetName(param)), 
@@ -37,6 +48,8 @@ std::vector<UniformBufferReflectionInfo> GxmShader::getUniformBufferInfos() cons
 					.size = sceGxmProgramParameterGetArraySize(param)}); // @Review is arraySize really what we want ?
 		}
 	}
+	
+	AES_LOG("get getUniformBufferInfos end");
 	return uniformBuffersInfos;
 }
 
@@ -83,6 +96,7 @@ GxmVertexShader& GxmVertexShader::operator=(GxmVertexShader&& rhs) noexcept
 
 GxmVertexShader::~GxmVertexShader()
 {
+	AES_PROFILE_FUNCTION();
 	sceGxmShaderPatcherReleaseVertexProgram(RHIRenderContext::instance().getShaderPatcher(), vertexShader);
 }
 
@@ -145,6 +159,7 @@ GxmFragmentShader& GxmFragmentShader::operator=(GxmFragmentShader&& rhs) noexcep
 
 GxmFragmentShader::~GxmFragmentShader()
 {
+	AES_PROFILE_FUNCTION();
 	sceGxmShaderPatcherReleaseFragmentProgram(RHIRenderContext::instance().getShaderPatcher(), fragmentShader);
 }
 

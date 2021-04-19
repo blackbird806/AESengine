@@ -11,7 +11,7 @@
 namespace aes {
 	
 	std::string readFile(std::string const& file);
-	std::vector<unsigned char> readFileBin(std::string const& file);
+	std::vector<uint8_t> readFileBin(std::string const& file);
 	
 	constexpr uintptr_t align(uintptr_t x, uint32_t a)
 	{

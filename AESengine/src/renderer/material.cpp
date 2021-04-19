@@ -3,7 +3,7 @@
 
 aes::Result<void> aes::Material::init(RHIVertexShader* vs, RHIFragmentShader* fs)
 {
-	AES_PROFILE_FUNCTION()
+	AES_PROFILE_FUNCTION();
 	AES_ASSERT(vs);
 	AES_ASSERT(fs);
 	

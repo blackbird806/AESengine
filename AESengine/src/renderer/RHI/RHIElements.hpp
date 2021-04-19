@@ -3,7 +3,7 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <string>
+#include <string_view>
 #include <span>
 #include <variant>
 
@@ -101,7 +101,7 @@ namespace aes
 
 	struct ShaderDescription
 	{
-		std::variant<std::string, uint8_t*> source;
+		std::variant<std::string_view, uint8_t*> source;
 	};
 
 	struct VertexShaderDescription : public ShaderDescription
