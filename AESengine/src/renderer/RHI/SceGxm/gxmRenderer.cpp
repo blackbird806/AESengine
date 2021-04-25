@@ -18,7 +18,7 @@ void* aes::graphicsAlloc(SceKernelMemBlockType type, uint32_t size, uint32_t ali
 	else
 	{
 		// LPDDR memblocks must be 4KiB aligned
-		AES_ASSERT(alignment <= 4 * 1024);
+		AES_ASSERT(alignement <= 4 * 1024);
 		size = aes::align(size, 4 * 1024);
 	}
 	
@@ -142,8 +142,8 @@ static void patcherHostFree(void* userData, void* mem)
 
 GxmRenderer& GxmRenderer::instance()
 {
-	static GxmRenderer inst;
-	return inst;
+	AES_ASSERT(inst != nullptr);
+	return *inst;
 }
 
 struct DisplayData
@@ -169,6 +169,8 @@ static void displayCallback(void const* callbackData)
 	err = sceDisplayWaitVblankStart();
 	AES_ASSERT(err == SCE_OK);
 }
+
+GxmRenderer* GxmRenderer::inst = nullptr;
 
 void GxmRenderer::init(Window& windowHandle)
 {
@@ -437,6 +439,7 @@ void GxmRenderer::init(Window& windowHandle)
 	clearIndices[1] = 1;
 	clearIndices[2] = 2;
 
+	inst = this;
 	AES_LOG("GXM initialized successfully");
 }
 
@@ -488,9 +491,11 @@ void GxmRenderer::destroy()
 
 	// terminate libgxm
 	sceGxmTerminate();
+
+	AES_LOG("GXM terminated successfully");
 }
 
-void GxmRenderer::startFrame(Camera const& cam)
+void GxmRenderer::startFrame()
 {
 	AES_PROFILE_FUNCTION();
 
@@ -538,13 +543,15 @@ void GxmRenderer::endFrame()
 void GxmRenderer::bindVSUniformBuffer(RHIBuffer& buffer, uint slot)
 {
 	AES_PROFILE_FUNCTION();
-	sceGxmSetVertexUniformBuffer(context, slot, buffer.getHandle());
+	int err = sceGxmSetVertexUniformBuffer(context, slot, buffer.getHandle());
+	AES_ASSERT(err == SCE_OK);
 }
 
 void GxmRenderer::bindFSUniformBuffer(RHIBuffer& buffer, uint slot)
 {
 	AES_PROFILE_FUNCTION();
-	sceGxmSetFragmentUniformBuffer(context, slot, buffer.getHandle());
+	int err = sceGxmSetFragmentUniformBuffer(context, slot, buffer.getHandle());
+	AES_ASSERT(err == SCE_OK);
 }
 
 void GxmRenderer::bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset)

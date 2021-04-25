@@ -128,7 +128,7 @@ std::vector<UniformBufferReflectionInfo> D3D11Shader::getUniformBufferInfos() co
 		ID3D11ShaderReflectionConstantBuffer* D3DbufferInfo = reflector->GetConstantBufferByIndex(i);
 		D3D11_SHADER_BUFFER_DESC bufferDesc;
 		D3DbufferInfo->GetDesc(&bufferDesc);
-
+		
 		bufferInfos[i].name = bufferDesc.Name;
 		bufferInfos[i].size = bufferDesc.Size;
 		bufferInfos[i].index = i;

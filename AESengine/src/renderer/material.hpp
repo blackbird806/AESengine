@@ -23,7 +23,7 @@ namespace aes
 		Result<void> init(RHIVertexShader*, RHIFragmentShader*);
 		
 		void bind(BindInfo const& bindInfos);
-		
+
 	private:
 		
 		std::unordered_map<std::string, uint32_t> vsUniformBufferSlots;

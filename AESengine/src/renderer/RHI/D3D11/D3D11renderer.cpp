@@ -198,7 +198,7 @@ void D3D11Renderer::drawIndexed(uint indexCount)
 	deviceContext->DrawIndexed(indexCount, 0, 0);
 }
 
-void D3D11Renderer::startFrame(Camera const& cam)
+void D3D11Renderer::startFrame()
 {
 	AES_PROFILE_FUNCTION();
 

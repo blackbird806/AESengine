@@ -87,8 +87,8 @@ public:
 		AES_PROFILE_FUNCTION();
 		AES_LOG("start");
 
-		auto vpGxp = aes::readFileBin("app0:assets/shaders/vita/basic3d_fs.gxp");
-		auto fpGxp = aes::readFileBin("app0:assets/shaders/vita/basic3d_vs.gxp");
+		auto vpGxp = aes::readFileBin("app0:assets/shaders/vita/basic3d_vs.gxp");
+		auto fpGxp = aes::readFileBin("app0:assets/shaders/vita/basic3d_fs.gxp");
 		AES_LOG("shader read success");
 
 		aes::FragmentShaderDescription fragmentShaderDescription;
@@ -111,7 +111,10 @@ public:
 
 		vertexShaderDescription.verticesLayout = vertexInputLayout;
 
-		vertexShader.init(vertexShaderDescription);
+		if (!vertexShader.init(vertexShaderDescription))
+		{
+			AES_ASSERT(false && "vertex shader creation failed");
+		}
 		AES_LOG("vertex shader created");
 
 		defaultMtrl.init(&vertexShader, &fragmentShader);
@@ -137,10 +140,10 @@ public:
 	glm::vec3 direction = {0.0, 0.0, 1.0};
 	float yaw = 91, pitch = 2;
 	
-	void update(double dt) override
+	void update(float dt) override
 	{
 		 AES_PROFILE_FUNCTION();
-		
+
 		 glm::vec4 movePos = { 0.0f, 0.f, 0.f, 0.0f };
 		 if (getKeyState(aes::Key::W) == aes::InputState::Down)
 		 {
@@ -214,8 +217,7 @@ public:
 		 	float const aspect = (float)windowWidth / (float)windowHeight;
 		 	mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), aspect, 0.0001f, 1000.0f);
 		 }
-
-		model.toWorld = glm::rotate(model.toWorld, 1.5f * (float)dt, glm::vec3(0.0f, 1.0f, 1.0f));
+		model.toWorld = glm::rotate(model.toWorld, 1.5f * dt, glm::vec3(0.0f, 1.0f, 1.0f));
 		aes::CameraBuffer const camBuf { glm::transpose(mainCamera.viewMatrix), glm::transpose(mainCamera.projMatrix) };
 		viewBuffer.setData(camBuf);
 	}
@@ -248,6 +250,6 @@ int main()
 
 	game.init();
 	game.run();
-
+	
 	return 0;
 }

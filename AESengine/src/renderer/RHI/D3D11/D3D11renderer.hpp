@@ -5,15 +5,10 @@
 #include "core/window.hpp"
 #include "renderer/RHI/RHIElements.hpp"
 
-#include <string_view>
 #include <dxgi.h>
 #include <d3d11.h>
 
 #include "D3D11Shader.hpp"
-
-/// DEBUG
-#include "renderer/camera.hpp"
-/// ///
 
 namespace aes {
 	class RHIBuffer;
@@ -40,7 +35,7 @@ namespace aes {
 		void setDrawPrimitiveMode(DrawPrimitiveType mode);
 		void drawIndexed(uint indexCount);
 		
-		void startFrame(Camera const& cam);
+		void startFrame();
 		void endFrame();
 		
 		ID3D11Device* getDevice();

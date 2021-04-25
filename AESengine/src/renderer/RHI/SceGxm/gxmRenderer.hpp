@@ -2,12 +2,12 @@
 #define GXMRENDERER_HPP
 
 #include "core/window.hpp"
-#include "renderer/camera.hpp"
 #include "renderer/RHI/RHIElements.hpp"
 #include "renderer/RHI/RHIBuffer.hpp"
 
 #include "../RHIBuffer.hpp"
 #include "../RHIShader.hpp"
+#include <glm/glm.hpp>
 #include <vitasdk.h>
 #include "gxmCompatibilty.h"
 
@@ -47,7 +47,7 @@ namespace aes
 			void init(Window& windowHandle);
 			void destroy();
 
-			void startFrame(Camera const& cam);
+			void startFrame();
 			void endFrame();
 			
 			void bindVSUniformBuffer(RHIBuffer& buffer, uint slot);
@@ -64,6 +64,8 @@ namespace aes
 			SceGxmShaderPatcher* getShaderPatcher() const;
 
 		private:
+
+			static GxmRenderer* inst;
 
 			State currentState;
 

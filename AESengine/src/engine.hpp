@@ -26,8 +26,6 @@ namespace aes {
 		void init();
 		void run();
 
-		static Logger& getLogger() noexcept;
-
 	protected:
 
 		InputState getKeyState(Key k) noexcept;
@@ -61,7 +59,7 @@ namespace aes {
 		virtual void onKeyReleased(Key k) {};
 
 		virtual void start() {}
-		virtual void update(double deltaTime) {}
+		virtual void update(float deltaTime) {}
 		virtual void draw() {}
 		virtual void end() {}
 

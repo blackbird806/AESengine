@@ -13,11 +13,11 @@
 #ifdef __vita__
 #define AES_LOG(msg, ...) ::aes::Logger::instance().log(fmt::format("info : " msg "\n" __VA_OPT__(,) __VA_ARGS__))
 #define AES_WARN(msg, ...) ::aes::Logger::instance().log(fmt::format("warn : " msg "\n" __VA_OPT__(,) __VA_ARGS__))
-#define AES_LOG_ERROR(msg, ...) ::aes::Logger::instance().log(fmt::format("function {} line {} error {}\n", __FUNCTION__, __LINE__, fmt::format(msg __VA_OPT__(,) __VA_ARGS__)))
+#define AES_LOG_ERROR(msg, ...) ::aes::Logger::instance().log(fmt::format("error {} line {} : {}\n", __FUNCTION__, __LINE__, fmt::format(msg __VA_OPT__(,) __VA_ARGS__)))
 #else
 #define AES_LOG(msg, ...) ::aes::Logger::instance().log(fmt::format("info : " msg "\n", __VA_ARGS__))
 #define AES_WARN(msg, ...) ::aes::Logger::instance().log(fmt::format("warn : " msg "\n", __VA_ARGS__))
-#define AES_LOG_ERROR(msg, ...) ::aes::Logger::instance().log(fmt::format(__FUNCTION__ " line " AES_STRINGIFY(__LINE__) " error : " msg "\n", __VA_ARGS__))
+#define AES_LOG_ERROR(msg, ...) ::aes::Logger::instance().log(fmt::format(" error : " __FUNCTION__ " : " AES_STRINGIFY(__LINE__) ": " msg "\n", __VA_ARGS__))
 #endif
 
 // @Review

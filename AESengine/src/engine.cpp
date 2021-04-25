@@ -59,30 +59,29 @@ void Engine::run()
 	using namespace std::chrono;
 	AES_PROFILE_FUNCTION();
 
-	double deltaTime = 0.0;
+	float deltaTime = 0.0;
 
 	start();
 	while (!mainWindow->shouldClose())
 	{
 		AES_PROFILE_FRAME();
-		auto start = std::chrono::high_resolution_clock::now();
+		auto const start = std::chrono::high_resolution_clock::now();
 		
 		mainWindow->pollEvents();
-		renderer.startFrame(mainCamera);
+		renderer.startFrame();
 
 		update(deltaTime);
 		draw();
 
 		renderer.endFrame();
 		
-		auto end = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<double> deltaTimeInSec = end - start;
+		auto const end = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<float> const deltaTimeInSec = end - start;
 		deltaTime = deltaTimeInSec.count();
 		time += deltaTime;
 		frameCount++;
 	}
 }
-
 
 InputState Engine::getKeyState(Key k) noexcept
 {

@@ -1,6 +1,7 @@
 #include "gxmShader.hpp"
 #include "gxmElements.hpp"
 #include "gxmRenderer.hpp"
+#include "core/utility.hpp"
 #include <vector>
 
 using namespace aes;
@@ -29,27 +30,71 @@ GxmShader::~GxmShader()
 	sceGxmShaderPatcherUnregisterProgram(RHIRenderContext::instance().getShaderPatcher(), id);
 }
 
+static size_t getProgramParameterTypeSize(SceGxmParameterType type)
+{
+	switch (type)
+	{
+		case SCE_GXM_PARAMETER_TYPE_U32:
+		case SCE_GXM_PARAMETER_TYPE_F32:
+			return 4;
+		case SCE_GXM_PARAMETER_TYPE_F16:
+		case SCE_GXM_PARAMETER_TYPE_U16:
+		case SCE_GXM_PARAMETER_TYPE_S16:
+		case SCE_GXM_PARAMETER_TYPE_C10:
+			return 2;
+		case SCE_GXM_PARAMETER_TYPE_U8:
+		case SCE_GXM_PARAMETER_TYPE_S8:
+			return 1;
+		case SCE_GXM_PARAMETER_TYPE_AGGREGATE:
+			AES_ASSERT(false);
+	}
+
+	AES_UNREACHABLE();
+}
+
+static size_t getProgramParameterSize(SceGxmProgramParameter const* param)
+{
+	return sceGxmProgramParameterGetArraySize(param) * getProgramParameterTypeSize(sceGxmProgramParameterGetType(param));
+}
+
 std::vector<UniformBufferReflectionInfo> GxmShader::getUniformBufferInfos() const
 {
 	AES_PROFILE_FUNCTION();
 
-	AES_LOG("get getUniformBufferInfos start");
 	uint32_t const paramsCount = sceGxmProgramGetParameterCount(gxpShader);
 	std::vector<UniformBufferReflectionInfo> uniformBuffersInfos;
 	for (uint32_t i = 0; i < paramsCount; i++)
 	{
 		SceGxmProgramParameter const* param = sceGxmProgramGetParameter(gxpShader, i);
-		AES_LOG("param {} {}", i, sceGxmProgramParameterGetName(param));
+		AES_ASSERT(param != nullptr); // if i is in bounds param should not be null
 
-		if (sceGxmProgramParameterGetCategory(param) == SCE_GXM_PARAMETER_CATEGORY_UNIFORM_BUFFER)
+		SceGxmParameterCategory parameterCategory = sceGxmProgramParameterGetCategory(param);
+		if (parameterCategory == SCE_GXM_PARAMETER_CATEGORY_UNIFORM_BUFFER)
 		{
-			uniformBuffersInfos.push_back({ .name = std::string(sceGxmProgramParameterGetName(param)), 
-					.index = i,  
-					.size = sceGxmProgramParameterGetArraySize(param)}); // @Review is arraySize really what we want ?
+			// uniformBuffersInfos.push_back({
+			// 	.name = fmt::format("BUFFER{}", sceGxmProgramParameterGetResourceIndex(param)),
+			// 	.index = sceGxmProgramParameterGetResourceIndex(param),
+			// 	.size = 0 });
+		}
+		else if (parameterCategory == SCE_GXM_PARAMETER_CATEGORY_UNIFORM)
+		{
+			std::string const bufferName = split(sceGxmProgramParameterGetName(param), '.')[0];
+			auto const it = std::find_if(uniformBuffersInfos.begin(), uniformBuffersInfos.end(), [&bufferName](auto const& a) { return a.name == bufferName; });
+			if (it != uniformBuffersInfos.end())
+			{
+				// update infos about the existing buffer
+				it->size += getProgramParameterSize(param);
+			}
+			else
+			{
+				// New buffer read add it
+				uniformBuffersInfos.push_back({
+						.name = std::move(bufferName), 
+						.index = sceGxmProgramParameterGetContainerIndex(param),
+						.size = getProgramParameterSize(param) });
+			}
 		}
 	}
-	
-	AES_LOG("get getUniformBufferInfos end");
 	return uniformBuffersInfos;
 }
 
@@ -106,7 +151,7 @@ Result<void> GxmVertexShader::init(VertexShaderDescription const& desc)
 	AES_ASSERT(std::holds_alternative<uint8_t*>(desc.source) && "runtime compiled shaders aren't supported on vita platform !");
 	
 	gxpShader = reinterpret_cast<SceGxmProgram*>(std::get<uint8_t*>(desc.source));
-	AES_ASSERT(vertexShaderGxp);
+	AES_ASSERT(gxpShader != nullptr);
 
 	auto& context = RHIRenderContext::instance();
 	auto err = sceGxmShaderPatcherRegisterProgram(context.getShaderPatcher(), gxpShader, &id);
@@ -169,7 +214,7 @@ Result<void> GxmFragmentShader::init(FragmentShaderDescription const& desc)
 	AES_ASSERT(std::holds_alternative<uint8_t*>(desc.source) && "runtime compiled shaders aren't supported on vita platform !");
 	
 	gxpShader = reinterpret_cast<SceGxmProgram*>(std::get<uint8_t*>(desc.source));
-	AES_ASSERT(fragmentShaderGxp);
+	AES_ASSERT(gxpShader);
 
 	auto& context = RHIRenderContext::instance();
 	auto err = sceGxmShaderPatcherRegisterProgram(context.getShaderPatcher(), gxpShader, &id);

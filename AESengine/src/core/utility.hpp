@@ -2,6 +2,7 @@
 #define UTILITY_HPP
 
 #include <string>
+#include <string_view>
 #include <vector>
 #include "macro_helpers.hpp"
 
@@ -12,6 +13,8 @@ namespace aes {
 	
 	std::string readFile(std::string const& file);
 	std::vector<uint8_t> readFileBin(std::string const& file);
+
+	std::vector<std::string> split(std::string_view a, char sep);
 	
 	constexpr uintptr_t align(uintptr_t x, uint32_t a)
 	{

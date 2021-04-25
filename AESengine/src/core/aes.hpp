@@ -1,11 +1,9 @@
 #ifndef AES_HPP
 #define AES_HPP
 
-#define AES_UNUSED(x) ((void)(x))
+#include <cstdlib>
 
-#ifndef AES_DEBUG
-	#define AES_RELEASE
-#endif
+#define AES_UNUSED(x) ((void)(x))
 
 #ifdef _MSC_VER	
 	#define AES_ASSUME(x) __assume(x)
@@ -18,8 +16,10 @@
 #ifdef AES_DEBUG
 	#ifdef _WIN32
 		#define AES_DEBUG_BREAK() __debugbreak()
-	#else
-		#define AES_DEBUG_BREAK() __builtin_trap()
+	#elif defined(__vita__)
+		#define AES_DEBUG_BREAK() std::abort();
+	//#else
+	//	#define AES_DEBUG_BREAK() __builtin_trap()
 	#endif
 	#define AES_ASSERT(x) if (x) {} else { AES_LOG_ERROR("Assertion Failed : " #x); AES_DEBUG_BREAK(); }
 #else

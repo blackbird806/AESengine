@@ -4,9 +4,14 @@
     float4 color : COLOR;
 };
 
-uniform float4x4 viewMatrix 		: BUFFER0;
-uniform float4x4 projectionMatrix 	: BUFFER0;
-uniform float4x4 worldMatrix 		: BUFFER1;
+struct {
+    float4x4 viewMatrix;
+    float4x4 projectionMatrix;
+} CameraBuffer : BUFFER0;
+
+uniform struct {
+    float4x4 worldMatrix;
+} ModelBuffer : BUFFER1;
 
 void main(VS_INPUT input,
 	out float4 position : POSITION,
@@ -16,9 +21,9 @@ void main(VS_INPUT input,
     input.position.w = 1.0f;
 
     // Calculate the position of the vertex against the world, view, and projection matrices.
-    position = mul(input.position, worldMatrix);
-    position = mul(position, viewMatrix);
-    position = mul(position, projectionMatrix);
+    position = mul(input.position, ModelBuffer.worldMatrix);
+    position = mul(position, CameraBuffer.viewMatrix);
+    position = mul(position, CameraBuffer.projectionMatrix);
 
     // Store the input color for the pixel shader to use.
     color = input.color;
