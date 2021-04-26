@@ -86,18 +86,29 @@ public:
 	{
 		AES_PROFILE_FUNCTION();
 		AES_LOG("start");
-
-		auto vpGxp = aes::readFileBin("app0:assets/shaders/vita/basic3d_vs.gxp");
-		auto fpGxp = aes::readFileBin("app0:assets/shaders/vita/basic3d_fs.gxp");
+#ifdef __vita__
+		auto vpGxp = aes::readFileBin("app0:assets/shaders/vita/basic2d_vs.gxp");
+		auto fpGxp = aes::readFileBin("app0:assets/shaders/vita/basic2d_fs.gxp");
 		AES_LOG("shader read success");
-
+#endif
 		aes::FragmentShaderDescription fragmentShaderDescription;
+#ifdef __vita__
 		fragmentShaderDescription.source = fpGxp.data();
-		fragmentShader.init(fragmentShaderDescription);
+#else
+		fragmentShaderDescription.source = pxShader;
+#endif
+		if (!fragmentShader.init(fragmentShaderDescription))
+		{
+			AES_ASSERT(false && "fragment shader creation failed");
+		}
 		AES_LOG("fragment shader created");
 
 		aes::VertexShaderDescription vertexShaderDescription;
+#ifdef __vita__
 		vertexShaderDescription.source = vpGxp.data();
+#else
+		vertexShaderDescription.source = vShader;
+#endif
 		vertexShaderDescription.verticesStride = sizeof(aes::Vertex);
 
 		aes::VertexInputLayout vertexInputLayout[2];
@@ -117,10 +128,23 @@ public:
 		}
 		AES_LOG("vertex shader created");
 
-		defaultMtrl.init(&vertexShader, &fragmentShader);
+		if (!defaultMtrl.init(&vertexShader, &fragmentShader))
+		{
+			AES_ASSERT(false && "material creation failed");
+		}
 		AES_LOG("material created");
-
-		model = aes::createCube(&defaultMtrl).value();
+		
+		//auto modelR = aes::createCube();
+		aes::Vertex vertices[] = {
+			{ {-0.5f, 0.0f, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f } },
+			{ {0.0f, 0.5f, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f } },
+			{ {0.5f, 0.0f, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f } }
+		};
+		uint32_t indices[] = { 0, 1, 2 };
+		if (!model.create(vertices, indices))
+		{
+			AES_ASSERT(false && "failed to create model");
+		}
 		AES_LOG("cube created");
 
 		aes::BufferDescription viewDesc;
@@ -132,7 +156,7 @@ public:
 		AES_LOG("view buffer created");
 
 		mainCamera.pos = { 0.0, 0.0, -5.0 };
-		//getViewportMousePos(lastMousePosX, lastMousePosY);
+		getViewportMousePos(lastMousePosX, lastMousePosY);
 	}
 
 	float speed = 5.0f, sensitivity = 50.f;
@@ -177,7 +201,7 @@ public:
 
 		 mainCamera.pos += glm::vec3(movePos * mainCamera.viewMatrix);
 		 float mx, my;
-		 //getViewportMousePos(mx, my);
+		 getViewportMousePos(mx, my);
 		
 		 if (getKeyState(aes::Key::RClick) == aes::InputState::Down)
 		 {
@@ -204,7 +228,7 @@ public:
 		 }
 		 else
 		 {
-		 	//getViewportMousePos(lastMousePosX, lastMousePosY);
+		 	getViewportMousePos(lastMousePosX, lastMousePosY);
 		 }
 		 mainCamera.lookAt(mainCamera.pos + glm::normalize(direction));
 
@@ -215,10 +239,11 @@ public:
 		 	uint windowWidth = 960, windowHeight = 544;
 		 	//mainWindow->getScreenSize(windowWidth, windowHeight);
 		 	float const aspect = (float)windowWidth / (float)windowHeight;
-		 	mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), aspect, 0.0001f, 1000.0f);
+			mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), aspect, 0.0001f, 1000.0f);
 		 }
 		model.toWorld = glm::rotate(model.toWorld, 1.5f * dt, glm::vec3(0.0f, 1.0f, 1.0f));
-		aes::CameraBuffer const camBuf { glm::transpose(mainCamera.viewMatrix), glm::transpose(mainCamera.projMatrix) };
+		aes::CameraBuffer const camBuf{ glm::transpose(mainCamera.viewMatrix), glm::transpose(mainCamera.projMatrix) };
+		//aes::CameraBuffer const camBuf { mainCamera.viewMatrix, mainCamera.projMatrix };
 		viewBuffer.setData(camBuf);
 	}
 
@@ -226,8 +251,8 @@ public:
 	{
 		AES_PROFILE_FUNCTION();
 		aes::Material::BindInfo bindInfo;
-		bindInfo.vsBuffers.push_back(std::make_pair("ModelBuffer", &model.modelBuffer));
-		bindInfo.vsBuffers.push_back(std::make_pair("CameraBuffer", &viewBuffer));
+		//bindInfo.vsBuffers.push_back(std::make_pair("ModelBuffer", &model.modelBuffer));
+		//bindInfo.vsBuffers.push_back(std::make_pair("CameraBuffer", &viewBuffer));
 		defaultMtrl.bind(bindInfo);
 		model.render();
 	}

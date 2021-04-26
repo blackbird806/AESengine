@@ -587,7 +587,7 @@ void GxmRenderer::setDrawPrimitiveMode(DrawPrimitiveType mode)
 void GxmRenderer::drawIndexed(uint indexCount)
 {
 	sceGxmDraw(context, rhiPrimitiveTypeToApi(currentState.primitiveType), 
-				rhiIndexFormatToApi(currentState.indexBufferInfo.typeFormat), 
+				rhiIndexFormatToApi(currentState.indexBufferInfo.typeFormat),
 				currentState.indexBufferInfo.buffer,
 				(uint32_t)indexCount);
 }

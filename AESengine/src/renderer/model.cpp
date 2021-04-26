@@ -35,23 +35,21 @@ std::vector<Vertex> aes::getCubeVertices()
 	return vertices;
 }
 
-Result<Model> aes::createCube(Material* mtrl)
+Result<Model> aes::createCube()
 {
 	AES_PROFILE_FUNCTION();
 
 	Model cube;
-	auto const result = cube.create(getCubeVertices(), cubeIndices, mtrl);
+	auto const result = cube.create(getCubeVertices(), cubeIndices);
 	if (!result)
 		return { result.error() };
 	return { std::move(cube) };
 }
 
-Result<void> Model::create(std::span<Vertex const> vertices, std::span<uint32_t const> indices, Material* mtrl)
+Result<void> Model::create(std::span<Vertex const> vertices, std::span<uint32_t const> indices)
 {
 	AES_PROFILE_FUNCTION();
 
-	material = mtrl;
-	
 	vertexCount = vertices.size();
 	indexCount = indices.size();
 

@@ -173,7 +173,7 @@ Result<void> GxmVertexShader::init(VertexShaderDescription const& desc)
 	
 	SceGxmVertexStream vertexStream;
 	vertexStream.stride = desc.verticesStride;
-	vertexStream.indexSource = SCE_GXM_INDEX_SOURCE_INDEX_16BIT; // @Review
+	vertexStream.indexSource = SCE_GXM_INDEX_SOURCE_INDEX_32BIT; // @Review
 
 	err = sceGxmShaderPatcherCreateVertexProgram(context.getShaderPatcher(), id, verticesAttributes.data(), verticesAttributes.size(), &vertexStream, 1, &vertexShader);
 	if (err != SCE_OK)

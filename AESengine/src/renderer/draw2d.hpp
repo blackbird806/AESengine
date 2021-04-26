@@ -5,7 +5,6 @@
 #include <variant>
 #include <vector>
 
-#include "RHI/RHIRenderContext.hpp"
 #include "RHI/RHIBuffer.hpp"
 
 #include "core/color.hpp"
@@ -20,6 +19,7 @@ namespace aes
 		void init();
 		
 		void setColor(Color color);
+		void setMatrix(glm::mat2 const&);
 		void drawLine(Line2D const& line);
 		void drawRect(Rect const& rect);
 		
@@ -52,6 +52,7 @@ namespace aes
 		struct State
 		{
 			Color color;
+			glm::mat2 transformationMatrix;
 		};
 		
 		State currentState;

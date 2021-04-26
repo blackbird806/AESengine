@@ -19,9 +19,6 @@
     <Filter Include="ThirdParty\fmt">
       <UniqueIdentifier>{e18408e8-b048-4a50-aa8e-0f38f42b4658}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ThirdParty\tracy">
-      <UniqueIdentifier>{b67932b3-573c-430c-87ec-b4421133d089}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ThirdParty\stb">
       <UniqueIdentifier>{edc2130c-9a41-4e11-bb66-58818b3ad3ea}</UniqueIdentifier>
     </Filter>
@@ -59,9 +56,6 @@
     </ClCompile>
     <ClCompile Include="src\core\allocator.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="thirdParty\tracy\TracyClient.cpp">
-      <Filter>ThirdParty\tracy</Filter>
     </ClCompile>
     <ClCompile Include="src\core\input.cpp">
       <Filter>Source Files</Filter>

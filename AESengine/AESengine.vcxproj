@@ -55,7 +55,6 @@
     <ClCompile Include="thirdParty\fmt\src\os.cc" />
     <ClCompile Include="thirdParty\stb\stb_truetype.cpp" />
     <ClCompile Include="thirdParty\tiny\tiny_obj_loader.cpp" />
-    <ClCompile Include="thirdParty\tracy\TracyClient.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\aes.hpp" />

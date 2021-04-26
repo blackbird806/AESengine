@@ -64,6 +64,7 @@ Result<void> D3D11VertexShader::init(VertexShaderDescription const& desc)
 	}
 	
 	vertexShaderBuffer->Release();
+	return {};
 }
 
 D3D11VertexShader::D3D11VertexShader(D3D11VertexShader&& rhs) noexcept : D3D11Shader(std::move(rhs)),
@@ -179,6 +180,7 @@ Result<void> D3D11FragmentShader::init(FragmentShaderDescription const& desc)
 	
 	D3DReflect(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&reflector);
 	pixelShaderBuffer->Release();
+	return {};
 }
 
 D3D11FragmentShader::D3D11FragmentShader(D3D11FragmentShader&& rhs) noexcept : D3D11Shader(std::move(rhs)), pixelShader(rhs.pixelShader)

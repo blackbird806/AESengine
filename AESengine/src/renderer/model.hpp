@@ -59,22 +59,21 @@ namespace aes
 		Model(Model&& rhs) noexcept = default;
 		Model& operator=(Model&& rhs) noexcept = default;
 		
-		Result<void> create(std::span<Vertex const> vertices, std::span<uint32_t const> indices, Material* mtrl);
+		Result<void> create(std::span<Vertex const> vertices, std::span<uint32_t const> indices);
 		
 		void destroy();
 		void render();
 		
 		glm::mat4 toWorld;
-		
 		RHIBuffer modelBuffer;
+		
 	private:
 		
 		RHIBuffer vertexBuffer, indexBuffer;
-		Material* material;
 		size_t vertexCount, indexCount;
 	};
 
-	Result<Model> createCube(Material* mtrl);
+	Result<Model> createCube();
 }
 
 #endif

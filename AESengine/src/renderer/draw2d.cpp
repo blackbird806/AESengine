@@ -15,6 +15,12 @@ void Draw2d::setColor(Color color)
 	currentState.color = color;
 }
 
+void Draw2d::setMatrix(glm::mat2 const& mat)
+{
+	AES_PROFILE_FUNCTION();
+	currentState.transformationMatrix = mat;
+}
+
 void Draw2d::drawLine(Line2D const& line)
 {
 	AES_PROFILE_FUNCTION();

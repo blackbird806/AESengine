@@ -44,7 +44,6 @@ include_directories(
   thirdParty/
   thirdParty/fmt/include
   thirdParty/glm
-  thirdParty/tracy
 )
 
 # Add any additional library paths here
@@ -75,7 +74,6 @@ file(
   thirdParty/stb/*
   thirdParty/stb/*
   thirdParty/tiny/*
-  thirdParty/tracy/*
   thirdParty/psvDebugScreen/debugScreen.c
 )
 
@@ -106,6 +104,8 @@ vita_create_vpk(${PROJECT_NAME}.vpk ${VITA_TITLEID} ${PROJECT_NAME}.self
   FILE sce_sys/livearea/contents/template.xml sce_sys/livearea/contents/template.xml
   FILE assets/shaders/vita/bin/clear_fs.gxp assets/shaders/vita/clear_fs.gxp
   FILE assets/shaders/vita/bin/clear_vs.gxp assets/shaders/vita/clear_vs.gxp
+  FILE assets/shaders/vita/bin/basic3d_vs.gxp assets/shaders/vita/basic2d_vs.gxp
+  FILE assets/shaders/vita/bin/basic3d_fs.gxp assets/shaders/vita/basic2d_fs.gxp
   FILE assets/shaders/vita/bin/basic3d_vs.gxp assets/shaders/vita/basic3d_vs.gxp
   FILE assets/shaders/vita/bin/basic3d_fs.gxp assets/shaders/vita/basic3d_fs.gxp
 )
