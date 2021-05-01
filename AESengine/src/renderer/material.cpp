@@ -29,7 +29,7 @@ aes::Result<void> aes::Material::init(RHIVertexShader* vs, RHIFragmentShader* fs
 
 void aes::Material::bind(BindInfo const& bindInfos)
 {
-	AES_PROFILE_FUNCTION()
+	AES_PROFILE_FUNCTION();
 
 	auto& context = RHIRenderContext::instance();
 	context.setVertexShader(*vertexShader);

@@ -1,6 +1,7 @@
 #include "gxmRenderer.hpp"
 #include "core/utility.hpp"
 #include "gxmElements.hpp"
+#include "gxmDebug.hpp"
 
 using namespace aes;
 
@@ -151,6 +152,8 @@ struct DisplayData
 	void* address;
 };
 
+
+// displayCallback may be called on another thread
 static void displayCallback(void const* callbackData)
 {
 	DisplayData const* displayData = (DisplayData const*)callbackData;
@@ -163,11 +166,9 @@ static void displayCallback(void const* callbackData)
 		.height = vita_display_height
 	};
 
-	auto err = sceDisplaySetFrameBuf(&frameBuf, (SceDisplaySetBufSync) SCE_DISPLAY_UPDATETIMING_NEXTVSYNC);
-	AES_ASSERT(err == SCE_OK);
-	
-	err = sceDisplayWaitVblankStart();
-	AES_ASSERT(err == SCE_OK);
+	// TODO Thread safe assert / Logs
+	sceDisplaySetFrameBuf(&frameBuf, (SceDisplaySetBufSync) SCE_DISPLAY_UPDATETIMING_NEXTVSYNC);
+	sceDisplayWaitVblankStart();
 }
 
 GxmRenderer* GxmRenderer::inst = nullptr;
@@ -176,6 +177,9 @@ void GxmRenderer::init(Window& windowHandle)
 {
 	AES_PROFILE_FUNCTION();
 	AES_UNUSED(windowHandle);
+
+	AES_ASSERT(inst == nullptr);
+	inst = this;
 
 	// init gxm
 	SceGxmInitializeParams initializeParams = {
@@ -439,7 +443,6 @@ void GxmRenderer::init(Window& windowHandle)
 	clearIndices[1] = 1;
 	clearIndices[2] = 2;
 
-	inst = this;
 	AES_LOG("GXM initialized successfully");
 }
 
@@ -499,7 +502,7 @@ void GxmRenderer::startFrame()
 {
 	AES_PROFILE_FUNCTION();
 
-	sceGxmBeginScene(
+	auto err = sceGxmBeginScene(
 		context,
 		0,
 		renderTarget,
@@ -508,6 +511,7 @@ void GxmRenderer::startFrame()
 		displayBufferSync[backBufferIndex],
 		&displaySurface[backBufferIndex],
 		&depthSurface);
+	AES_GXM_CHECK(err);
 	
 	// set clear shaders
 	sceGxmSetVertexProgram(context, clearVertexProgram);
@@ -523,17 +527,30 @@ void GxmRenderer::endFrame()
 	AES_PROFILE_FUNCTION();
 
 	// end the scene on the main render target, submitting rendering work to the GPU
-	sceGxmEndScene(context, NULL, NULL);
+	auto err = sceGxmEndScene(context, NULL, NULL);
+	AES_GXM_CHECK(err);
+
 	// PA heartbeat to notify end of frame
-	sceGxmPadHeartbeat(&displaySurface[backBufferIndex], displayBufferSync[backBufferIndex]);
+	err = sceGxmPadHeartbeat(&displaySurface[backBufferIndex], displayBufferSync[backBufferIndex]);
+	AES_GXM_CHECK(err);
 
 	// queue the display swap for this frame
 	DisplayData displayData;
 	displayData.address = displayBufferData[backBufferIndex];
-	sceGxmDisplayQueueAddEntry(
+	err = sceGxmDisplayQueueAddEntry(
 		displayBufferSync[frontBufferIndex],	// front buffer is OLD buffer
 		displayBufferSync[backBufferIndex],		// back buffer is NEW buffer
 		&displayData);
+	AES_GXM_CHECK(err);
+
+	// if (callbackErr1 != SCE_OK)
+	// {
+	// 	AES_LOG_ERROR("err 1 {}", callbackErr1);
+	// }
+	// if (callbackErr2 != SCE_OK)
+	// {
+	// 	AES_LOG_ERROR("err 2 {}", callbackErr2);
+	// }
 
 	// update buffer indices
 	frontBufferIndex = backBufferIndex;
@@ -557,7 +574,8 @@ void GxmRenderer::bindFSUniformBuffer(RHIBuffer& buffer, uint slot)
 void GxmRenderer::bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset)
 {
 	AES_PROFILE_FUNCTION();
-	sceGxmSetVertexStream(context, (uint32_t)offset, buffer.getHandle());
+	auto err = sceGxmSetVertexStream(context, (uint32_t)offset, buffer.getHandle());
+	AES_GXM_CHECK(err);
 }
 
 void GxmRenderer::bindIndexBuffer(RHIBuffer& buffer, TypeFormat format, uint offset)
@@ -586,10 +604,12 @@ void GxmRenderer::setDrawPrimitiveMode(DrawPrimitiveType mode)
 
 void GxmRenderer::drawIndexed(uint indexCount)
 {
-	sceGxmDraw(context, rhiPrimitiveTypeToApi(currentState.primitiveType), 
+	AES_PROFILE_FUNCTION();
+	int err = sceGxmDraw(context, rhiPrimitiveTypeToApi(currentState.primitiveType), 
 				rhiIndexFormatToApi(currentState.indexBufferInfo.typeFormat),
 				currentState.indexBufferInfo.buffer,
 				(uint32_t)indexCount);
+	AES_ASSERT(err == SCE_OK);
 }
 
 SceGxmShaderPatcher* GxmRenderer::getShaderPatcher() const

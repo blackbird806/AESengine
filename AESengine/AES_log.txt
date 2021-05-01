@@ -6,9 +6,109 @@ info : engine initialized
 info : start
 info : fragment shader created
 info : vertex shader created
-info : buffer infos size 1
+info : buffer infos size 2
 info : uniform buffer reflect CameraBuffer - index: 0 - size: 128
+info : uniform buffer reflect ModelBuffer - index: 1 - size: 64
 info : material created
 info : cube created
 info : view buffer created
+info : SO FAR
+info : SO FAR 2
+info : SO FAR 3
+info : aes::D3D11Shader::getUniformBufferInfos
+	totalTime:0.0252ms
+	count:2
+	average:0.0126ms
+	parent:aes::Material::init
+
+info : aes::D3D11FragmentShader::init
+	totalTime:7.8376ms
+	count:1
+	average:7.8376ms
+	parent:Game::start
+
+info : aes::D3D11VertexShader::init
+	totalTime:3.2258ms
+	count:1
+	average:3.2258ms
+	parent:Game::start
+
+info : Game::start
+	totalTime:13.351ms
+	count:1
+	average:13.351ms
+	parent:aes::Engine::run
+
+info : aes::Window::getMousePosition
+	totalTime:0.8449999999999366ms
+	count:5985
+	average:0.00014118629908102534ms
+	parent:Game::start
+
+info : aes::Material::init
+	totalTime:0.4255ms
+	count:1
+	average:0.4255ms
+	parent:Game::start
+
+info : aes::Window::getScreenSize
+	totalTime:0.8794999999999354ms
+	count:5985
+	average:0.00014695071010859407ms
+	parent:Game::start
+
+info : aes::Model::create
+	totalTime:0.759ms
+	count:1
+	average:0.759ms
+	parent:Game::start
+
+info : aes::Win_Window::pollEvents
+	totalTime:128.64710000000008ms
+	count:2992
+	average:0.04299702540106955ms
+	parent:aes::Engine::run
+
+info : aes::D3D11Renderer::startFrame
+	totalTime:6.703299999999906ms
+	count:2992
+	average:0.002240407754010664ms
+	parent:aes::Engine::run
+
+info : Game::update
+	totalTime:105.69369999999996ms
+	count:2992
+	average:0.0353254344919786ms
+	parent:aes::Engine::run
+
+info : aes::Material::bind
+	totalTime:20.964199999999764ms
+	count:2992
+	average:0.007006751336898317ms
+	parent:Game::draw
+
+info : aes::Model::render
+	totalTime:40.089999999999876ms
+	count:2992
+	average:0.013399064171122953ms
+	parent:Game::draw
+
+info : Game::draw
+	totalTime:147.42580000000035ms
+	count:2992
+	average:0.049273328877005466ms
+	parent:aes::Engine::run
+
+info : aes::D3D11Renderer::endFrame
+	totalTime:522.6235000000014ms
+	count:2992
+	average:0.17467362967914485ms
+	parent:aes::Engine::run
+
+info : aes::Engine::run
+	totalTime:963.9464ms
+	count:1
+	average:963.9464ms
+	parent:none
+
 info : engine destroyed

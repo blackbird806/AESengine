@@ -17,11 +17,11 @@
 	#ifdef _WIN32
 		#define AES_DEBUG_BREAK() __debugbreak()
 	#elif defined(__vita__)
-		#define AES_DEBUG_BREAK() std::abort();
+		#define AES_DEBUG_BREAK() std::abort()
 	//#else
 	//	#define AES_DEBUG_BREAK() __builtin_trap()
 	#endif
-	#define AES_ASSERT(x) if (x) {} else { AES_LOG_ERROR("Assertion Failed : " #x); AES_DEBUG_BREAK(); }
+#define AES_ASSERT(x) if (x) {} else { AES_LOG_ERROR("Assertion Failed : " #x); AES_DEBUG_BREAK(); }
 #else
 		#define AES_ASSERT(x) AES_ASSUME(x)
 #endif

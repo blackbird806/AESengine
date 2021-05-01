@@ -34,6 +34,7 @@
     <ClCompile Include="src\core\input.cpp" />
     <ClCompile Include="src\core\maths.cpp" />
     <ClCompile Include="src\core\platformWindows\win_window.cpp" />
+    <ClCompile Include="src\core\profiler.cpp" />
     <ClCompile Include="src\core\string_converter.cpp" />
     <ClCompile Include="src\core\utility.cpp" />
     <ClCompile Include="src\core\window.cpp" />
@@ -210,7 +211,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;TRACY_ENABLE;GLM_FORCE_LEFT_HANDED;GLM_FORCE_DEPTH_ZERO_TO_ONE;GLM_FORCE_CTOR_INIT;AES_DEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;TRACY_ENABLE;GLM_FORCE_LEFT_HANDED;GLM_FORCE_DEPTH_ZERO_TO_ONE;GLM_FORCE_CTOR_INIT;AES_DEBUG;AES_ENABLE_PROFILING</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -229,7 +230,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;TRACY_ENABLE;GLM_FORCE_LEFT_HANDED;GLM_FORCE_DEPTH_ZERO_TO_ONE;GLM_FORCE_CTOR_INIT;AES_DEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;TRACY_ENABLE;GLM_FORCE_LEFT_HANDED;GLM_FORCE_DEPTH_ZERO_TO_ONE;GLM_FORCE_CTOR_INIT;AES_DEBUG;AES_ENABLE_PROFILING</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include;$(SolutionDir)thirdParty/kc_TrueTypeAssembler/</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -250,7 +251,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;TRACY_ENABLE;GLM_FORCE_CTOR_INIT</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;TRACY_ENABLE;GLM_FORCE_CTOR_INIT;AES_ENABLE_PROFILING</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -271,7 +272,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;TRACY_ENABLE;GLM_FORCE_CTOR_INIT</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;TRACY_ENABLE;GLM_FORCE_CTOR_INIT;AES_ENABLE_PROFILING</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include;$(SolutionDir)thirdParty/kc_TrueTypeAssembler/</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -290,7 +291,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;GLM_FORCE_LEFT_HANDED;GLM_FORCE_DEPTH_ZERO_TO_ONE;GLM_FORCE_CTOR_INIT;AES_DEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;GLM_FORCE_LEFT_HANDED;GLM_FORCE_DEPTH_ZERO_TO_ONE;GLM_FORCE_CTOR_INIT;AES_DEBUG;AES_ENABLE_PROFILING</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -311,7 +312,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;TRACY_ENABLE;GLM_FORCE_CTOR_INIT</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;TRACY_ENABLE;GLM_FORCE_CTOR_INIT;AES_ENABLE_PROFILING</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>

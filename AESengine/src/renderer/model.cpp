@@ -1,5 +1,6 @@
 #include "model.hpp"
 #include "core/debug.hpp"
+#include "core/utility.hpp"
 #include "RHI/RHIRenderContext.hpp"
 
 using namespace aes;

@@ -1,6 +1,7 @@
 #include <glm/gtx/transform.hpp>
 #include <iostream>
 #include <fstream>
+#include "core/profiler.hpp"
 #include "core/debugMath.hpp"
 #include "engine.hpp"
 #include "renderer/model.hpp"
@@ -133,12 +134,11 @@ public:
 			AES_ASSERT(false && "material creation failed");
 		}
 		AES_LOG("material created");
-		
 		//auto modelR = aes::createCube();
 		aes::Vertex vertices[] = {
-			{ {-0.5f, 0.0f, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f } },
-			{ {0.0f, 0.5f, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f } },
-			{ {0.5f, 0.0f, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f } }
+			{ {-1.0f, -1.0f, 1.0f}, { 0.0f, 1.0f, 1.0f, 1.0f } },
+			{ {3.0f, -1.f, 1.0f}, { 1.0f, 0.0f, 1.0f, 1.0f } },
+			{ {-1.0f, 3.0f, 1.0f}, { 1.0f, 0.0f, 1.0f, 1.0f } }
 		};
 		uint32_t indices[] = { 0, 1, 2 };
 		if (!model.create(vertices, indices))
@@ -268,13 +268,23 @@ int main()
 	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(std::cout));
 #endif
 	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(logFile));
-
+	//AES_START_PROFILE_SESSION("startup");
+	
 	Game game({
 		.appName = "aes cubes"
 	});
 
 	game.init();
+	//auto startupSession = AES_STOP_PROFILE_SESSION();
+	
+	//AES_START_PROFILE_SESSION("running");
 	game.run();
+	//auto runningSession = AES_STOP_PROFILE_SESSION();
+
+	//for (auto const& [_, v] : runningSession.profileDatas)
+	//{
+	//	AES_LOG("{}\n\ttotalTime:{}ms\n\tcount:{}\n\taverage:{}ms\n\tparent:{}\n", v.name, v.elapsedTime, v.count, v.elapsedTime / v.count, v.parentName != nullptr ? v.parentName : "null");
+	//}
 	
 	return 0;
 }

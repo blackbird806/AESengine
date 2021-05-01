@@ -45,6 +45,21 @@ void* operator new[](size_t size, std::align_val_t al)
 	return ptr;
 }
 
+void* operator new(size_t size, std::align_val_t al, std::nothrow_t const&)
+{
+	auto* ptr = _aligned_malloc(size, (size_t)al);
+	AES_PROFILE_MEMORY_ALLOC(ptr, size);
+	return ptr;
+}
+
+void* operator new[](size_t size, std::align_val_t al, std::nothrow_t const&)
+{
+	auto* ptr = _aligned_malloc(size, (size_t)al);
+	AES_PROFILE_MEMORY_ALLOC(ptr, size);
+	return ptr;
+}
+
+
 void operator delete(void* ptr) noexcept
 {
 	AES_PROFILE_MEMORY_DEALLOC(ptr);
@@ -61,7 +76,7 @@ void operator delete[](void* ptr) noexcept
 
 aes::StackAllocator::StackAllocator(size_t size) : totalSize(size), offset(0)
 {
-	start = malloc(totalSize);
+	start = new uint8_t(totalSize);
 }
 
 aes::StackAllocator::~StackAllocator()
