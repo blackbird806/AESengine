@@ -92,7 +92,7 @@ void Model::destroy()
 	AES_PROFILE_FUNCTION();
 }
 
-void Model::render()
+void Model::draw()
 {
 	AES_PROFILE_FUNCTION();
 

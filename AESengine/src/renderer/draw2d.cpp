@@ -4,6 +4,31 @@ using namespace aes;
 
 void Draw2d::init()
 {
+	VertexInputLayout vertexInputLayout[3];
+	vertexInputLayout[0].semantic = SemanticType::Position;
+	vertexInputLayout[0].offset = 0;
+	vertexInputLayout[0].format = RHIFormat::R32G32B32_Float;
+
+	vertexInputLayout[1].semantic = SemanticType::TexCoord;
+	vertexInputLayout[1].offset = sizeof(glm::vec3);
+	vertexInputLayout[1].format = RHIFormat::R32G32_Float;
+
+	vertexInputLayout[2].semantic = SemanticType::Color;
+	vertexInputLayout[2].offset = sizeof(glm::vec3) + sizeof(glm::vec2);
+	vertexInputLayout[2].format = RHIFormat::R32G32B32A32_Float;
+	
+	VertexShaderDescription vertexShaderDescription;
+	vertexShaderDescription.source = ""; // TODO
+	vertexShaderDescription.verticesLayout = vertexInputLayout;
+	vertexShaderDescription.verticesStride = sizeof(Vertex);
+	
+	vertexShader.init(vertexShaderDescription);
+
+	FragmentShaderDescription fragmentShaderDescription;
+	fragmentShaderDescription.source = ""; // TODO
+
+	fragmentShader.init(fragmentShaderDescription);
+	
 	ensureVertexBuffersCapacity(200 * sizeof(Vertex));
 	ensureIndexBuffersCapacity(200 * sizeof(Index_t));
 	ensureModelBuffersCapacity(50 * sizeof(Model));
@@ -24,13 +49,24 @@ void Draw2d::setMatrix(glm::mat2 const& mat)
 void Draw2d::drawLine(Line2D const& line)
 {
 	AES_PROFILE_FUNCTION();
-	commands.push_back(Command{ line, currentState.color });
+	commands.push_back(Command{ DrawCommandType::Lines, currentState.color });
+	// update ram vertices / indices
+	// beware of alignement !
 }
 
 void Draw2d::drawRect(Rect const& rect)
 {
 	AES_PROFILE_FUNCTION();
-	commands.push_back(Command{ rect, currentState.color });
+	commands.push_back(Command{ DrawCommandType::FillRects, currentState.color });
+}
+
+void Draw2d::executeDrawCommands()
+{
+	// update buffers
+	for (auto const& cmd : commands)
+	{
+		// execute commands
+	}
 }
 
 void Draw2d::ensureVertexBuffersCapacity(size_t size)
@@ -49,7 +85,7 @@ void Draw2d::ensureVertexBuffersCapacity(size_t size)
 	vertexBufferDesc.sizeInBytes = newCapacity;
 
 	RHIBuffer newBuffer;
-	newBuffer.create(vertexBufferDesc);
+	newBuffer.create(vertexBufferDesc); // TODO handle reallocation error
 
 	if (vertexBuffer.isValid())
 	{

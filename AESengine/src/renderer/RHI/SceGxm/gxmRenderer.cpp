@@ -152,7 +152,6 @@ struct DisplayData
 	void* address;
 };
 
-
 // displayCallback may be called on another thread
 static void displayCallback(void const* callbackData)
 {
@@ -543,15 +542,6 @@ void GxmRenderer::endFrame()
 		&displayData);
 	AES_GXM_CHECK(err);
 
-	// if (callbackErr1 != SCE_OK)
-	// {
-	// 	AES_LOG_ERROR("err 1 {}", callbackErr1);
-	// }
-	// if (callbackErr2 != SCE_OK)
-	// {
-	// 	AES_LOG_ERROR("err 2 {}", callbackErr2);
-	// }
-
 	// update buffer indices
 	frontBufferIndex = backBufferIndex;
 	backBufferIndex = (backBufferIndex + 1) % vita_display_buffer_count;
@@ -605,7 +595,7 @@ void GxmRenderer::setDrawPrimitiveMode(DrawPrimitiveType mode)
 void GxmRenderer::drawIndexed(uint indexCount)
 {
 	AES_PROFILE_FUNCTION();
-	int err = sceGxmDraw(context, rhiPrimitiveTypeToApi(currentState.primitiveType), 
+	int err = sceGxmDraw(context, rhiPrimitiveTypeToApi(currentState.primitiveType),
 				rhiIndexFormatToApi(currentState.indexBufferInfo.typeFormat),
 				currentState.indexBufferInfo.buffer,
 				(uint32_t)indexCount);

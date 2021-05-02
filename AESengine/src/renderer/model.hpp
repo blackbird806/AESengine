@@ -62,7 +62,7 @@ namespace aes
 		Result<void> create(std::span<Vertex const> vertices, std::span<uint32_t const> indices);
 		
 		void destroy();
-		void render();
+		void draw();
 		
 		glm::mat4 toWorld;
 		RHIBuffer modelBuffer;

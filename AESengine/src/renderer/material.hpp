@@ -3,13 +3,20 @@
 
 #include <unordered_map>
 #include <string>
-
 #include "RHI/RHIShader.hpp"
 #include "RHI/RHIBuffer.hpp"
 #include "core/error.hpp"
 
 namespace aes
 {
+	/*
+	 * @TODO Materials rework
+	 * Materials should ? own shaders and shaders parameters (buffers, textures, ...)
+	 * Current bind system is not user friendly
+	 * Set data per member name rather than per buffer ?
+	 * Regroup buffers per update frequency eg rather than "CameraBuffer" and ModelBuffer ==> FrameBuffer updated each frame ?
+	 */
+	
 	class Material
 	{
 	public:
@@ -19,7 +26,7 @@ namespace aes
 			std::vector<std::pair<std::string, RHIBuffer*>> vsBuffers;
 			std::vector<std::pair<std::string, RHIBuffer*>> fsBuffers;
 		};
-		
+
 		Result<void> init(RHIVertexShader*, RHIFragmentShader*);
 		
 		void bind(BindInfo const& bindInfos);

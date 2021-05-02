@@ -8,7 +8,6 @@
 #include "renderer/material.hpp"
 #include "core/os.hpp"
 #include "core/utility.hpp"
-
 #include "core/color.hpp"
 
 const char pxShader[] = R"(
@@ -166,81 +165,81 @@ public:
 	
 	void update(float dt) override
 	{
-		 AES_PROFILE_FUNCTION();
+		AES_PROFILE_FUNCTION();
 
-		 glm::vec4 movePos = { 0.0f, 0.f, 0.f, 0.0f };
-		 if (getKeyState(aes::Key::W) == aes::InputState::Down)
-		 {
-		 	movePos.z += speed * dt;
-		 }
+		glm::vec4 movePos = { 0.0f, 0.f, 0.f, 0.0f };
+		if (getKeyState(aes::Key::W) == aes::InputState::Down)
+		{
+			movePos.z += speed * dt;
+		}
 
-		 if (getKeyState(aes::Key::S) == aes::InputState::Down)
-		 {
-		 	movePos.z -= speed * dt;
-		 }
+		if (getKeyState(aes::Key::S) == aes::InputState::Down)
+		{
+			movePos.z -= speed * dt;
+		}
 
-		 if (getKeyState(aes::Key::D) == aes::InputState::Down)
-		 {
-		 	movePos.x += speed * dt;
-		 }
+		if (getKeyState(aes::Key::D) == aes::InputState::Down)
+		{
+			movePos.x += speed * dt;
+		}
 
-		 if (getKeyState(aes::Key::A) == aes::InputState::Down)
-		 {
-		 	movePos.x -= speed * dt;
-		 }
+		if (getKeyState(aes::Key::A) == aes::InputState::Down)
+		{
+			movePos.x -= speed * dt;
+		}
 
-		 if (getKeyState(aes::Key::E) == aes::InputState::Down)
-		 {
-		 	movePos.y += speed * dt;
-		 }
+		if (getKeyState(aes::Key::E) == aes::InputState::Down)
+		{
+			movePos.y += speed * dt;
+		}
 
-		 if (getKeyState(aes::Key::Q) == aes::InputState::Down)
-		 {
-		 	movePos.y -= speed * dt;
-		 }
+		if (getKeyState(aes::Key::Q) == aes::InputState::Down)
+		{
+			movePos.y -= speed * dt;
+		}
 
-		 mainCamera.pos += glm::vec3(movePos * mainCamera.viewMatrix);
-		 float mx, my;
-		 getViewportMousePos(mx, my);
+		mainCamera.pos += glm::vec3(movePos * mainCamera.viewMatrix);
+		float mx, my;
+		getViewportMousePos(mx, my);
 		
-		 if (getKeyState(aes::Key::RClick) == aes::InputState::Down)
-		 {
-		 	float xoffset = mx - lastMousePosX;
-		 	float yoffset = my - lastMousePosY; // reversed since y-coordinates range from bottom to top
+		if (getKeyState(aes::Key::RClick) == aes::InputState::Down)
+		{
+			float xoffset = mx - lastMousePosX;
+			float yoffset = my - lastMousePosY; // reversed since y-coordinates range from bottom to top
 
-		 	lastMousePosX = mx;
-		 	lastMousePosY = my;
+			lastMousePosX = mx;
+			lastMousePosY = my;
 
-		 	xoffset *= sensitivity;
-		 	yoffset *= sensitivity;
+			xoffset *= sensitivity;
+			yoffset *= sensitivity;
 
-		 	yaw += xoffset;
-		 	pitch += yoffset;
+			yaw += xoffset;
+			pitch += yoffset;
 
-		 	if (pitch > 89.0f)
-		 		pitch = 89.0f;
-		 	if (pitch < -89.0f)
-		 		pitch = -89.0f;
+			if (pitch > 89.0f)
+				pitch = 89.0f;
+			if (pitch < -89.0f)
+				pitch = -89.0f;
 
-		 	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-		 	direction.y = sin(glm::radians(pitch));
-		 	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-		 }
-		 else
-		 {
-		 	getViewportMousePos(lastMousePosX, lastMousePosY);
-		 }
-		 mainCamera.lookAt(mainCamera.pos + glm::normalize(direction));
+			direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+			direction.y = sin(glm::radians(pitch));
+			direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+		}
+		else
+		{
+			getViewportMousePos(lastMousePosX, lastMousePosY);
+		}
+		mainCamera.lookAt(mainCamera.pos + glm::normalize(direction));
 
-		 {
-		 	float const ex = 0.0055f;
-		 	float const csx = 0.025f;
+		{
+			float const ex = 0.0055f;
+			float const csx = 0.025f;
 
-		 	uint windowWidth = 960, windowHeight = 544;
-		 	//mainWindow->getScreenSize(windowWidth, windowHeight);
-		 	float const aspect = (float)windowWidth / (float)windowHeight;
+			uint windowWidth = 960, windowHeight = 544;
+			//mainWindow->getScreenSize(windowWidth, windowHeight);
+			float const aspect = (float)windowWidth / (float)windowHeight;
 			mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), aspect, 0.0001f, 1000.0f);
-		 }
+		}
 		model.toWorld = glm::rotate(model.toWorld, 1.5f * dt, glm::vec3(0.0f, 1.0f, 1.0f));
 		aes::CameraBuffer const camBuf{ glm::transpose(mainCamera.viewMatrix), glm::transpose(mainCamera.projMatrix) };
 		//aes::CameraBuffer const camBuf { mainCamera.viewMatrix, mainCamera.projMatrix };
@@ -254,7 +253,7 @@ public:
 		//bindInfo.vsBuffers.push_back(std::make_pair("ModelBuffer", &model.modelBuffer));
 		//bindInfo.vsBuffers.push_back(std::make_pair("CameraBuffer", &viewBuffer));
 		defaultMtrl.bind(bindInfo);
-		model.render();
+		model.draw();
 	}
 };
 

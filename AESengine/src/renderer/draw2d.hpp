@@ -6,6 +6,9 @@
 #include <vector>
 
 #include "RHI/RHIBuffer.hpp"
+#include "RHI/RHIShader.hpp"
+#include "RHI/RHIVertexInputLayout.hpp"
+#include "material.hpp"
 
 #include "core/color.hpp"
 #include "core/geometry.hpp"
@@ -22,6 +25,8 @@ namespace aes
 		void setMatrix(glm::mat2 const&);
 		void drawLine(Line2D const& line);
 		void drawRect(Rect const& rect);
+
+		void executeDrawCommands();
 		
 	private:
 
@@ -34,6 +39,7 @@ namespace aes
 		struct Vertex
 		{
 			glm::vec2 pos;
+			glm::vec2 uv;
 			Color color;
 		};
 
@@ -41,11 +47,16 @@ namespace aes
 		{
 			glm::mat2 model;
 		};
+
+		enum class DrawCommandType
+		{
+			Lines,
+			FillRects,
+		};
 		
 		struct Command
 		{
-			using Shape_t = std::variant<Line2D, Rect>;
-			Shape_t shape;
+			DrawCommandType type;
 			Color color;
 		};
 
@@ -57,6 +68,9 @@ namespace aes
 		
 		State currentState;
 		std::vector<Command> commands;
+
+		RHIVertexShader vertexShader;
+		RHIFragmentShader fragmentShader;
 		
 		RHIBuffer vertexBuffer;
 		RHIBuffer indexBuffer;

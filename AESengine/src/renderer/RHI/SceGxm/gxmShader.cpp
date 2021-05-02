@@ -83,7 +83,8 @@ std::vector<UniformBufferReflectionInfo> GxmShader::getUniformBufferInfos() cons
 			if (it != uniformBuffersInfos.end())
 			{
 				// update infos about the existing buffer
-				it->size += getProgramParameterSize(param);
+				// TODO deduce the buffer size according his members and ubo alignement
+				// it->size += getProgramParameterSize(param); // unsupported for now
 			}
 			else
 			{
