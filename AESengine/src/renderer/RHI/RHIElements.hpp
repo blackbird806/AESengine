@@ -3,7 +3,7 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <string_view>
+#include <string>
 #include <span>
 #include <variant>
 
@@ -31,6 +31,24 @@ namespace aes
 		VertexBuffer,
 		IndexBuffer,
 		UniformBuffer,
+	};
+
+	enum class BlendOp
+	{
+		Add,
+		Sub
+	};
+
+	enum class BlendFactor
+	{
+		Zero,
+		One,
+		SrcColor,
+		SrcAlpha,
+		DstColor,
+		DstAlpha,
+		OneMinusSrcColor,
+		OneMinusDstColor,
 	};
 
 	enum class DrawPrimitiveType
@@ -101,7 +119,7 @@ namespace aes
 
 	struct ShaderDescription
 	{
-		std::variant<std::string_view, uint8_t*> source;
+		std::variant<std::string, uint8_t*> source;
 	};
 
 	struct VertexShaderDescription : public ShaderDescription

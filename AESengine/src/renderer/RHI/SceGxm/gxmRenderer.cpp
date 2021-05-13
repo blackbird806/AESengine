@@ -592,12 +592,12 @@ void GxmRenderer::setDrawPrimitiveMode(DrawPrimitiveType mode)
 	currentState.primitiveType = mode;
 }
 
-void GxmRenderer::drawIndexed(uint indexCount)
+void GxmRenderer::drawIndexed(uint indexCount, uint indexOffset)
 {
 	AES_PROFILE_FUNCTION();
 	int err = sceGxmDraw(context, rhiPrimitiveTypeToApi(currentState.primitiveType),
 				rhiIndexFormatToApi(currentState.indexBufferInfo.typeFormat),
-				currentState.indexBufferInfo.buffer,
+				currentState.indexBufferInfo.buffer + indexOffset,
 				(uint32_t)indexCount);
 	AES_ASSERT(err == SCE_OK);
 }

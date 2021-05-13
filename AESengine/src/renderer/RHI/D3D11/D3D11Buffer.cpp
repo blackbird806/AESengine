@@ -27,7 +27,7 @@ D3D11Buffer::~D3D11Buffer()
 		apiBuffer->Release();
 }
 
-Result<void> D3D11Buffer::create(BufferDescription const& desc)
+Result<void> D3D11Buffer::init(BufferDescription const& desc)
 {
 	AES_ASSERT(desc.sizeInBytes != 0);
 	

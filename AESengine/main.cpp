@@ -6,6 +6,7 @@
 #include "engine.hpp"
 #include "renderer/model.hpp"
 #include "renderer/material.hpp"
+#include "renderer/draw2d.hpp"
 #include "core/os.hpp"
 #include "core/utility.hpp"
 #include "core/color.hpp"
@@ -76,6 +77,7 @@ public:
 	aes::RHIBuffer viewBuffer;
 	aes::Material defaultMtrl;
 	aes::Model model;
+	aes::Draw2d draw2d;
 	
 	Game(InitInfo const& info) : Engine(info)
 	{
@@ -86,6 +88,11 @@ public:
 	{
 		AES_PROFILE_FUNCTION();
 		AES_LOG("start");
+
+		auto err = draw2d.init();
+		if (!err)
+			AES_LOG_ERROR("err {}", err.error());
+		return;
 #ifdef __vita__
 		auto vpGxp = aes::readFileBin("app0:assets/shaders/vita/basic2d_vs.gxp");
 		auto fpGxp = aes::readFileBin("app0:assets/shaders/vita/basic2d_fs.gxp");
@@ -140,7 +147,7 @@ public:
 			{ {-1.0f, 3.0f, 1.0f}, { 1.0f, 0.0f, 1.0f, 1.0f } }
 		};
 		uint32_t indices[] = { 0, 1, 2 };
-		if (!model.create(vertices, indices))
+		if (!model.init(vertices, indices))
 		{
 			AES_ASSERT(false && "failed to create model");
 		}
@@ -151,7 +158,7 @@ public:
 		viewDesc.bufferUsage = aes::BufferUsage::Dynamic;
 		viewDesc.cpuAccessFlags = (uint8_t)aes::CPUAccessFlags::Write;
 		viewDesc.sizeInBytes = sizeof(aes::CameraBuffer);
-		viewBuffer.create(viewDesc);
+		viewBuffer.init(viewDesc);
 		AES_LOG("view buffer created");
 
 		mainCamera.pos = { 0.0, 0.0, -5.0 };
@@ -166,7 +173,7 @@ public:
 	void update(float dt) override
 	{
 		AES_PROFILE_FUNCTION();
-
+		return;
 		glm::vec4 movePos = { 0.0f, 0.f, 0.f, 0.0f };
 		if (getKeyState(aes::Key::W) == aes::InputState::Down)
 		{
@@ -243,12 +250,21 @@ public:
 		model.toWorld = glm::rotate(model.toWorld, 1.5f * dt, glm::vec3(0.0f, 1.0f, 1.0f));
 		aes::CameraBuffer const camBuf{ glm::transpose(mainCamera.viewMatrix), glm::transpose(mainCamera.projMatrix) };
 		//aes::CameraBuffer const camBuf { mainCamera.viewMatrix, mainCamera.projMatrix };
-		viewBuffer.setData(camBuf);
+		viewBuffer.setDataFromPOD(camBuf);
 	}
 
 	void draw() override
 	{
 		AES_PROFILE_FUNCTION();
+		
+		draw2d.setColor(aes::Color::Blue);
+		draw2d.drawPoint({0.f, 0.f});
+		//draw2d.drawPoint({1.0f, 1.0f});
+		draw2d.setColor(aes::Color::Red);
+		draw2d.drawPoint({ 0.5f, 0.5f });
+
+		draw2d.executeDrawCommands();
+		return;
 		aes::Material::BindInfo bindInfo;
 		//bindInfo.vsBuffers.push_back(std::make_pair("ModelBuffer", &model.modelBuffer));
 		//bindInfo.vsBuffers.push_back(std::make_pair("CameraBuffer", &viewBuffer));

@@ -41,13 +41,13 @@ Result<Model> aes::createCube()
 	AES_PROFILE_FUNCTION();
 
 	Model cube;
-	auto const result = cube.create(getCubeVertices(), cubeIndices);
+	auto const result = cube.init(getCubeVertices(), cubeIndices);
 	if (!result)
 		return { result.error() };
 	return { std::move(cube) };
 }
 
-Result<void> Model::create(std::span<Vertex const> vertices, std::span<uint32_t const> indices)
+Result<void> Model::init(std::span<Vertex const> vertices, std::span<uint32_t const> indices)
 {
 	AES_PROFILE_FUNCTION();
 
@@ -60,7 +60,7 @@ Result<void> Model::create(std::span<Vertex const> vertices, std::span<uint32_t 
 	vertexBufferInfo.sizeInBytes = vertices.size_bytes();
 	vertexBufferInfo.initialData = (void*)vertices.data();
 	
-	auto err = vertexBuffer.create(vertexBufferInfo);
+	auto err = vertexBuffer.init(vertexBufferInfo);
 	if (!err)
 		return err;
 	
@@ -70,7 +70,7 @@ Result<void> Model::create(std::span<Vertex const> vertices, std::span<uint32_t 
 	indexBufferInfo.sizeInBytes = indices.size_bytes();
 	indexBufferInfo.initialData = (void*)indices.data();
 
-	err = indexBuffer.create(indexBufferInfo);
+	err = indexBuffer.init(indexBufferInfo);
 	if (!err)
 		return err;
 
@@ -80,7 +80,7 @@ Result<void> Model::create(std::span<Vertex const> vertices, std::span<uint32_t 
 	modelBufferInfo.sizeInBytes = sizeof(ModelBuffer);
 	modelBufferInfo.cpuAccessFlags = (uint8_t)CPUAccessFlags::Write;
 
-	err = modelBuffer.create(modelBufferInfo);
+	err = modelBuffer.init(modelBufferInfo);
 	if (!err)
 		return err;
 
@@ -96,7 +96,7 @@ void Model::draw()
 {
 	AES_PROFILE_FUNCTION();
 
-	modelBuffer.setData(glm::transpose(toWorld));
+	modelBuffer.setDataFromPOD(glm::transpose(toWorld));
 
 	RHIRenderContext& renderContext = RHIRenderContext::instance();
 	renderContext.bindVertexBuffer(vertexBuffer, sizeof(Vertex));

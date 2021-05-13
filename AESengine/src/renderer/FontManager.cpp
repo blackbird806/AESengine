@@ -64,7 +64,7 @@ static std::vector<uint32_t> createCheckboard(uint resX, uint resY, float segmen
 		{
 			int const segmentNumJ = j / segmentSizeY;
 
-			bitmap[i + j * resX] = segmentNumI % 2 != segmentNumJ % 2 ? Color::BLUE : Color::RED;
+			bitmap[i + j * resX] = segmentNumI % 2 != segmentNumJ % 2 ? Color::Blue : Color::Red;
 		}
 	}
 	return bitmap;

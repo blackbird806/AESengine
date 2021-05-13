@@ -59,7 +59,7 @@ namespace aes
 			void setVertexShader(RHIVertexShader& vs);
 
 			void setDrawPrimitiveMode(DrawPrimitiveType mode);
-			void drawIndexed(uint indexCount);
+			void drawIndexed(uint indexCount, uint indexOffset = 0);
 
 			SceGxmShaderPatcher* getShaderPatcher() const;
 

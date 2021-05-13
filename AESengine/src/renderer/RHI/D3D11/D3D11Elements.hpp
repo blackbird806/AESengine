@@ -13,6 +13,8 @@ namespace aes
 	D3D11_BIND_FLAG rhiBufferBindFlagsToApi(BindFlags flags);
 	D3D_PRIMITIVE_TOPOLOGY rhiPrimitiveTypeToApi(DrawPrimitiveType primitiveMode);
 	UINT rhiCPUAccessFlagsToApi(uint8_t flags);
+	D3D11_BLEND_OP rhiBlendOpToApi(BlendOp op);
+	D3D11_BLEND rhiBlendFactorToApi(BlendFactor blend);
 }
 
 #endif

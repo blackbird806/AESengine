@@ -2,16 +2,17 @@
 #define DRAW2D_HPP
 
 #include <glm/glm.hpp>
-#include <variant>
 #include <vector>
 
+#include "core/error.hpp"
 #include "RHI/RHIBuffer.hpp"
 #include "RHI/RHIShader.hpp"
-#include "RHI/RHIVertexInputLayout.hpp"
+#include "RHI/RHIBlendState.hpp"
 #include "material.hpp"
 
 #include "core/color.hpp"
 #include "core/geometry.hpp"
+#include "RHI/D3D11/D3D11BlendState.hpp"
 
 namespace aes
 {
@@ -19,12 +20,13 @@ namespace aes
 	{
 	public:
 
-		void init();
+		Result<void> init();
 		
 		void setColor(Color color);
 		void setMatrix(glm::mat2 const&);
 		void drawLine(Line2D const& line);
-		void drawRect(Rect const& rect);
+		void drawPoint(glm::vec2 p, float size = 0.05f);
+		void drawFillRect(Rect const& rect);
 
 		void executeDrawCommands();
 		
@@ -32,26 +34,20 @@ namespace aes
 
 		using Index_t = uint16_t;
 		
-		void ensureVertexBuffersCapacity(size_t size);
-		void ensureIndexBuffersCapacity(size_t size);
-		void ensureModelBuffersCapacity(size_t size);
+		Result<void> ensureVertexBuffersCapacity(size_t size);
+		Result<void> ensureIndexBuffersCapacity(size_t size);
 		
 		struct Vertex
 		{
 			glm::vec2 pos;
 			glm::vec2 uv;
-			Color color;
-		};
-
-		struct Model
-		{
-			glm::mat2 model;
+			glm::vec4 color;
 		};
 
 		enum class DrawCommandType
 		{
-			Lines,
-			FillRects,
+			Line,
+			FillRect,
 		};
 		
 		struct Command
@@ -68,13 +64,17 @@ namespace aes
 		
 		State currentState;
 		std::vector<Command> commands;
-
+		std::vector<Vertex> vertices;
+		std::vector<Index_t> indices;
+		uint iOff = 0;
+		
 		RHIVertexShader vertexShader;
 		RHIFragmentShader fragmentShader;
+		RHIBlendState blendState;
 		
 		RHIBuffer vertexBuffer;
 		RHIBuffer indexBuffer;
-		RHIBuffer modelBuffer;
+		RHIBuffer projectionBuffer;
 	};
 }
 

@@ -114,6 +114,9 @@
     <ClCompile Include="src\core\profiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\renderer\RHI\D3D11\D3D11BlendState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\window.hpp">
@@ -237,6 +240,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\RHI\RHIShaderReflection.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\RHI\RHIBlendState.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\RHI\D3D11\D3D11BlendState.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

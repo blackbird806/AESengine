@@ -9,13 +9,14 @@
 #include <d3d11.h>
 
 #include "D3D11Shader.hpp"
+#include "D3D11BlendState.hpp"
 
 namespace aes {
 	class RHIBuffer;
 
 	class D3D11Renderer
 	{
-
+		//@Review https://www.gamedev.net/forums/topic/586063-dx11-and-screen-coordinates/
 	public:
 
 		static D3D11Renderer& instance();
@@ -33,7 +34,8 @@ namespace aes {
 		void setVertexShader(RHIVertexShader& vs);
 
 		void setDrawPrimitiveMode(DrawPrimitiveType mode);
-		void drawIndexed(uint indexCount);
+		void setBlendState(RHIBlendState& blendState);
+		void drawIndexed(uint indexCount, uint indexOffset = 0);
 		
 		void startFrame();
 		void endFrame();

@@ -17,7 +17,7 @@ namespace aes
 		D3D11Buffer& operator=(D3D11Buffer&& rhs) noexcept;
 		~D3D11Buffer();
 		
-		Result<void> create(BufferDescription const& desc);
+		Result<void> init(BufferDescription const& desc);
 		Result<void> copyTo(D3D11Buffer& dest);
 		
 		ID3D11Buffer* getHandle() noexcept;

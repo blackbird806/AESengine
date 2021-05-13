@@ -208,8 +208,8 @@ void Renderer2D::updateBuffers()
 		switch (cmd.type)
 		{
 		case Command::Type::Line:
-			verticesData[0] = { cmd.line.from, cmd.col };
-			verticesData[1] = { cmd.line.to, cmd.col };
+			verticesData[0] = { cmd.line.p1, cmd.col };
+			verticesData[1] = { cmd.line.p2, cmd.col };
 			indicesData[0] = 0;
 			indicesData[1] = 1;
 			

@@ -1,37 +1,72 @@
 #include "draw2d.hpp"
 
+#include "core/utility.hpp"
+#include "RHI/RHIRenderContext.hpp"
+#include "RHI/RHIVertexInputLayout.hpp"
+#include <glm/ext/matrix_clip_space.hpp>
+
 using namespace aes;
 
-void Draw2d::init()
+Result<void> Draw2d::init()
 {
+	AES_PROFILE_FUNCTION();
+
 	VertexInputLayout vertexInputLayout[3];
 	vertexInputLayout[0].semantic = SemanticType::Position;
 	vertexInputLayout[0].offset = 0;
-	vertexInputLayout[0].format = RHIFormat::R32G32B32_Float;
+	vertexInputLayout[0].format = RHIFormat::R32G32_Float;
 
 	vertexInputLayout[1].semantic = SemanticType::TexCoord;
-	vertexInputLayout[1].offset = sizeof(glm::vec3);
+	vertexInputLayout[1].offset = sizeof(glm::vec2);
 	vertexInputLayout[1].format = RHIFormat::R32G32_Float;
 
 	vertexInputLayout[2].semantic = SemanticType::Color;
-	vertexInputLayout[2].offset = sizeof(glm::vec3) + sizeof(glm::vec2);
+	vertexInputLayout[2].offset = sizeof(glm::vec2) * 2;
 	vertexInputLayout[2].format = RHIFormat::R32G32B32A32_Float;
 	
 	VertexShaderDescription vertexShaderDescription;
-	vertexShaderDescription.source = ""; // TODO
+	vertexShaderDescription.source = readFile("assets/shaders/HLSL/draw2d.vs"); // TODO
 	vertexShaderDescription.verticesLayout = vertexInputLayout;
 	vertexShaderDescription.verticesStride = sizeof(Vertex);
 	
-	vertexShader.init(vertexShaderDescription);
-
+	auto err = vertexShader.init(vertexShaderDescription);
+	if (!err)
+		return err;
+	
 	FragmentShaderDescription fragmentShaderDescription;
-	fragmentShaderDescription.source = ""; // TODO
+	fragmentShaderDescription.source = readFile("assets/shaders/HLSL/draw2d.fs"); // TODO
 
-	fragmentShader.init(fragmentShaderDescription);
+	err = fragmentShader.init(fragmentShaderDescription);
+	if (!err)
+		return err;
 	
 	ensureVertexBuffersCapacity(200 * sizeof(Vertex));
 	ensureIndexBuffersCapacity(200 * sizeof(Index_t));
-	ensureModelBuffersCapacity(50 * sizeof(Model));
+
+	BufferDescription viewBufferDesc;
+	viewBufferDesc.bindFlags = BindFlags::UniformBuffer;
+	viewBufferDesc.bufferUsage = BufferUsage::Immutable; // @Review default ?
+	viewBufferDesc.cpuAccessFlags = (uint8_t)CPUAccessFlags::None;
+	viewBufferDesc.sizeInBytes = sizeof(glm::mat4);
+	glm::mat4 viewMtr = glm::orthoLH_ZO(0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 100.0f);
+	viewBufferDesc.initialData = &viewMtr; // TODO
+
+	err = projectionBuffer.init(viewBufferDesc);
+	if (!err)
+		return err;
+
+	BlendInfo blendInfo = {};
+	blendInfo.colorSrc = BlendFactor::One;
+	blendInfo.colorDst = BlendFactor::OneMinusSrcColor;
+	blendInfo.colorOp = BlendOp::Add;
+	blendInfo.alphaSrc = BlendFactor::One;
+	blendInfo.alphaDst = BlendFactor::Zero;
+	blendInfo.alphaOp = BlendOp::Add;
+	err = blendState.init(blendInfo);
+	if (!err)
+		return err;
+
+	return {};
 }
 
 void Draw2d::setColor(Color color)
@@ -49,34 +84,97 @@ void Draw2d::setMatrix(glm::mat2 const& mat)
 void Draw2d::drawLine(Line2D const& line)
 {
 	AES_PROFILE_FUNCTION();
-	commands.push_back(Command{ DrawCommandType::Lines, currentState.color });
-	// update ram vertices / indices
-	// beware of alignement !
+	commands.push_back(Command{ DrawCommandType::Line, currentState.color });
+	
+	glm::vec2 const from = line.p1 * currentState.transformationMatrix;
+	glm::vec2 const to = line.p2 * currentState.transformationMatrix;
+	vertices.push_back({ from, {0.0f, 0.0f}, currentState.color.toVec4() });
+	vertices.push_back({ to, {0.0f, 0.0f}, currentState.color.toVec4() });
+	indices.push_back(iOff + 0);
+	indices.push_back(iOff + 1);
+	iOff += 2;
 }
 
-void Draw2d::drawRect(Rect const& rect)
+void Draw2d::drawPoint(glm::vec2 p, float size)
+{
+	drawLine({ {p.x - size, p.y}, {p.x + size, p.y} });
+	drawLine({ {p.x, p.y - size}, {p.x, p.y + size} });
+}
+
+void Draw2d::drawFillRect(Rect const& rect)
 {
 	AES_PROFILE_FUNCTION();
-	commands.push_back(Command{ DrawCommandType::FillRects, currentState.color });
+	commands.push_back(Command{ DrawCommandType::FillRect, currentState.color });
+	Rect const transformedRect{
+		rect.min * currentState.transformationMatrix, 
+		rect.max * currentState.transformationMatrix };
+	
+	RectBounds const bounds = transformedRect.getBounds();
+	vertices.push_back({ bounds.minL, {}, currentState.color.toVec4() });
+	vertices.push_back({ bounds.minR, {}, currentState.color.toVec4() });
+	vertices.push_back({ bounds.topL, {}, currentState.color.toVec4() });
+	vertices.push_back({ bounds.topR, {}, currentState.color.toVec4() });
+
+	indices.push_back(iOff + 0);
+	indices.push_back(iOff + 1);
+	indices.push_back(iOff + 2);
+	indices.push_back(iOff + 3);
+	iOff += 4;
 }
 
 void Draw2d::executeDrawCommands()
 {
-	// update buffers
+	AES_PROFILE_FUNCTION();
+
+	iOff = 0;
+
+	vertexBuffer.setData(vertices.data(), vertices.size() * sizeof(Vertex));
+	indexBuffer.setData(indices.data(), indices.size() * sizeof(Index_t));
+
+	auto& context = RHIRenderContext::instance();
+	context.setVertexShader(vertexShader);
+	context.setFragmentShader(fragmentShader);
+	//context.setBlendState(blendState);
+	
+	context.bindVertexBuffer(vertexBuffer, sizeof(Vertex));
+	context.bindIndexBuffer(indexBuffer, TypeFormat::Uint16);
+
+	context.bindVSUniformBuffer(projectionBuffer, 0);
+	
+	uint indicesOffset = 0;
+	uint indicesCount;
 	for (auto const& cmd : commands)
 	{
-		// execute commands
+		if (cmd.type == DrawCommandType::Line)
+		{
+			context.setDrawPrimitiveMode(DrawPrimitiveType::Lines);
+			indicesCount = 2;
+		}
+		else
+		{
+			context.setDrawPrimitiveMode(DrawPrimitiveType::TriangleStrip);
+			indicesCount = 4;
+		}
+
+		context.drawIndexed(indicesCount, indicesOffset);
+		indicesOffset += indicesCount;
 	}
+
+	indices.clear();
+	vertices.clear();
 }
 
-void Draw2d::ensureVertexBuffersCapacity(size_t size)
+// @Review
+
+Result<void> Draw2d::ensureVertexBuffersCapacity(size_t size)
 {
 	AES_PROFILE_FUNCTION();
 
 	if (vertexBuffer.isValid() && vertexBuffer.getSize() > size)
-		return;
+		return {};
 
-	size_t const newCapacity = vertexBuffer.getSize() * 2;
+	size_t const newCapacity = size;
+	
 	// reallocate buffers
 	BufferDescription vertexBufferDesc{};
 	vertexBufferDesc.bindFlags = BindFlags::VertexBuffer;
@@ -85,23 +183,30 @@ void Draw2d::ensureVertexBuffersCapacity(size_t size)
 	vertexBufferDesc.sizeInBytes = newCapacity;
 
 	RHIBuffer newBuffer;
-	newBuffer.create(vertexBufferDesc); // TODO handle reallocation error
+	auto err = newBuffer.init(vertexBufferDesc);
+	if (!err)
+		return err;
 
 	if (vertexBuffer.isValid())
 	{
-		vertexBuffer.copyTo(newBuffer);
+		err = vertexBuffer.copyTo(newBuffer);
+		if (!err) 
+			return err;
 	}
 	vertexBuffer = std::move(newBuffer);
+
+	return {};
 }
 
-void Draw2d::ensureIndexBuffersCapacity(size_t size)
+Result<void> Draw2d::ensureIndexBuffersCapacity(size_t size)
 {
 	AES_PROFILE_FUNCTION();
 
 	if (indexBuffer.isValid() && indexBuffer.getSize() > size)
-		return;
+		return {};
 
-	size_t const newCapacity = indexBuffer.getSize() * 2;
+	size_t const newCapacity = size;
+	
 	// reallocate buffers
 	BufferDescription indexBufferDesc{};
 	indexBufferDesc.bindFlags = BindFlags::IndexBuffer;
@@ -110,38 +215,19 @@ void Draw2d::ensureIndexBuffersCapacity(size_t size)
 	indexBufferDesc.sizeInBytes = newCapacity;
 
 	RHIBuffer newBuffer;
-	newBuffer.create(indexBufferDesc);
-
+	auto err = newBuffer.init(indexBufferDesc);
+	if (!err)
+		return err;
+	
 	if (indexBuffer.isValid())
 	{
-		indexBuffer.copyTo(newBuffer);
+		err = indexBuffer.copyTo(newBuffer);
+		if (!err)
+			return err;
 	}
 	indexBuffer = std::move(newBuffer);
-}
-
-void Draw2d::ensureModelBuffersCapacity(size_t size)
-{
-	AES_PROFILE_FUNCTION();
-
-	if (modelBuffer.isValid() && modelBuffer.getSize() > size)
-		return;
-
-	size_t const newCapacity = modelBuffer.getSize() * 2;
-	// reallocate buffers
-	BufferDescription modelBufferDesc{};
-	modelBufferDesc.bindFlags = BindFlags::UniformBuffer;
-	modelBufferDesc.bufferUsage = BufferUsage::Dynamic;
-	modelBufferDesc.cpuAccessFlags = (uint8_t)CPUAccessFlags::Write;
-	modelBufferDesc.sizeInBytes = newCapacity;
-
-	RHIBuffer newBuffer;
-	newBuffer.create(modelBufferDesc);
-
-	if (modelBuffer.isValid())
-	{
-		modelBuffer.copyTo(newBuffer);
-	}
-	modelBuffer = std::move(newBuffer);
+	
+	return {};
 }
 
 

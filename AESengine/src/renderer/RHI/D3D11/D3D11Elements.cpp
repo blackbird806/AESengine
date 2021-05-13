@@ -13,7 +13,7 @@ DXGI_FORMAT aes::rhiTypeFormatToApi(TypeFormat format)
 		return DXGI_FORMAT_R16_UINT;
 	case TypeFormat::Uint8:
 		return DXGI_FORMAT_R8_UINT;
-	default: ;
+	default:;
 	}
 	AES_UNREACHABLE();
 }
@@ -63,7 +63,7 @@ D3D_PRIMITIVE_TOPOLOGY aes::rhiPrimitiveTypeToApi(DrawPrimitiveType primitiveMod
 {
 	switch (primitiveMode)
 	{
-	case DrawPrimitiveType::Lines: 
+	case DrawPrimitiveType::Lines:
 		return D3D_PRIMITIVE_TOPOLOGY_LINELIST;
 	case DrawPrimitiveType::LineStrip:
 		return D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
@@ -81,11 +81,39 @@ D3D_PRIMITIVE_TOPOLOGY aes::rhiPrimitiveTypeToApi(DrawPrimitiveType primitiveMod
 UINT aes::rhiCPUAccessFlagsToApi(uint8_t flags)
 {
 	UINT result = 0;
-	if((flags & (uint8_t)CPUAccessFlags::Read) == (uint8_t)CPUAccessFlags::Read)
+	if ((flags & (uint8_t)CPUAccessFlags::Read) == (uint8_t)CPUAccessFlags::Read)
 		result |= D3D11_CPU_ACCESS_READ;
 	if ((flags & (uint8_t)CPUAccessFlags::Write) == (uint8_t)CPUAccessFlags::Write)
 		result |= D3D11_CPU_ACCESS_WRITE;
 	return result;
+}
+
+D3D11_BLEND_OP aes::rhiBlendOpToApi(BlendOp op)
+{
+	switch (op)
+	{
+	case BlendOp::Sub:
+		return D3D11_BLEND_OP_SUBTRACT;
+	case BlendOp::Add:
+		return D3D11_BLEND_OP_ADD;
+	}
+	AES_UNREACHABLE();
+}
+
+D3D11_BLEND aes::rhiBlendFactorToApi(BlendFactor blend)
+{
+	switch (blend)
+	{
+	case BlendFactor::Zero: return D3D11_BLEND_ZERO;
+	case BlendFactor::One: return D3D11_BLEND_ONE;
+	case BlendFactor::SrcColor: return D3D11_BLEND_SRC_COLOR;
+	case BlendFactor::SrcAlpha: return D3D11_BLEND_SRC_ALPHA;
+	case BlendFactor::DstColor: return D3D11_BLEND_DEST_COLOR;
+	case BlendFactor::DstAlpha: return D3D11_BLEND_DEST_ALPHA;
+	case BlendFactor::OneMinusSrcColor: return D3D11_BLEND_INV_SRC_COLOR;
+	case BlendFactor::OneMinusDstColor: return D3D11_BLEND_INV_DEST_COLOR;
+	}
+	AES_UNREACHABLE();
 }
 
 

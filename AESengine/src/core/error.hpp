@@ -17,6 +17,7 @@ namespace aes {
 		ShaderCompilationFailed,
 		ShaderCreationFailed,
 		FontInitFailed,
+		BlendStateCreationFailed,
 	};
 
 	template<typename T, typename ErrorCode = AESError>

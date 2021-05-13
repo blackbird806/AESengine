@@ -7,6 +7,7 @@
 
 namespace aes
 {
+	// @Review
 	struct Color
 	{
 		Color() {}
@@ -36,11 +37,11 @@ namespace aes
 		uint8_t a;
 
 		enum {
-			RED = 0xff0000ff,
-			GREEN = 0xff00ff00,
-			BLUE = 0xffff0000,
-			BLACK = 0xff000000,
-			WHITE = 0xffFFffFF
+			Red = 0xff0000ff,
+			Green = 0xff00ff00,
+			Blue = 0xffff0000,
+			Black = 0xff000000,
+			White = 0xffffffff
 		};
 	};
 }

@@ -183,6 +183,11 @@ void D3D11Renderer::setDrawPrimitiveMode(DrawPrimitiveType mode)
 	deviceContext->IASetPrimitiveTopology(rhiPrimitiveTypeToApi(mode));
 }
 
+void D3D11Renderer::setBlendState(RHIBlendState& blendState)
+{
+	deviceContext->OMSetBlendState(blendState.getHandle(), nullptr, 0xffffffff);
+}
+
 ID3D11Device* D3D11Renderer::getDevice()
 {
 	return device;
@@ -193,9 +198,9 @@ ID3D11DeviceContext* D3D11Renderer::getDeviceContext()
 	return deviceContext;
 }
 
-void D3D11Renderer::drawIndexed(uint indexCount)
+void D3D11Renderer::drawIndexed(uint indexCount, uint indexOffset)
 {
-	deviceContext->DrawIndexed(indexCount, 0, 0);
+	deviceContext->DrawIndexed(indexCount, indexOffset, 0);
 }
 
 void D3D11Renderer::startFrame()
@@ -298,7 +303,7 @@ void D3D11Renderer::createSwapchain()
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 
 	// Set the handle for the window to render to.
-	swapChainDesc.OutputWindow = (HWND)renderWindow->getHandle();
+	swapChainDesc.OutputWindow = static_cast<HWND>(renderWindow->getHandle());
 
 	// Turn multisampling off.
 	swapChainDesc.SampleDesc.Count = 1;
@@ -330,7 +335,7 @@ void D3D11Renderer::createRenderTarget()
 
 	// Get the pointer to the back buffer.
 	ID3D11Texture2D* backBufferPtr;
-	HRESULT result = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr);
+	HRESULT result = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID*>(&backBufferPtr));
 	if (FAILED(result))
 	{
 		AES_ERROR("swapChain->GetBuffer failed");
@@ -449,13 +454,13 @@ void D3D11Renderer::setupViewport()
 
 	D3D11_VIEWPORT viewport;
 	// Setup the viewport for rendering.
-	viewport.Width = (float)screenWidth;
-	viewport.Height = (float)screenHeight;
+	viewport.Width = static_cast<float>(screenWidth);
+	viewport.Height = static_cast<float>(screenHeight);
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 	viewport.TopLeftX = 0.0f;
 	viewport.TopLeftY = 0.0f;
-
+	
 	deviceContext->RSSetViewports(1, &viewport);
 }
 

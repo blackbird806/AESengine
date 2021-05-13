@@ -27,7 +27,7 @@ GxmBuffer& GxmBuffer::operator=(GxmBuffer&& rhs) noexcept
 	return *this;
 }
 
-Result<void> GxmBuffer::create(BufferDescription const& desc)
+Result<void> GxmBuffer::init(BufferDescription const& desc)
 {
 	// @TODO vram memory manager
 	buffer = aes::graphicsAlloc(SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE /* @Review */,

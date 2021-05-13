@@ -17,7 +17,7 @@ namespace aes
 		GxmBuffer& operator=(GxmBuffer&& rhs) noexcept;
 		~GxmBuffer();
 
-		Result<void> create(BufferDescription const& desc);
+		Result<void> init(BufferDescription const& desc);
 		Result<void*> map();
 		Result<void> unmap();
 		

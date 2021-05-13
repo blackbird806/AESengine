@@ -7,7 +7,7 @@ namespace aes {
 
 	struct Line2D
 	{
-		glm::vec2 from, to;
+		glm::vec2 p1, p2;
 	};
 
 	struct RectBounds

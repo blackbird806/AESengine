@@ -19,11 +19,11 @@ Result<void> D3D11VertexShader::init(VertexShaderDescription const& desc)
 
 	ID3D11Device* device = D3D11Renderer::instance().getDevice();
 
-	if (!std::holds_alternative<std::string_view>(desc.source))
+	if (!std::holds_alternative<std::string>(desc.source))
 	{
 		AES_NOT_IMPLEMENTED();
 	}
-	auto const source = std::get<std::string_view>(desc.source);
+	auto const& source = std::get<std::string>(desc.source);
 	auto result = D3DCompile(source.data(), sizeof(char) * source.size(), "vertexShader", nullptr, nullptr, "main", "vs_5_0", 0, 0, &vertexShaderBuffer, &errorMessage);
 	if (FAILED(result))
 	{
@@ -158,12 +158,12 @@ Result<void> D3D11FragmentShader::init(FragmentShaderDescription const& desc)
 
 	ID3D11Device* device = D3D11Renderer::instance().getDevice();
 	
-	if (!std::holds_alternative<std::string_view>(desc.source))
+	if (!std::holds_alternative<std::string>(desc.source))
 	{
 		AES_NOT_IMPLEMENTED();
 	}
 	
-	auto const source = std::get<std::string_view>(desc.source);
+	auto const& source = std::get<std::string>(desc.source);
 	HRESULT result = D3DCompile(source.data(), sizeof(char) * source.size(), "pixelShader", nullptr, nullptr, "main", "ps_5_0", 0, 0, &pixelShaderBuffer, &errorMessage);
 	if (FAILED(result))
 	{
