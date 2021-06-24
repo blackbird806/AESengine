@@ -149,9 +149,9 @@ GxmVertexShader::~GxmVertexShader()
 Result<void> GxmVertexShader::init(VertexShaderDescription const& desc)
 {
 	AES_PROFILE_FUNCTION();
-	AES_ASSERT(std::holds_alternative<uint8_t*>(desc.source) && "runtime compiled shaders aren't supported on vita platform !");
+	AES_ASSERT(std::holds_alternative<uint8_t const*>(desc.source) && "runtime compiled shaders aren't supported on vita platform !");
 	
-	gxpShader = reinterpret_cast<SceGxmProgram*>(std::get<uint8_t*>(desc.source));
+	gxpShader = reinterpret_cast<SceGxmProgram const*>(std::get<uint8_t const*>(desc.source));
 	AES_ASSERT(gxpShader != nullptr);
 
 	auto& context = RHIRenderContext::instance();
@@ -212,9 +212,9 @@ GxmFragmentShader::~GxmFragmentShader()
 Result<void> GxmFragmentShader::init(FragmentShaderDescription const& desc)
 {
 	AES_PROFILE_FUNCTION();
-	AES_ASSERT(std::holds_alternative<uint8_t*>(desc.source) && "runtime compiled shaders aren't supported on vita platform !");
+	AES_ASSERT(std::holds_alternative<uint8_t const*>(desc.source) && "runtime compiled shaders aren't supported on vita platform !");
 	
-	gxpShader = reinterpret_cast<SceGxmProgram*>(std::get<uint8_t*>(desc.source));
+	gxpShader = reinterpret_cast<SceGxmProgram const*>(std::get<uint8_t const*>(desc.source));
 	AES_ASSERT(gxpShader);
 
 	auto& context = RHIRenderContext::instance();

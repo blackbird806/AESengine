@@ -11,7 +11,7 @@
 
 namespace aes
 {
-	enum class CPUAccessFlags : uint8_t
+	enum CPUAccessFlags : uint8_t
 	{
 		None = 0x0,
 		Read = 0x1,
@@ -119,7 +119,7 @@ namespace aes
 
 	struct ShaderDescription
 	{
-		std::variant<std::string, uint8_t*> source;
+		std::variant<std::string, uint8_t const*> source;
 	};
 
 	struct VertexShaderDescription : public ShaderDescription

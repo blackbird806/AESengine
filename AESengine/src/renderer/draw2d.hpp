@@ -7,12 +7,9 @@
 #include "core/error.hpp"
 #include "RHI/RHIBuffer.hpp"
 #include "RHI/RHIShader.hpp"
-#include "RHI/RHIBlendState.hpp"
-#include "material.hpp"
 
 #include "core/color.hpp"
 #include "core/geometry.hpp"
-#include "RHI/D3D11/D3D11BlendState.hpp"
 
 namespace aes
 {
@@ -70,7 +67,7 @@ namespace aes
 		
 		RHIVertexShader vertexShader;
 		RHIFragmentShader fragmentShader;
-		RHIBlendState blendState;
+		//RHIBlendState blendState;
 		
 		RHIBuffer vertexBuffer;
 		RHIBuffer indexBuffer;

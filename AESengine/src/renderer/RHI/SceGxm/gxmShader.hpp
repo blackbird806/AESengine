@@ -20,7 +20,7 @@ namespace aes
 		std::vector<UniformBufferReflectionInfo> getUniformBufferInfos() const;
 
 		protected:
-		SceGxmProgram* gxpShader;
+		SceGxmProgram const* gxpShader;
 		SceGxmShaderPatcherId id;
 	};
 

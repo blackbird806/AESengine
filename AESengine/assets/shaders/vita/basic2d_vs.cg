@@ -1,12 +1,10 @@
-﻿// uniform float4x4 model : BUFFER0;
-
-void main(
-	float3 aPosition : POSITION,
+﻿void main(
+	float2 aPosition : POSITION,
+	float2 tex : TEXCOORD0,
 	float4 aColor : COLOR,
 	float4 out vPosition : POSITION,
 	float4 out vColor : COLOR)
 {
-	// vPosition = mul(float4(aPosition, 1.f), model);
-	vPosition = float4(aPosition, 1.0f);
+	vPosition = float4(aPosition, 0.0f, 1.0f);
 	vColor = aColor;
 }

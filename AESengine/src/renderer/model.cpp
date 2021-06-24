@@ -78,7 +78,7 @@ Result<void> Model::init(std::span<Vertex const> vertices, std::span<uint32_t co
 	modelBufferInfo.bindFlags = BindFlags::UniformBuffer;
 	modelBufferInfo.bufferUsage = BufferUsage::Dynamic;
 	modelBufferInfo.sizeInBytes = sizeof(ModelBuffer);
-	modelBufferInfo.cpuAccessFlags = (uint8_t)CPUAccessFlags::Write;
+	modelBufferInfo.cpuAccessFlags = CPUAccessFlags::Write;
 
 	err = modelBuffer.init(modelBufferInfo);
 	if (!err)

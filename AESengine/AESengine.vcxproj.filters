@@ -25,6 +25,9 @@
     <Filter Include="ThirdParty\tiny">
       <UniqueIdentifier>{5766d58f-d333-4445-bc83-5b104d05f63d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ThirdParty\aini">
+      <UniqueIdentifier>{aa6863d0-bc21-4de6-9ec1-f7ace0f1dd84}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -116,6 +119,9 @@
     </ClCompile>
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11BlendState.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdParty\aini\aini.cpp">
+      <Filter>ThirdParty\aini</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

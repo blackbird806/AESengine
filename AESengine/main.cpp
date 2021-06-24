@@ -11,6 +11,8 @@
 #include "core/utility.hpp"
 #include "core/color.hpp"
 
+#include "aini/aini.hpp"
+
 const char pxShader[] = R"(
 struct VS_OUTPUT
 {
@@ -156,7 +158,7 @@ public:
 		aes::BufferDescription viewDesc;
 		viewDesc.bindFlags = aes::BindFlags::UniformBuffer;
 		viewDesc.bufferUsage = aes::BufferUsage::Dynamic;
-		viewDesc.cpuAccessFlags = (uint8_t)aes::CPUAccessFlags::Write;
+		viewDesc.cpuAccessFlags = aes::CPUAccessFlags::Write;
 		viewDesc.sizeInBytes = sizeof(aes::CameraBuffer);
 		viewBuffer.init(viewDesc);
 		AES_LOG("view buffer created");
@@ -275,18 +277,25 @@ public:
 
 int main()
 {
+	std::string appName = "aes engine";
+	
 #ifdef __vita__
 	std::ofstream logFile("ux0:log/AES_log.txt");
 	//aes::Logger::instance().addSink(std::make_unique<aes::PsvDebugScreenSink>());
 #else
 	std::ofstream logFile("AES_log.txt");
 	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(std::cout));
+
+	aini::Reader engineConfig(aes::readFile("engine.ini"));
+	if (engineConfig.has_key("app_name"))
+		appName = engineConfig.get_string("app_name");
+	
 #endif
 	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(logFile));
 	//AES_START_PROFILE_SESSION("startup");
 	
 	Game game({
-		.appName = "aes cubes"
+		.appName = appName.c_str()
 	});
 
 	game.init();

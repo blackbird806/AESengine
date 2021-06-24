@@ -14,7 +14,7 @@ std::string aes::readFile(std::string const& file)
 std::vector<uint8_t> aes::readFileBin(std::string const& file)
 {
 	std::ifstream input(file, std::ios::binary);
-	return std::vector<unsigned char>(std::istreambuf_iterator<char>(input), {});
+	return std::vector<uint8_t>(std::istreambuf_iterator<char>(input), {});
 }
 
 std::vector<std::string> aes::split(std::string_view a, char sep)
