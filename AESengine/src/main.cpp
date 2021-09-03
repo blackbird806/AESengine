@@ -91,21 +91,13 @@ public:
 		AES_PROFILE_FUNCTION();
 		AES_LOG("start");
 
-		auto err = draw2d.init();
-		if (!err)
-			AES_LOG_ERROR("err {}", err.error());
-		return;
-#ifdef __vita__
-		auto vpGxp = aes::readFileBin("app0:assets/shaders/vita/basic2d_vs.gxp");
-		auto fpGxp = aes::readFileBin("app0:assets/shaders/vita/basic2d_fs.gxp");
-		AES_LOG("shader read success");
-#endif
+		//auto err = draw2d.init();
+		//if (!err)
+		//	AES_LOG_ERROR("err {}", err.error());
+
 		aes::FragmentShaderDescription fragmentShaderDescription;
-#ifdef __vita__
-		fragmentShaderDescription.source = fpGxp.data();
-#else
 		fragmentShaderDescription.source = pxShader;
-#endif
+
 		if (!fragmentShader.init(fragmentShaderDescription))
 		{
 			AES_ASSERT(false && "fragment shader creation failed");
@@ -113,11 +105,8 @@ public:
 		AES_LOG("fragment shader created");
 
 		aes::VertexShaderDescription vertexShaderDescription;
-#ifdef __vita__
-		vertexShaderDescription.source = vpGxp.data();
-#else
+
 		vertexShaderDescription.source = vShader;
-#endif
 		vertexShaderDescription.verticesStride = sizeof(aes::Vertex);
 
 		aes::VertexInputLayout vertexInputLayout[2];
@@ -142,17 +131,18 @@ public:
 			AES_ASSERT(false && "material creation failed");
 		}
 		AES_LOG("material created");
-		//auto modelR = aes::createCube();
+		
 		aes::Vertex vertices[] = {
 			{ {-1.0f, -1.0f, 1.0f}, { 0.0f, 1.0f, 1.0f, 1.0f } },
 			{ {3.0f, -1.f, 1.0f}, { 1.0f, 0.0f, 1.0f, 1.0f } },
 			{ {-1.0f, 3.0f, 1.0f}, { 1.0f, 0.0f, 1.0f, 1.0f } }
 		};
-		uint32_t indices[] = { 0, 1, 2 };
+		uint32_t indices[] = { 1, 0, 2 };
 		if (!model.init(vertices, indices))
 		{
 			AES_ASSERT(false && "failed to create model");
 		}
+		//model = aes::createCube().value();
 		AES_LOG("cube created");
 
 		aes::BufferDescription viewDesc;
@@ -175,7 +165,6 @@ public:
 	void update(float dt) override
 	{
 		AES_PROFILE_FUNCTION();
-		return;
 		glm::vec4 movePos = { 0.0f, 0.f, 0.f, 0.0f };
 		if (getKeyState(aes::Key::W) == aes::InputState::Down)
 		{
@@ -245,7 +234,7 @@ public:
 			float const csx = 0.025f;
 
 			uint windowWidth = 960, windowHeight = 544;
-			//mainWindow->getScreenSize(windowWidth, windowHeight);
+			mainWindow->getScreenSize(windowWidth, windowHeight);
 			float const aspect = (float)windowWidth / (float)windowHeight;
 			mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), aspect, 0.0001f, 1000.0f);
 		}
@@ -259,17 +248,16 @@ public:
 	{
 		AES_PROFILE_FUNCTION();
 		
-		draw2d.setColor(aes::Color::Blue);
-		draw2d.drawPoint({0.f, 0.f});
-		//draw2d.drawPoint({1.0f, 1.0f});
-		draw2d.setColor(aes::Color::Red);
-		draw2d.drawPoint({ 0.5f, 0.5f });
+		//draw2d.setColor(aes::Color::Blue);
+		//draw2d.drawPoint({0.f, 0.f});
+		////draw2d.drawPoint({1.0f, 1.0f});
+		//draw2d.setColor(aes::Color::Red);
+		//draw2d.drawPoint({ 0.5f, 0.5f });
 
-		draw2d.executeDrawCommands();
-		return;
+		//draw2d.executeDrawCommands();
 		aes::Material::BindInfo bindInfo;
-		//bindInfo.vsBuffers.push_back(std::make_pair("ModelBuffer", &model.modelBuffer));
-		//bindInfo.vsBuffers.push_back(std::make_pair("CameraBuffer", &viewBuffer));
+		bindInfo.vsBuffers.push_back(std::make_pair("ModelBuffer", &model.modelBuffer));
+		bindInfo.vsBuffers.push_back(std::make_pair("CameraBuffer", &viewBuffer));
 		defaultMtrl.bind(bindInfo);
 		model.draw();
 	}
@@ -279,36 +267,38 @@ int main()
 {
 	std::string appName = "aes engine";
 	
-#ifdef __vita__
-	std::ofstream logFile("ux0:log/AES_log.txt");
-	//aes::Logger::instance().addSink(std::make_unique<aes::PsvDebugScreenSink>());
-#else
 	std::ofstream logFile("AES_log.txt");
 	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(std::cout));
 
 	aini::Reader engineConfig(aes::readFile("engine.ini"));
 	if (engineConfig.has_key("app_name"))
 		appName = engineConfig.get_string("app_name");
-	
-#endif
 	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(logFile));
-	//AES_START_PROFILE_SESSION("startup");
+	AES_START_PROFILE_SESSION("startup");
 	
 	Game game({
 		.appName = appName.c_str()
 	});
 
 	game.init();
-	//auto startupSession = AES_STOP_PROFILE_SESSION();
+	auto startupSession = AES_STOP_PROFILE_SESSION();
 	
-	//AES_START_PROFILE_SESSION("running");
+	AES_START_PROFILE_SESSION("running");
 	game.run();
-	//auto runningSession = AES_STOP_PROFILE_SESSION();
+	auto runningSession = AES_STOP_PROFILE_SESSION();
+	
+	std::ofstream timmingFile("prof.txt");
+	for (auto const& [_, v] : startupSession.profileDatas)
+	{
+		timmingFile << fmt::format("{}\n\ttotalTime:{}ms\n\tcount:{}\n\taverage:{}ms\n\tparent:{}\n",
+			v.name, v.elapsedTime, v.count, v.elapsedTime / v.count, v.parentName != nullptr ? v.parentName : "null");
+	}
 
-	//for (auto const& [_, v] : runningSession.profileDatas)
-	//{
-	//	AES_LOG("{}\n\ttotalTime:{}ms\n\tcount:{}\n\taverage:{}ms\n\tparent:{}\n", v.name, v.elapsedTime, v.count, v.elapsedTime / v.count, v.parentName != nullptr ? v.parentName : "null");
-	//}
+	for (auto const& [_, v] : runningSession.profileDatas)
+	{
+		timmingFile << fmt::format("{}\n\ttotalTime:{}ms\n\tcount:{}\n\taverage:{}ms\n\tparent:{}\n", 
+			v.name, v.elapsedTime, v.count, v.elapsedTime / v.count, v.parentName != nullptr ? v.parentName : "null");
+	}
 	
 	return 0;
 }

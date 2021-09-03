@@ -7,8 +7,12 @@
 
 #ifdef _MSC_VER	
 	#define AES_ASSUME(x) __assume(x)
+	#define AES_RESTRICT(x) __restrict x
 #elif defined(__clang__)
 	#define AES_ASSUME(x) __builtin_assume(x)
+	#define AES_RESTRICT(x) __restrict__ x
+#elif defined (__GNUC__)
+	#define AES_RESTRICT(x) __restrict__ x
 #else
 	#define AES_ASSUME(x)
 #endif
@@ -24,6 +28,7 @@
 #define AES_ASSERT(x) if (x) {} else { AES_LOG_ERROR("Assertion Failed : " #x); AES_DEBUG_BREAK(); }
 #else
 		#define AES_ASSERT(x) AES_ASSUME(x)
+		#define AES_DEBUG_BREAK()
 #endif
 
 #define AES_NOT_IMPLEMENTED() AES_DEBUG_BREAK()

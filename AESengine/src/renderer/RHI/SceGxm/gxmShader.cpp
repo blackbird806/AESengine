@@ -57,6 +57,7 @@ static size_t getProgramParameterSize(SceGxmProgramParameter const* param)
 	return sceGxmProgramParameterGetArraySize(param) * getProgramParameterTypeSize(sceGxmProgramParameterGetType(param));
 }
 
+// Review
 std::vector<UniformBufferReflectionInfo> GxmShader::getUniformBufferInfos() const
 {
 	AES_PROFILE_FUNCTION();
@@ -157,14 +158,17 @@ Result<void> GxmVertexShader::init(VertexShaderDescription const& desc)
 	auto& context = RHIRenderContext::instance();
 	auto err = sceGxmShaderPatcherRegisterProgram(context.getShaderPatcher(), gxpShader, &id);
 	if (err != SCE_OK)
+	{
+		AES_LOG_ERROR("sceGxmShaderPatcherRegisterProgram {}", err);
 		return { AESError::ShaderCreationFailed };
+	}
 
 	std::vector<SceGxmVertexAttribute> verticesAttributes(desc.verticesLayout.size());
 	for (int i = 0; auto const& layout : desc.verticesLayout)
 	{
 		verticesAttributes[i].streamIndex = 0;
 		verticesAttributes[i].offset = layout.offset;
-		auto formatComponents = getFormatComponents(layout.format);
+		auto const formatComponents = getFormatComponents(layout.format);
 		verticesAttributes[i].format = formatComponents.attribFormat;
 		verticesAttributes[i].componentCount = formatComponents.numComponents;
 		verticesAttributes[i].regIndex = sceGxmProgramParameterGetResourceIndex(
@@ -178,7 +182,10 @@ Result<void> GxmVertexShader::init(VertexShaderDescription const& desc)
 
 	err = sceGxmShaderPatcherCreateVertexProgram(context.getShaderPatcher(), id, verticesAttributes.data(), verticesAttributes.size(), &vertexStream, 1, &vertexShader);
 	if (err != SCE_OK)
+	{
+		AES_LOG_ERROR("sceGxmShaderPatcherCreateVertexProgram {}", err);
 		return { AESError::ShaderCreationFailed };
+	}
 
 	return {};
 }

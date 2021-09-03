@@ -9,7 +9,7 @@ using namespace aes;
 Result<void> Draw2d::init()
 {
 	AES_PROFILE_FUNCTION();
-
+	
 	VertexInputLayout vertexInputLayout[3];
 	vertexInputLayout[0].semantic = SemanticType::Position;
 	vertexInputLayout[0].offset = 0;
@@ -139,29 +139,30 @@ void Draw2d::executeDrawCommands()
 	AES_PROFILE_FUNCTION();
 
 	iOff = 0;
-	AES_LOG("So FAr {}", cpt++);
+	//AES_LOG("So FAr {}", cpt++);
 	vertexBuffer.setData(vertices.data(), vertices.size() * sizeof(Vertex));
 	indexBuffer.setData(indices.data(), indices.size() * sizeof(Index_t));
-	AES_LOG("So FAr {}", cpt++);
+	//AES_LOG("So FAr {}", cpt++);
 
 	auto& context = RHIRenderContext::instance();
 	context.setVertexShader(vertexShader);
 	context.setFragmentShader(fragmentShader);
 	//context.setBlendState(blendState);
-	AES_LOG("So FAr {}", cpt++);
+	//AES_LOG("So FAr {}", cpt++);
 
 	context.bindVertexBuffer(vertexBuffer, sizeof(Vertex));
 	context.bindIndexBuffer(indexBuffer, TypeFormat::Uint16);
-	AES_LOG("So FAr {}", cpt++);
+	//AES_LOG("So FAr {}", cpt++);
 
 	//context.bindVSUniformBuffer(projectionBuffer, 0);
 	
 	uint indicesOffset = 0;
 	uint indicesCount;
-	AES_LOG("So FAr {}", cpt++);
+	//AES_LOG("So FAr {}", cpt++);
 
 	for (auto const& cmd : commands)
 	{
+		// @Review only draw triangles ?
 		if (cmd.type == DrawCommandType::Line)
 		{
 			context.setDrawPrimitiveMode(DrawPrimitiveType::Lines);
@@ -175,12 +176,13 @@ void Draw2d::executeDrawCommands()
 
 		context.drawIndexed(indicesCount, indicesOffset);
 		indicesOffset += indicesCount;
-		AES_LOG("So FAr {}", cpt++);
+		//AES_LOG("So FAr {}", cpt++);
 	}
 
 	indices.clear();
 	vertices.clear();
-	AES_LOG("So FAr {}", cpt++);
+	commands.clear();
+	//AES_LOG("So FAr {}", cpt++);
 }
 
 // @Review

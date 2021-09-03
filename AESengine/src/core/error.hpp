@@ -94,7 +94,7 @@ namespace aes {
 		using ValueType = void;
 		using ErrorCodeType = ErrorCode;
 
-		Result() noexcept : value_(true)
+		Result() noexcept
 		{
 
 		}
@@ -106,7 +106,7 @@ namespace aes {
 
 		operator bool() const noexcept
 		{
-			return std::holds_alternative<bool>(value_);
+			return std::holds_alternative<std::monostate>(value_);
 		}
 
 		ErrorCodeType error() const noexcept
@@ -115,7 +115,7 @@ namespace aes {
 		}
 
 	private:
-		std::variant<bool, ErrorCodeType> value_;
+		std::variant<std::monostate, ErrorCodeType> value_;
 	};
 
 }
