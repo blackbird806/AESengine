@@ -49,21 +49,25 @@ namespace aes {
 
 		ValueType const& value() const& noexcept
 		{
+			AES_ASSERT(this->operator bool());
 			return std::get<ValueType>(value_);
 		}
 
 		ValueType& value() & noexcept
 		{
+			AES_ASSERT(this->operator bool());
 			return std::get<ValueType>(value_);
 		}
 
 		ValueType const&& value() const&& noexcept
 		{
+			AES_ASSERT(this->operator bool());
 			return std::move(std::get<ValueType>(value_));
 		}
 
 		ValueType&& value() && noexcept
 		{
+			AES_ASSERT(this->operator bool());
 			return std::move(std::get<ValueType>(value_));
 		}
 
@@ -79,6 +83,7 @@ namespace aes {
 
 		ErrorCodeType error() const noexcept
 		{
+			AES_ASSERT(!this->operator bool());
 			return std::get<ErrorCodeType>(value_);
 		}
 
@@ -111,6 +116,7 @@ namespace aes {
 
 		ErrorCodeType error() const noexcept
 		{
+			AES_ASSERT(!this->operator bool());
 			return std::get<ErrorCodeType>(value_);
 		}
 

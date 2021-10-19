@@ -6,10 +6,8 @@
 #include "engine.hpp"
 #include "renderer/model.hpp"
 #include "renderer/material.hpp"
-#include "renderer/draw2d.hpp"
 #include "core/os.hpp"
 #include "core/utility.hpp"
-#include "core/color.hpp"
 
 #include "aini/aini.hpp"
 
@@ -79,7 +77,6 @@ public:
 	aes::RHIBuffer viewBuffer;
 	aes::Material defaultMtrl;
 	aes::Model model;
-	aes::Draw2d draw2d;
 	
 	Game(InitInfo const& info) : Engine(info)
 	{
@@ -91,17 +88,14 @@ public:
 		AES_PROFILE_FUNCTION();
 		AES_LOG("start");
 
-		//auto err = draw2d.init();
-		//if (!err)
-		//	AES_LOG_ERROR("err {}", err.error());
-
 		aes::FragmentShaderDescription fragmentShaderDescription;
 		fragmentShaderDescription.source = pxShader;
 
 		if (!fragmentShader.init(fragmentShaderDescription))
 		{
-			AES_ASSERT(false && "fragment shader creation failed");
+			AES_ASSERTF(false, "fragment shader creation failed");
 		}
+
 		AES_LOG("fragment shader created");
 
 		aes::VertexShaderDescription vertexShaderDescription;
@@ -122,27 +116,17 @@ public:
 
 		if (!vertexShader.init(vertexShaderDescription))
 		{
-			AES_ASSERT(false && "vertex shader creation failed");
+			AES_ASSERTF(false, "vertex shader creation failed");
 		}
 		AES_LOG("vertex shader created");
 
 		if (!defaultMtrl.init(&vertexShader, &fragmentShader))
 		{
-			AES_ASSERT(false && "material creation failed");
+			AES_ASSERTF(false, "material creation failed");
 		}
 		AES_LOG("material created");
-		
-		aes::Vertex vertices[] = {
-			{ {-1.0f, -1.0f, 1.0f}, { 0.0f, 1.0f, 1.0f, 1.0f } },
-			{ {3.0f, -1.f, 1.0f}, { 1.0f, 0.0f, 1.0f, 1.0f } },
-			{ {-1.0f, 3.0f, 1.0f}, { 1.0f, 0.0f, 1.0f, 1.0f } }
-		};
-		uint32_t indices[] = { 1, 0, 2 };
-		if (!model.init(vertices, indices))
-		{
-			AES_ASSERT(false && "failed to create model");
-		}
-		//model = aes::createCube().value();
+
+		model = aes::createCube().value();
 		AES_LOG("cube created");
 
 		aes::BufferDescription viewDesc;
