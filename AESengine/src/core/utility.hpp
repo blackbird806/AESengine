@@ -47,6 +47,87 @@ namespace aes {
 	private:
 		F func;
 	};
+
+	template <typename BitType>
+	class Flags
+	{
+	public:
+		using MaskType = typename std::underlying_type<BitType>::type;
+
+		// constructors
+		constexpr Flags() : mask(0) {}
+
+		constexpr Flags(BitType bit) : mask(static_cast<MaskType>(bit)) {}
+
+		constexpr Flags(Flags<BitType> const& rhs) = default;
+
+		constexpr explicit Flags(MaskType flags) : mask(flags) {}
+
+		// relational operators
+		auto operator<=>(Flags<BitType> const&) const = default;
+
+		// logical operator
+		constexpr bool operator!() const
+		{
+			return !mask;
+		}
+
+		// bitwise operators
+		constexpr Flags<BitType> operator&(Flags<BitType> const& rhs) const
+		{
+			return Flags<BitType>(mask & rhs.mask);
+		}
+
+		constexpr Flags<BitType> operator|(Flags<BitType> const& rhs) const
+		{
+			return Flags<BitType>(mask | rhs.mask);
+		}
+
+		constexpr Flags<BitType> operator^(Flags<BitType> const& rhs) const
+		{
+			return Flags<BitType>(mask ^ rhs.mask);
+		}
+
+		constexpr Flags<BitType> operator~() const
+		{
+			return Flags<BitType>(mask ^ 0);
+		}
+
+		// assignment operators
+		constexpr Flags<BitType>& operator=(Flags<BitType> const& rhs) = default;
+
+		constexpr Flags<BitType>& operator|=(Flags<BitType> const& rhs) 
+		{
+			mask |= rhs.mask;
+			return *this;
+		}
+
+		constexpr Flags<BitType>& operator&=(Flags<BitType> const& rhs)
+		{
+			mask &= rhs.mask;
+			return *this;
+		}
+
+		constexpr Flags<BitType>& operator^=(Flags<BitType> const& rhs)
+		{
+			mask ^= rhs.mask;
+			return *this;
+		}
+
+		// cast operators
+		explicit constexpr operator bool() const
+		{
+			return !!mask;
+		}
+
+		explicit constexpr operator MaskType() const 
+		{
+			return mask;
+		}
+
+	private:
+		MaskType mask;
+	};
 }
 
 #endif // !UTILITY_HPP

@@ -2,6 +2,7 @@
 
 #include "core/aes.hpp"
 
+using namespace aes;
 
 DXGI_FORMAT aes::rhiTypeFormatToApi(TypeFormat format)
 {
@@ -50,13 +51,18 @@ D3D11_USAGE aes::rhiBufferUsageToApi(BufferUsage u)
 
 D3D11_BIND_FLAG aes::rhiBufferBindFlagsToApi(BindFlags flags)
 {
-	switch (flags)
-	{
-	case BindFlags::VertexBuffer: return D3D11_BIND_VERTEX_BUFFER;
-	case BindFlags::IndexBuffer: return D3D11_BIND_INDEX_BUFFER;
-	case BindFlags::UniformBuffer: return D3D11_BIND_CONSTANT_BUFFER;
-	}
-	AES_UNREACHABLE();
+	int32_t result = {};
+	
+	if (flags & BindFlagBits::VertexBuffer)
+		result |= D3D11_BIND_VERTEX_BUFFER;
+	
+	if (flags & BindFlagBits::IndexBuffer)
+		result |= D3D11_BIND_INDEX_BUFFER;
+	
+	if (flags & BindFlagBits::UniformBuffer)
+		result |= D3D11_BIND_CONSTANT_BUFFER;
+	
+	return static_cast<D3D11_BIND_FLAG>(result);
 }
 
 D3D_PRIMITIVE_TOPOLOGY aes::rhiPrimitiveTypeToApi(DrawPrimitiveType primitiveMode)
@@ -78,12 +84,12 @@ D3D_PRIMITIVE_TOPOLOGY aes::rhiPrimitiveTypeToApi(DrawPrimitiveType primitiveMod
 }
 
 // @Review
-UINT aes::rhiCPUAccessFlagsToApi(uint8_t flags)
+UINT aes::rhiCPUAccessFlagsToApi(CPUAccessFlags flags)
 {
 	UINT result = 0;
-	if ((flags & (uint8_t)CPUAccessFlags::Read) == (uint8_t)CPUAccessFlags::Read)
+	if (flags & CPUAccessFlagBits::Read)
 		result |= D3D11_CPU_ACCESS_READ;
-	if ((flags & (uint8_t)CPUAccessFlags::Write) == (uint8_t)CPUAccessFlags::Write)
+	if (flags & CPUAccessFlagBits::Write)
 		result |= D3D11_CPU_ACCESS_WRITE;
 	return result;
 }

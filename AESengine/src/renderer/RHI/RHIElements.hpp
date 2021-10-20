@@ -8,15 +8,17 @@
 #include <variant>
 
 #include "core/aes.hpp"
+#include "core/utility.hpp"
 
 namespace aes
 {
-	enum CPUAccessFlags : uint8_t
+	enum CPUAccessFlagBits : uint8_t
 	{
 		None = 0x0,
 		Read = 0x1,
 		Write = 0x2
 	};
+	using CPUAccessFlags = Flags<CPUAccessFlagBits>;
 
 	enum class BufferUsage
 	{
@@ -26,12 +28,13 @@ namespace aes
 		Staging
 	};
 
-	enum class BindFlags
+	enum class BindFlagBits
 	{
-		VertexBuffer,
-		IndexBuffer,
-		UniformBuffer,
+		VertexBuffer = 0x1,
+		IndexBuffer = 0x2,
+		UniformBuffer = 0x4,
 	};
+	using BindFlags = Flags<BindFlagBits>;
 
 	enum class BlendOp
 	{
@@ -78,7 +81,7 @@ namespace aes
 		TexCoord
 	};
 
-	inline const char* getSemanticName(SemanticType e)
+	constexpr const char* getSemanticName(SemanticType e)
 	{
 		switch (e)
 		{
@@ -95,7 +98,7 @@ namespace aes
 		size_t sizeInBytes;
 		BufferUsage bufferUsage;
 		BindFlags bindFlags;
-		uint8_t cpuAccessFlags;
+		CPUAccessFlags cpuAccessFlags;
 		void* initialData = nullptr;
 	};
 

@@ -130,9 +130,9 @@ public:
 		AES_LOG("cube created");
 
 		aes::BufferDescription viewDesc;
-		viewDesc.bindFlags = aes::BindFlags::UniformBuffer;
+		viewDesc.bindFlags = aes::BindFlagBits::UniformBuffer;
 		viewDesc.bufferUsage = aes::BufferUsage::Dynamic;
-		viewDesc.cpuAccessFlags = aes::CPUAccessFlags::Write;
+		viewDesc.cpuAccessFlags = aes::CPUAccessFlagBits::Write;
 		viewDesc.sizeInBytes = sizeof(aes::CameraBuffer);
 		viewBuffer.init(viewDesc);
 		AES_LOG("view buffer created");

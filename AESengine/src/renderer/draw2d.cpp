@@ -56,9 +56,9 @@ Result<void> Draw2d::init()
 	AES_LOG("buffers initialized");
 
 	BufferDescription viewBufferDesc;
-	viewBufferDesc.bindFlags = BindFlags::UniformBuffer;
+	viewBufferDesc.bindFlags = BindFlagBits::UniformBuffer;
 	viewBufferDesc.bufferUsage = BufferUsage::Immutable; // @Review default ?
-	viewBufferDesc.cpuAccessFlags = CPUAccessFlags::None;
+	viewBufferDesc.cpuAccessFlags = CPUAccessFlagBits::None;
 	viewBufferDesc.sizeInBytes = sizeof(glm::mat4);
 	glm::mat4 viewMtr = glm::orthoLH_ZO(0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 100.0f);
 	viewBufferDesc.initialData = &viewMtr; // TODO
@@ -198,9 +198,9 @@ Result<void> Draw2d::ensureVertexBuffersCapacity(size_t size)
 	
 	// reallocate buffers
 	BufferDescription vertexBufferDesc{};
-	vertexBufferDesc.bindFlags = BindFlags::VertexBuffer;
+	vertexBufferDesc.bindFlags = BindFlagBits::VertexBuffer;
 	vertexBufferDesc.bufferUsage = BufferUsage::Dynamic;
-	vertexBufferDesc.cpuAccessFlags = (uint8_t)CPUAccessFlags::Write;
+	vertexBufferDesc.cpuAccessFlags = CPUAccessFlagBits::Write;
 	vertexBufferDesc.sizeInBytes = newCapacity;
 
 	RHIBuffer newBuffer;
@@ -230,9 +230,9 @@ Result<void> Draw2d::ensureIndexBuffersCapacity(size_t size)
 	
 	// reallocate buffers
 	BufferDescription indexBufferDesc{};
-	indexBufferDesc.bindFlags = BindFlags::IndexBuffer;
+	indexBufferDesc.bindFlags = BindFlagBits::IndexBuffer;
 	indexBufferDesc.bufferUsage = BufferUsage::Dynamic;
-	indexBufferDesc.cpuAccessFlags = CPUAccessFlags::Write;
+	indexBufferDesc.cpuAccessFlags = CPUAccessFlagBits::Write;
 	indexBufferDesc.sizeInBytes = newCapacity;
 
 	RHIBuffer newBuffer;

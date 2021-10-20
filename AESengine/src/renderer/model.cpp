@@ -55,7 +55,7 @@ Result<void> Model::init(std::span<Vertex const> vertices, std::span<uint32_t co
 	indexCount = indices.size();
 
 	BufferDescription vertexBufferInfo{};
-	vertexBufferInfo.bindFlags = BindFlags::VertexBuffer;
+	vertexBufferInfo.bindFlags = BindFlagBits::VertexBuffer;
 	vertexBufferInfo.bufferUsage = BufferUsage::Immutable;
 	vertexBufferInfo.sizeInBytes = vertices.size_bytes();
 	vertexBufferInfo.initialData = (void*)vertices.data();
@@ -65,7 +65,7 @@ Result<void> Model::init(std::span<Vertex const> vertices, std::span<uint32_t co
 		return err;
 	
 	BufferDescription indexBufferInfo{};
-	indexBufferInfo.bindFlags = BindFlags::IndexBuffer;
+	indexBufferInfo.bindFlags = BindFlagBits::IndexBuffer;
 	indexBufferInfo.bufferUsage = BufferUsage::Immutable;
 	indexBufferInfo.sizeInBytes = indices.size_bytes();
 	indexBufferInfo.initialData = (void*)indices.data();
@@ -75,10 +75,10 @@ Result<void> Model::init(std::span<Vertex const> vertices, std::span<uint32_t co
 		return err;
 
 	BufferDescription modelBufferInfo {};
-	modelBufferInfo.bindFlags = BindFlags::UniformBuffer;
+	modelBufferInfo.bindFlags = BindFlagBits::UniformBuffer;
 	modelBufferInfo.bufferUsage = BufferUsage::Dynamic;
 	modelBufferInfo.sizeInBytes = sizeof(ModelBuffer);
-	modelBufferInfo.cpuAccessFlags = CPUAccessFlags::Write;
+	modelBufferInfo.cpuAccessFlags = CPUAccessFlagBits::Write;
 
 	err = modelBuffer.init(modelBufferInfo);
 	if (!err)
