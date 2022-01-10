@@ -1,7 +1,7 @@
 ﻿void main(
-	float2 aPosition : POSITION,
-	float2 tex : TEXCOORD0,
-	float4 aColor : COLOR,
+	float2 aPosition,
+	// float2 tex : TEXCOORD0,
+	float4 aColor,
 	float4 out vPosition : POSITION,
 	float4 out vColor : COLOR)
 {

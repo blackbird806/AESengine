@@ -150,10 +150,12 @@ GxmVertexShader::~GxmVertexShader()
 Result<void> GxmVertexShader::init(VertexShaderDescription const& desc)
 {
 	AES_PROFILE_FUNCTION();
-	AES_ASSERT(std::holds_alternative<uint8_t const*>(desc.source) && "runtime compiled shaders aren't supported on vita platform !");
+	AES_ASSERTF(std::holds_alternative<uint8_t const*>(desc.source), "runtime compiled shaders aren't supported on vita platform ! {}", std::holds_alternative<uint8_t const*>(desc.source));
 	
 	gxpShader = reinterpret_cast<SceGxmProgram const*>(std::get<uint8_t const*>(desc.source));
 	AES_ASSERT(gxpShader != nullptr);
+	AES_ASSERT(sceGxmProgramCheck(gxpShader) == SCE_OK);
+	AES_ASSERT(sceGxmProgramGetType(gxpShader) == SCE_GXM_VERTEX_PROGRAM);
 
 	auto& context = RHIRenderContext::instance();
 	auto err = sceGxmShaderPatcherRegisterProgram(context.getShaderPatcher(), gxpShader, &id);
@@ -164,6 +166,7 @@ Result<void> GxmVertexShader::init(VertexShaderDescription const& desc)
 	}
 
 	std::vector<SceGxmVertexAttribute> verticesAttributes(desc.verticesLayout.size());
+	const char* names[] = {"aPosition", "aColor"};
 	for (int i = 0; auto const& layout : desc.verticesLayout)
 	{
 		verticesAttributes[i].streamIndex = 0;
@@ -171,14 +174,16 @@ Result<void> GxmVertexShader::init(VertexShaderDescription const& desc)
 		auto const formatComponents = getFormatComponents(layout.format);
 		verticesAttributes[i].format = formatComponents.attribFormat;
 		verticesAttributes[i].componentCount = formatComponents.numComponents;
-		verticesAttributes[i].regIndex = sceGxmProgramParameterGetResourceIndex(
-				sceGxmProgramFindParameterBySemantic(gxpShader, rhiSemanticTypeToApi(layout.semantic), 0));
+		// SceGxmProgramParameter const* param = sceGxmProgramFindParameterBySemantic(gxpShader, rhiSemanticTypeToApi(layout.semantic), 0);
+		SceGxmProgramParameter const* param = sceGxmProgramFindParameterByName(gxpShader, names[i]);
+		AES_ASSERTF(param != nullptr, "param {} is nullptr", (int)layout.semantic);
+		verticesAttributes[i].regIndex = sceGxmProgramParameterGetResourceIndex(param);
 		i++;
 	}
 	
 	SceGxmVertexStream vertexStream;
 	vertexStream.stride = desc.verticesStride;
-	vertexStream.indexSource = SCE_GXM_INDEX_SOURCE_INDEX_32BIT; // @Review
+	vertexStream.indexSource = SCE_GXM_INDEX_SOURCE_INDEX_16BIT; // @Review
 
 	err = sceGxmShaderPatcherCreateVertexProgram(context.getShaderPatcher(), id, verticesAttributes.data(), verticesAttributes.size(), &vertexStream, 1, &vertexShader);
 	if (err != SCE_OK)
@@ -219,17 +224,20 @@ GxmFragmentShader::~GxmFragmentShader()
 Result<void> GxmFragmentShader::init(FragmentShaderDescription const& desc)
 {
 	AES_PROFILE_FUNCTION();
-	AES_ASSERT(std::holds_alternative<uint8_t const*>(desc.source) && "runtime compiled shaders aren't supported on vita platform !");
+	AES_ASSERTF(std::holds_alternative<uint8_t const*>(desc.source), "runtime compiled shaders aren't supported on vita platform ! {}", std::holds_alternative<uint8_t const*>(desc.source));
 	
 	gxpShader = reinterpret_cast<SceGxmProgram const*>(std::get<uint8_t const*>(desc.source));
 	AES_ASSERT(gxpShader);
+	AES_ASSERT(sceGxmProgramCheck(gxpShader) == SCE_OK);
+	AES_ASSERT(sceGxmProgramGetType(gxpShader) == SCE_GXM_FRAGMENT_PROGRAM);
 
 	auto& context = RHIRenderContext::instance();
 	auto err = sceGxmShaderPatcherRegisterProgram(context.getShaderPatcher(), gxpShader, &id);
 	if (err != SCE_OK)
 		return { AESError::ShaderCreationFailed };
 	
-	err = sceGxmShaderPatcherCreateFragmentProgram(context.getShaderPatcher(), id, SCE_GXM_OUTPUT_REGISTER_FORMAT_UCHAR4 /* @Review */, vita_msaa_mode, nullptr, gxpShader, &fragmentShader);
+	err = sceGxmShaderPatcherCreateFragmentProgram(context.getShaderPatcher(), id, SCE_GXM_OUTPUT_REGISTER_FORMAT_UCHAR4, vita_msaa_mode, nullptr, 
+		(SceGxmProgram const*)desc.gxpVertexProgram, &fragmentShader);
 
 	if (err != SCE_OK)
 		return { AESError::ShaderCreationFailed };

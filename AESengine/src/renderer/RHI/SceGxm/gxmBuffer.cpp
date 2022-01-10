@@ -35,6 +35,7 @@ Result<void> GxmBuffer::init(BufferDescription const& desc)
 		0 /* alignement */,
 		rhiBufferUsageToApi(desc.bufferUsage),
 		&memID);
+	AES_ASSERT(buffer);
 	return {};
 }
 

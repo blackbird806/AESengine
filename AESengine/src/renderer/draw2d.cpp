@@ -10,18 +10,18 @@ Result<void> Draw2d::init()
 {
 	AES_PROFILE_FUNCTION();
 	
-	VertexInputLayout vertexInputLayout[3];
+	VertexInputLayout vertexInputLayout[2];
 	vertexInputLayout[0].semantic = SemanticType::Position;
 	vertexInputLayout[0].offset = 0;
 	vertexInputLayout[0].format = RHIFormat::R32G32_Float;
 
-	vertexInputLayout[1].semantic = SemanticType::TexCoord;
-	vertexInputLayout[1].offset = sizeof(glm::vec2);
-	vertexInputLayout[1].format = RHIFormat::R32G32_Float;
+	// vertexInputLayout[1].semantic = SemanticType::TexCoord;
+	// vertexInputLayout[1].offset = sizeof(glm::vec2);
+	// vertexInputLayout[1].format = RHIFormat::R32G32_Float;
 
-	vertexInputLayout[2].semantic = SemanticType::Color;
-	vertexInputLayout[2].offset = sizeof(glm::vec2) * 2;
-	vertexInputLayout[2].format = RHIFormat::R32G32B32A32_Float;
+	vertexInputLayout[1].semantic = SemanticType::Color;
+	vertexInputLayout[1].offset = sizeof(glm::vec2);
+	vertexInputLayout[1].format = RHIFormat::R32G32B32A32_Float;
 	
 	VertexShaderDescription vertexShaderDescription;
 #ifdef __vita__
@@ -33,7 +33,6 @@ Result<void> Draw2d::init()
 	vertexShaderDescription.verticesLayout = vertexInputLayout;
 	vertexShaderDescription.verticesStride = sizeof(Vertex);
 	AES_LOG("shader 1 start");
-	// Crash on vita here
 	auto err = vertexShader.init(vertexShaderDescription);
 	if (!err)
 		return err;
@@ -42,7 +41,7 @@ Result<void> Draw2d::init()
 	FragmentShaderDescription fragmentShaderDescription;
 #ifdef __vita__
 	auto const source_fs = readFileBin("app0:assets/shaders/vita/basic2d_fs.gxp");
-	vertexShaderDescription.source = source_fs.data();
+	fragmentShaderDescription.source = source_fs.data();
 #else
 	fragmentShaderDescription.source = readFile("assets/shaders/HLSL/draw2d.fs"); // TODO
 #endif
@@ -100,8 +99,8 @@ void Draw2d::drawLine(Line2D const& line)
 	
 	glm::vec2 const from = line.p1 * currentState.transformationMatrix;
 	glm::vec2 const to = line.p2 * currentState.transformationMatrix;
-	vertices.push_back({ from, {0.0f, 0.0f}, currentState.color.toVec4() });
-	vertices.push_back({ to, {0.0f, 0.0f}, currentState.color.toVec4() });
+	vertices.push_back({ from, currentState.color.toVec4() });
+	vertices.push_back({ to, currentState.color.toVec4() });
 	indices.push_back(iOff + 0);
 	indices.push_back(iOff + 1);
 	iOff += 2;
@@ -122,10 +121,10 @@ void Draw2d::drawFillRect(Rect const& rect)
 		rect.max * currentState.transformationMatrix };
 	
 	RectBounds const bounds = transformedRect.getBounds();
-	vertices.push_back({ bounds.minL, {}, currentState.color.toVec4() });
-	vertices.push_back({ bounds.minR, {}, currentState.color.toVec4() });
-	vertices.push_back({ bounds.topL, {}, currentState.color.toVec4() });
-	vertices.push_back({ bounds.topR, {}, currentState.color.toVec4() });
+	vertices.push_back({ bounds.minL, currentState.color.toVec4() });
+	vertices.push_back({ bounds.minR, currentState.color.toVec4() });
+	vertices.push_back({ bounds.topL, currentState.color.toVec4() });
+	vertices.push_back({ bounds.topR, currentState.color.toVec4() });
 
 	indices.push_back(iOff + 0);
 	indices.push_back(iOff + 1);
@@ -139,26 +138,26 @@ void Draw2d::executeDrawCommands()
 	AES_PROFILE_FUNCTION();
 
 	iOff = 0;
-	//AES_LOG("So FAr {}", cpt++);
+	// AES_LOG("So FAr {}", cpt++);
 	vertexBuffer.setData(vertices.data(), vertices.size() * sizeof(Vertex));
 	indexBuffer.setData(indices.data(), indices.size() * sizeof(Index_t));
-	//AES_LOG("So FAr {}", cpt++);
+	// AES_LOG("So FAr {}", cpt++);
 
 	auto& context = RHIRenderContext::instance();
 	context.setVertexShader(vertexShader);
 	context.setFragmentShader(fragmentShader);
 	//context.setBlendState(blendState);
-	//AES_LOG("So FAr {}", cpt++);
+	// AES_LOG("So FAr {}", cpt++);
 
 	context.bindVertexBuffer(vertexBuffer, sizeof(Vertex));
 	context.bindIndexBuffer(indexBuffer, TypeFormat::Uint16);
-	//AES_LOG("So FAr {}", cpt++);
+	// AES_LOG("So FAr {}", cpt++);
 
 	//context.bindVSUniformBuffer(projectionBuffer, 0);
 	
 	uint indicesOffset = 0;
 	uint indicesCount;
-	//AES_LOG("So FAr {}", cpt++);
+	// AES_LOG("So FAr {}", cpt++);
 
 	for (auto const& cmd : commands)
 	{
@@ -176,13 +175,13 @@ void Draw2d::executeDrawCommands()
 
 		context.drawIndexed(indicesCount, indicesOffset);
 		indicesOffset += indicesCount;
-		//AES_LOG("So FAr {}", cpt++);
+		// AES_LOG("So FAr {}", cpt++);
 	}
 
 	indices.clear();
 	vertices.clear();
 	commands.clear();
-	//AES_LOG("So FAr {}", cpt++);
+	// AES_LOG("So FAr {}", cpt++);
 }
 
 // @Review

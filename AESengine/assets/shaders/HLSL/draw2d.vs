@@ -1,7 +1,7 @@
 struct VS_INPUT
 {
     float2 position : POSITION;
-    float2 UV : TEXCOORD;
+    // float2 UV : TEXCOORD;
     float4 color : COLOR;
 };
 

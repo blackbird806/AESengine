@@ -96,7 +96,7 @@ namespace aes
 	struct BufferDescription
 	{
 		size_t sizeInBytes;
-		BufferUsage bufferUsage;
+		BufferUsage bufferUsage; // @TODO rename usage
 		BindFlags bindFlags;
 		CPUAccessFlags cpuAccessFlags;
 		void* initialData = nullptr;
@@ -122,7 +122,8 @@ namespace aes
 
 	struct ShaderDescription
 	{
-		std::variant<std::string, uint8_t const*> source;
+		using Binary = uint8_t const*;
+		std::variant<std::string, Binary> source;
 	};
 
 	struct VertexShaderDescription : public ShaderDescription
@@ -133,8 +134,9 @@ namespace aes
 
 	struct FragmentShaderDescription : public ShaderDescription
 	{
-		
-	};	
+		// TODO: clean this
+		void const* gxpVertexProgram; 
+	};
 }
 
 #endif

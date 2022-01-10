@@ -7,7 +7,7 @@
 
 #ifdef AES_GRAPHIC_API_D3D11
 	#include "renderer/RHI/D3D11/D3D11Buffer.hpp"
-#elif defined(__vita__)
+#elif defined(AES_GRAPHIC_API_GXM)
 	#include "renderer/RHI/SceGxm/gxmBuffer.hpp"
 #endif
 

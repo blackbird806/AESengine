@@ -17,6 +17,8 @@ namespace aes
 		GxmShader& operator=(GxmShader&& rhs) noexcept;
 		~GxmShader();
 
+		SceGxmProgram const* getGxpShader() const { return gxpShader; }
+
 		std::vector<UniformBufferReflectionInfo> getUniformBufferInfos() const;
 
 		protected:
@@ -40,7 +42,7 @@ namespace aes
 
 		private:
 		
-		SceGxmVertexProgram* vertexShader;
+		SceGxmVertexProgram* vertexShader = nullptr;
 	};
 
 	class GxmFragmentShader : public GxmShader
