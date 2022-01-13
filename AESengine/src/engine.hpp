@@ -29,6 +29,7 @@ namespace aes {
 	protected:
 
 		InputState getKeyState(Key k) noexcept;
+		bool isKeyDown(Key k) noexcept;
 
 		/*
 		 *0;1

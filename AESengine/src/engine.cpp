@@ -88,6 +88,11 @@ InputState Engine::getKeyState(Key k) noexcept
 	return keyStates[k];
 }
 
+bool Engine::isKeyDown(Key k) noexcept
+{
+	return keyStates[k] == InputState::Down;
+}
+
 void Engine::getViewportMousePos(float& x, float& y) const noexcept
 {
 	uint sx, sy;

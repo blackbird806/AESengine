@@ -1,6 +1,7 @@
 #include <glm/gtx/transform.hpp>
 #include <iostream>
 #include <fstream>
+#include <random>
 #include "core/profiler.hpp"
 #include "core/debugMath.hpp"
 #include "engine.hpp"
@@ -80,6 +81,7 @@ struct LineRenderer
 	
 	void init()
 	{
+		AES_PROFILE_FUNCTION();
 		using namespace aes;
 
 		BufferDescription vertexBufferInfo{};
@@ -106,6 +108,8 @@ struct LineRenderer
 	
 	void addLine(glm::vec3 const& from, glm::vec3 const& to)
 	{
+		AES_PROFILE_FUNCTION();
+
 		glm::vec4 const vcolor = colorState.toVec4();
 		vertices.push_back({ from, vcolor });
 		vertices.push_back({ to, vcolor });
@@ -118,6 +122,7 @@ struct LineRenderer
 	
 	void draw()
 	{
+		AES_PROFILE_FUNCTION();
 		indices.resize(vertices.size());
 		for (uint32_t i = 0; i < vertices.size(); i++)
 			indices[i] = i;
@@ -132,6 +137,12 @@ struct LineRenderer
 	
 };
 
+struct TestElement
+{
+	glm::vec3 pos;
+	glm::vec3 size;
+};
+
 class Game : public aes::Engine
 {
 
@@ -144,6 +155,8 @@ public:
 	aes::RHIBuffer identityModelBuffer;
 	aes::Material defaultMtrl;
 	aes::Model model;
+	
+	TestElement testElements[25];
 	
 	Game(InitInfo const& info) : Engine(info)
 	{
@@ -225,13 +238,24 @@ public:
 		}
 		mainCamera.pos = { 0.0, 0.0, -5.0 };
 		getViewportMousePos(lastMousePosX, lastMousePosY);
+
+		// generate test elements for the octree
+		std::random_device rd;  // Will be used to obtain a seed for the random number engine
+		std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+		std::uniform_real_distribution const dis(-20.0, 20.0);
+		std::uniform_real_distribution const disS(1.0, 4.0);
+		for (auto& e : testElements)
+		{
+			e.pos = glm::vec3(dis(gen), dis(gen), dis(gen));
+			e.size = glm::vec3(disS(gen), disS(gen), disS(gen));
+		}
 	}
 
 	float speed = 6.0f, sensitivity = 60.f;
 	float lastMousePosX, lastMousePosY;
 	glm::vec3 direction = {0.0, 0.0, 1.0};
 	float yaw = 91, pitch = 2;
-	
+
 	void update(float dt) override
 	{
 		AES_PROFILE_FUNCTION();
@@ -266,6 +290,32 @@ public:
 			movePos.y -= speed * dt;
 		}
 
+		// move the collision cube
+		if (isKeyDown(aes::Key::Up))
+		{
+
+		}
+		if (isKeyDown(aes::Key::Down))
+		{
+
+		}
+		if (isKeyDown(aes::Key::Left))
+		{
+			
+		}
+		if (isKeyDown(aes::Key::Right))
+		{
+
+		}
+		if (isKeyDown(aes::Key::Num1))
+		{
+
+		}
+		if (isKeyDown(aes::Key::Num2))
+		{
+
+		}
+		
 		mainCamera.pos += glm::vec3(movePos * mainCamera.viewMatrix);
 		float mx, my;
 		getViewportMousePos(mx, my);
@@ -308,13 +358,10 @@ public:
 			float const aspect = (float)windowWidth / (float)windowHeight;
 			mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), aspect, 0.0001f, 1000.0f);
 		}
-		//model.toWorld = glm::rotate(model.toWorld, 1.5f * dt, glm::vec3(0.0f, 1.0f, 1.0f));
 		aes::CameraBuffer const camBuf{ glm::transpose(mainCamera.viewMatrix), glm::transpose(mainCamera.projMatrix) };
-		//aes::CameraBuffer const camBuf { mainCamera.viewMatrix, mainCamera.projMatrix };
 		viewBuffer.setDataFromPOD(camBuf);
-
-		aes::RHIBlendState blendState{};
-
+		
+		//aes::RHIBlendState blendState{};
 		//aes::BlendInfo blendInfo = {};
 		//blendInfo.colorSrc = aes::BlendFactor::One;
 		//blendInfo.colorDst = aes::BlendFactor::OneMinusSrcColor;
@@ -324,37 +371,25 @@ public:
 		//blendInfo.alphaOp = aes::BlendOp::Add;
 		//blendState.init(blendInfo);
 		//aes::RHIRenderContext::instance().setBlendState(blendState);
+
 	}
 
 	void draw() override
 	{
 		AES_PROFILE_FUNCTION();
 		
-		//draw2d.setColor(aes::Color::Blue);
-		//draw2d.drawPoint({0.f, 0.f});
-		//draw2d.drawPoint({1.0f, 1.0f});
-		//draw2d.setColor(aes::Color::Red);
-		//draw2d.drawPoint({ 0.5f, 0.5f });
-
-		//draw2d.executeDrawCommands();
 		aes::Material::BindInfo bindInfo;
 		bindInfo.vsBuffers.push_back(std::make_pair("ModelBuffer", &model.modelBuffer));
 		bindInfo.vsBuffers.push_back(std::make_pair("CameraBuffer", &viewBuffer));
 		defaultMtrl.bind(bindInfo);
 
-		for (int i = 0; i < 10; i++)
+		for (auto& e : testElements)
 		{
-			for (int j = 0; j < 10; j++)
-			{
-				for (int k = 0; k < 10; k++)
-				{
-					//model.toWorld = glm::translate(glm::mat4(1.0f), glm::vec3(i * 2.5, j * 2.5, k * 2.5));
-					//model.draw();
-				}
-			}
+			model.toWorld = glm::translate(glm::mat4(1.0f), e.pos);
+			model.toWorld = glm::scale(model.toWorld, e.size);
+			model.draw();
 		}
 		
-		model.draw(); 
 		aes::RHIRenderContext::instance().bindVSUniformBuffer(identityModelBuffer, 1);
 		lineRenderer.draw();
 	}

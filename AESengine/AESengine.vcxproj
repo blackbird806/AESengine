@@ -30,6 +30,7 @@
     <ClCompile Include="src\core\allocator.cpp" />
     <ClCompile Include="src\core\console.cpp" />
     <ClCompile Include="src\core\debug.cpp" />
+    <ClCompile Include="src\core\geometry.cpp" />
     <ClCompile Include="src\core\input.cpp" />
     <ClCompile Include="src\core\maths.cpp" />
     <ClCompile Include="src\core\platformWindows\win_window.cpp" />

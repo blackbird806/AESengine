@@ -4,17 +4,22 @@
 
 namespace aes
 {
-	template<template<typename, typename> typename Container, template<typename> typename Allocator = std::allocator>
 	class Octree
 	{
-		struct Node
+		using LocCode_t = uint32_t;
+
+		struct Object
 		{
-			Node* next;
-			Node* prev;
 			void* userData;
 		};
+		
+		struct Node
+		{
+			LocCode_t locCode;
+			uint8_t childExist;
+			Object* userData;
+		};
 
-		Container<Node, Allocator<Node>> data;
 	};
 }
 

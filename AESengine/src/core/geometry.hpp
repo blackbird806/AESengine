@@ -52,6 +52,8 @@ namespace aes {
 		glm::vec3 max;
 	};
 
+	bool AABB_AABBIntersect(AABB const& a, AABB const& b) noexcept;
+	
 	struct Sphere
 	{
 		glm::vec3 pos;
