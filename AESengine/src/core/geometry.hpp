@@ -10,6 +10,11 @@ namespace aes {
 		glm::vec2 p1, p2;
 	};
 
+	struct Line3D
+	{
+		glm::vec3 p1, p2;
+	};
+	
 	struct RectBounds
 	{
 		glm::vec2 topL, topR, minL, minR;
@@ -33,6 +38,24 @@ namespace aes {
 				.minR = { max.x, min.y }
 			};
 		}
+	};
+
+	struct Circle
+	{
+		glm::vec2 pos;
+		float size;
+	};
+	
+	struct AABB
+	{
+		glm::vec3 min;
+		glm::vec3 max;
+	};
+
+	struct Sphere
+	{
+		glm::vec3 pos;
+		float size;
 	};
 }
 

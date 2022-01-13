@@ -20,6 +20,11 @@ void Window::setMouseMoveCallback(MouseMoveCallbackT func)
 	mouseMoveCallback = func;
 }
 
+void Window::setMouseWheelMoveCallback(MouseWheelMoveCallbackT func)
+{
+	mouseWheelMoveCallback = func;
+}
+
 void Window::getMousePosition(int& mouseX_, int& mouseY_) const
 {
 	AES_PROFILE_FUNCTION();

@@ -254,5 +254,8 @@
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11BlendState.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\spatial\octree.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

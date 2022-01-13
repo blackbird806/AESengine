@@ -4,6 +4,8 @@
 #include <string>
 #include <windowsx.h>
 
+#include "core/maths.hpp"
+
 #define AES_CLASSNAME L"AES_CLASS"
 #define WINDOW_HANDLE_PROP_NAME L"AES_WinHandle"
 
@@ -73,6 +75,13 @@ LRESULT Win_Window::windowProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPa
 			self->mouseY = self->height - GET_Y_LPARAM(lParam); // 0 is down
 			if (self->mouseMoveCallback) self->mouseMoveCallback(self->mouseX, self->mouseY);
 			break;
+		// For some reason WM_MOUSEWHEEL is defined 0x020E on my win api and doesn't works
+		// With 0x020A as documented in https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-mousewheel everything works properly
+		case 0x020A: // WM_MOUSEWHEEL
+			{
+				if (self->mouseWheelMoveCallback) self->mouseWheelMoveCallback(aes::sign(GET_WHEEL_DELTA_WPARAM(wParam)));
+				break;
+			}
 		case WM_SIZE:
 		//	self->width = LOWORD(lParam);
 		//	self->height = HIWORD(lParam);

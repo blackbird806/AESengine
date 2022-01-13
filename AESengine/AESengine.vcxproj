@@ -101,6 +101,7 @@
     <ClInclude Include="src\renderer\RHI\RHIShaderReflection.hpp" />
     <ClInclude Include="src\renderer\RHI\RHIVertexInputLayout.hpp" />
     <ClInclude Include="src\renderer\vertex.hpp" />
+    <ClInclude Include="src\spatial\octree.hpp" />
     <ClInclude Include="src\UI\UI.hpp" />
     <ClInclude Include="thirdParty\tiny\tiny_obj_loader.h" />
   </ItemGroup>

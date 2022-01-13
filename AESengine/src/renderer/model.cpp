@@ -57,9 +57,10 @@ Result<void> Model::init(std::span<Vertex const> vertices, std::span<uint32_t co
 	BufferDescription vertexBufferInfo{};
 	vertexBufferInfo.bindFlags = BindFlagBits::VertexBuffer;
 	vertexBufferInfo.bufferUsage = BufferUsage::Immutable;
+	vertexBufferInfo.cpuAccessFlags = CPUAccessFlagBits::None;
 	vertexBufferInfo.sizeInBytes = vertices.size_bytes();
 	vertexBufferInfo.initialData = (void*)vertices.data();
-	
+
 	auto err = vertexBuffer.init(vertexBufferInfo);
 	if (!err)
 		return err;
@@ -67,6 +68,7 @@ Result<void> Model::init(std::span<Vertex const> vertices, std::span<uint32_t co
 	BufferDescription indexBufferInfo{};
 	indexBufferInfo.bindFlags = BindFlagBits::IndexBuffer;
 	indexBufferInfo.bufferUsage = BufferUsage::Immutable;
+	indexBufferInfo.cpuAccessFlags = CPUAccessFlagBits::None;
 	indexBufferInfo.sizeInBytes = indices.size_bytes();
 	indexBufferInfo.initialData = (void*)indices.data();
 

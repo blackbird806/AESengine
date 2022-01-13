@@ -22,7 +22,7 @@ namespace aes
 		template<typename T>
 		Result<void> setData(std::span<T> data)
 		{
-			return setData(data.data(), data.size());
+			return setData(data.data(), data.size_bytes());
 		}
 
 		template<typename T>

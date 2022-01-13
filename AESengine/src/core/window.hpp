@@ -34,12 +34,14 @@ namespace aes {
 		using ResizeCallbackT = void(*)(uint, uint);
 		using KeyCallbackT = ContextCallback<void(*)(InputAction action, int key, void* userData)>;
 		using MouseMoveCallbackT = void(*)(int mouseX, int mouseY);
+		using MouseWheelMoveCallbackT = void(*)(int directionY);
 		
 		virtual ~Window() {};
 
-		virtual void setResizeCallback(ResizeCallbackT func);
-		virtual void setKeyCallback(KeyCallbackT func);
-		virtual void setMouseMoveCallback(MouseMoveCallbackT func);
+		void setResizeCallback(ResizeCallbackT func);
+		void setKeyCallback(KeyCallbackT func);
+		void setMouseMoveCallback(MouseMoveCallbackT func);
+		void setMouseWheelMoveCallback(MouseWheelMoveCallbackT func);
 		virtual void getMousePosition(int& mouseX, int& mouseY) const;
 		virtual void getScreenSize(uint& sizeX, uint& sizeY) const;
 		virtual bool shouldClose() const;
@@ -56,11 +58,12 @@ namespace aes {
 		KeyCallbackT keyCallback;
 		ResizeCallbackT resizeCallback = nullptr;
 		MouseMoveCallbackT mouseMoveCallback = nullptr;
+		MouseWheelMoveCallbackT mouseWheelMoveCallback = nullptr;
 		uint width, height;
 		int mouseX, mouseY;
 	};
 
-	class EmptyWindow : public Window
+	class EmptyWindow final : public Window
 	{
 	public:
 		void* getHandle() const override
