@@ -12,8 +12,6 @@
 #include "core/geometry.hpp"
 #include "core/color.hpp"
 
-#include "aini/aini.hpp"
-
 const char pxShader[] = R"(
 struct VS_OUTPUT
 {
@@ -87,7 +85,7 @@ struct LineRenderer
 		BufferDescription vertexBufferInfo{};
 		vertexBufferInfo.bindFlags = BindFlagBits::VertexBuffer;
 		vertexBufferInfo.bufferUsage = BufferUsage::Dynamic;
-		vertexBufferInfo.sizeInBytes = 8000;
+		vertexBufferInfo.sizeInBytes = 1024 * 1024 * 1024;
 		vertexBufferInfo.cpuAccessFlags = CPUAccessFlagBits::Write;
 
 		auto err = vertexBuffer.init(vertexBufferInfo);
@@ -95,7 +93,7 @@ struct LineRenderer
 		BufferDescription indexBufferInfo{};
 		indexBufferInfo.bindFlags = BindFlagBits::IndexBuffer;
 		indexBufferInfo.bufferUsage = BufferUsage::Dynamic;
-		indexBufferInfo.sizeInBytes = 8000;
+		indexBufferInfo.sizeInBytes = 1024 * 1024 * 1024;
 		indexBufferInfo.cpuAccessFlags = CPUAccessFlagBits::Write;
 
 		err = indexBuffer.init(indexBufferInfo);
@@ -115,6 +113,26 @@ struct LineRenderer
 		vertices.push_back({ to, vcolor });
 	}
 
+	void addAABB(aes::AABB const& aabb)
+	{
+		AES_PROFILE_FUNCTION();
+		addLine(glm::vec3(aabb.min), glm::vec3(aabb.min.x, aabb.min.y, aabb.max.z));
+		addLine(glm::vec3(aabb.min), glm::vec3(aabb.min.x, aabb.max.y, aabb.min.z));
+		addLine(glm::vec3(aabb.min), glm::vec3(aabb.max.x, aabb.min.y, aabb.min.z));
+		
+		addLine(glm::vec3(aabb.max), glm::vec3(aabb.min.x, aabb.max.y, aabb.max.z));
+		addLine(glm::vec3(aabb.max), glm::vec3(aabb.max.x, aabb.min.y, aabb.max.z));
+		addLine(glm::vec3(aabb.max), glm::vec3(aabb.max.x, aabb.max.y, aabb.min.z));
+
+		addLine(glm::vec3(aabb.min.x, aabb.max.y, aabb.min.z), glm::vec3(aabb.max.x, aabb.max.y, aabb.min.z));
+		addLine(glm::vec3(aabb.max.x, aabb.min.y, aabb.min.z), glm::vec3(aabb.max.x, aabb.max.y, aabb.min.z));
+		addLine(glm::vec3(aabb.max.x, aabb.min.y, aabb.max.z), glm::vec3(aabb.max.x, aabb.min.y, aabb.min.z));
+		
+		addLine(glm::vec3(aabb.min.x, aabb.max.y, aabb.max.z), glm::vec3(aabb.min.x, aabb.max.y, aabb.min.z));
+		addLine(glm::vec3(aabb.min.x, aabb.min.y, aabb.max.z), glm::vec3(aabb.min.x, aabb.max.y, aabb.max.z));
+		addLine(glm::vec3(aabb.min.x, aabb.min.y, aabb.max.z), glm::vec3(aabb.max.x, aabb.min.y, aabb.max.z));
+	}
+	
 	void clear()
 	{
 		vertices.clear();
@@ -139,6 +157,7 @@ struct LineRenderer
 
 struct TestElement
 {
+	std::string debugName;
 	glm::vec3 pos;
 	glm::vec3 size;
 };
@@ -244,10 +263,13 @@ public:
 		std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
 		std::uniform_real_distribution const dis(-20.0, 20.0);
 		std::uniform_real_distribution const disS(1.0, 4.0);
-		for (auto& e : testElements)
+		lineRenderer.setColor(aes::Color::Blue);
+		for (int i = 0; auto& e : testElements)
 		{
+			e.debugName = fmt::format("test_{}", i++);
 			e.pos = glm::vec3(dis(gen), dis(gen), dis(gen));
 			e.size = glm::vec3(disS(gen), disS(gen), disS(gen));
+			lineRenderer.addAABB(aes::AABB::createHalfCenter(e.pos, e.size));
 		}
 	}
 
@@ -371,7 +393,6 @@ public:
 		//blendInfo.alphaOp = aes::BlendOp::Add;
 		//blendState.init(blendInfo);
 		//aes::RHIRenderContext::instance().setBlendState(blendState);
-
 	}
 
 	void draw() override
@@ -387,7 +408,7 @@ public:
 		{
 			model.toWorld = glm::translate(glm::mat4(1.0f), e.pos);
 			model.toWorld = glm::scale(model.toWorld, e.size);
-			model.draw();
+			//model.draw();
 		}
 		
 		aes::RHIRenderContext::instance().bindVSUniformBuffer(identityModelBuffer, 1);
@@ -401,13 +422,9 @@ int main()
 	
 	std::ofstream logFile("AES_log.txt");
 	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(std::cout));
-
-	aini::Reader engineConfig(aes::readFile("engine.ini"));
-	if (engineConfig.has_key("app_name"))
-		appName = engineConfig.get_string("app_name");
 	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(logFile));
-	AES_START_PROFILE_SESSION("startup");
 	
+	AES_START_PROFILE_SESSION("startup");
 	Game game({
 		.appName = appName.c_str()
 	});
@@ -420,16 +437,11 @@ int main()
 	auto runningSession = AES_STOP_PROFILE_SESSION();
 	
 	std::ofstream timmingFile("prof.txt");
-	for (auto const& [_, v] : startupSession.profileDatas)
-	{
-		timmingFile << fmt::format("{}\n\ttotalTime:{}ms\n\tcount:{}\n\taverage:{}ms\n\tparent:{}\n",
-			v.name, v.elapsedTime, v.count, v.elapsedTime / v.count, v.parentName != nullptr ? v.parentName : "null");
-	}
 
 	for (auto const& [_, v] : runningSession.profileDatas)
 	{
-		timmingFile << fmt::format("{}\n\ttotalTime:{}ms\n\tcount:{}\n\taverage:{}ms\n\tparent:{}\n", 
-			v.name, v.elapsedTime, v.count, v.elapsedTime / v.count, v.parentName != nullptr ? v.parentName : "null");
+		timmingFile << fmt::format("{}\n\ttotalTime: {}ms\n\tcount: {}\n\taverage: {}ms\n\tparent: {}\n", 
+			v.name, v.elapsedTime, v.count, v.elapsedTime / v.count, v.parentName != nullptr ? v.parentName : "none");
 	}
 	
 	return 0;

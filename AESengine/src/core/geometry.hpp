@@ -48,11 +48,21 @@ namespace aes {
 	
 	struct AABB
 	{
+		static AABB createHalfCenter(glm::vec3 const& center, glm::vec3 const& halfSize)
+		{
+			return AABB{ center - halfSize, center + halfSize };
+		}
+
 		glm::vec3 min;
 		glm::vec3 max;
+
+		glm::vec3 center() const
+		{
+			return min + glm::length(max - min) * 0.5f;
+		}
 	};
 
-	bool AABB_AABBIntersect(AABB const& a, AABB const& b) noexcept;
+	bool AABB_AABBIntersect(AABB const& a, AABB const& b);
 	
 	struct Sphere
 	{

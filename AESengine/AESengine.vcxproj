@@ -53,6 +53,7 @@
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11renderer.cpp" />
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11Shader.cpp" />
     <ClCompile Include="src\renderer\RHI\RHIBuffer.cpp" />
+    <ClCompile Include="src\spatial\octree.cpp" />
     <ClCompile Include="src\UI\UI.cpp" />
     <ClCompile Include="thirdParty\aini\aini.cpp" />
     <ClCompile Include="thirdParty\fmt\src\format.cc" />
