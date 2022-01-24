@@ -49,6 +49,7 @@ namespace aes
 	};
 
 	std::vector<Vertex> getCubeVertices();
+	std::vector<Vertex> getCubeVertices(glm::vec4 const&);
 	
 	class Model
 	{
@@ -74,6 +75,7 @@ namespace aes
 	};
 
 	Result<Model> createCube();
+	Result<Model> createCube(glm::vec4 const&);
 }
 
 #endif

@@ -36,12 +36,55 @@ std::vector<Vertex> aes::getCubeVertices()
 	return vertices;
 }
 
+std::vector<Vertex> aes::getCubeVertices(glm::vec4 const& color)
+{
+	std::vector<Vertex> vertices(8);
+
+	vertices[0].pos = { -1, -1,  1.0f };
+	vertices[0].color = color;
+
+	vertices[1].pos = { 1, -1,  1.0f };
+	vertices[1].color = color;
+
+	vertices[2].pos = { -1,  1,  1.0f };
+	vertices[2].color = color;
+
+	vertices[3].pos = { 1,  1,  1.0f };
+	vertices[3].color = color;
+
+	vertices[4].pos = { -1, -1, -1.0f };
+	vertices[4].color = color;
+
+	vertices[5].pos = { 1, -1, -1.0f };
+	vertices[5].color = color;
+
+	vertices[6].pos = { -1,  1, -1.0f };
+	vertices[6].color = color;
+
+	vertices[7].pos = { 1,  1, -1.0f };
+	vertices[7].color = color;
+
+	return vertices;
+}
+
+
 Result<Model> aes::createCube()
 {
 	AES_PROFILE_FUNCTION();
 
 	Model cube;
 	auto const result = cube.init(getCubeVertices(), cubeIndices);
+	if (!result)
+		return { result.error() };
+	return { std::move(cube) };
+}
+
+Result<Model> aes::createCube(glm::vec4 const& col)
+{
+	AES_PROFILE_FUNCTION();
+
+	Model cube;
+	auto const result = cube.init(getCubeVertices(col), cubeIndices);
 	if (!result)
 		return { result.error() };
 	return { std::move(cube) };

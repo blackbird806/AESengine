@@ -161,6 +161,8 @@ struct TestElement
 	std::string debugName;
 	glm::vec3 pos;
 	glm::vec3 size;
+	aes::Model model;
+	bool coll = false;
 };
 
 static void debugDrawOctree(aes::Octree const& tree, LineRenderer& render)
@@ -236,8 +238,42 @@ public:
 		}
 		AES_LOG("material created");
 
-		model = aes::createCube().value();
-		AES_LOG("cube created");
+		// octree ========
+		// generate test elements for the octree
+		std::random_device rd;  // Will be used to obtain a seed for the random number engine
+		std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+		std::uniform_real_distribution const dis(-10.0, 10.0);
+		std::uniform_real_distribution const disS(1.0, 3.0);
+		lineRenderer.setColor(aes::Color::Blue);
+		octree.build(glm::vec3(0), 20.0f, 1);
+		for (int i = 0; auto & e : testElements)
+		{
+			e.debugName = fmt::format("test_{}", i++);
+			e.pos = glm::vec3(dis(gen), dis(gen), dis(gen));
+			e.size = glm::vec3(disS(gen), disS(gen), disS(gen));
+			octree.insertObject(*octree.root(), { aes::AABB::createHalfCenter(e.pos, e.size), &e });
+		}
+		for (auto& [c, n] : octree.nodes)
+		{
+			AES_LOG("code : {}, depth : {}, num objects : {}", c, aes::Octree::getNodeTreeDepth(n), n.objects.size());
+		}
+		debugDrawOctree(octree, lineRenderer);
+		auto cb = [](void* userData)
+		{
+			TestElement* element = (TestElement*)userData;
+			element->coll = true;
+		};
+		octree.testAllCollisions(*octree.root(), cb);
+		// octree ===========
+		
+		for (auto& e : testElements)
+		{
+			if (e.coll)
+				e.model = aes::createCube({ 1.0, 0.0, 0.0, 1.0 }).value();
+			else
+				e.model = aes::createCube({ 0.0, 1.0, 0.0, 1.0 }).value();
+		}
+		AES_LOG("cubes created");
 
 		lineRenderer.init();
 		lineRenderer.addLine(glm::vec3(0, 0, 0), glm::vec3(10, 0, 0));
@@ -268,27 +304,6 @@ public:
 		}
 		mainCamera.pos = { 0.0, 0.0, -5.0 };
 		getViewportMousePos(lastMousePosX, lastMousePosY);
-
-		// generate test elements for the octree
-		std::random_device rd;  // Will be used to obtain a seed for the random number engine
-		std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
-		std::uniform_real_distribution const dis(-10.0, 10.0);
-		std::uniform_real_distribution const disS(0.1, 0.2);
-		lineRenderer.setColor(aes::Color::Blue);
-		octree.build(glm::vec3(0), 20.0f, 1);
-		for (int i = 0; auto& e : testElements)
-		{
-			e.debugName = fmt::format("test_{}", i++);
-			e.pos = glm::vec3(dis(gen), dis(gen), dis(gen));
-			e.size = glm::vec3(disS(gen), disS(gen), disS(gen));
-			octree.insertObject(*octree.root(), { aes::AABB::createHalfCenter(e.pos, e.size), &e });
-		}
-		for (auto& [c, n] : octree.nodes)
-		{
-			AES_LOG("code : {}, depth : {}, num objects : {}", c, aes::Octree::getNodeTreeDepth(n), n.objects.size());
-		}
-		
-		debugDrawOctree(octree, lineRenderer);
 	}
 
 	uint drawLevel = 0;
@@ -420,15 +435,16 @@ public:
 		AES_PROFILE_FUNCTION();
 		
 		aes::Material::BindInfo bindInfo;
-		bindInfo.vsBuffers.push_back(std::make_pair("ModelBuffer", &model.modelBuffer));
-		bindInfo.vsBuffers.push_back(std::make_pair("CameraBuffer", &viewBuffer));
-		defaultMtrl.bind(bindInfo);
 
 		for (auto& e : testElements)
 		{
-			model.toWorld = glm::translate(glm::mat4(1.0f), e.pos);
-			model.toWorld = glm::scale(model.toWorld, e.size);
-			model.draw();
+			bindInfo.vsBuffers.push_back(std::make_pair("ModelBuffer", &e.model.modelBuffer));
+			bindInfo.vsBuffers.push_back(std::make_pair("CameraBuffer", &viewBuffer));
+			defaultMtrl.bind(bindInfo);
+
+			e.model.toWorld = glm::translate(glm::mat4(1.0f), e.pos);
+			e.model.toWorld = glm::scale(e.model.toWorld, e.size);
+			e.model.draw();
 		}
 		
 		aes::RHIRenderContext::instance().bindVSUniformBuffer(identityModelBuffer, 1);

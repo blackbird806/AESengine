@@ -35,7 +35,8 @@ namespace aes
 		void insertObject(Node& tree, Object const& obj);
 
 		static uint32_t getNodeTreeDepth(Octree::Node const& node);
-
+		void testAllCollisions(Node const& node, void(*callback)(void*)) const;
+		
 		Node* root();
 		
 	//private:

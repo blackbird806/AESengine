@@ -4,6 +4,8 @@
 
 using namespace aes;
 
+// TODO: clean and optimize
+
 // see: Christer_Ericson-Real-Time_Collision_Detection: part 7.3, page 311
 // @Review lazy building ?
 Octree::Node* Octree::build(glm::vec3 const& center, float halfSize, int stopDepth, LocCode_t locCode)
@@ -80,6 +82,50 @@ uint32_t Octree::getNodeTreeDepth(Octree::Node const& node)
 	for (uint32_t lc = node.locCode, depth=0; lc!=1; lc>>=3, depth++);
 	return depth;
 #endif
+}
+
+void Octree::testAllCollisions(Node const& node, void(* callback)(void*)) const
+{
+	AES_PROFILE_FUNCTION();
+	AES_ASSERT(callback);
+	
+	//Keep track of all ancestor object lists in a stack
+	constexpr int MAX_DEPTH = 40;
+	static Node const* ancestorStack[MAX_DEPTH];
+	static int depth = 0; // ’Depth == 0’ is invariant over calls
+	// Check collision between all objects on this level and all
+	// ancestor objects. The current level is included as its own
+	// ancestor so all necessary pairwise tests are done
+	ancestorStack[depth++] = &node;
+	for (int n = 0; n < depth; n++) {
+		for (auto const& pA : ancestorStack[n]->objects) {
+			for (auto const& pB : node.objects) {
+				// Avoid testing both A->B and B->A
+				// @Review use userData for equality ?
+				if (pA.userData == pB.userData) break;
+				
+				// Now perform the collision test between pA and pB in some manner
+				if (aes::AABB_AABBIntersect(pA.bounds, pB.bounds))
+				{
+					callback(pA.userData);
+					callback(pB.userData);
+				}
+
+			}
+		}
+	}
+	// Recursively visit all existing children
+	for (int i = 0; i < 8; i++)
+	{
+		auto const it = nodes.find((node.locCode << 3) + i);
+		if (it != nodes.end())
+		{
+			testAllCollisions(it->second, callback);
+		}
+	}
+	
+	// Remove current node from ancestor stack before returning
+	depth--;
 }
 
 Octree::Node* Octree::root()
