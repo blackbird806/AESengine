@@ -60,6 +60,11 @@ namespace aes {
 		{
 			return min + glm::length(max - min) * 0.5f;
 		}
+
+		glm::vec3 halfSize() const
+		{
+			return max - min;
+		}
 	};
 
 	bool AABB_AABBIntersect(AABB const& a, AABB const& b);

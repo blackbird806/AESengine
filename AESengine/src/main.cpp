@@ -272,8 +272,8 @@ public:
 		// generate test elements for the octree
 		std::random_device rd;  // Will be used to obtain a seed for the random number engine
 		std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
-		std::uniform_real_distribution const dis(-20.0, 20.0);
-		std::uniform_real_distribution const disS(1.0, 4.0);
+		std::uniform_real_distribution const dis(-10.0, 10.0);
+		std::uniform_real_distribution const disS(0.1, 0.2);
 		lineRenderer.setColor(aes::Color::Blue);
 		octree.build(glm::vec3(0), 20.0f, 1);
 		for (int i = 0; auto& e : testElements)
