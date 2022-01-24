@@ -37,6 +37,7 @@ void Engine::init()
 
 		Engine& self = *static_cast<Engine*>(userData);
 		Key const k = windowsToAESKey(key);
+		
 		if (action == InputAction::Pressed)
 		{
 			self.onKeyPressed(k);

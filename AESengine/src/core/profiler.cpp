@@ -17,7 +17,7 @@ ProfileSession Instrumentor::stopSession()
 {
 	std::chrono::duration<ProfileTime_t, std::milli> const elapsed = std::chrono::high_resolution_clock::now() - sessionStartPoint;
 	currentSession.elapsedSessionTime = elapsed.count();
-	return std::move(currentSession);
+	return currentSession;
 }
 
 void Instrumentor::updateProfileData(ProfileData const& data)

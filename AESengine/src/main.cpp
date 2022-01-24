@@ -11,6 +11,7 @@
 #include "core/utility.hpp"
 #include "core/geometry.hpp"
 #include "core/color.hpp"
+#include "spatial/octree.hpp"
 
 const char pxShader[] = R"(
 struct VS_OUTPUT
@@ -162,6 +163,15 @@ struct TestElement
 	glm::vec3 size;
 };
 
+static void debugDrawOctree(aes::Octree const& tree, LineRenderer& render)
+{
+	for (auto const& [_, node]: tree.nodes)
+	{
+		render.setColor(aes::Color(0, 0, 255));
+		render.addAABB(aes::AABB::createHalfCenter(node.center, glm::vec3(node.halfSize)));
+	}
+}
+
 class Game : public aes::Engine
 {
 
@@ -176,6 +186,7 @@ public:
 	aes::Model model;
 	
 	TestElement testElements[25];
+	aes::Octree octree;
 	
 	Game(InitInfo const& info) : Engine(info)
 	{
@@ -264,15 +275,23 @@ public:
 		std::uniform_real_distribution const dis(-20.0, 20.0);
 		std::uniform_real_distribution const disS(1.0, 4.0);
 		lineRenderer.setColor(aes::Color::Blue);
+		octree.build(glm::vec3(0), 20.0f, 1);
 		for (int i = 0; auto& e : testElements)
 		{
 			e.debugName = fmt::format("test_{}", i++);
 			e.pos = glm::vec3(dis(gen), dis(gen), dis(gen));
 			e.size = glm::vec3(disS(gen), disS(gen), disS(gen));
-			lineRenderer.addAABB(aes::AABB::createHalfCenter(e.pos, e.size));
+			octree.insertObject(*octree.root(), { aes::AABB::createHalfCenter(e.pos, e.size), &e });
 		}
+		for (auto& [c, n] : octree.nodes)
+		{
+			AES_LOG("code : {}, depth : {}, num objects : {}", c, aes::Octree::getNodeTreeDepth(n), n.objects.size());
+		}
+		
+		debugDrawOctree(octree, lineRenderer);
 	}
 
+	uint drawLevel = 0;
 	float speed = 6.0f, sensitivity = 60.f;
 	float lastMousePosX, lastMousePosY;
 	glm::vec3 direction = {0.0, 0.0, 1.0};
@@ -282,6 +301,7 @@ public:
 	{
 		AES_PROFILE_FUNCTION();
 		glm::vec4 movePos = { 0.0f, 0.f, 0.f, 0.0f };
+
 		if (getKeyState(aes::Key::W) == aes::InputState::Down)
 		{
 			movePos.z += speed * dt;
@@ -378,7 +398,7 @@ public:
 			uint windowWidth = 960, windowHeight = 544;
 			mainWindow->getScreenSize(windowWidth, windowHeight);
 			float const aspect = (float)windowWidth / (float)windowHeight;
-			mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), aspect, 0.0001f, 1000.0f);
+			mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
 		}
 		aes::CameraBuffer const camBuf{ glm::transpose(mainCamera.viewMatrix), glm::transpose(mainCamera.projMatrix) };
 		viewBuffer.setDataFromPOD(camBuf);
@@ -408,7 +428,7 @@ public:
 		{
 			model.toWorld = glm::translate(glm::mat4(1.0f), e.pos);
 			model.toWorld = glm::scale(model.toWorld, e.size);
-			//model.draw();
+			model.draw();
 		}
 		
 		aes::RHIRenderContext::instance().bindVSUniformBuffer(identityModelBuffer, 1);

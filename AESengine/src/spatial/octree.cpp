@@ -5,17 +5,20 @@
 using namespace aes;
 
 // see: Christer_Ericson-Real-Time_Collision_Detection: part 7.3, page 311
+// @Review lazy building ?
 Octree::Node* Octree::build(glm::vec3 const& center, float halfSize, int stopDepth, LocCode_t locCode)
 {
+	AES_PROFILE_FUNCTION();
+	
 	if (stopDepth < 0)
 		return nullptr;
-	
-	auto [it, inserted] = nodes.insert(std::make_pair(locCode, Node{center, halfSize, locCode, 0XFF}));
+
+	auto [it, inserted] = nodes.insert(std::make_pair(locCode, Node{ center, halfSize, locCode, 0XFF }));
 	AES_ASSERT(inserted);
-	
+
 	// Recursively construct the eight children of the subtree
 	float const step = halfSize * 0.5f;
-	for (int i = 0; i < 8; i++) 
+	for (int i = 0; i < 8; i++)
 	{
 		glm::vec3 offset;
 		offset.x = ((i & 1) ? step : -step);
@@ -24,25 +27,28 @@ Octree::Node* Octree::build(glm::vec3 const& center, float halfSize, int stopDep
 		LocCode_t const childCode = (locCode << 3) + i;
 		build(center + offset, step, stopDepth - 1, childCode);
 	}
-	
+
 	return &it->second;
 }
 
-void Octree::insertObject(Node& tree, Object& obj)
+void Octree::insertObject(Node& tree, Object const& obj)
 {
+	AES_PROFILE_FUNCTION();
+
 	uint8_t index = 0;
 	bool straddle = false;
 	// Compute the octant number [0..7] the object sphere center is in
 	// If straddling any of the dividing x, y, or z planes, exit directly
 	for (int i = 0; i < 3; i++) {
 		float const delta = obj.bounds.center()[i] - tree.center[i];
-		if (AABB_AABBIntersect(obj.bounds, AABB::createHalfCenter(tree.center, glm::vec3(tree.halfSize)))) 
+		if (AABB_AABBIntersect(obj.bounds, AABB::createHalfCenter(tree.center, glm::vec3(tree.halfSize))))
 		{
 			straddle = true;
 			break;
 		}
 		if (delta > 0.0f) index |= (1 << i); // ZYX
 	}
+	
 	if (!straddle && ((tree.childExist & index) == index)) {
 		// Fully contained in existing child node; insert in that subtree
 		insertObject(nodes[0 << index], obj);
@@ -57,6 +63,8 @@ void Octree::insertObject(Node& tree, Object& obj)
 // https://geidav.wordpress.com/2014/08/18/advanced-octrees-2-node-representations/
 uint32_t Octree::getNodeTreeDepth(Octree::Node const& node)
 {
+	AES_PROFILE_FUNCTION();
+
 	AES_ASSERT(node.locCode); // at least flag bit must be set
 
 #if defined(__GNUC__)
@@ -69,4 +77,14 @@ uint32_t Octree::getNodeTreeDepth(Octree::Node const& node)
 	for (uint32_t lc = node.locCode, depth=0; lc!=1; lc>>=3, depth++);
 	return depth;
 #endif
+}
+
+Octree::Node* Octree::root()
+{
+	AES_PROFILE_FUNCTION();
+
+	auto const it = nodes.find(1);
+	if (it != nodes.end())
+		return &it->second;
+	return nullptr;
 }

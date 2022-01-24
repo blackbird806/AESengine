@@ -30,6 +30,8 @@ namespace aes {
 
 		InputState getKeyState(Key k) noexcept;
 		bool isKeyDown(Key k) noexcept;
+		// return true only the first frame
+		bool isKeyPressed(Key k) noexcept;
 
 		/*
 		 *0;1
