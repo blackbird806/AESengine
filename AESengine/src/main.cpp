@@ -167,7 +167,7 @@ struct TestElement
 
 static void debugDrawOctree(aes::Octree const& tree, LineRenderer& render)
 {
-	for (auto const& [_, node]: tree.nodes)
+	for (auto const& [_, node] : tree)
 	{
 		render.setColor(aes::Color(0, 0, 255));
 		render.addAABB(aes::AABB::createHalfCenter(node.center, glm::vec3(node.halfSize)));
@@ -243,7 +243,7 @@ public:
 		std::random_device rd;  // Will be used to obtain a seed for the random number engine
 		std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
 		std::uniform_real_distribution const dis(-10.0, 10.0);
-		std::uniform_real_distribution const disS(1.0, 3.0);
+		std::uniform_real_distribution const disS(1.0, 2.0);
 		lineRenderer.setColor(aes::Color::Blue);
 		octree.build(glm::vec3(0), 20.0f, 1);
 		for (int i = 0; auto & e : testElements)
@@ -253,7 +253,7 @@ public:
 			e.size = glm::vec3(disS(gen), disS(gen), disS(gen));
 			octree.insertObject(*octree.root(), { aes::AABB::createHalfCenter(e.pos, e.size), &e });
 		}
-		for (auto& [c, n] : octree.nodes)
+		for (auto& [c, n] : octree)
 		{
 			AES_LOG("code : {}, depth : {}, num objects : {}", c, aes::Octree::getNodeTreeDepth(n), n.objects.size());
 		}
@@ -265,13 +265,21 @@ public:
 		};
 		octree.testAllCollisions(*octree.root(), cb);
 		// octree ===========
-		
+
+		// create a minor color difference in order to distinct objects
+		float decR = 1.0f, decG = 1.0f;
 		for (auto& e : testElements)
 		{
 			if (e.coll)
-				e.model = aes::createCube({ 1.0, 0.0, 0.0, 1.0 }).value();
+			{
+				e.model = aes::createCube({ decR, 0.0, 0.0, 1.0 }).value();
+				decR -= 0.05f; 
+			}
 			else
-				e.model = aes::createCube({ 0.0, 1.0, 0.0, 1.0 }).value();
+			{
+				e.model = aes::createCube({ 0.0, decG, 0.0, 1.0 }).value();
+				decG -= 0.025f;
+			}
 		}
 		AES_LOG("cubes created");
 
@@ -476,8 +484,11 @@ int main()
 
 	for (auto const& [_, v] : runningSession.profileDatas)
 	{
-		timmingFile << fmt::format("{}\n\ttotalTime: {}ms\n\tcount: {}\n\taverage: {}ms\n\tparent: {}\n", 
-			v.name, v.elapsedTime, v.count, v.elapsedTime / v.count, v.parentName != nullptr ? v.parentName : "none");
+		if (strstr(v.name, "Octree"))
+		{
+			timmingFile << fmt::format("{}\n\ttotalTime: {}ms\n\tcount: {}\n\taverage: {}ms\n\tparent: {}\n",
+				v.name, v.elapsedTime, v.count, v.elapsedTime / v.count, v.parentName != nullptr ? v.parentName : "none");
+		}
 	}
 	
 	return 0;

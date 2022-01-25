@@ -2,8 +2,11 @@
 #define OCTREE_HPP
 
 #include <list>
+#include <span>
 #include <unordered_map>
 #include <glm/glm.hpp>
+
+#include "core/aes.hpp"
 #include "core/geometry.hpp"
 
 namespace aes
@@ -26,7 +29,7 @@ namespace aes
 			glm::vec3 center;
 			float halfSize;
 			LocCode_t locCode;
-			uint8_t childExist = 0xFF;
+			bool isLeaf;
 			std::list<Object> objects;
 		};
 
@@ -34,13 +37,36 @@ namespace aes
 		Node* build(glm::vec3 const& center, float halfSize, int stopDepth, LocCode_t locCode = 1);
 		void insertObject(Node& tree, Object const& obj);
 
-		static uint32_t getNodeTreeDepth(Octree::Node const& node);
+		static uint getNodeTreeDepth(Octree::Node const& node);
+
+		// call callback on userdata carried by the colliding nodes
 		void testAllCollisions(Node const& node, void(*callback)(void*)) const;
-		
+		void testAllCollisionsRec(Node const& node, void(*callback)(void*), uint& depth, std::span<Node const*> ancestorStack) const;
+
+		// return null if tree wasn't built
 		Node* root();
+		Node const* root() const;
+
+		// range interface
 		
-	//private:
-		// @TODO use cache friendly representation
+		auto begin() const
+		{
+			return nodes.begin();
+		}
+
+		auto end() const
+		{
+			return nodes.end();
+		}
+		
+	private:
+		
+		static LocCode_t getChildCode(LocCode_t parentCode, uint childNumber)
+		{
+			return (parentCode << 3) + childNumber;
+		}
+		
+		// @Review try other node representations
 		std::unordered_map<LocCode_t, Node> nodes;
 	};
 }

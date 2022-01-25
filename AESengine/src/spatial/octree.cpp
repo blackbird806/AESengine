@@ -15,13 +15,13 @@ Octree::Node* Octree::build(glm::vec3 const& center, float halfSize, int stopDep
 	if (stopDepth < 0)
 		return nullptr;
 
-	auto [it, inserted] = nodes.insert(std::make_pair(locCode, Node{ center, halfSize, locCode, 0xFF }));
+	auto [it, inserted] = nodes.insert(std::make_pair(locCode, Node{ center, halfSize, locCode, false }));
 	AES_ASSERT(inserted);
 
-	if (stopDepth == 0) [[unlikely]]
-		it->second.childExist = 0;
-	
-	// Recursively construct the eight children of the subtree
+	if (stopDepth == 0)
+		it->second.isLeaf = true;
+
+	// Recursively construct the eight children of the subtree 
 	float const step = halfSize * 0.5f;
 	for (int i = 0; i < 8; i++)
 	{
@@ -29,8 +29,7 @@ Octree::Node* Octree::build(glm::vec3 const& center, float halfSize, int stopDep
 		offset.x = ((i & 1) ? step : -step);
 		offset.y = ((i & 2) ? step : -step);
 		offset.z = ((i & 4) ? step : -step);
-		LocCode_t const childCode = (locCode << 3) + i;
-		build(center + offset, step, stopDepth - 1, childCode);
+		build(center + offset, step, stopDepth - 1, getChildCode(locCode, i));
 	}
 
 	return &it->second;
@@ -53,10 +52,10 @@ void Octree::insertObject(Node& tree, Object const& obj)
 		}
 		if (delta > 0.0f) index |= (1 << i); // ZYX
 	}
-	
-	if (!straddle && tree.childExist > 0) {
+
+	if (!straddle && !tree.isLeaf) {
 		// Fully contained in existing child node; insert in that subtree
-		insertObject(nodes.at((tree.locCode << 3) + index), obj);
+		insertObject(nodes.at(getChildCode(tree.locCode, index)), obj);
 	}
 	else {
 		// Straddling, or no child node to descend into, so
@@ -66,7 +65,7 @@ void Octree::insertObject(Node& tree, Object const& obj)
 }
 
 // https://geidav.wordpress.com/2014/08/18/advanced-octrees-2-node-representations/
-uint32_t Octree::getNodeTreeDepth(Octree::Node const& node)
+uint Octree::getNodeTreeDepth(Octree::Node const& node)
 {
 	AES_PROFILE_FUNCTION();
 
@@ -90,9 +89,16 @@ void Octree::testAllCollisions(Node const& node, void(* callback)(void*)) const
 	AES_ASSERT(callback);
 	
 	//Keep track of all ancestor object lists in a stack
-	constexpr int MAX_DEPTH = 40;
-	static Node const* ancestorStack[MAX_DEPTH];
-	static int depth = 0; // ’Depth == 0’ is invariant over calls
+	// @Review ancestorStack size
+	Node const* ancestorStack[40];
+	uint depth = 0;
+	testAllCollisionsRec(node, callback, depth, ancestorStack);
+}
+
+void Octree::testAllCollisionsRec(Node const& node, void(* callback)(void*), uint& depth, std::span<Node const*> ancestorStack) const
+{
+	AES_PROFILE_FUNCTION();
+
 	// Check collision between all objects on this level and all
 	// ancestor objects. The current level is included as its own
 	// ancestor so all necessary pairwise tests are done
@@ -103,7 +109,7 @@ void Octree::testAllCollisions(Node const& node, void(* callback)(void*)) const
 				// Avoid testing both A->B and B->A
 				// @Review use userData for equality ?
 				if (pA.userData == pB.userData) break;
-				
+
 				// Now perform the collision test between pA and pB in some manner
 				if (aes::AABB_AABBIntersect(pA.bounds, pB.bounds))
 				{
@@ -114,21 +120,30 @@ void Octree::testAllCollisions(Node const& node, void(* callback)(void*)) const
 			}
 		}
 	}
+
 	// Recursively visit all existing children
-	for (int i = 0; i < 8; i++)
+	for (uint i = 0; i < 8; i++)
 	{
-		auto const it = nodes.find((node.locCode << 3) + i);
+		auto const it = nodes.find(getChildCode(node.locCode, i));
 		if (it != nodes.end())
 		{
-			testAllCollisions(it->second, callback);
+			testAllCollisionsRec(it->second, callback, depth, ancestorStack);
 		}
 	}
-	
-	// Remove current node from ancestor stack before returning
 	depth--;
 }
 
 Octree::Node* Octree::root()
+{
+	AES_PROFILE_FUNCTION();
+
+	auto const it = nodes.find(1);
+	if (it != nodes.end())
+		return &it->second;
+	return nullptr;
+}
+
+Octree::Node const* Octree::root() const
 {
 	AES_PROFILE_FUNCTION();
 
