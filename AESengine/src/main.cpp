@@ -253,7 +253,7 @@ public:
 			e.size = glm::vec3(disS(gen), disS(gen), disS(gen));
 			octree.insertObject(*octree.root(), { aes::AABB::createHalfCenter(e.pos, e.size), &e });
 		}
-		for (auto& [c, n] : octree)
+		for (auto const& [c, n] : octree)
 		{
 			AES_LOG("code : {}, depth : {}, num objects : {}", c, aes::Octree::getNodeTreeDepth(n), n.objects.size());
 		}
@@ -462,15 +462,13 @@ public:
 
 int main()
 {
-	std::string appName = "aes engine";
-	
 	std::ofstream logFile("AES_log.txt");
 	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(std::cout));
 	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(logFile));
 	
 	AES_START_PROFILE_SESSION("startup");
 	Game game({
-		.appName = appName.c_str()
+		.appName = "aes engine"
 	});
 
 	game.init();

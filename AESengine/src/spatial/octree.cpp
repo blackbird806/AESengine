@@ -4,10 +4,8 @@
 
 using namespace aes;
 
-// TODO: clean and optimize
 
 // see: Christer_Ericson-Real-Time_Collision_Detection: part 7.3, page 311
-// @Review lazy building ?
 Octree::Node* Octree::build(glm::vec3 const& center, float halfSize, int stopDepth, LocCode_t locCode)
 {
 	AES_PROFILE_FUNCTION();
@@ -15,7 +13,7 @@ Octree::Node* Octree::build(glm::vec3 const& center, float halfSize, int stopDep
 	if (stopDepth < 0)
 		return nullptr;
 
-	auto [it, inserted] = nodes.insert(std::make_pair(locCode, Node{ center, halfSize, locCode, false }));
+	auto [it, inserted] = nodes.insert(std::make_pair(locCode, Node{ center, halfSize, locCode, {}, false }));
 	AES_ASSERT(inserted);
 
 	if (stopDepth == 0)
@@ -45,6 +43,7 @@ void Octree::insertObject(Node& tree, Object const& obj)
 	// If straddling any of the dividing x, y, or z planes, exit directly
 	for (int i = 0; i < 3; i++) {
 		float const delta = obj.bounds.center()[i] - tree.center[i];
+		// @Review use bounding box here instead ?
 		if (abs(delta) <= glm::length(obj.bounds.max - obj.bounds.min))
 		{
 			straddle = true;

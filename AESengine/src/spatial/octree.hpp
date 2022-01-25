@@ -29,8 +29,8 @@ namespace aes
 			glm::vec3 center;
 			float halfSize;
 			LocCode_t locCode;
-			bool isLeaf;
 			std::list<Object> objects;
+			bool isLeaf;
 		};
 
 		// root locCode is one to mark end of locCode sequence https://geidav.wordpress.com/2014/08/18/advanced-octrees-2-node-representations/

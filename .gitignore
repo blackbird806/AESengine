@@ -3,7 +3,9 @@ AESengine/build
 coreDumps/
 # tmp
 sce_sys/
-thirdParty/
+kc_TrueTypeAssembler/
+stb/
+tiny/
 
 # ignore bin and vita build files 
 *.elf
@@ -409,3 +411,5 @@ MigrationBackup/
 .ionide/
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio,c++
+AESengine/prof.txt
+AESengine/AES_log.txt

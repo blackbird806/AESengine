@@ -1,0 +1,25 @@
+aes::Octree::getNodeTreeDepth
+	totalTime: 0.0008ms
+	count: 9
+	average: 8.888888888888889e-05ms
+	parent: Game::start
+aes::Octree::insertObject
+	totalTime: 0.27419999999999595ms
+	count: 1457
+	average: 0.00018819492107069043ms
+	parent: aes::Octree::insertObject
+aes::Octree::root
+	totalTime: 0.04010000000000012ms
+	count: 1001
+	average: 4.005994005994018e-05ms
+	parent: Game::start
+aes::Octree::build
+	totalTime: 0.0508ms
+	count: 73
+	average: 0.0006958904109589041ms
+	parent: aes::Octree::build
+aes::Octree::testAllCollisions
+	totalTime: 2.798ms
+	count: 9
+	average: 0.3108888888888889ms
+	parent: aes::Octree::testAllCollisions
