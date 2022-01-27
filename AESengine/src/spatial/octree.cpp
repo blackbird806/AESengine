@@ -4,7 +4,6 @@
 
 using namespace aes;
 
-
 // see: Christer_Ericson-Real-Time_Collision_Detection: part 7.3, page 311
 Octree::Node* Octree::build(glm::vec3 const& center, float halfSize, int stopDepth, LocCode_t locCode)
 {
@@ -31,6 +30,11 @@ Octree::Node* Octree::build(glm::vec3 const& center, float halfSize, int stopDep
 	}
 
 	return &it->second;
+}
+
+void Octree::clear()
+{
+	nodes.clear();
 }
 
 void Octree::insertObject(Node& tree, Object const& obj)

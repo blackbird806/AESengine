@@ -53,6 +53,7 @@
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11renderer.cpp" />
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11Shader.cpp" />
     <ClCompile Include="src\renderer\RHI\RHIBuffer.cpp" />
+    <ClCompile Include="src\spatial\BSPTree.cpp" />
     <ClCompile Include="src\spatial\octree.cpp" />
     <ClCompile Include="src\UI\UI.cpp" />
     <ClCompile Include="thirdParty\aini\aini.cpp" />
@@ -103,6 +104,7 @@
     <ClInclude Include="src\renderer\RHI\RHIShaderReflection.hpp" />
     <ClInclude Include="src\renderer\RHI\RHIVertexInputLayout.hpp" />
     <ClInclude Include="src\renderer\vertex.hpp" />
+    <ClInclude Include="src\spatial\BSPTree.hpp" />
     <ClInclude Include="src\spatial\octree.hpp" />
     <ClInclude Include="src\UI\UI.hpp" />
     <ClInclude Include="thirdParty\tiny\tiny_obj_loader.h" />

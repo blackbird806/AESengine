@@ -1,7 +1,7 @@
 #ifndef OCTREE_HPP
 #define OCTREE_HPP
 
-#include <list>
+#include <vector>
 #include <span>
 #include <unordered_map>
 #include <glm/glm.hpp>
@@ -29,12 +29,17 @@ namespace aes
 			glm::vec3 center;
 			float halfSize;
 			LocCode_t locCode;
-			std::list<Object> objects;
+			// vector is faster than list except for insertion
+			// insertion ~12.5% slower
+			// build ~16.9% faster
+			// testAllCollisions ~7% faster
+			std::vector<Object> objects;
 			bool isLeaf;
 		};
 
 		// root locCode is one to mark end of locCode sequence https://geidav.wordpress.com/2014/08/18/advanced-octrees-2-node-representations/
 		Node* build(glm::vec3 const& center, float halfSize, int stopDepth, LocCode_t locCode = 1);
+		void clear();
 		void insertObject(Node& tree, Object const& obj);
 
 		static uint getNodeTreeDepth(Octree::Node const& node);

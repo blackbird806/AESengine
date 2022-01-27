@@ -2,6 +2,7 @@
 #define GEOMETRY_HPP
 
 #include <glm/glm.hpp>
+#include <array>
 
 namespace aes {
 
@@ -65,6 +66,8 @@ namespace aes {
 		{
 			return max - min;
 		}
+
+		std::array<glm::vec3, 8> getVertices() const;
 	};
 
 	bool AABB_AABBIntersect(AABB const& a, AABB const& b);
@@ -74,6 +77,21 @@ namespace aes {
 		glm::vec3 pos;
 		float size;
 	};
+
+	struct Plane
+	{
+		float dist;
+		glm::vec3 dir;
+	};
+
+	enum PointPlanePlacement
+	{
+		Back = -1,
+		OnPlane = 0,
+		Front = 1,
+	};
+
+	PointPlanePlacement classifyPointToPlane(Plane const& plane, glm::vec3 const& pt);
 }
 
 #endif // !GEOMETRY_HPP

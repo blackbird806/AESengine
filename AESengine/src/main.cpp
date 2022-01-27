@@ -187,7 +187,7 @@ public:
 	aes::Material defaultMtrl;
 	aes::Model model;
 	
-	TestElement testElements[25];
+	TestElement testElements[1000];
 	aes::Octree octree;
 	
 	Game(InitInfo const& info) : Engine(info)
@@ -245,25 +245,29 @@ public:
 		std::uniform_real_distribution const dis(-10.0, 10.0);
 		std::uniform_real_distribution const disS(1.0, 2.0);
 		lineRenderer.setColor(aes::Color::Blue);
-		octree.build(glm::vec3(0), 20.0f, 1);
-		for (int i = 0; auto & e : testElements)
+		for (int a = 0; a < 10'000; a++)
 		{
-			e.debugName = fmt::format("test_{}", i++);
-			e.pos = glm::vec3(dis(gen), dis(gen), dis(gen));
-			e.size = glm::vec3(disS(gen), disS(gen), disS(gen));
-			octree.insertObject(*octree.root(), { aes::AABB::createHalfCenter(e.pos, e.size), &e });
+			octree.clear();
+			octree.build(glm::vec3(0), 20.0f, 1);
+			for (int i = 0; auto & e : testElements)
+			{
+				e.debugName = fmt::format("test_{}", i++);
+				e.pos = glm::vec3(dis(gen), dis(gen), dis(gen));
+				e.size = glm::vec3(disS(gen), disS(gen), disS(gen));
+				octree.insertObject(*octree.root(), { aes::AABB::createHalfCenter(e.pos, e.size), &e });
+			}
+			//for (auto const& [c, n] : octree)
+			//{
+			//	AES_LOG("code : {}, depth : {}, num objects : {}", c, aes::Octree::getNodeTreeDepth(n), n.objects.size());
+			//}
+			//debugDrawOctree(octree, lineRenderer);
+			auto cb = [](void* userData)
+			{
+				TestElement* element = (TestElement*)userData;
+				element->coll = true;
+			};
+			octree.testAllCollisions(*octree.root(), cb);
 		}
-		for (auto const& [c, n] : octree)
-		{
-			AES_LOG("code : {}, depth : {}, num objects : {}", c, aes::Octree::getNodeTreeDepth(n), n.objects.size());
-		}
-		debugDrawOctree(octree, lineRenderer);
-		auto cb = [](void* userData)
-		{
-			TestElement* element = (TestElement*)userData;
-			element->coll = true;
-		};
-		octree.testAllCollisions(*octree.root(), cb);
 		// octree ===========
 
 		// create a minor color difference in order to distinct objects
@@ -323,6 +327,7 @@ public:
 	void update(float dt) override
 	{
 		AES_PROFILE_FUNCTION();
+		
 		glm::vec4 movePos = { 0.0f, 0.f, 0.f, 0.0f };
 
 		if (getKeyState(aes::Key::W) == aes::InputState::Down)

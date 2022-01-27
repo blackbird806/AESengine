@@ -129,6 +129,9 @@
     <ClCompile Include="src\spatial\octree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\spatial\BSPTree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\window.hpp">
@@ -261,6 +264,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\spatial\octree.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\spatial\BSPTree.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
