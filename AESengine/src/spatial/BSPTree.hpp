@@ -24,7 +24,7 @@ namespace aes
 
 		struct BSPElement
 		{
-			
+			virtual void testAllCollisions(void(*)(void* userData)) = 0;
 		};
 		
 		struct Leaf final : BSPElement
@@ -33,6 +33,8 @@ namespace aes
 			{
 				
 			}
+
+			void testAllCollisions(void(*)(void* userData)) override;
 			std::vector<Object> objects;
 		};
 
@@ -43,15 +45,16 @@ namespace aes
 			{
 				
 			}
-			
+
+			void testAllCollisions(void(*)(void* userData)) override;
 			Plane plane;
 			std::unique_ptr<BSPElement> front;
 			std::unique_ptr<BSPElement> back;
 		};
 
-		static constexpr uint maxDepth = 32;
+		static constexpr uint maxDepth = 16;
 		static constexpr uint minLeafSize = 2;
-
+		
 		static std::unique_ptr<BSPElement> build(std::span<Object> objects, uint depth = 0);
 	};
 }

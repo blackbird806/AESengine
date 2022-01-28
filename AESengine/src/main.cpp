@@ -12,6 +12,7 @@
 #include "core/geometry.hpp"
 #include "core/color.hpp"
 #include "spatial/octree.hpp"
+#include "spatial/BSPTree.hpp"
 
 const char pxShader[] = R"(
 struct VS_OUTPUT
@@ -69,6 +70,14 @@ VS_OUTPUT main(VS_INPUT input)
     return output;
 })";
 
+struct PlaneRenderer
+{
+	aes::RHIBuffer vertexBuffer;
+	aes::RHIBuffer indexBuffer;
+	std::vector<aes::Vertex> vertices;
+	std::vector<uint32_t> indices;
+	aes::Color colorState = aes::Color::Blue;
+};
 
 struct LineRenderer
 {
@@ -158,7 +167,7 @@ struct LineRenderer
 
 struct TestElement
 {
-	std::string debugName;
+	int id;
 	glm::vec3 pos;
 	glm::vec3 size;
 	aes::Model model;
@@ -187,7 +196,7 @@ public:
 	aes::Material defaultMtrl;
 	aes::Model model;
 	
-	TestElement testElements[1000];
+	TestElement testElements[25];
 	aes::Octree octree;
 	
 	Game(InitInfo const& info) : Engine(info)
@@ -238,20 +247,40 @@ public:
 		}
 		AES_LOG("material created");
 
-		// octree ========
-		// generate test elements for the octree
+		// generate test elements
 		std::random_device rd;  // Will be used to obtain a seed for the random number engine
 		std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
 		std::uniform_real_distribution const dis(-10.0, 10.0);
 		std::uniform_real_distribution const disS(1.0, 2.0);
 		lineRenderer.setColor(aes::Color::Blue);
-		for (int a = 0; a < 10'000; a++)
+		auto cb = [](void* userData)
+		{
+			TestElement* element = (TestElement*)userData;
+			element->coll = true;
+		};
+		
+		std::vector<aes::BSPTree::Object> bspObjects;
+		bspObjects.reserve(std::size(testElements));
+		for (int i = 0; auto & e : testElements)
+		{
+			e.id = i++;
+			e.pos = glm::vec3(dis(gen), dis(gen), dis(gen));
+			e.size = glm::vec3(disS(gen), disS(gen), disS(gen));
+			bspObjects.push_back({ &e, aes::AABB::createHalfCenter(e.pos, e.size) });
+		}
+		
+		auto bspTree = aes::BSPTree::build(std::span(bspObjects));
+		bspTree->testAllCollisions(cb);
+
+		// octree ========
+#ifdef USE_OCTREE
+		//for (int a = 0; a < 10'000; a++)
 		{
 			octree.clear();
 			octree.build(glm::vec3(0), 20.0f, 1);
 			for (int i = 0; auto & e : testElements)
 			{
-				e.debugName = fmt::format("test_{}", i++);
+				e.id = i++;
 				e.pos = glm::vec3(dis(gen), dis(gen), dis(gen));
 				e.size = glm::vec3(disS(gen), disS(gen), disS(gen));
 				octree.insertObject(*octree.root(), { aes::AABB::createHalfCenter(e.pos, e.size), &e });
@@ -261,13 +290,10 @@ public:
 			//	AES_LOG("code : {}, depth : {}, num objects : {}", c, aes::Octree::getNodeTreeDepth(n), n.objects.size());
 			//}
 			//debugDrawOctree(octree, lineRenderer);
-			auto cb = [](void* userData)
-			{
-				TestElement* element = (TestElement*)userData;
-				element->coll = true;
-			};
+
 			octree.testAllCollisions(*octree.root(), cb);
 		}
+#endif
 		// octree ===========
 
 		// create a minor color difference in order to distinct objects
@@ -447,21 +473,21 @@ public:
 	{
 		AES_PROFILE_FUNCTION();
 		
-		aes::Material::BindInfo bindInfo;
+		//aes::Material::BindInfo bindInfo;
 
-		for (auto& e : testElements)
-		{
-			bindInfo.vsBuffers.push_back(std::make_pair("ModelBuffer", &e.model.modelBuffer));
-			bindInfo.vsBuffers.push_back(std::make_pair("CameraBuffer", &viewBuffer));
-			defaultMtrl.bind(bindInfo);
+		//for (auto& e : testElements)
+		//{
+		//	bindInfo.vsBuffers.push_back(std::make_pair("ModelBuffer", &e.model.modelBuffer));
+		//	bindInfo.vsBuffers.push_back(std::make_pair("CameraBuffer", &viewBuffer));
+		//	defaultMtrl.bind(bindInfo);
 
-			e.model.toWorld = glm::translate(glm::mat4(1.0f), e.pos);
-			e.model.toWorld = glm::scale(e.model.toWorld, e.size);
-			e.model.draw();
-		}
-		
-		aes::RHIRenderContext::instance().bindVSUniformBuffer(identityModelBuffer, 1);
-		lineRenderer.draw();
+		//	e.model.toWorld = glm::translate(glm::mat4(1.0f), e.pos);
+		//	e.model.toWorld = glm::scale(e.model.toWorld, e.size);
+		//	e.model.draw();
+		//}
+		//
+		//aes::RHIRenderContext::instance().bindVSUniformBuffer(identityModelBuffer, 1);
+		//lineRenderer.draw();
 	}
 };
 
@@ -487,7 +513,7 @@ int main()
 
 	for (auto const& [_, v] : runningSession.profileDatas)
 	{
-		if (strstr(v.name, "Octree"))
+		//if (strstr(v.name, "BSPTree"))
 		{
 			timmingFile << fmt::format("{}\n\ttotalTime: {}ms\n\tcount: {}\n\taverage: {}ms\n\tparent: {}\n",
 				v.name, v.elapsedTime, v.count, v.elapsedTime / v.count, v.parentName != nullptr ? v.parentName : "none");

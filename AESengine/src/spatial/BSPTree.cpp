@@ -50,6 +50,8 @@ namespace
 	// @Review how do we get a good plane from aabb ?
 	Plane getPlaneFromAABB(AABB const& aabb)
 	{
+		AES_PROFILE_FUNCTION();
+
 		return Plane{ glm::length(aabb.center()),
 			glm::normalize(glm::vec3{aabb.max.x - aabb.min.x, aabb.min.y, aabb.min.z}) };
 	}
@@ -100,8 +102,36 @@ namespace
 		}
 		return bestPlane;
 	}
+}
 
+void BSPTree::Leaf::testAllCollisions(void(*callback)(void* userData))
+{
+	AES_PROFILE_FUNCTION();
+	for (auto const& objA : objects)
+	{
+		for (auto const& objB : objects)
+		{
+			if (objA.userData == objB.userData)
+				continue;
+			
+			if (AABB_AABBIntersect(objA.bounds, objB.bounds))
+			{
+				callback(objA.userData);
+				callback(objB.userData);
+			}
+		}
+	}
+}
 
+void BSPTree::Node::testAllCollisions(void(*callback)(void* userData))
+{
+	AES_PROFILE_FUNCTION();
+	AES_ASSERT(callback);
+
+	if (front)
+		front->testAllCollisions(callback);
+	if (back)
+		back->testAllCollisions(callback);
 }
 
 std::unique_ptr<BSPTree::BSPElement> BSPTree::build(std::span<Object> objects, uint depth)
@@ -122,10 +152,10 @@ std::unique_ptr<BSPTree::BSPElement> BSPTree::build(std::span<Object> objects, u
 	{
 		switch (classifyObjectToPlane(o, splitPlane))
 		{
-		case ObjectPlanePlacement::Front: 
+		case ObjectPlanePlacement::Front:
 			frontList.push_back(o);
 			break;
-		case ObjectPlanePlacement::Back: 
+		case ObjectPlanePlacement::Back:
 			backList.push_back(o);
 			break;
 		case ObjectPlanePlacement::Straddling:
@@ -138,6 +168,6 @@ std::unique_ptr<BSPTree::BSPElement> BSPTree::build(std::span<Object> objects, u
 	}
 	
 	return std::make_unique<Node>(splitPlane, 
-		build(std::span(frontList.begin(), frontList.end()),  depth + 1), 
+		build(std::span(frontList.begin(), frontList.end()), depth + 1), 
 		build(std::span(backList.begin(), backList.end()), depth + 1));
 }
