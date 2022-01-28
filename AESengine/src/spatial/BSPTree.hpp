@@ -25,6 +25,7 @@ namespace aes
 		struct BSPElement
 		{
 			virtual void testAllCollisions(void(*)(void* userData)) = 0;
+			virtual ~BSPElement() = default;
 		};
 		
 		struct Leaf final : BSPElement
@@ -33,6 +34,7 @@ namespace aes
 			{
 				
 			}
+			virtual ~Leaf() = default;
 
 			void testAllCollisions(void(*)(void* userData)) override;
 			std::vector<Object> objects;
@@ -45,6 +47,7 @@ namespace aes
 			{
 				
 			}
+			virtual ~Node() = default;
 
 			void testAllCollisions(void(*)(void* userData)) override;
 			Plane plane;
