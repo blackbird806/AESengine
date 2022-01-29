@@ -24,7 +24,8 @@ namespace aes
 
 		struct BSPElement
 		{
-			virtual void testAllCollisions(void(*)(void* userData)) = 0;
+			virtual void testAllCollisions(void(*)(void* userData)) const = 0;
+			virtual void* raycast(Ray const& r) const = 0;
 			virtual ~BSPElement() = default;
 		};
 		
@@ -36,7 +37,8 @@ namespace aes
 			}
 			virtual ~Leaf() = default;
 
-			void testAllCollisions(void(*)(void* userData)) override;
+			void testAllCollisions(void(*)(void* userData)) const override;
+			void* raycast(Ray const& r) const override;
 			std::vector<Object> objects;
 		};
 
@@ -49,7 +51,9 @@ namespace aes
 			}
 			virtual ~Node() = default;
 
-			void testAllCollisions(void(*)(void* userData)) override;
+			void testAllCollisions(void(*)(void* userData)) const override;
+			void* raycast(Ray const& r) const override;
+
 			Plane plane;
 			std::unique_ptr<BSPElement> front;
 			std::unique_ptr<BSPElement> back;

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <random>
+
 #include "core/profiler.hpp"
 #include "core/debugMath.hpp"
 #include "engine.hpp"
@@ -198,6 +199,7 @@ public:
 	
 	TestElement testElements[25];
 	aes::Octree octree;
+	std::unique_ptr<aes::BSPTree::BSPElement> bspTree;
 	
 	Game(InitInfo const& info) : Engine(info)
 	{
@@ -269,7 +271,7 @@ public:
 			bspObjects.push_back({ &e, aes::AABB::createHalfCenter(e.pos, e.size) });
 		}
 		
-		auto bspTree = aes::BSPTree::build(std::span(bspObjects));
+		bspTree = aes::BSPTree::build(std::span(bspObjects));
 		bspTree->testAllCollisions(cb);
 
 		// octree ========
@@ -386,32 +388,6 @@ public:
 			movePos.y -= speed * dt;
 		}
 
-		// move the collision cube
-		if (isKeyDown(aes::Key::Up))
-		{
-
-		}
-		if (isKeyDown(aes::Key::Down))
-		{
-
-		}
-		if (isKeyDown(aes::Key::Left))
-		{
-			
-		}
-		if (isKeyDown(aes::Key::Right))
-		{
-
-		}
-		if (isKeyDown(aes::Key::Num1))
-		{
-
-		}
-		if (isKeyDown(aes::Key::Num2))
-		{
-
-		}
-		
 		mainCamera.pos += glm::vec3(movePos * mainCamera.viewMatrix);
 		float mx, my;
 		getViewportMousePos(mx, my);
@@ -444,7 +420,12 @@ public:
 			getViewportMousePos(lastMousePosX, lastMousePosY);
 		}
 		mainCamera.lookAt(mainCamera.pos + glm::normalize(direction));
-
+		TestElement* elem = (TestElement*)bspTree->raycast({ mainCamera.pos, glm::normalize(direction) });
+		if (elem)
+		{
+			elem->coll = true;
+		}
+		
 		{
 			float const ex = 0.0055f;
 			float const csx = 0.025f;
@@ -473,21 +454,24 @@ public:
 	{
 		AES_PROFILE_FUNCTION();
 		
-		//aes::Material::BindInfo bindInfo;
+		aes::Material::BindInfo bindInfo;
 
-		//for (auto& e : testElements)
-		//{
-		//	bindInfo.vsBuffers.push_back(std::make_pair("ModelBuffer", &e.model.modelBuffer));
-		//	bindInfo.vsBuffers.push_back(std::make_pair("CameraBuffer", &viewBuffer));
-		//	defaultMtrl.bind(bindInfo);
+		for (auto& e : testElements)
+		{
+			if (!e.coll)
+				continue;
+			
+			bindInfo.vsBuffers.push_back(std::make_pair("ModelBuffer", &e.model.modelBuffer));
+			bindInfo.vsBuffers.push_back(std::make_pair("CameraBuffer", &viewBuffer));
+			defaultMtrl.bind(bindInfo);
 
-		//	e.model.toWorld = glm::translate(glm::mat4(1.0f), e.pos);
-		//	e.model.toWorld = glm::scale(e.model.toWorld, e.size);
-		//	e.model.draw();
-		//}
-		//
-		//aes::RHIRenderContext::instance().bindVSUniformBuffer(identityModelBuffer, 1);
-		//lineRenderer.draw();
+			e.model.toWorld = glm::translate(glm::mat4(1.0f), e.pos);
+			e.model.toWorld = glm::scale(e.model.toWorld, e.size);
+			e.model.draw();
+		}
+		
+		aes::RHIRenderContext::instance().bindVSUniformBuffer(identityModelBuffer, 1);
+		lineRenderer.draw();
 	}
 };
 

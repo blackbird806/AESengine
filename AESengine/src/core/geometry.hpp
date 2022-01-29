@@ -84,6 +84,14 @@ namespace aes {
 		glm::vec3 dir;
 	};
 
+	struct Ray
+	{
+		glm::vec3 start, dir;
+	};
+
+	bool ray_AABBIntersect(Ray const& r, AABB const& aabb);
+	bool ray_PlaneIntersect(Ray const& r, Plane const& p);
+	
 	enum PointPlanePlacement
 	{
 		Back = -1,

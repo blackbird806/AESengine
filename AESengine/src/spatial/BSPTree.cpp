@@ -104,7 +104,7 @@ namespace
 	}
 }
 
-void BSPTree::Leaf::testAllCollisions(void(*callback)(void* userData))
+void BSPTree::Leaf::testAllCollisions(void(*callback)(void* userData)) const
 {
 	AES_PROFILE_FUNCTION();
 	for (auto const& objA : objects)
@@ -123,7 +123,20 @@ void BSPTree::Leaf::testAllCollisions(void(*callback)(void* userData))
 	}
 }
 
-void BSPTree::Node::testAllCollisions(void(*callback)(void* userData))
+void* BSPTree::Leaf::raycast(Ray const& r) const
+{
+	for (auto const& obj : objects)
+	{
+		if (ray_AABBIntersect(r, obj.bounds))
+		{
+			return obj.userData;
+		}
+	}
+	
+	return nullptr;
+}
+
+void BSPTree::Node::testAllCollisions(void(*callback)(void* userData)) const
 {
 	AES_PROFILE_FUNCTION();
 	AES_ASSERT(callback);
@@ -132,6 +145,25 @@ void BSPTree::Node::testAllCollisions(void(*callback)(void* userData))
 		front->testAllCollisions(callback);
 	if (back)
 		back->testAllCollisions(callback);
+}
+
+void* BSPTree::Node::raycast(Ray const& r) const
+{
+	BSPElement* relativeFront = front.get();
+	BSPElement* relativeBack = back.get();
+
+	// if camera is behind plane swap front and back spaces
+	if (classifyPointToPlane(plane, r.start) == PointPlanePlacement::Back)
+		std::swap(relativeFront, relativeBack);
+
+	void* const frontResult = relativeFront ? relativeFront->raycast(r) : nullptr;
+
+	if (frontResult == nullptr && ray_PlaneIntersect(r, plane))
+	{
+		return relativeBack->raycast(r);
+	}
+	
+	return frontResult;
 }
 
 std::unique_ptr<BSPTree::BSPElement> BSPTree::build(std::span<Object> objects, uint depth)
