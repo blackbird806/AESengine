@@ -125,6 +125,8 @@ void BSPTree::Leaf::testAllCollisions(void(*callback)(void* userData)) const
 
 void* BSPTree::Leaf::raycast(Ray const& r) const
 {
+	AES_PROFILE_FUNCTION();
+
 	for (auto const& obj : objects)
 	{
 		if (ray_AABBIntersect(r, obj.bounds))
@@ -149,6 +151,8 @@ void BSPTree::Node::testAllCollisions(void(*callback)(void* userData)) const
 
 void* BSPTree::Node::raycast(Ray const& r) const
 {
+	AES_PROFILE_FUNCTION();
+
 	BSPElement* relativeFront = front.get();
 	BSPElement* relativeBack = back.get();
 

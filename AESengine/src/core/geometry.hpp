@@ -4,6 +4,10 @@
 #include <glm/glm.hpp>
 #include <array>
 
+// undef windows shit
+#undef near
+#undef far
+
 namespace aes {
 
 	struct Line2D
@@ -100,6 +104,16 @@ namespace aes {
 	};
 
 	PointPlanePlacement classifyPointToPlane(Plane const& plane, glm::vec3 const& pt);
+
+	struct Frustum
+	{
+		static Frustum createFromPerspective(glm::mat4 const& m);
+		Plane left, right, top, bottom, near, far;
+	};
+
+	bool frustum_AABBIntersect(Frustum const& f, AABB const& b);
+	bool frustum_PlaneIntersect(Frustum const& f, Plane const& b);
+	
 }
 
 #endif // !GEOMETRY_HPP
