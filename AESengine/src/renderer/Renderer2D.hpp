@@ -1,11 +1,11 @@
 #ifndef IMMEDIATE_RENDERER_HPP
 #define IMMEDIATE_RENDERER_HPP
 
-#include <d3d11.h>
-
 #include <glm/glm.hpp>
 #include <vector>
 #include "core/geometry.hpp"
+// include d3d11 after geometry since geometry use near and far identifiers that are defined in the global namespace by the shitty windows API
+#include <d3d11.h> 
 
 namespace aes {
 
