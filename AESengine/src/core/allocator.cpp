@@ -5,60 +5,68 @@
 #include <memory>
 #include <cstdlib>
 
+#ifdef AES_ENABLE_PROFILING
+
+#define AES_PROFILE_MEMORY_ALLOC(ptr, size) ::aes::MemoryProfiler::instance().profileAlloc(ptr, size)
+#define AES_PROFILE_MEMORY_DEALLOC(ptr) ::aes::MemoryProfiler::instance().profileDealloc(ptr)
+
+#else
+
+#define AES_PROFILE_MEMORY_ALLOC(ptr, size) 
+#define AES_PROFILE_MEMORY_DEALLOC(ptr)
+
+#endif
+
 // @TODO
-#ifndef __vita__
+#if 0 
 
-void* operator new(size_t size)
+void* operator new(size_t size) noexcept
 {
-	auto* ptr = malloc(size);
-	if (ptr == nullptr) throw std::bad_alloc();
+	void* ptr = malloc(size);
 	AES_PROFILE_MEMORY_ALLOC(ptr, size);
 	return ptr;
 }
 
-void* operator new(size_t size, std::nothrow_t const&)
+void* operator new[](size_t size) noexcept
 {
 	auto* ptr = malloc(size);
 	AES_PROFILE_MEMORY_ALLOC(ptr, size);
 	return ptr;
 }
-
-void* operator new[](size_t size)
+// https://stackoverflow.com/questions/53922209/how-to-invoke-aligned-new-delete-properly
+static void* alignedAlloc(size_t size, std::align_val_t al) noexcept
 {
-	auto* ptr = malloc(size);
-	if (ptr == nullptr) throw std::bad_alloc();
-	AES_PROFILE_MEMORY_ALLOC(ptr, size);
-	return ptr;
+	AES_ASSERT(size % (size_t)al == 0);
+#if _MSC_VER
+	// msvc doesn't support c11 aligned_alloc
+	return _aligned_malloc(size, (size_t)al);
+#else
+	return aligned_alloc((size_t)al, size);
+#endif
+}
+
+static void alignedFree(void* ptr) noexcept
+{
+#if _MSC_VER
+	return _aligned_free(ptr);
+#else
+	return free(ptr);
+#endif
 }
 
 void* operator new(size_t size, std::align_val_t al)
 {
-	auto* ptr = _aligned_malloc(size, (size_t)al);
+	auto* ptr = alignedAlloc(size, al);
 	AES_PROFILE_MEMORY_ALLOC(ptr, size);
 	return ptr;
 }
 
 void* operator new[](size_t size, std::align_val_t al)
 {
-	auto* ptr = _aligned_malloc(size, (size_t)al);
+	auto* ptr = alignedAlloc(size, al);
 	AES_PROFILE_MEMORY_ALLOC(ptr, size);
 	return ptr;
 }
-
-void* operator new(size_t size, std::align_val_t al, std::nothrow_t const&)
-{
-	auto* ptr = _aligned_malloc(size, (size_t)al);
-	AES_PROFILE_MEMORY_ALLOC(ptr, size);
-	return ptr;
-}
-
-void* operator new[](size_t size, std::align_val_t al, std::nothrow_t const&)
-{
-	auto* ptr = _aligned_malloc(size, (size_t)al);
-	AES_PROFILE_MEMORY_ALLOC(ptr, size);
-	return ptr;
-}
-
 
 void operator delete(void* ptr) noexcept
 {
@@ -72,16 +80,34 @@ void operator delete[](void* ptr) noexcept
 	free(ptr);
 }
 
+void operator delete(void* ptr, std::align_val_t al) noexcept
+{
+	AES_PROFILE_MEMORY_DEALLOC(ptr);
+	alignedFree(ptr);
+}
+
+void operator delete[](void* ptr, std::align_val_t al) noexcept
+{
+	AES_PROFILE_MEMORY_DEALLOC(ptr);
+	alignedFree(ptr);
+}
+
+
 #endif
+
+void aes::MemoryProfiler::profileAlloc(void* ptr, size_t size)
+{
+	
+}
 
 aes::StackAllocator::StackAllocator(size_t size) : totalSize(size), offset(0)
 {
-	start = new uint8_t(totalSize);
+	start = new uint8_t[totalSize];
 }
 
 aes::StackAllocator::~StackAllocator()
 {
-	free(start);
+	delete[] start;
 }
 
 void* aes::StackAllocator::allocate(size_t size, size_t alignement)

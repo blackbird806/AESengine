@@ -4,6 +4,7 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include "aes.hpp"
 #include "macro_helpers.hpp"
 
 #define AES_SCOPE(code) ::aes::Scope AES_CONCAT(aes_scope_internal_, __COUNTER__) ([&](){code;});
@@ -15,10 +16,21 @@ namespace aes {
 	std::vector<uint8_t> readFileBin(std::string const& file);
 
 	std::vector<std::string> split(std::string_view a, char sep);
-	
+
+	// see Game engine architecture 6.2.1.3 (p431)
 	constexpr uintptr_t align(uintptr_t x, uint32_t a)
 	{
-		return (x + (a - 1)) & ~(a - 1);
+		uint32_t const mask = a - 1;
+		AES_ASSERT((a & mask) == 0);
+		return (x + mask) & ~mask;
+	}
+
+	template<typename T>
+	constexpr T* alignPointer(T* ptr, uint32_t a)
+	{
+		uintptr_t constexpr addr = reinterpret_cast<uintptr_t>(ptr);
+		uintptr_t constexpr addrAligned = align(addr, a);
+		return reinterpret_cast<T*>(addrAligned);
 	}
 
 	constexpr bool isPowerOf2(size_t n)

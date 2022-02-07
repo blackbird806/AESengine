@@ -4,9 +4,9 @@
 #include "core/aes.hpp"
 
 #ifdef _WIN32
-#define AES_GRAPHIC_API_D3D11
+	#define AES_GRAPHIC_API_D3D11
 #elif defined(__vita__)
-#define AES_GRAPHIC_API_GXM
+	#define AES_GRAPHIC_API_GXM
 #endif
 
 #endif

@@ -16,9 +16,6 @@
 #define AES_PROFILE_FRAME()
 #define AES_PROFILE_FRAMEN(name)
 
-#define AES_PROFILE_MEMORY_ALLOC(ptr, size) 
-#define AES_PROFILE_MEMORY_DEALLOC(ptr)
-
 #define AES_START_PROFILE_SESSION(name) ::aes::Instrumentor::instance().startSession(name);
 #define AES_STOP_PROFILE_SESSION() ::aes::Instrumentor::instance().stopSession();
 
@@ -29,9 +26,6 @@
 
 #define AES_PROFILE_FRAME()
 #define AES_PROFILE_FRAMEN(name)
-
-#define AES_PROFILE_MEMORY_ALLOC(ptr, size)
-#define AES_PROFILE_MEMORY_DEALLOC(ptr)
 
 #define AES_START_PROFILE_SESSION(name) 
 #define AES_STOP_PROFILE_SESSION() 
