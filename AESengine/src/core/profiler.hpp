@@ -1,5 +1,5 @@
-#ifndef PROFILER_HPP
-#define PROFILER_HPP
+#ifndef AES_PROFILER_HPP
+#define AES_PROFILER_HPP
 
 #include <unordered_map>
 #include <string>

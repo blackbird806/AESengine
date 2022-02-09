@@ -1,5 +1,5 @@
-#ifndef OCTREE_HPP
-#define OCTREE_HPP
+#ifndef AES_OCTREE_HPP
+#define AES_OCTREE_HPP
 
 #include <vector>
 #include <span>

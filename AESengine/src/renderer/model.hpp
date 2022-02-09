@@ -1,5 +1,5 @@
-#ifndef MODEL_HPP
-#define MODEL_HPP
+#ifndef AES_MODEL_HPP
+#define AES_MODEL_HPP
 
 #include <span>
 #include <vector>
@@ -37,7 +37,7 @@ namespace aes
 		4, 7, 5
 	};
 
-	constexpr glm::vec3 cubeVerticesPos[] = {
+	inline glm::vec3 cubeVerticesPos[] = {
 		{ -1, -1,  1.0f },
 		{ 1, -1,  1.0f },
 		{ -1,  1,  1.0f },

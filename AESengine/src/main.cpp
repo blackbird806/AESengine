@@ -14,6 +14,7 @@
 #include "core/color.hpp"
 #include "spatial/octree.hpp"
 #include "spatial/BSPTree.hpp"
+#include "core/simd.hpp"
 
 const char pxShader[] = R"(
 struct VS_OUTPUT
@@ -260,7 +261,7 @@ public:
 			TestElement* element = (TestElement*)userData;
 			element->coll = true;
 		};
-		
+#ifdef USE_BSP
 		std::vector<aes::BSPTree::Object> bspObjects;
 		bspObjects.reserve(std::size(testElements));
 		for (int i = 0; auto & e : testElements)
@@ -273,8 +274,9 @@ public:
 		
 		bspTree = aes::BSPTree::build(std::span(bspObjects));
 		bspTree->testAllCollisions(cb);
-
+#endif
 		// octree ========
+#define USE_OCTREE
 #ifdef USE_OCTREE
 		//for (int a = 0; a < 10'000; a++)
 		{
@@ -437,17 +439,6 @@ public:
 		}
 		aes::CameraBuffer const camBuf{ glm::transpose(mainCamera.viewMatrix), glm::transpose(mainCamera.projMatrix) };
 		viewBuffer.setDataFromPOD(camBuf);
-		
-		//aes::RHIBlendState blendState{};
-		//aes::BlendInfo blendInfo = {};
-		//blendInfo.colorSrc = aes::BlendFactor::One;
-		//blendInfo.colorDst = aes::BlendFactor::OneMinusSrcColor;
-		//blendInfo.colorOp = aes::BlendOp::Add;
-		//blendInfo.alphaSrc = aes::BlendFactor::One;
-		//blendInfo.alphaDst = aes::BlendFactor::Zero;
-		//blendInfo.alphaOp = aes::BlendOp::Add;
-		//blendState.init(blendInfo);
-		//aes::RHIRenderContext::instance().setBlendState(blendState);
 	}
 
 	void draw() override
@@ -475,11 +466,11 @@ public:
 	}
 };
 
-int main()
+int main(int a, char const** b)
 {
 	std::ofstream logFile("AES_log.txt");
 	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(std::cout));
-	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(logFile));
+	//aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(logFile));
 	
 	AES_START_PROFILE_SESSION("startup");
 	Game game({
@@ -497,12 +488,12 @@ int main()
 
 	for (auto const& [_, v] : runningSession.profileDatas)
 	{
-		//if (strstr(v.name, "BSPTree"))
+		if (strstr(v.name, "Octree"))
 		{
 			timmingFile << fmt::format("{}\n\ttotalTime: {}ms\n\tcount: {}\n\taverage: {}ms\n\tparent: {}\n",
 				v.name, v.elapsedTime, v.count, v.elapsedTime / v.count, v.parentName != nullptr ? v.parentName : "none");
 		}
 	}
-	
+	//
 	return 0;
 }

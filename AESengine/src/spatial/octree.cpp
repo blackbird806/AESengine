@@ -1,5 +1,6 @@
 #include "octree.hpp"
 
+#include <glm/gtx/norm.hpp>
 #include "core/aes.hpp"
 
 using namespace aes;
@@ -34,6 +35,8 @@ Octree::Node* Octree::build(glm::vec3 const& center, float halfSize, int stopDep
 
 void Octree::clear()
 {
+	AES_PROFILE_FUNCTION();
+
 	nodes.clear();
 }
 
@@ -48,7 +51,7 @@ void Octree::insertObject(Node& tree, Object const& obj)
 	for (int i = 0; i < 3; i++) {
 		float const delta = obj.bounds.center()[i] - tree.center[i];
 		// @Review use bounding box here instead ?
-		if (abs(delta) <= glm::length(obj.bounds.max - obj.bounds.min))
+		if (delta * delta <= glm::length2(obj.bounds.max - obj.bounds.min))
 		{
 			straddle = true;
 			break;
