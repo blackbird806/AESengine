@@ -6,6 +6,10 @@
 	#if defined(__vita__)
 		#define AES_NEON
 		#include <arm_neon.h>
+		namespace aes
+		{
+			using r128_t = __n128;
+		}
 	#else
 		#define AES_SSE	
 		#define AES_SSE2
@@ -38,6 +42,10 @@
 		#if defined(AES_AVX) || defined(AES_AVX512)
 			#include <immintrin.h>
 		#endif
+		namespace aes
+		{
+			using r128_t = __m128;
+		}
 	#endif
 
 #endif

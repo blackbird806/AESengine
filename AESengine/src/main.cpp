@@ -422,11 +422,11 @@ public:
 			getViewportMousePos(lastMousePosX, lastMousePosY);
 		}
 		mainCamera.lookAt(mainCamera.pos + glm::normalize(direction));
-		TestElement* elem = (TestElement*)bspTree->raycast({ mainCamera.pos, glm::normalize(direction) });
-		if (elem)
-		{
-			elem->coll = true;
-		}
+		//TestElement* elem = (TestElement*)bspTree->raycast({ mainCamera.pos, glm::normalize(direction) });
+		//if (elem)
+		//{
+		//	elem->coll = true;
+		//}
 		
 		{
 			float const ex = 0.0055f;
@@ -449,9 +449,7 @@ public:
 
 		for (auto& e : testElements)
 		{
-			if (!e.coll)
-				continue;
-			
+
 			bindInfo.vsBuffers.push_back(std::make_pair("ModelBuffer", &e.model.modelBuffer));
 			bindInfo.vsBuffers.push_back(std::make_pair("CameraBuffer", &viewBuffer));
 			defaultMtrl.bind(bindInfo);

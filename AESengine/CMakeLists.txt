@@ -63,6 +63,7 @@ file(
   src/engine.cpp
   src/vita_main.cpp
   src/core/*
+  src/spatial/*
   src/renderer/camera.cpp
   src/renderer/model.cpp
   src/renderer/draw2d.cpp
@@ -72,8 +73,6 @@ file(
 
   thirdParty/fmt/src/*
   thirdParty/stb/*
-  thirdParty/stb/*
-  thirdParty/tiny/*
   thirdParty/psvDebugScreen/debugScreen.c
 )
 
