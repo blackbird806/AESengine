@@ -8,6 +8,7 @@
 		#include <arm_neon.h>
 		namespace aes
 		{
+			using r64_t = __n64;
 			using r128_t = __n128;
 		}
 	#else
@@ -44,6 +45,7 @@
 		#endif
 		namespace aes
 		{
+			using r64_t = __m64;
 			using r128_t = __m128;
 		}
 	#endif

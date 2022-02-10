@@ -2,7 +2,9 @@
 
 #include <algorithm>
 #include "aes.hpp"
-#include "renderer/RHI/RHI.hpp"
+#include "core/simd.hpp"
+
+using namespace aes;
 
 std::array<glm::vec3, 8> aes::AABB::getVertices() const
 {
@@ -19,6 +21,7 @@ std::array<glm::vec3, 8> aes::AABB::getVertices() const
 		};
 }
 
+
 bool aes::AABB_AABBIntersect(AABB const& a, AABB const& b)
 {
 	AES_PROFILE_FUNCTION();
@@ -28,11 +31,37 @@ bool aes::AABB_AABBIntersect(AABB const& a, AABB const& b)
 			(a.min.z <= b.max.z && a.max.z >= b.min.z);
 }
 
+// http://www.cs.uu.nl/docs/vakken/magr/2017-2018/slides/lecture%2005%20-%20SIMD%20recap.pdf
+static bool ray_AABBIntersectSIMD(aes::Ray const& ray, aes::AABB const& box)
+{
+	AES_PROFILE_FUNCTION();
+
+	glm::vec3 const invRayDir = 1.0f / ray.dir;
+
+	r128_t bmin = _mm_load_ps(box.min.data.data);
+	r128_t bmax = _mm_load_ps(box.max.data.data);
+	r128_t rstart = _mm_load_ps(ray.start.data.data);
+	r128_t idir = _mm_load_ps(invRayDir.data.data);
+
+	r128_t t1 = _mm_mul_ps(_mm_sub_ps(bmin, rstart), idir);
+	r128_t t2 = _mm_mul_ps(_mm_sub_ps(bmax, rstart), idir);
+
+	glm::vec4 vmin;
+	_mm_store_ps(vmin.data.data, _mm_min_ps(t1, t2));
+	glm::vec4 vmax;
+	_mm_store_ps(vmax.data.data, _mm_max_ps(t1, t2));
+
+	float const tmax = std::min(vmax[0], std::min(vmax[1], vmax[2]));
+	float const tmin = std::max(vmin[0], std::max(vmin[1], vmin[2]));
+
+	return tmax >= std::max(0.0f, tmin);
+}
+
 // https://tavianator.com/2011/ray_box.html
 bool aes::ray_AABBIntersect(Ray const& ray, AABB const& box)
 {
 	AES_PROFILE_FUNCTION();
-
+	return ray_AABBIntersectSIMD(ray, box);
 	glm::vec3 const invRayDir = 1.0f / ray.dir;
 	
 	float const tx1 = (box.min.x - ray.start.x) * invRayDir.x;

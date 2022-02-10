@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <random>
+#include <ranges>
 
 #include "core/profiler.hpp"
 #include "core/debugMath.hpp"
@@ -261,6 +262,8 @@ public:
 			TestElement* element = (TestElement*)userData;
 			element->coll = true;
 		};
+#define USE_BSP
+
 #ifdef USE_BSP
 		std::vector<aes::BSPTree::Object> bspObjects;
 		bspObjects.reserve(std::size(testElements));
@@ -276,7 +279,6 @@ public:
 		bspTree->testAllCollisions(cb);
 #endif
 		// octree ========
-#define USE_OCTREE
 #ifdef USE_OCTREE
 		//for (int a = 0; a < 10'000; a++)
 		{
@@ -422,11 +424,11 @@ public:
 			getViewportMousePos(lastMousePosX, lastMousePosY);
 		}
 		mainCamera.lookAt(mainCamera.pos + glm::normalize(direction));
-		//TestElement* elem = (TestElement*)bspTree->raycast({ mainCamera.pos, glm::normalize(direction) });
-		//if (elem)
-		//{
-		//	elem->coll = true;
-		//}
+		TestElement* elem = (TestElement*)bspTree->raycast({ mainCamera.pos, glm::normalize(direction) });
+		if (elem)
+		{
+			elem->coll = true;
+		}
 		
 		{
 			float const ex = 0.0055f;
@@ -449,6 +451,8 @@ public:
 
 		for (auto& e : testElements)
 		{
+			if (!e.coll)
+				continue;
 
 			bindInfo.vsBuffers.push_back(std::make_pair("ModelBuffer", &e.model.modelBuffer));
 			bindInfo.vsBuffers.push_back(std::make_pair("CameraBuffer", &viewBuffer));
@@ -484,13 +488,10 @@ int main(int a, char const** b)
 	
 	std::ofstream timmingFile("prof.txt");
 
-	for (auto const& [_, v] : runningSession.profileDatas)
+	for (auto const& v : runningSession.profileDatas | std::views::values)
 	{
-		if (strstr(v.name, "Octree"))
-		{
-			timmingFile << fmt::format("{}\n\ttotalTime: {}ms\n\tcount: {}\n\taverage: {}ms\n\tparent: {}\n",
-				v.name, v.elapsedTime, v.count, v.elapsedTime / v.count, v.parentName != nullptr ? v.parentName : "none");
-		}
+		timmingFile << fmt::format("{}\n\ttotalTime: {}ms\n\tcount: {}\n\taverage: {}ms\n\tparent: {}\n",
+			v.name, v.elapsedTime, v.count, v.elapsedTime / v.count, v.parentName != nullptr ? v.parentName : "none");
 	}
 	//
 	return 0;
