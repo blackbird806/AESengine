@@ -37,6 +37,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -fno-exceptions")
 set(VITA_MKSFOEX_FLAGS "${VITA_MKSFOEX_FLAGS} -d PARENTAL_LEVEL=1")
 
 add_definitions(-DAES_DEBUG )
+add_definitions(-DAES_ENABLE_SIMD )
 
 # Add any additional include paths here
 include_directories(
