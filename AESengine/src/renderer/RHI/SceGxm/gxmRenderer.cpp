@@ -369,8 +369,8 @@ void GxmRenderer::init(Window& windowHandle)
 	err = sceGxmShaderPatcherCreate(&patcherParams, &shaderPatcher);
 	AES_ASSERT(err == SCE_OK);
 
-	auto const clearShaderData_vs = aes::readFileBin("app0:assets/shaders/vita/clear_vs.gxp");
-	auto const clearShaderData_fs = aes::readFileBin("app0:assets/shaders/vita/clear_fs.gxp");
+	static auto const clearShaderData_vs = aes::readFileBin("app0:assets/shaders/vita/clear_vs.gxp");
+	static auto const clearShaderData_fs = aes::readFileBin("app0:assets/shaders/vita/clear_fs.gxp");
 	
 	SceGxmProgram const* clearShaderGxp_vs = reinterpret_cast<SceGxmProgram const*>(clearShaderData_vs.data());
 	SceGxmProgram const* clearShaderGxp_fs = reinterpret_cast<SceGxmProgram const*>(clearShaderData_fs.data());

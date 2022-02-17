@@ -11,6 +11,8 @@
 
 #include "aini/aini.hpp"
 
+#define SCE_DBG_ASSERT AES_ASSERT
+
 class Game : public aes::Engine
 {
 
@@ -30,9 +32,10 @@ public:
 	struct Vertex
 	{
 		glm::vec2 pos;
-		glm::vec4 color;
+		uint32_t color;
 	};
 
+	uint16_t* basicIndices = nullptr;
 	void start() override
 	{
 		using namespace aes;
@@ -41,14 +44,14 @@ public:
 		AES_LOG("start");
 
 		Vertex basicVertices[3];
-		basicVertices[0].pos = {-0.5f, -0.5f};
-		basicVertices[0].color = {1.0f, 0.0f, 0.0f, 1.0f};
+		basicVertices[0].pos = { -0.5f, -0.5f };
+		basicVertices[0].color = 0xffffffff;
 
-		basicVertices[1].pos = {0.5f, -0.5f};
-		basicVertices[1].color = {1.0f, 0.0f, 0.0f, 1.0f};
+		basicVertices[1].pos = { 0.5f, -0.5f };
+		basicVertices[1].color = 0xffffffff;
 
-		basicVertices[2].pos = {-0.5f, 0.5f};
-		basicVertices[2].color = {1.0f, 0.0f, 0.0f, 1.0f};
+		basicVertices[2].pos = { -0.5f, 0.5f };
+		basicVertices[2].color = 0xffffffff;
 
 		{
 			aes::BufferDescription vertexBufferDescription;
@@ -60,7 +63,7 @@ public:
 			vertexBuffer.init(vertexBufferDescription);
 		}
 
-		uint16_t indices[] = {0, 1, 2};
+		uint16_t indices[] = { 0, 1, 2 };
 		{
 			aes::BufferDescription indexBufferDescription;
 			indexBufferDescription.sizeInBytes = sizeof(indices);
@@ -78,14 +81,11 @@ public:
 
 		vertexInputLayout[1].semantic = SemanticType::Color;
 		vertexInputLayout[1].offset = sizeof(glm::vec2);
-		vertexInputLayout[1].format = RHIFormat::R32G32B32A32_Float;
+		vertexInputLayout[1].format = RHIFormat::U8n;
 
-		AES_LOG("so far");
 		aes::VertexShaderDescription vertexShaderDescription;
-		auto const source_vs = aes::readFileBin("app0:assets/shaders/vita/basic2d_vs.gxp");
+		static auto const source_vs = aes::readFileBin("app0:assets/shaders/vita/basic2d_vs.gxp");
 		vertexShaderDescription.source = source_vs.data();
-		AES_LOG("alt {}", vertexShaderDescription.source.index());
-		AES_LOG("holds {}", std::holds_alternative<uint8_t const*>(vertexShaderDescription.source));
 		vertexShaderDescription.verticesLayout = vertexInputLayout;
 		vertexShaderDescription.verticesStride = sizeof(Vertex);
 		AES_LOG("vertex stride {}", vertexShaderDescription.verticesStride);
@@ -93,7 +93,7 @@ public:
 		AES_LOG("shader 1 initialized");
 		
 		aes::FragmentShaderDescription fragmentShaderDescription;
-		auto const source_fs = aes::readFileBin("app0:assets/shaders/vita/basic2d_fs.gxp");
+		static auto const source_fs = aes::readFileBin("app0:assets/shaders/vita/basic2d_fs.gxp");
 		fragmentShaderDescription.source = source_fs.data();
 		fragmentShaderDescription.gxpVertexProgram = vertexShader.getGxpShader();
 		err = fragmentShader.init(fragmentShaderDescription);
@@ -110,33 +110,24 @@ public:
 		using namespace aes;
 
 		AES_PROFILE_FUNCTION();
+		auto context = RHIRenderContext::instance();
 
-		auto& context = RHIRenderContext::instance();
-		
-		AES_LOG("Start draw");
 		context.setDrawPrimitiveMode(DrawPrimitiveType::Triangles);
-		AES_LOG("Draw primitives set");
-		
 		context.setVertexShader(vertexShader);
 		context.setFragmentShader(fragmentShader);
-		AES_LOG("shaders binded");
-
 		context.bindVertexBuffer(vertexBuffer, sizeof(Vertex));
 		context.bindIndexBuffer(indexBuffer, TypeFormat::Uint16);
-		AES_LOG("buffers binded");
-		
 		context.drawIndexed(3, 0);
-		AES_LOG("DRAW command");
 	}
 };
 
 int main()
 {
 	std::string appName = "aes engine";
-	std::ofstream logFile("ux0:log/AES_log.txt");
+	//std::ofstream logFile("ux0:log/AES_log.txt");
 	aes::Logger::instance().addSink(std::make_unique<aes::PsvDebugScreenSink>());
-	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(logFile));
-	
+	//aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(logFile));
+
 	Game game({
 		.appName = appName.c_str()
 	});

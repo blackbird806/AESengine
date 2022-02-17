@@ -111,6 +111,8 @@ static auto getFormatComponents(RHIFormat format)
 
 	switch(format)
 	{
+		case RHIFormat::U8n:
+			return FormatComponent{ SCE_GXM_ATTRIBUTE_FORMAT_U8N, 4 };
 		case RHIFormat::R16G16_Float:
 			return FormatComponent{ SCE_GXM_ATTRIBUTE_FORMAT_F16, 2 };
 		case RHIFormat::R32G32_Float:
@@ -166,7 +168,7 @@ Result<void> GxmVertexShader::init(VertexShaderDescription const& desc)
 	}
 
 	std::vector<SceGxmVertexAttribute> verticesAttributes(desc.verticesLayout.size());
-	const char* names[] = {"aPosition", "aColor"};
+	const char* names[] = { "aPosition", "aColor" };
 	for (int i = 0; auto const& layout : desc.verticesLayout)
 	{
 		verticesAttributes[i].streamIndex = 0;

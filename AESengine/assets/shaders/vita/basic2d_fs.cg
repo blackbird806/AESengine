@@ -1,4 +1,4 @@
 ﻿float4 main(float4 vColor : TEXCOORD0)
 {
-	return vColor;
+	return 1.f;
 }

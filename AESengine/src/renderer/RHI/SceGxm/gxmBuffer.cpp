@@ -36,6 +36,10 @@ Result<void> GxmBuffer::init(BufferDescription const& desc)
 		rhiBufferUsageToApi(desc.bufferUsage),
 		&memID);
 	AES_ASSERT(buffer);
+	if (desc.initialData != nullptr)
+	{
+		memcpy(buffer, desc.initialData, desc.sizeInBytes);
+	}
 	return {};
 }
 

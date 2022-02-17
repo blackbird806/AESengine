@@ -104,6 +104,7 @@ namespace aes
 
 	enum class RHIFormat
 	{
+		U8n,
 		R16G16_Float,
 		R32G32_Float,
 		

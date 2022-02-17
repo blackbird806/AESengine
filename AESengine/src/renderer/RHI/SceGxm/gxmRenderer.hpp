@@ -63,7 +63,7 @@ namespace aes
 
 			SceGxmShaderPatcher* getShaderPatcher() const;
 
-		private:
+		// private:
 
 			static GxmRenderer* inst;
 
