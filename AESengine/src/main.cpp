@@ -160,7 +160,7 @@ struct LineRenderer
 		vertexBuffer.setData(std::span(vertices));
 		indexBuffer.setData(std::span(indices));
 		aes::RHIRenderContext::instance().bindVertexBuffer(vertexBuffer, sizeof(aes::Vertex));
-		aes::RHIRenderContext::instance().bindIndexBuffer(indexBuffer, aes::TypeFormat::Uint32);
+		aes::RHIRenderContext::instance().bindIndexBuffer(indexBuffer, aes::IndexTypeFormat::Uint32);
 		aes::RHIRenderContext::instance().setDrawPrimitiveMode(aes::DrawPrimitiveType::Lines);
 		aes::RHIRenderContext::instance().drawIndexed(indices.size());
 	}

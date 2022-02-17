@@ -32,10 +32,10 @@ public:
 	struct Vertex
 	{
 		glm::vec2 pos;
-		uint32_t color;
+		//uint32_t color;
+		glm::vec4 color;
 	};
 
-	uint16_t* basicIndices = nullptr;
 	void start() override
 	{
 		using namespace aes;
@@ -45,13 +45,16 @@ public:
 
 		Vertex basicVertices[3];
 		basicVertices[0].pos = { -0.5f, -0.5f };
-		basicVertices[0].color = 0xffffffff;
+		//basicVertices[0].color = 0x0000ffff;
+		basicVertices[0].color = { 1.0f, 0.0f, 0.0f, 1.0f };
 
 		basicVertices[1].pos = { 0.5f, -0.5f };
-		basicVertices[1].color = 0xffffffff;
+		//basicVertices[1].color = 0xff0000ff;
+		basicVertices[1].color = { 1.0f, 0.0f, 0.0f, 1.0f };
 
 		basicVertices[2].pos = { -0.5f, 0.5f };
-		basicVertices[2].color = 0xffffffff;
+		//basicVertices[2].color = 0xfff00fff;
+		basicVertices[1].color = { 0.0f, 1.0f, 0.0f, 1.0f };
 
 		{
 			aes::BufferDescription vertexBufferDescription;
@@ -63,7 +66,7 @@ public:
 			vertexBuffer.init(vertexBufferDescription);
 		}
 
-		uint16_t indices[] = { 0, 1, 2 };
+		uint16_t indices[] = { 0, 1, 2, 0 };
 		{
 			aes::BufferDescription indexBufferDescription;
 			indexBufferDescription.sizeInBytes = sizeof(indices);
@@ -73,36 +76,42 @@ public:
 			indexBufferDescription.initialData = indices;
 			indexBuffer.init(indexBufferDescription);
 		}
+		AES_LOG("buffers initialized");
 
 		aes::VertexInputLayout vertexInputLayout[2];
-		vertexInputLayout[0].semantic = SemanticType::Position;
+		vertexInputLayout[0].parameterName = "aPosition";
 		vertexInputLayout[0].offset = 0;
 		vertexInputLayout[0].format = RHIFormat::R32G32_Float;
 
-		vertexInputLayout[1].semantic = SemanticType::Color;
+		vertexInputLayout[1].parameterName = "aColor";
 		vertexInputLayout[1].offset = sizeof(glm::vec2);
-		vertexInputLayout[1].format = RHIFormat::U8n;
+		//vertexInputLayout[1].format = RHIFormat::R8G8B8A8_Uint;
+		vertexInputLayout[1].format = RHIFormat::R32G32B32A32_Float;
 
 		aes::VertexShaderDescription vertexShaderDescription;
 		static auto const source_vs = aes::readFileBin("app0:assets/shaders/vita/basic2d_vs.gxp");
 		vertexShaderDescription.source = source_vs.data();
 		vertexShaderDescription.verticesLayout = vertexInputLayout;
 		vertexShaderDescription.verticesStride = sizeof(Vertex);
-		AES_LOG("vertex stride {}", vertexShaderDescription.verticesStride);
 		auto err = vertexShader.init(vertexShaderDescription);
-		AES_LOG("shader 1 initialized");
 		
 		aes::FragmentShaderDescription fragmentShaderDescription;
 		static auto const source_fs = aes::readFileBin("app0:assets/shaders/vita/basic2d_fs.gxp");
 		fragmentShaderDescription.source = source_fs.data();
-		fragmentShaderDescription.gxpVertexProgram = vertexShader.getGxpShader();
+		//fragmentShaderDescription.gxpVertexProgram = vertexShader.getGxpShader();
 		err = fragmentShader.init(fragmentShaderDescription);
-		AES_LOG("shader 2 initialized");
+		//draw2d.init();
+		AES_LOG("shaders initialized");
 	}
 
 	void update(float dt) override
 	{
 		AES_PROFILE_FUNCTION();
+
+		//draw2d.setColor(aes::Color::Blue);
+		//draw2d.drawLine({ {0.0f, 0.0f}, {1.0f, 0.0f} });
+		//draw2d.setColor(aes::Color::Green);
+		//draw2d.drawLine({ {0.0f, 0.0f}, {0.0f, 1.0f} });
 	}
 
 	void draw() override
@@ -112,12 +121,14 @@ public:
 		AES_PROFILE_FUNCTION();
 		auto context = RHIRenderContext::instance();
 
-		context.setDrawPrimitiveMode(DrawPrimitiveType::Triangles);
+		context.setDrawPrimitiveMode(DrawPrimitiveType::Lines);
 		context.setVertexShader(vertexShader);
 		context.setFragmentShader(fragmentShader);
 		context.bindVertexBuffer(vertexBuffer, sizeof(Vertex));
-		context.bindIndexBuffer(indexBuffer, TypeFormat::Uint16);
-		context.drawIndexed(3, 0);
+		context.bindIndexBuffer(indexBuffer, IndexTypeFormat::Uint16);
+		context.drawIndexed(4, 0);
+
+		//draw2d.executeDrawCommands();
 	}
 };
 

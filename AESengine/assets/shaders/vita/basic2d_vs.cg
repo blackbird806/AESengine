@@ -3,7 +3,7 @@
 	// float2 tex : TEXCOORD0,
 	float4 aColor,
 	float4 out vPosition : POSITION,
-	float4 out vColor : TEXCOORD0)
+	float4 out vColor : COLOR)
 {
 	vPosition = float4(aPosition, 0.0f, 1.0f);
 

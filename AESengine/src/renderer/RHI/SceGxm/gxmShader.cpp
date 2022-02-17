@@ -111,7 +111,7 @@ static auto getFormatComponents(RHIFormat format)
 
 	switch(format)
 	{
-		case RHIFormat::U8n:
+		case RHIFormat::R8G8B8A8_Uint:
 			return FormatComponent{ SCE_GXM_ATTRIBUTE_FORMAT_U8N, 4 };
 		case RHIFormat::R16G16_Float:
 			return FormatComponent{ SCE_GXM_ATTRIBUTE_FORMAT_F16, 2 };
@@ -168,7 +168,6 @@ Result<void> GxmVertexShader::init(VertexShaderDescription const& desc)
 	}
 
 	std::vector<SceGxmVertexAttribute> verticesAttributes(desc.verticesLayout.size());
-	const char* names[] = { "aPosition", "aColor" };
 	for (int i = 0; auto const& layout : desc.verticesLayout)
 	{
 		verticesAttributes[i].streamIndex = 0;
@@ -177,8 +176,8 @@ Result<void> GxmVertexShader::init(VertexShaderDescription const& desc)
 		verticesAttributes[i].format = formatComponents.attribFormat;
 		verticesAttributes[i].componentCount = formatComponents.numComponents;
 		// SceGxmProgramParameter const* param = sceGxmProgramFindParameterBySemantic(gxpShader, rhiSemanticTypeToApi(layout.semantic), 0);
-		SceGxmProgramParameter const* param = sceGxmProgramFindParameterByName(gxpShader, names[i]);
-		AES_ASSERTF(param != nullptr, "param {} is nullptr", (int)layout.semantic);
+		SceGxmProgramParameter const* param = sceGxmProgramFindParameterByName(gxpShader, layout.parameterName);
+		AES_ASSERTF(param != nullptr, "param {} not found", layout.parameterName);
 		verticesAttributes[i].regIndex = sceGxmProgramParameterGetResourceIndex(param);
 		i++;
 	}

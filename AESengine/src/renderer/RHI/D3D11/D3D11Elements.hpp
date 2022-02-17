@@ -7,7 +7,7 @@
 
 namespace aes
 {
-	DXGI_FORMAT rhiTypeFormatToApi(TypeFormat format);
+	DXGI_FORMAT rhiTypeFormatToApi(IndexTypeFormat format);
 	DXGI_FORMAT rhiFormatToApi(RHIFormat format);
 	D3D11_USAGE rhiBufferUsageToApi(BufferUsage u);
 	D3D11_BIND_FLAG rhiBufferBindFlagsToApi(BindFlags flags);

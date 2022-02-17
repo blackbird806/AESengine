@@ -4,16 +4,14 @@
 
 using namespace aes;
 
-DXGI_FORMAT aes::rhiTypeFormatToApi(TypeFormat format)
+DXGI_FORMAT aes::rhiTypeFormatToApi(IndexTypeFormat format)
 {
 	switch (format)
 	{
-	case TypeFormat::Uint32:
+	case IndexTypeFormat::Uint32:
 		return DXGI_FORMAT_R32_UINT;
-	case TypeFormat::Uint16:
+	case IndexTypeFormat::Uint16:
 		return DXGI_FORMAT_R16_UINT;
-	case TypeFormat::Uint8:
-		return DXGI_FORMAT_R8_UINT;
 	default:;
 	}
 	AES_UNREACHABLE();

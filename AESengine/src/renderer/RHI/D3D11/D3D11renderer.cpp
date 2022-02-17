@@ -162,7 +162,7 @@ void D3D11Renderer::bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset
 	deviceContext->IASetVertexBuffers(0, 1, &handle, &stride, &offset);
 }
 
-void D3D11Renderer::bindIndexBuffer(RHIBuffer& buffer, TypeFormat typeFormat, uint offset)
+void D3D11Renderer::bindIndexBuffer(RHIBuffer& buffer, IndexTypeFormat typeFormat, uint offset)
 {
 	deviceContext->IASetIndexBuffer(buffer.getHandle(), rhiTypeFormatToApi(typeFormat), offset);
 }

@@ -30,7 +30,7 @@ namespace aes
 	{
 			struct IndexBufferInfo
 			{
-				TypeFormat typeFormat;
+				IndexTypeFormat typeFormat;
 				void* buffer;
 			};
 
@@ -53,7 +53,7 @@ namespace aes
 			void bindVSUniformBuffer(RHIBuffer& buffer, uint slot);
 			void bindFSUniformBuffer(RHIBuffer& buffer, uint slot);
 			void bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset = 0);
-			void bindIndexBuffer(RHIBuffer& buffer, TypeFormat typeFormat, uint offset = 0);
+			void bindIndexBuffer(RHIBuffer& buffer, IndexTypeFormat typeFormat, uint offset = 0);
 
 			void setFragmentShader(RHIFragmentShader& fs);
 			void setVertexShader(RHIVertexShader& vs);
@@ -63,7 +63,7 @@ namespace aes
 
 			SceGxmShaderPatcher* getShaderPatcher() const;
 
-		// private:
+		private:
 
 			static GxmRenderer* inst;
 

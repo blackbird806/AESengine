@@ -568,7 +568,7 @@ void GxmRenderer::bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset)
 	AES_GXM_CHECK(err);
 }
 
-void GxmRenderer::bindIndexBuffer(RHIBuffer& buffer, TypeFormat format, uint offset)
+void GxmRenderer::bindIndexBuffer(RHIBuffer& buffer, IndexTypeFormat format, uint offset)
 {
 	AES_PROFILE_FUNCTION();
 	currentState.indexBufferInfo.typeFormat = format;
@@ -595,11 +595,22 @@ void GxmRenderer::setDrawPrimitiveMode(DrawPrimitiveType mode)
 void GxmRenderer::drawIndexed(uint indexCount, uint indexOffset)
 {
 	AES_PROFILE_FUNCTION();
-	int err = sceGxmDraw(context, rhiPrimitiveTypeToApi(currentState.primitiveType),
+	if (currentState.indexBufferInfo.typeFormat == IndexTypeFormat::Uint16)
+	{
+			int err = sceGxmDraw(context, rhiPrimitiveTypeToApi(currentState.primitiveType),
 				rhiIndexFormatToApi(currentState.indexBufferInfo.typeFormat),
-				((uint8_t*)currentState.indexBufferInfo.buffer) + indexOffset,
+				((uint16_t*)currentState.indexBufferInfo.buffer) + indexOffset,
 				(uint32_t)indexCount);
 	AES_ASSERT(err == SCE_OK);
+	}
+	else {
+		int err = sceGxmDraw(context, rhiPrimitiveTypeToApi(currentState.primitiveType),
+					rhiIndexFormatToApi(currentState.indexBufferInfo.typeFormat),
+					((uint32_t*)currentState.indexBufferInfo.buffer) + indexOffset,
+					(uint32_t)indexCount);
+		AES_ASSERT(err == SCE_OK);
+	}
+
 }
 
 SceGxmShaderPatcher* GxmRenderer::getShaderPatcher() const

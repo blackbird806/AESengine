@@ -63,12 +63,8 @@ namespace aes
 		Points,
 	};
 
-	enum class TypeFormat
+	enum class IndexTypeFormat
 	{
-		Float16,
-		Float32,
-
-		Uint8,
 		Uint16,
 		Uint32,
 	};
@@ -104,7 +100,7 @@ namespace aes
 
 	enum class RHIFormat
 	{
-		U8n,
+		R8G8B8A8_Uint,
 		R16G16_Float,
 		R32G32_Float,
 		
@@ -116,7 +112,9 @@ namespace aes
 	
 	struct VertexInputLayout
 	{
+		[[deprecated("use parameterName instead")]] // used only by d3d11
 		SemanticType semantic;
+		const char* parameterName;
 		RHIFormat format;
 		uint32_t offset;
 	};

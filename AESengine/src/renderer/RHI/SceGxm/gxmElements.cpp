@@ -14,16 +14,16 @@ SceGxmPrimitiveType aes::rhiPrimitiveTypeToApi(DrawPrimitiveType type)
 		case DrawPrimitiveType::Lines: return SCE_GXM_PRIMITIVE_LINES; 
 		case DrawPrimitiveType::LineStrip: // Linestrip not supported by vita
 		default:
-			AES_ASSERT(false);
+			AES_ASSERTF(false, "DrawPrimitiveType not supported {}", type);
 	}
 	AES_UNREACHABLE();
 }
 
-SceGxmIndexFormat aes::rhiIndexFormatToApi(TypeFormat format)
+SceGxmIndexFormat aes::rhiIndexFormatToApi(IndexTypeFormat format)
 {
-	if (format == TypeFormat::Uint32)
+	if (format == IndexTypeFormat::Uint32)
 		return SCE_GXM_INDEX_FORMAT_U32;
-	if (format == TypeFormat::Uint16)
+	if (format == IndexTypeFormat::Uint16)
 		return SCE_GXM_INDEX_FORMAT_U16;
 	AES_ASSERT(false); // unsupported format type
 }
@@ -40,23 +40,6 @@ uint8_t aes::rhiBufferUsageToApi(BufferUsage usage)
 			return SCE_GXM_MEMORY_ATTRIB_READ;
 	}
 	AES_UNREACHABLE();
-}
-
-
-SceGxmAttributeFormat aes::rhiAttributeFormatToApi(TypeFormat format)
-{
-	switch(format)
-	{
-		case TypeFormat::Float16:
-			return SCE_GXM_ATTRIBUTE_FORMAT_F16;
-		case TypeFormat::Float32:
-			return SCE_GXM_ATTRIBUTE_FORMAT_F32;
-		case TypeFormat::Uint8:
-			return SCE_GXM_ATTRIBUTE_FORMAT_U8;
-		case TypeFormat::Uint16:
-			return SCE_GXM_ATTRIBUTE_FORMAT_U16;
-	}
-	AES_ASSERT(false && "format not supported");
 }
 
 SceGxmParameterSemantic aes::rhiSemanticTypeToApi(SemanticType type)

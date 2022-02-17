@@ -12,6 +12,7 @@ Result<void> Draw2d::init()
 	
 	VertexInputLayout vertexInputLayout[2];
 	vertexInputLayout[0].semantic = SemanticType::Position;
+	vertexInputLayout[0].parameterName = "aPosition";
 	vertexInputLayout[0].offset = 0;
 	vertexInputLayout[0].format = RHIFormat::R32G32_Float;
 
@@ -20,6 +21,7 @@ Result<void> Draw2d::init()
 	// vertexInputLayout[1].format = RHIFormat::R32G32_Float;
 
 	vertexInputLayout[1].semantic = SemanticType::Color;
+	vertexInputLayout[1].parameterName = "aColor";
 	vertexInputLayout[1].offset = sizeof(glm::vec2);
 	vertexInputLayout[1].format = RHIFormat::R32G32B32A32_Float;
 	
@@ -150,7 +152,7 @@ void Draw2d::executeDrawCommands()
 	// AES_LOG("So FAr {}", cpt++);
 
 	context.bindVertexBuffer(vertexBuffer, sizeof(Vertex));
-	context.bindIndexBuffer(indexBuffer, TypeFormat::Uint16);
+	context.bindIndexBuffer(indexBuffer, IndexTypeFormat::Uint16);
 	// AES_LOG("So FAr {}", cpt++);
 
 	//context.bindVSUniformBuffer(projectionBuffer, 0);

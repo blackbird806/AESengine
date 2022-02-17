@@ -28,7 +28,7 @@ namespace aes {
 		void bindFSUniformBuffer(RHIBuffer& buffer, uint slot);
 
 		void bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset = 0);
-		void bindIndexBuffer(RHIBuffer& buffer, TypeFormat typeFormat, uint offset = 0);
+		void bindIndexBuffer(RHIBuffer& buffer, IndexTypeFormat typeFormat, uint offset = 0);
 
 		void setFragmentShader(RHIFragmentShader& fs);
 		void setVertexShader(RHIVertexShader& vs);

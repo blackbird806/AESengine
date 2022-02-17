@@ -145,7 +145,7 @@ void Model::draw()
 
 	RHIRenderContext& renderContext = RHIRenderContext::instance();
 	renderContext.bindVertexBuffer(vertexBuffer, sizeof(Vertex));
-	renderContext.bindIndexBuffer(indexBuffer, TypeFormat::Uint32);
+	renderContext.bindIndexBuffer(indexBuffer, IndexTypeFormat::Uint32);
 	renderContext.setDrawPrimitiveMode(DrawPrimitiveType::Triangles);
 	renderContext.drawIndexed(indexCount);
 }
