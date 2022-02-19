@@ -25,8 +25,8 @@
 	#else
 		#define AES_DEBUG_BREAK() __builtin_trap()
 	#endif
-	#define AES_ASSERT(x) if (x) {} else { AES_LOG_RAW("Assertion Failed : " #x); AES_DEBUG_BREAK(); }
-	#define AES_ASSERTF(x, msg, ...) if (x) {} else { AES_LOG_RAW("Assertion Failed : " #x " " msg, __VA_ARGS__); AES_DEBUG_BREAK(); }
+	#define AES_ASSERT(x) if (x) {} else { AES_LOG_ERROR("Assertion Failed : " #x); AES_DEBUG_BREAK(); }
+	#define AES_ASSERTF(x, msg, ...) if (x) {} else { AES_LOG_ERROR("Assertion Failed : " #x " " msg, __VA_ARGS__); AES_DEBUG_BREAK(); }
 #else
 	#define AES_ASSERT(x) AES_ASSUME(x)
 	#define AES_ASSERTF(x, msg, ...) AES_ASSUME(x)

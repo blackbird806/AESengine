@@ -44,6 +44,7 @@ Result<void> Draw2d::init()
 #ifdef __vita__
 	auto const source_fs = readFileBin("app0:assets/shaders/vita/basic2d_fs.gxp");
 	fragmentShaderDescription.source = source_fs.data();
+	fragmentShaderDescription.gxpVertexProgram = vertexShader.getGxpShader();
 #else
 	fragmentShaderDescription.source = readFile("assets/shaders/HLSL/draw2d.fs"); // TODO
 #endif
@@ -56,17 +57,17 @@ Result<void> Draw2d::init()
 	ensureIndexBuffersCapacity(40 * sizeof(Index_t));
 	AES_LOG("buffers initialized");
 
-	BufferDescription viewBufferDesc;
-	viewBufferDesc.bindFlags = BindFlagBits::UniformBuffer;
-	viewBufferDesc.bufferUsage = BufferUsage::Immutable; // @Review default ?
-	viewBufferDesc.cpuAccessFlags = CPUAccessFlagBits::None;
-	viewBufferDesc.sizeInBytes = sizeof(glm::mat4);
-	glm::mat4 viewMtr = glm::orthoLH_ZO(0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 100.0f);
-	viewBufferDesc.initialData = &viewMtr; // TODO
+	//BufferDescription viewBufferDesc;
+	//viewBufferDesc.bindFlags = BindFlagBits::UniformBuffer;
+	//viewBufferDesc.bufferUsage = BufferUsage::Immutable; // @Review default ?
+	//viewBufferDesc.cpuAccessFlags = CPUAccessFlagBits::None;
+	//viewBufferDesc.sizeInBytes = sizeof(glm::mat4);
+	//glm::mat4 viewMtr = glm::orthoLH_ZO(0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 100.0f);
+	//viewBufferDesc.initialData = &viewMtr; // TODO
 
-	err = projectionBuffer.init(viewBufferDesc);
-	if (!err)
-		return err;
+	//err = projectionBuffer.init(viewBufferDesc);
+	//if (!err)
+	//	return err;
 
 	//BlendInfo blendInfo = {};
 	//blendInfo.colorSrc = BlendFactor::One;
@@ -134,32 +135,26 @@ void Draw2d::drawFillRect(Rect const& rect)
 	indices.push_back(iOff + 3);
 	iOff += 4;
 }
-int cpt = 0;
 void Draw2d::executeDrawCommands()
 {
 	AES_PROFILE_FUNCTION();
 
 	iOff = 0;
-	// AES_LOG("So FAr {}", cpt++);
 	vertexBuffer.setData(vertices.data(), vertices.size() * sizeof(Vertex));
 	indexBuffer.setData(indices.data(), indices.size() * sizeof(Index_t));
-	// AES_LOG("So FAr {}", cpt++);
 
 	auto& context = RHIRenderContext::instance();
 	context.setVertexShader(vertexShader);
 	context.setFragmentShader(fragmentShader);
 	//context.setBlendState(blendState);
-	// AES_LOG("So FAr {}", cpt++);
 
 	context.bindVertexBuffer(vertexBuffer, sizeof(Vertex));
 	context.bindIndexBuffer(indexBuffer, IndexTypeFormat::Uint16);
-	// AES_LOG("So FAr {}", cpt++);
 
 	//context.bindVSUniformBuffer(projectionBuffer, 0);
 	
 	uint indicesOffset = 0;
 	uint indicesCount;
-	// AES_LOG("So FAr {}", cpt++);
 
 	for (auto const& cmd : commands)
 	{
@@ -177,13 +172,11 @@ void Draw2d::executeDrawCommands()
 
 		context.drawIndexed(indicesCount, indicesOffset);
 		indicesOffset += indicesCount;
-		// AES_LOG("So FAr {}", cpt++);
 	}
 
 	indices.clear();
 	vertices.clear();
 	commands.clear();
-	// AES_LOG("So FAr {}", cpt++);
 }
 
 // @Review

@@ -601,7 +601,8 @@ void GxmRenderer::drawIndexed(uint indexCount, uint indexOffset)
 				rhiIndexFormatToApi(currentState.indexBufferInfo.typeFormat),
 				((uint16_t*)currentState.indexBufferInfo.buffer) + indexOffset,
 				(uint32_t)indexCount);
-	AES_ASSERT(err == SCE_OK);
+		AES_LOG("sceGxmDraw err {}", sceGxmErrorToString(err));
+		AES_ASSERT(err == SCE_OK);
 	}
 	else {
 		int err = sceGxmDraw(context, rhiPrimitiveTypeToApi(currentState.primitiveType),

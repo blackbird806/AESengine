@@ -175,7 +175,6 @@ Result<void> GxmVertexShader::init(VertexShaderDescription const& desc)
 		auto const formatComponents = getFormatComponents(layout.format);
 		verticesAttributes[i].format = formatComponents.attribFormat;
 		verticesAttributes[i].componentCount = formatComponents.numComponents;
-		// SceGxmProgramParameter const* param = sceGxmProgramFindParameterBySemantic(gxpShader, rhiSemanticTypeToApi(layout.semantic), 0);
 		SceGxmProgramParameter const* param = sceGxmProgramFindParameterByName(gxpShader, layout.parameterName);
 		AES_ASSERTF(param != nullptr, "param {} not found", layout.parameterName);
 		verticesAttributes[i].regIndex = sceGxmProgramParameterGetResourceIndex(param);

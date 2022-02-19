@@ -29,6 +29,7 @@ GxmBuffer& GxmBuffer::operator=(GxmBuffer&& rhs) noexcept
 
 Result<void> GxmBuffer::init(BufferDescription const& desc)
 {
+	AES_ASSERT(desc.sizeInBytes > 0);
 	// @TODO vram memory manager
 	buffer = aes::graphicsAlloc(SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE /* @Review */,
 		desc.sizeInBytes,
@@ -70,7 +71,7 @@ void* GxmBuffer::getHandle()
 
 bool GxmBuffer::isValid() const
 {
-	return buffer != nullptr;
+	return buffer != nullptr && memID != SCE_UID_INVALID_UID;
 }
 
 size_t GxmBuffer::getSize() const
