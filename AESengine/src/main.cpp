@@ -3,6 +3,7 @@
 #include <fstream>
 #include <random>
 
+#include "core/allocator.hpp"
 #include "core/profiler.hpp"
 #include "core/debugMath.hpp"
 #include "engine.hpp"
@@ -209,6 +210,8 @@ public:
 
 	void start() override
 	{
+		using namespace aes;
+
 		AES_PROFILE_FUNCTION();
 		AES_LOG("start");
 

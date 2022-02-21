@@ -2,14 +2,25 @@
 #define AES_ALLOCATOR_HPP
 
 #include "core/aes.hpp"
+#include <memory_resource>
 
 namespace aes
 {
-	// malloc based allocator that is not tracked by memory profiler
-	struct UntrackedAllocator
+	inline unsigned operator "" _ko(unsigned long long p)
 	{
-	};
-	
+		return p * 1024;
+	}
+
+	inline unsigned operator "" _mo(unsigned long long p)
+	{
+		return p * 1024_ko;
+	}
+
+	inline unsigned operator "" _go(unsigned long long p)
+	{
+		return p * 1024_mo;
+	}
+
 	class MemoryProfiler
 	{
 		
@@ -28,19 +39,50 @@ namespace aes
 		size_t nbAllocations = 0;
 	};
 
-	class StackAllocator
+	class IAllocator
+	{
+	public:
+		[[nodiscard]] virtual void* allocate(size_t size, size_t align = 1) = 0;
+		virtual void deallocate(void* ptr) = 0;
+
+		virtual ~IAllocator() {};
+	};
+
+	// compatibility layer between aes allocators and std pmr memory ressource
+	class PmrRessourceAllocator final : public std::pmr::memory_resource
+	{
+	public:
+		PmrRessourceAllocator(IAllocator& alloc);
+	private:
+		void* do_allocate(size_t _Bytes, size_t _Align) override;
+		void do_deallocate(void* _Ptr, size_t _Bytes, size_t _Align) override;
+		bool do_is_equal(const memory_resource& _That) const noexcept override;
+
+		IAllocator* allocator;
+	};
+
+	class Mallocator final : public IAllocator
+	{
+	public:
+		[[nodiscard]] void* allocate(size_t size, size_t align) override;
+		void deallocate(void* ptr) override;
+	};
+
+	class StackAllocator final : public IAllocator
 	{
 	public:
 		
-		StackAllocator(size_t size);
-		~StackAllocator();
-		[[nodiscard]] void* allocate(size_t size, size_t align = 0);
+		StackAllocator(IAllocator& base, size_t size);
+		~StackAllocator() override;
+		[[nodiscard]] void* allocate(size_t size, size_t align) override;
+		void deallocate(void* ptr) override { AES_UNUSED(ptr); }
+
 		void deallocateFromMarker(size_t marker);
 		size_t getMarker() const;
 		
 	private:
-
-		uint8_t* start;;
+		IAllocator* baseAllocator;
+		uint8_t* start;
 		size_t totalSize, offset;
 	};
 
