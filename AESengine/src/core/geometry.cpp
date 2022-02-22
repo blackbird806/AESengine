@@ -106,7 +106,7 @@ static float dotSIMD(__m128 v1, __m128 v2)
 
 static bool ray_PlaneIntersectSIMD(Ray const& r, Plane const& plane)
 {
-	__m128 const invDirV = _mm_set_ps(-plane.dir[0], -plane.dir[1], -plane.dir[2], -plane.dir[3]);
+	__m128 const invDirV = _mm_set_ps(-plane.dir[0], -plane.dir[1], -plane.dir[2], 0.0);
 	float const d = dotSIMD(invDirV, _mm_load_ps(&r.dir[0]));
 	if (d > FLT_EPSILON)
 	{
@@ -123,7 +123,7 @@ static bool ray_PlaneIntersectSIMD(Ray const& r, Plane const& plane)
 bool aes::ray_PlaneIntersect(Ray const& r, Plane const& plane)
 {
 	AES_PROFILE_FUNCTION();
-
+	return ray_PlaneIntersectSIMD(r, plane);
 	// assuming vectors are all normalized
 	float const d = glm::dot(-plane.dir, r.dir);
 	if (d > FLT_EPSILON)
