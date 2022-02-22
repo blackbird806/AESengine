@@ -31,6 +31,8 @@ bool aes::AABB_AABBIntersect(AABB const& a, AABB const& b)
 			(a.min.z <= b.max.z && a.max.z >= b.min.z);
 }
 
+// usage of SIMD is for educational purpose here, it's unlikely more performant than non SIMD implementations
+
 // http://www.cs.uu.nl/docs/vakken/magr/2017-2018/slides/lecture%2005%20-%20SIMD%20recap.pdf
 static bool ray_AABBIntersectSIMD(aes::Ray const& ray, aes::AABB const& box)
 {
