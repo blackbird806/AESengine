@@ -193,7 +193,7 @@ Result<void> Draw2d::ensureVertexBuffersCapacity(size_t size)
 	// reallocate buffers
 	BufferDescription vertexBufferDesc{};
 	vertexBufferDesc.bindFlags = BindFlagBits::VertexBuffer;
-	vertexBufferDesc.bufferUsage = BufferUsage::Dynamic;
+	vertexBufferDesc.usage = MemoryUsage::Dynamic;
 	vertexBufferDesc.cpuAccessFlags = CPUAccessFlagBits::Write;
 	vertexBufferDesc.sizeInBytes = newCapacity;
 
@@ -225,7 +225,7 @@ Result<void> Draw2d::ensureIndexBuffersCapacity(size_t size)
 	// reallocate buffers
 	BufferDescription indexBufferDesc{};
 	indexBufferDesc.bindFlags = BindFlagBits::IndexBuffer;
-	indexBufferDesc.bufferUsage = BufferUsage::Dynamic;
+	indexBufferDesc.usage = MemoryUsage::Dynamic;
 	indexBufferDesc.cpuAccessFlags = CPUAccessFlagBits::Write;
 	indexBufferDesc.sizeInBytes = newCapacity;
 

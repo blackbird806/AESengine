@@ -31,18 +31,21 @@ DXGI_FORMAT aes::rhiFormatToApi(RHIFormat format)
 		return DXGI_FORMAT_R16G16B16A16_FLOAT;
 	case RHIFormat::R32G32B32A32_Float:
 		return DXGI_FORMAT_R32G32B32A32_FLOAT;
+	case RHIFormat::R8G8B8A8_Uint:
+		return DXGI_FORMAT_R8G8B8A8_UINT;
+	default: ;
 	}
 	AES_UNREACHABLE();
 }
 
-D3D11_USAGE aes::rhiBufferUsageToApi(BufferUsage u)
+D3D11_USAGE aes::rhiMemoryUsageToApi(MemoryUsage u)
 {
 	switch (u)
 	{
-	case BufferUsage::Default: return D3D11_USAGE_DEFAULT;
-	case BufferUsage::Immutable: return D3D11_USAGE_IMMUTABLE;
-	case BufferUsage::Dynamic: return D3D11_USAGE_DYNAMIC;
-	case BufferUsage::Staging: return D3D11_USAGE_STAGING;
+	case MemoryUsage::Default: return D3D11_USAGE_DEFAULT;
+	case MemoryUsage::Immutable: return D3D11_USAGE_IMMUTABLE;
+	case MemoryUsage::Dynamic: return D3D11_USAGE_DYNAMIC;
+	case MemoryUsage::Staging: return D3D11_USAGE_STAGING;
 	}
 	AES_UNREACHABLE();
 }

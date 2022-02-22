@@ -20,7 +20,7 @@ namespace aes
 	};
 	using CPUAccessFlags = Flags<CPUAccessFlagBits>;
 
-	enum class BufferUsage
+	enum class MemoryUsage
 	{
 		Default,
 		Immutable,	// GPU Readonly, hidden from CPU
@@ -88,11 +88,11 @@ namespace aes
 		}
 		AES_UNREACHABLE();
 	}
-	
+
 	struct BufferDescription
 	{
 		size_t sizeInBytes;
-		BufferUsage bufferUsage; // @TODO rename usage
+		MemoryUsage usage;
 		BindFlags bindFlags;
 		CPUAccessFlags cpuAccessFlags;
 		void* initialData = nullptr;
@@ -103,13 +103,27 @@ namespace aes
 		R8G8B8A8_Uint,
 		R16G16_Float,
 		R32G32_Float,
-		
+
 		R32G32B32_Float,
 
 		R16G16B16A16_Float,
 		R32G32B32A32_Float,
 	};
-	
+
+	uint getFormatSize(RHIFormat format)
+	{
+		switch(format)
+		{
+		case RHIFormat::R8G8B8A8_Uint: return 4;
+		case RHIFormat::R16G16_Float: return 4;
+		case RHIFormat::R32G32_Float: return 8;
+		case RHIFormat::R32G32B32_Float: return 12;
+		case RHIFormat::R16G16B16A16_Float: return 8;
+		case RHIFormat::R32G32B32A32_Float: return 16;
+		}
+		AES_UNREACHABLE();
+	}
+
 	struct VertexInputLayout
 	{
 		[[deprecated("use parameterName instead")]] // used only by d3d11
@@ -136,6 +150,17 @@ namespace aes
 		// TODO: clean this
 		void const* gxpVertexProgram; 
 	};
+
+	struct TextureDescription
+	{
+		uint width, height;
+		uint mipsLevel;
+		RHIFormat format;
+		MemoryUsage usage;
+		CPUAccessFlags cpuAccess;
+		void* initialData = nullptr;
+	};
+
 }
 
 #endif

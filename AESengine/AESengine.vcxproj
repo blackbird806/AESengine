@@ -64,6 +64,7 @@
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11Model.cpp" />
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11renderer.cpp" />
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11Shader.cpp" />
+    <ClCompile Include="src\renderer\RHI\D3D11\D3D11Texture.cpp" />
     <ClCompile Include="src\renderer\RHI\RHIBuffer.cpp" />
     <ClCompile Include="src\spatial\BSPTree.cpp" />
     <ClCompile Include="src\spatial\octree.cpp" />
@@ -115,7 +116,6 @@
     <ClInclude Include="src\renderer\RHI\RHIRenderContext.hpp" />
     <ClInclude Include="src\renderer\RHI\RHIShader.hpp" />
     <ClInclude Include="src\renderer\RHI\RHIShaderReflection.hpp" />
-    <ClInclude Include="src\renderer\RHI\RHIVertexInputLayout.hpp" />
     <ClInclude Include="src\renderer\vertex.hpp" />
     <ClInclude Include="src\spatial\BSPTree.hpp" />
     <ClInclude Include="src\spatial\octree.hpp" />

@@ -3,15 +3,20 @@
 
 #include <d3d11.h>
 
-namespace aes {
+#include "core/error.hpp"
+#include "renderer/RHI/RHIElements.hpp"
+
+namespace aes
+{
 
 	class D3D11Texture
 	{
-
 	public:
+		Result<void> init(TextureDescription const& info);
 
 	private:
-		ID3D11Texture2D* texture;
+		ID3D11Texture2D* texture = nullptr;
+		ID3D11ShaderResourceView* textureView = nullptr;
 	};
 
 }

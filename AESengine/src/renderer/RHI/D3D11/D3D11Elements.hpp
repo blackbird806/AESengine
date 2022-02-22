@@ -9,7 +9,7 @@ namespace aes
 {
 	DXGI_FORMAT rhiTypeFormatToApi(IndexTypeFormat format);
 	DXGI_FORMAT rhiFormatToApi(RHIFormat format);
-	D3D11_USAGE rhiBufferUsageToApi(BufferUsage u);
+	D3D11_USAGE rhiMemoryUsageToApi(MemoryUsage u);
 	D3D11_BIND_FLAG rhiBufferBindFlagsToApi(BindFlags flags);
 	D3D_PRIMITIVE_TOPOLOGY rhiPrimitiveTypeToApi(DrawPrimitiveType primitiveMode);
 	UINT rhiCPUAccessFlagsToApi(CPUAccessFlags flags);

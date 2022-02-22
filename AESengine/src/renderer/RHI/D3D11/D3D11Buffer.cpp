@@ -35,7 +35,7 @@ Result<void> D3D11Buffer::init(BufferDescription const& desc)
 	bindFlags = desc.bindFlags;
 	
 	D3D11_BUFFER_DESC bufferDesc;
-	bufferDesc.Usage = rhiBufferUsageToApi(desc.bufferUsage);
+	bufferDesc.Usage = rhiMemoryUsageToApi(desc.usage);
 	bufferDesc.ByteWidth = size;
 	bufferDesc.BindFlags = rhiBufferBindFlagsToApi(bindFlags);
 	bufferDesc.CPUAccessFlags = rhiCPUAccessFlagsToApi(desc.cpuAccessFlags);

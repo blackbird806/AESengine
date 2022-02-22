@@ -99,7 +99,7 @@ Result<void> Model::init(std::span<Vertex const> vertices, std::span<uint32_t co
 
 	BufferDescription vertexBufferInfo{};
 	vertexBufferInfo.bindFlags = BindFlagBits::VertexBuffer;
-	vertexBufferInfo.bufferUsage = BufferUsage::Immutable;
+	vertexBufferInfo.usage = MemoryUsage::Immutable;
 	vertexBufferInfo.cpuAccessFlags = CPUAccessFlagBits::None;
 	vertexBufferInfo.sizeInBytes = vertices.size_bytes();
 	vertexBufferInfo.initialData = (void*)vertices.data();
@@ -110,7 +110,7 @@ Result<void> Model::init(std::span<Vertex const> vertices, std::span<uint32_t co
 	
 	BufferDescription indexBufferInfo{};
 	indexBufferInfo.bindFlags = BindFlagBits::IndexBuffer;
-	indexBufferInfo.bufferUsage = BufferUsage::Immutable;
+	indexBufferInfo.usage = MemoryUsage::Immutable;
 	indexBufferInfo.cpuAccessFlags = CPUAccessFlagBits::None;
 	indexBufferInfo.sizeInBytes = indices.size_bytes();
 	indexBufferInfo.initialData = (void*)indices.data();
@@ -121,7 +121,7 @@ Result<void> Model::init(std::span<Vertex const> vertices, std::span<uint32_t co
 
 	BufferDescription modelBufferInfo {};
 	modelBufferInfo.bindFlags = BindFlagBits::UniformBuffer;
-	modelBufferInfo.bufferUsage = BufferUsage::Dynamic;
+	modelBufferInfo.usage = MemoryUsage::Dynamic;
 	modelBufferInfo.sizeInBytes = sizeof(ModelBuffer);
 	modelBufferInfo.cpuAccessFlags = CPUAccessFlagBits::Write;
 
