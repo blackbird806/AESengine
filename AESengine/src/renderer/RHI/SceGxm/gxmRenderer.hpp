@@ -1,5 +1,5 @@
-#ifndef GXMRENDERER_HPP
-#define GXMRENDERER_HPP
+#ifndef AES_GXMRENDERER_HPP
+#define AES_GXMRENDERER_HPP
 
 #include "core/window.hpp"
 #include "renderer/RHI/RHIElements.hpp"
@@ -21,6 +21,8 @@ namespace aes
 	auto constexpr vita_display_buffer_count = 3;
 	auto constexpr vita_msaa_mode = SCE_GXM_MULTISAMPLE_NONE;
 	auto constexpr vita_display_max_pending_swaps = 2;
+	auto constexpr vita_texture_max_resolution = 4096;
+	auto constexpr vita_texture_max_mip_count = 13;
 
 	// allocate memory for GPU use
 	void* graphicsAlloc(SceKernelMemBlockType type, uint32_t size, uint32_t alignement, uint32_t attribs, SceUID* uid, const char* name = "default");

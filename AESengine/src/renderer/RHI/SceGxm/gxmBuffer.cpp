@@ -34,7 +34,7 @@ Result<void> GxmBuffer::init(BufferDescription const& desc)
 	buffer = aes::graphicsAlloc(SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE /* @Review */,
 		desc.sizeInBytes,
 		0 /* alignement */,
-		rhiBufferUsageToApi(desc.bufferUsage),
+		rhiMemoryUsageToApi(desc.usage),
 		&memID);
 	AES_ASSERT(buffer);
 	if (desc.initialData != nullptr)

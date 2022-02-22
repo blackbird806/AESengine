@@ -44,7 +44,7 @@ void* fragmentUsseAlloc(uint32_t size, SceUID* uid, uint32_t* usseOffset)
 	size = aes::align(size, 4096);
 
 	// allocate some memory
-	*uid = sceKernelAllocMemBlock("basic", SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE, size, nullptr);
+	*uid = sceKernelAllocMemBlock("fragmentUsse", SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE, size, nullptr);
 	AES_ASSERT(*uid >= SCE_OK);
 
 	// grab the base address
@@ -66,7 +66,7 @@ static void* vertexUsseAlloc(uint32_t size, SceUID* uid, uint32_t* usseOffset)
 	size = aes::align(size, 4096);
 
 	// allocate some memory
-	*uid = sceKernelAllocMemBlock("basic", SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE, size, nullptr);
+	*uid = sceKernelAllocMemBlock("vertexUsse", SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE, size, nullptr);
 	AES_ASSERT(*uid >= SCE_OK);
 
 	// grab the base address
@@ -132,7 +132,7 @@ static void fragmentUsseFree(SceUID uid)
 static void* patcherHostAlloc(void* userData, uint32_t size)
 {
 	AES_UNUSED(userData);
-	return malloc(size);
+	return malloc(size); // TODO use allocator here
 }
 
 static void patcherHostFree(void* userData, void* mem)

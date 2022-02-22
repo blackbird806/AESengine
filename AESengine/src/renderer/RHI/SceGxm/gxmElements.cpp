@@ -16,7 +16,6 @@ SceGxmPrimitiveType aes::rhiPrimitiveTypeToApi(DrawPrimitiveType type)
 		default:
 			AES_ASSERTF(false, "DrawPrimitiveType not supported {}", type);
 	}
-	AES_UNREACHABLE();
 }
 
 SceGxmIndexFormat aes::rhiIndexFormatToApi(IndexTypeFormat format)
@@ -28,15 +27,15 @@ SceGxmIndexFormat aes::rhiIndexFormatToApi(IndexTypeFormat format)
 	AES_ASSERT(false); // unsupported format type
 }
 
-uint8_t aes::rhiBufferUsageToApi(BufferUsage usage)
+uint8_t aes::rhiMemoryUsageToApi(MemoryUsage usage)
 {
 	switch(usage)
 	{
-		case BufferUsage::Default:
-		case BufferUsage::Staging:
+		case MemoryUsage::Default:
+		case MemoryUsage::Staging:
 			return SCE_GXM_MEMORY_ATTRIB_READ | SCE_GXM_MEMORY_ATTRIB_WRITE;
-		case BufferUsage::Dynamic:
-		case BufferUsage::Immutable:
+		case MemoryUsage::Dynamic:
+		case MemoryUsage::Immutable:
 			return SCE_GXM_MEMORY_ATTRIB_READ;
 	}
 	AES_UNREACHABLE();

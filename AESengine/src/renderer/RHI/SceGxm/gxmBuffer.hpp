@@ -1,5 +1,5 @@
-#ifndef GXMBUFFER_HPP
-#define GXMBUFFER_HPP
+#ifndef AES_GXMBUFFER_HPP
+#define AES_GXMBUFFER_HPP
 
 #include "renderer/RHI/RHIElements.hpp"
 #include "core/error.hpp"

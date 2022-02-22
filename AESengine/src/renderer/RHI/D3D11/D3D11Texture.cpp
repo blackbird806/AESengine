@@ -5,6 +5,22 @@
 
 using namespace aes;
 
+D3D11Texture::D3D11Texture(D3D11Texture&& rhs) noexcept :
+	texture(rhs.texture), textureView(rhs.textureView)
+{
+	rhs.texture = nullptr;
+	// only texture is checked in dtor
+	//rhs.textureView = nullptr;
+}
+
+D3D11Texture& D3D11Texture::operator=(D3D11Texture&& rhs) noexcept
+{
+	texture = rhs.texture;
+	textureView = rhs.textureView;
+	rhs.texture = nullptr;
+	//rhs.textureView = nullptr;
+}
+
 Result<void> D3D11Texture::init(TextureDescription const& info)
 {
 	ID3D11Device* device = D3D11Renderer::instance().getDevice();
@@ -46,13 +62,27 @@ Result<void> D3D11Texture::init(TextureDescription const& info)
 	srvDesc.Format = textureDesc.Format;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MostDetailedMip = 0;
-	srvDesc.Texture2D.MipLevels = -1;
+	srvDesc.Texture2D.MipLevels = -1; // @Review
 
 	// Create the shader resource view for the texture.
-	hResult = device->CreateShaderResourceView(m_texture, &srvDesc, &m_textureView);
-	if (FAILED(hResult))
+	err = device->CreateShaderResourceView(texture, &srvDesc, &textureView);
+	if (FAILED(err))
 	{
-		return false;
+		AES_LOG_ERROR("D3D11 CreateShaderResourceView failed !");
+		return { AESError::GPUTextureCreationFailed };
 	}
 
+	return {};
+}
+
+D3D11Texture::~D3D11Texture() noexcept
+{
+	if (texture)
+	{
+		texture->Release();
+		textureView->Release();
+
+		texture = nullptr;
+		textureView = nullptr;
+	}
 }
