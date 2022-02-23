@@ -19,6 +19,7 @@ D3D11Texture& D3D11Texture::operator=(D3D11Texture&& rhs) noexcept
 	textureView = rhs.textureView;
 	rhs.texture = nullptr;
 	//rhs.textureView = nullptr;
+	return *this;
 }
 
 Result<void> D3D11Texture::init(TextureDescription const& info)
@@ -85,4 +86,9 @@ D3D11Texture::~D3D11Texture() noexcept
 		texture = nullptr;
 		textureView = nullptr;
 	}
+}
+
+ID3D11ShaderResourceView* D3D11Texture::getResourceView() const
+{
+	return textureView;
 }

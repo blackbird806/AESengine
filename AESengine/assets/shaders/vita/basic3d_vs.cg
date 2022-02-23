@@ -1,10 +1,4 @@
-﻿struct VS_INPUT
-{
-    float4 position : POSITION;
-    float4 color : COLOR;
-};
-
-struct {
+﻿struct {
     float4x4 viewMatrix;
     float4x4 projectionMatrix;
 } CameraBuffer : BUFFER0;
@@ -13,7 +7,7 @@ uniform struct {
     float4x4 worldMatrix;
 } ModelBuffer : BUFFER1;
 
-void main(VS_INPUT input,
+void main(float4 aPosition, float4 aColor,
 	out float4 position : POSITION,
 	out float4 color : COLOR)
 {
@@ -21,10 +15,10 @@ void main(VS_INPUT input,
     input.position.w = 1.0f;
 
     // Calculate the position of the vertex against the world, view, and projection matrices.
-    position = mul(input.position, ModelBuffer.worldMatrix);
+    position = mul(aPosition, ModelBuffer.worldMatrix);
     position = mul(position, CameraBuffer.viewMatrix);
     position = mul(position, CameraBuffer.projectionMatrix);
 
     // Store the input color for the pixel shader to use.
-    color = input.color;
+    color = aColor;
 }

@@ -67,7 +67,6 @@ std::vector<Vertex> aes::getCubeVertices(glm::vec4 const& color)
 	return vertices;
 }
 
-
 Result<Model> aes::createCube()
 {
 	AES_PROFILE_FUNCTION();
@@ -132,11 +131,6 @@ Result<void> Model::init(std::span<Vertex const> vertices, std::span<uint32_t co
 	return {};
 }
 
-void Model::destroy()
-{
-	AES_PROFILE_FUNCTION();
-}
-
 void Model::draw()
 {
 	AES_PROFILE_FUNCTION();
@@ -144,8 +138,8 @@ void Model::draw()
 	modelBuffer.setDataFromPOD(glm::transpose(toWorld));
 
 	RHIRenderContext& renderContext = RHIRenderContext::instance();
+	renderContext.setDrawPrimitiveMode(DrawPrimitiveType::Triangles);
 	renderContext.bindVertexBuffer(vertexBuffer, sizeof(Vertex));
 	renderContext.bindIndexBuffer(indexBuffer, IndexTypeFormat::Uint32);
-	renderContext.setDrawPrimitiveMode(DrawPrimitiveType::Triangles);
 	renderContext.drawIndexed(indexCount);
 }

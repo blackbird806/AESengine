@@ -146,45 +146,67 @@ void D3D11Renderer::destroy()
 
 void D3D11Renderer::bindVSUniformBuffer(RHIBuffer& buffer, uint slot)
 {
+	AES_PROFILE_FUNCTION();
 	ID3D11Buffer* handle = buffer.getHandle();
 	deviceContext->VSSetConstantBuffers(slot, 1, &handle);
 }
 
 void D3D11Renderer::bindFSUniformBuffer(RHIBuffer& buffer, uint slot)
 {
+	AES_PROFILE_FUNCTION();
 	ID3D11Buffer* handle = buffer.getHandle();
 	deviceContext->PSSetConstantBuffers(slot, 1, &handle);
 }
 
+void D3D11Renderer::bindVertexTexture(RHITexture& tex, uint index)
+{
+	AES_PROFILE_FUNCTION();
+	ID3D11ShaderResourceView* res[] = { tex.getResourceView() };
+	deviceContext->VSSetShaderResources(index, 1, res);
+}
+
+void D3D11Renderer::bindFragmentTexture(RHITexture& tex, uint index)
+{
+	AES_PROFILE_FUNCTION();
+	ID3D11ShaderResourceView* res[] = { tex.getResourceView() };
+	deviceContext->PSSetShaderResources(index, 1, res);
+}
+
 void D3D11Renderer::bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset)
 {
+	AES_PROFILE_FUNCTION();
 	ID3D11Buffer* handle = buffer.getHandle();
 	deviceContext->IASetVertexBuffers(0, 1, &handle, &stride, &offset);
 }
 
 void D3D11Renderer::bindIndexBuffer(RHIBuffer& buffer, IndexTypeFormat typeFormat, uint offset)
 {
+	AES_PROFILE_FUNCTION();
 	deviceContext->IASetIndexBuffer(buffer.getHandle(), rhiTypeFormatToApi(typeFormat), offset);
 }
 
 void D3D11Renderer::setFragmentShader(RHIFragmentShader& fs)
 {
+	AES_PROFILE_FUNCTION();
 	deviceContext->PSSetShader(fs.getHandle(), nullptr, 0);
 }
 
 void D3D11Renderer::setVertexShader(RHIVertexShader& vs)
 {
+	AES_PROFILE_FUNCTION();
 	deviceContext->IASetInputLayout(vs.getInputLayout());
 	deviceContext->VSSetShader(vs.getHandle(), nullptr, 0);
 }
 
 void D3D11Renderer::setDrawPrimitiveMode(DrawPrimitiveType mode)
 {
+	AES_PROFILE_FUNCTION();
 	deviceContext->IASetPrimitiveTopology(rhiPrimitiveTypeToApi(mode));
 }
 
 void D3D11Renderer::setBlendState(RHIBlendState& blendState)
 {
+	AES_PROFILE_FUNCTION();
 	deviceContext->OMSetBlendState(blendState.getHandle(), nullptr, 0xffffffff);
 }
 
@@ -200,6 +222,7 @@ ID3D11DeviceContext* D3D11Renderer::getDeviceContext()
 
 void D3D11Renderer::drawIndexed(uint indexCount, uint indexOffset)
 {
+	AES_PROFILE_FUNCTION();
 	deviceContext->DrawIndexed(indexCount, indexOffset, 0);
 }
 

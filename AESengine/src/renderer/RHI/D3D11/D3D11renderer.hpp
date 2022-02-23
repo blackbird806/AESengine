@@ -10,6 +10,7 @@
 
 #include "D3D11Shader.hpp"
 #include "D3D11BlendState.hpp"
+#include "D3D11Texture.hpp"
 
 namespace aes {
 	class RHIBuffer;
@@ -26,6 +27,9 @@ namespace aes {
 
 		void bindVSUniformBuffer(RHIBuffer& buffer, uint slot);
 		void bindFSUniformBuffer(RHIBuffer& buffer, uint slot);
+
+		void bindVertexTexture(RHITexture& tex, uint index);
+		void bindFragmentTexture(RHITexture& tex, uint index);
 
 		void bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset = 0);
 		void bindIndexBuffer(RHIBuffer& buffer, IndexTypeFormat typeFormat, uint offset = 0);

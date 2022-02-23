@@ -62,7 +62,6 @@ namespace aes
 		
 		Result<void> init(std::span<Vertex const> vertices, std::span<uint32_t const> indices);
 		
-		void destroy();
 		void draw();
 		
 		glm::mat4 toWorld;

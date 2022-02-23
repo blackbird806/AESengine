@@ -550,6 +550,7 @@ void GxmRenderer::endFrame()
 void GxmRenderer::bindVSUniformBuffer(RHIBuffer& buffer, uint slot)
 {
 	AES_PROFILE_FUNCTION();
+	AES_ASSERT(slot < SCE_GXM_MAX_UNIFORM_BUFFERS);
 	int err = sceGxmSetVertexUniformBuffer(context, slot, buffer.getHandle());
 	AES_ASSERT(err == SCE_OK);
 }
@@ -557,6 +558,7 @@ void GxmRenderer::bindVSUniformBuffer(RHIBuffer& buffer, uint slot)
 void GxmRenderer::bindFSUniformBuffer(RHIBuffer& buffer, uint slot)
 {
 	AES_PROFILE_FUNCTION();
+	AES_ASSERT(slot < SCE_GXM_MAX_UNIFORM_BUFFERS);
 	int err = sceGxmSetFragmentUniformBuffer(context, slot, buffer.getHandle());
 	AES_ASSERT(err == SCE_OK);
 }

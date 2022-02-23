@@ -15,6 +15,8 @@ namespace aes
 		D3D11Texture& operator=(D3D11Texture&& rhs) noexcept;
 		Result<void> init(TextureDescription const& info);
 		~D3D11Texture() noexcept;
+
+		ID3D11ShaderResourceView* getResourceView() const;
 	private:
 		ID3D11Texture2D* texture = nullptr;
 		ID3D11ShaderResourceView* textureView = nullptr;
