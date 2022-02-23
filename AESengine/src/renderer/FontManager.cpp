@@ -59,7 +59,7 @@ static std::vector<uint32_t> createCheckboard(uint resX, uint resY, float segmen
 	std::vector<uint32_t> bitmap(resX * resY);
 	for (uint i = 0; i < resX; i++)
 	{
-		int const segmentNumI = i / segmentSizeX;
+		uint const segmentNumI = i / segmentSizeX;
 		for (uint j = 0; j < resY; j++)
 		{
 			int const segmentNumJ = j / segmentSizeY;

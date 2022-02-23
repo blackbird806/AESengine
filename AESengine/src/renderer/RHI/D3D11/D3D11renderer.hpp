@@ -1,5 +1,5 @@
-#ifndef D3D11RENDERER_HPP
-#define D3D11RENDERER_HPP
+#ifndef AES_D3D11RENDERER_HPP
+#define AES_D3D11RENDERER_HPP
 
 #include "core/aes.hpp"
 #include "core/window.hpp"

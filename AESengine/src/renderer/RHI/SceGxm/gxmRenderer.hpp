@@ -6,6 +6,7 @@
 #include "renderer/RHI/RHIBuffer.hpp"
 
 #include "../RHIBuffer.hpp"
+#include "../RHITexture.hpp"
 #include "../RHIShader.hpp"
 #include <glm/glm.hpp>
 #include <vitasdk.h>
@@ -17,7 +18,8 @@ namespace aes
 	auto constexpr vita_display_height = 544;
 	auto constexpr vita_display_stride_in_pixels = 1024;
 	auto constexpr vita_display_pixel_format = SCE_DISPLAY_PIXELFORMAT_A8B8G8R8;
-	auto constexpr vita_display_color_format = SCE_GXM_COLOR_FORMAT_A8B8G8R8;
+	// auto constexpr vita_display_color_format = SCE_GXM_COLOR_FORMAT_A8B8G8R8;
+	auto constexpr vita_display_color_format = SCE_GXM_COLOR_FORMAT_U8U8U8U8_RGBA;
 	auto constexpr vita_display_buffer_count = 3;
 	auto constexpr vita_msaa_mode = SCE_GXM_MULTISAMPLE_NONE;
 	auto constexpr vita_display_max_pending_swaps = 2;
@@ -54,6 +56,10 @@ namespace aes
 			
 			void bindVSUniformBuffer(RHIBuffer& buffer, uint slot);
 			void bindFSUniformBuffer(RHIBuffer& buffer, uint slot);
+
+			void bindVertexTexture(RHITexture& tex, uint index);
+			void bindFragmentTexture(RHITexture& tex, uint index);
+
 			void bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset = 0);
 			void bindIndexBuffer(RHIBuffer& buffer, IndexTypeFormat typeFormat, uint offset = 0);
 

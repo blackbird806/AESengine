@@ -11,6 +11,7 @@ namespace aes
 	SceGxmIndexFormat rhiIndexFormatToApi(IndexTypeFormat format);
 	SceGxmParameterSemantic rhiSemanticTypeToApi(SemanticType type);
 	uint8_t rhiMemoryUsageToApi(MemoryUsage usage);
+	SceGxmTextureFormat rhiFormatToApiTextureFormat(RHIFormat format);
 }
 
 #endif

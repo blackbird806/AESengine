@@ -110,7 +110,7 @@ namespace aes
 		R32G32B32A32_Float,
 	};
 
-	uint getFormatSize(RHIFormat format)
+	constexpr uint getFormatSize(RHIFormat format)
 	{
 		switch(format)
 		{

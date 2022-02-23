@@ -19,6 +19,7 @@ namespace aes
 		ID3D11Texture2D* texture = nullptr;
 		ID3D11ShaderResourceView* textureView = nullptr;
 	};
+	using RHITexture = D3D11Texture;
 }
 
 #endif // !D3D11TEXTURE_HPP

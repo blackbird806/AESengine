@@ -561,6 +561,20 @@ void GxmRenderer::bindFSUniformBuffer(RHIBuffer& buffer, uint slot)
 	AES_ASSERT(err == SCE_OK);
 }
 
+void GxmRenderer::bindVertexTexture(RHITexture& tex, uint index)
+{
+	AES_PROFILE_FUNCTION();
+	int err = sceGxmSetVertexTexture(context, index, tex.getHandle());
+	AES_ASSERT(err == SCE_OK);
+}
+
+void GxmRenderer::bindFragmentTexture(RHITexture& tex, uint index)
+{
+	AES_PROFILE_FUNCTION();
+	int err = sceGxmSetFragmentTexture(context, index, tex.getHandle());
+	AES_ASSERT(err == SCE_OK);
+}
+
 void GxmRenderer::bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset)
 {
 	AES_PROFILE_FUNCTION();

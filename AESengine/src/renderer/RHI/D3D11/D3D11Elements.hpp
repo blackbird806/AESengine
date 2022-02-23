@@ -1,5 +1,5 @@
-#ifndef D3D11ELEMENTS_HPP
-#define D3D11ELEMENTS_HPP
+#ifndef AES_D3D11ELEMENTS_HPP
+#define AES_D3D11ELEMENTS_HPP
 
 #include <d3d11.h>
 

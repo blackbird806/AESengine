@@ -56,3 +56,14 @@ SceGxmParameterSemantic aes::rhiSemanticTypeToApi(SemanticType type)
 	}
 	AES_UNREACHABLE();
 }
+
+SceGxmTextureFormat aes::rhiFormatToApiTextureFormat(RHIFormat format)
+{
+	switch(format)
+	{
+		case RHIFormat::R8G8B8A8_Uint: return SCE_GXM_TEXTURE_FORMAT_U8U8U8U8_RGBA;
+		case RHIFormat::R16G16_Float: return SCE_GXM_TEXTURE_FORMAT_F16F16_RGGG; // @review
+		case RHIFormat::R16G16B16A16_Float: return SCE_GXM_TEXTURE_FORMAT_F16F16F16F16_RGBA;
+	}
+	AES_ASSERT(false); // unsupported format type
+}

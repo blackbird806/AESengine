@@ -16,7 +16,8 @@ Result<void> Draw2d::init()
 	vertexInputLayout[0].offset = 0;
 	vertexInputLayout[0].format = RHIFormat::R32G32_Float;
 
-	// vertexInputLayout[1].semantic = SemanticType::TexCoord;
+	//vertexInputLayout[1].semantic = SemanticType::TexCoord;
+	//vertexInputLayout[1].parameterName = "aTexCoord";
 	// vertexInputLayout[1].offset = sizeof(glm::vec2);
 	// vertexInputLayout[1].format = RHIFormat::R32G32_Float;
 

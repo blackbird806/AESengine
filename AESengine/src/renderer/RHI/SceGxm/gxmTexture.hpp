@@ -12,12 +12,15 @@ namespace aes
 		public:
 		Result<void> init(TextureDescription const& info);
 
-
+		~GxmTexture() noexcept;
+		SceGxmTexture const* getHandle() const;
 		private:
-			SceUID memID;
-			SceGxmTexture texture;
+		
+		SceUID memID;
+		SceGxmTexture texture;
 	};
-} // namespace aes
 
+	using RHITexture = GxmTexture;
+} // namespace aes
 
 #endif

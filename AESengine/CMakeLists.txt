@@ -69,6 +69,7 @@ file(
   src/renderer/model.cpp
   src/renderer/draw2d.cpp
   src/renderer/material.cpp
+  src/renderer/textureUtility.cpp
   src/renderer/RHI/*
   src/renderer/RHI/SceGxm/*
 

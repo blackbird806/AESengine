@@ -8,6 +8,8 @@
 #include "core/color.hpp"
 #include "renderer/RHI/RHIRenderContext.hpp"
 #include "renderer/draw2d.hpp"
+#include "renderer/RHI/RHITexture.hpp"
+#include "renderer/textureUtility.hpp"
 
 class Game : public aes::Engine
 {
@@ -16,6 +18,7 @@ public:
 
 	aes::RHIBuffer vertexBuffer;
 	aes::RHIBuffer indexBuffer;
+	aes::RHITexture texture;
 	aes::RHIFragmentShader fragmentShader;
 	aes::RHIVertexShader vertexShader;
 	aes::Draw2d draw2d;
@@ -29,6 +32,7 @@ public:
 	{
 		glm::vec2 pos;
 		//uint32_t color;
+		glm::vec2 uv;
 		glm::vec4 color;
 	};
 
@@ -39,82 +43,104 @@ public:
 		AES_PROFILE_FUNCTION();
 		AES_LOG("start");
 
-		//Vertex basicVertices[3];
-		//basicVertices[0].pos = { -0.5f, -0.5f };
-		////basicVertices[0].color = aes::Color::White;
-		//basicVertices[0].color = { 1.0f, 0.0f, 0.0f, 1.0f };
+		Vertex basicVertices[3];
+		basicVertices[0].pos = { -0.5f, -0.5f };
+		//basicVertices[0].color = aes::Color::White;
+		basicVertices[0].uv = { 0.0f, 0.0f };
+		basicVertices[0].color = { 1.0f, 0.0f, 1.0f, 1.0f };
 
-		//basicVertices[1].pos = { 0.5f, -0.5f };
-		////basicVertices[1].color = 0xff0000ff;
-		//basicVertices[1].color = { 1.0f, 0.0f, 0.0f, 1.0f };
+		basicVertices[1].pos = { 0.5f, -0.5f };
+		basicVertices[1].uv = { 1.0f, 0.0f };
+		//basicVertices[1].color = 0xff0000ff;
+		basicVertices[1].color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-		//basicVertices[2].pos = { -0.5f, 0.5f };
-		////basicVertices[2].color = 0xfff00fff;
-		//basicVertices[1].color = { 0.0f, 1.0f, 0.0f, 1.0f };
+		basicVertices[2].pos = { -0.5f, 0.5f };
+		//basicVertices[2].color = 0xfff00fff;
+		basicVertices[2].uv = { 0.0f, 1.0f };
+		basicVertices[2].color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-		//{
-		//	aes::BufferDescription vertexBufferDescription;
-		//	vertexBufferDescription.sizeInBytes = sizeof(basicVertices);
-		//	vertexBufferDescription.bufferUsage = aes::BufferUsage::Dynamic;
-		//	vertexBufferDescription.cpuAccessFlags = aes::CPUAccessFlagBits::Write;
-		//	vertexBufferDescription.bindFlags = aes::BindFlagBits::VertexBuffer;
-		//	vertexBufferDescription.initialData = basicVertices;
-		//	vertexBuffer.init(vertexBufferDescription);
-		//}
+		{
+			aes::BufferDescription vertexBufferDescription;
+			vertexBufferDescription.sizeInBytes = sizeof(basicVertices);
+			vertexBufferDescription.usage = aes::MemoryUsage::Dynamic;
+			vertexBufferDescription.cpuAccessFlags = aes::CPUAccessFlagBits::Write;
+			vertexBufferDescription.bindFlags = aes::BindFlagBits::VertexBuffer;
+			vertexBufferDescription.initialData = basicVertices;
+			vertexBuffer.init(vertexBufferDescription);
+		}
 
-		//uint16_t indices[] = { 0, 1, 2, 0 };
-		//{
-		//	aes::BufferDescription indexBufferDescription;
-		//	indexBufferDescription.sizeInBytes = sizeof(indices);
-		//	indexBufferDescription.bufferUsage = aes::BufferUsage::Dynamic;
-		//	indexBufferDescription.cpuAccessFlags = aes::CPUAccessFlagBits::Write;
-		//	indexBufferDescription.bindFlags = aes::BindFlagBits::IndexBuffer;
-		//	indexBufferDescription.initialData = indices;
-		//	indexBuffer.init(indexBufferDescription);
-		//}
-		//AES_LOG("buffers initialized");
+		uint16_t indices[] = { 0, 1, 2, 0 };
+		{
+			aes::BufferDescription indexBufferDescription;
+			indexBufferDescription.sizeInBytes = sizeof(indices);
+			indexBufferDescription.usage = aes::MemoryUsage::Dynamic;
+			indexBufferDescription.cpuAccessFlags = aes::CPUAccessFlagBits::Write;
+			indexBufferDescription.bindFlags = aes::BindFlagBits::IndexBuffer;
+			indexBufferDescription.initialData = indices;
+			indexBuffer.init(indexBufferDescription);
+		}
+		AES_LOG("buffers initialized");
 
-		//aes::VertexInputLayout vertexInputLayout[2];
-		//vertexInputLayout[0].parameterName = "aPosition";
-		//vertexInputLayout[0].semantic = aes::SemanticType::Position;
-		//vertexInputLayout[0].offset = 0;
-		//vertexInputLayout[0].format = RHIFormat::R32G32_Float;
+		aes::VertexInputLayout vertexInputLayout[3];
+		vertexInputLayout[0].parameterName = "aPosition";
+		vertexInputLayout[0].semantic = aes::SemanticType::Position;
+		vertexInputLayout[0].offset = 0;
+		vertexInputLayout[0].format = RHIFormat::R32G32_Float;
 
-		//vertexInputLayout[1].parameterName = "aColor";
-		//vertexInputLayout[1].semantic = aes::SemanticType::Color;
-		//vertexInputLayout[1].offset = sizeof(glm::vec2);
-		////vertexInputLayout[1].format = RHIFormat::R8G8B8A8_Uint;
-		//vertexInputLayout[1].format = RHIFormat::R32G32B32A32_Float;
+		vertexInputLayout[1].parameterName = "aTexCoord";
+		vertexInputLayout[1].semantic = aes::SemanticType::TexCoord;
+		vertexInputLayout[1].offset = sizeof(glm::vec2);
+		vertexInputLayout[1].format = RHIFormat::R32G32_Float;
 
-		//aes::VertexShaderDescription vertexShaderDescription;
-		//static auto const source_vs = aes::readFileBin("app0:assets/shaders/vita/basic2d_vs.gxp");
-		//vertexShaderDescription.source = source_vs.data();
-		//vertexShaderDescription.verticesLayout = vertexInputLayout;
-		//vertexShaderDescription.verticesStride = sizeof(Vertex);
-		//auto err = vertexShader.init(vertexShaderDescription);
-		//AES_LOG("vertex shader err init");
+		vertexInputLayout[2].parameterName = "aColor";
+		vertexInputLayout[2].semantic = aes::SemanticType::Color;
+		vertexInputLayout[2].offset = sizeof(glm::vec2) * 2;
+		//vertexInputLayout[2].format = RHIFormat::R8G8B8A8_Uint;
+		vertexInputLayout[2].format = RHIFormat::R32G32B32A32_Float;
 
-		//aes::FragmentShaderDescription fragmentShaderDescription;
-		//static auto const source_fs = aes::readFileBin("app0:assets/shaders/vita/basic2d_fs.gxp");
-		//fragmentShaderDescription.source = source_fs.data();
-		//fragmentShaderDescription.gxpVertexProgram = vertexShader.getGxpShader();
-		//err = fragmentShader.init(fragmentShaderDescription);
-		//AES_LOG("fragment shader init");
+		aes::VertexShaderDescription vertexShaderDescription;
+		static auto const source_vs = aes::readFileBin("app0:assets/shaders/vita/basic2d_vs.gxp");
+		vertexShaderDescription.source = source_vs.data();
+		vertexShaderDescription.verticesLayout = vertexInputLayout;
+		vertexShaderDescription.verticesStride = sizeof(Vertex);
+		auto err = vertexShader.init(vertexShaderDescription);
+		AES_LOG("vertex shader err init");
 
-		draw2d.init();
+		aes::FragmentShaderDescription fragmentShaderDescription;
+		static auto const source_fs = aes::readFileBin("app0:assets/shaders/vita/basic2d_fs.gxp");
+		fragmentShaderDescription.source = source_fs.data();
+		fragmentShaderDescription.gxpVertexProgram = vertexShader.getGxpShader();
+		err = fragmentShader.init(fragmentShaderDescription);
+		AES_LOG("fragment shader init");
+
+		aes::TextureDescription textureDesc = {};
+		textureDesc.format = RHIFormat::R8G8B8A8_Uint;
+		textureDesc.width = 512;
+		textureDesc.height = 512;
+		textureDesc.mipsLevel = 0;
+		textureDesc.usage = MemoryUsage::Immutable;
+		textureDesc.cpuAccess = CPUAccessFlagBits::None;
+
+		std::vector<Color> bitmap(textureDesc.width * textureDesc.height);
+		buildCheckboard(bitmap, textureDesc.width, textureDesc.height, Color::Blue, Color::Green, 0.1);
+		textureDesc.initialData = bitmap.data();
+		texture.init(textureDesc);
+		AES_LOG("texture init");
+
+		//draw2d.init();
 	}
 
 	void update(float dt) override
 	{
 		AES_PROFILE_FUNCTION();
 
-		draw2d.setMatrix(glm::mat4(1.0f));
-		//draw2d.setColor(aes::Color::Blue);
-		//draw2d.drawLine({ {0.0f, 0.0f}, {1.0f, 0.0f} });
-		//draw2d.setColor(aes::Color::Green);
-		//draw2d.drawLine({ {0.0f, 0.0f}, {0.0f, 1.0f} });
-		draw2d.setColor(aes::Color::Red);
-		draw2d.drawFillRect({ {0.5f, 0.5f}, {-1.0f, -1.0f} });
+		//draw2d.setMatrix(glm::mat4(1.0f));
+		////draw2d.setColor(aes::Color::Blue);
+		////draw2d.drawLine({ {0.0f, 0.0f}, {1.0f, 0.0f} });
+		////draw2d.setColor(aes::Color::Green);
+		////draw2d.drawLine({ {0.0f, 0.0f}, {0.0f, 1.0f} });
+		//draw2d.setColor(aes::Color::Red);
+		//draw2d.drawFillRect({ {0.5f, 0.5f}, {-1.0f, -1.0f} });
 	}
 
 	void draw() override
@@ -124,14 +150,15 @@ public:
 		AES_PROFILE_FUNCTION();
 		auto context = RHIRenderContext::instance();
 
-		//context.setDrawPrimitiveMode(DrawPrimitiveType::Triangles);
-		//context.setVertexShader(vertexShader);
-		//context.setFragmentShader(fragmentShader);
-		//context.bindVertexBuffer(vertexBuffer, sizeof(Vertex));
-		//context.bindIndexBuffer(indexBuffer, IndexTypeFormat::Uint16);
-		//context.drawIndexed(3, 0);
+		context.setDrawPrimitiveMode(DrawPrimitiveType::Triangles);
+		context.setVertexShader(vertexShader);
+		context.setFragmentShader(fragmentShader);
+		context.bindVertexBuffer(vertexBuffer, sizeof(Vertex));
+		context.bindIndexBuffer(indexBuffer, IndexTypeFormat::Uint16);
+		context.bindFragmentTexture(texture, 0);
+		context.drawIndexed(3, 0);
 
-		draw2d.executeDrawCommands();
+		//draw2d.executeDrawCommands();
 	}
 };
 

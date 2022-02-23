@@ -1,5 +1,5 @@
-#ifndef RHIBUFFER_HPP
-#define RHIBUFFER_HPP
+#ifndef AES_RHIBUFFER_HPP
+#define AES_RHIBUFFER_HPP
 
 #include "renderer/RHI/RHI.hpp"
 #include <cstddef>

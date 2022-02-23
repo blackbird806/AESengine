@@ -1,5 +1,5 @@
-#ifndef RHISHADER_HPP
-#define RHISHADER_HPP
+#ifndef AES_RHISHADER_HPP
+#define AES_RHISHADER_HPP
 
 #include "renderer/RHI/RHI.hpp"
 
