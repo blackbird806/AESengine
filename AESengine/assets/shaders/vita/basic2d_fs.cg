@@ -1,4 +1,7 @@
-﻿float4 main(float4 vColor : COLOR, float2 vTexCoord : TEXCOORD0, uniform sampler2D tex)
+﻿float4 main(float4 vColor : COLOR,
+//  float2 vTexCoord : TEXCOORD0, 
+ uniform sampler2D tex)
 {
-	return tex2D(tex, vTexCoord) * vColor;
+	// return tex2D(tex, vTexCoord) * vColor;
+	return vColor;
 }

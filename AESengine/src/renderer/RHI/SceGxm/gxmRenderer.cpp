@@ -606,18 +606,34 @@ void GxmRenderer::setVertexShader(RHIVertexShader& vs)
 void GxmRenderer::setDrawPrimitiveMode(DrawPrimitiveType mode)
 {
 	currentState.primitiveType = mode;
+	SceGxmPolygonMode polygonMode;
+	switch(mode)
+	{
+		case DrawPrimitiveType::Lines:
+		case DrawPrimitiveType::LineStrip:
+			polygonMode = SCE_GXM_POLYGON_MODE_LINE;
+			break;
+		case DrawPrimitiveType::Triangles:
+		case DrawPrimitiveType::TriangleStrip:
+			polygonMode = SCE_GXM_POLYGON_MODE_TRIANGLE_FILL;
+			break;
+		case DrawPrimitiveType::Points:
+			polygonMode = SCE_GXM_POLYGON_MODE_POINT;
+			break;
+	}
+	sceGxmSetFrontPolygonMode(context, polygonMode);
 }
 
 void GxmRenderer::drawIndexed(uint indexCount, uint indexOffset)
 {
 	AES_PROFILE_FUNCTION();
+	// @Review
 	if (currentState.indexBufferInfo.typeFormat == IndexTypeFormat::Uint16)
 	{
 			int err = sceGxmDraw(context, rhiPrimitiveTypeToApi(currentState.primitiveType),
 				rhiIndexFormatToApi(currentState.indexBufferInfo.typeFormat),
 				((uint16_t*)currentState.indexBufferInfo.buffer) + indexOffset,
 				(uint32_t)indexCount);
-		AES_LOG("sceGxmDraw err {}", sceGxmErrorToString(err));
 		AES_ASSERT(err == SCE_OK);
 	}
 	else {

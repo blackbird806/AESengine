@@ -136,6 +136,7 @@ void Draw2d::drawFillRect(Rect const& rect)
 	indices.push_back(iOff + 3);
 	iOff += 4;
 }
+
 void Draw2d::executeDrawCommands()
 {
 	AES_PROFILE_FUNCTION();
