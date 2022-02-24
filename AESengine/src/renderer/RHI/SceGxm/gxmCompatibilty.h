@@ -8,4 +8,7 @@
 #define SCE_DISPLAY_UPDATETIMING_NEXTHSYNC	0
 #define SCE_DISPLAY_UPDATETIMING_NEXTVSYNC	1
 
+#define SCE_CTRL_L (1 << 8)
+#define SCE_CTRL_R (1 << 9)
+
 #endif

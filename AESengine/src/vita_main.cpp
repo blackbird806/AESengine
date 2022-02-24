@@ -18,6 +18,7 @@ public:
 
 	aes::RHIBuffer vertexBuffer;
 	aes::RHIBuffer indexBuffer;
+	aes::RHIBuffer uniformBuffer;
 	aes::RHITexture texture;
 	aes::RHIFragmentShader fragmentShader;
 	aes::RHIVertexShader vertexShader;
@@ -79,6 +80,15 @@ public:
 			indexBufferDescription.initialData = indices;
 			indexBuffer.init(indexBufferDescription);
 		}
+
+		{
+			aes::BufferDescription uniformBufferDesc;
+			uniformBufferDesc.sizeInBytes = sizeof(float) * 16;
+			uniformBufferDesc.usage = aes::MemoryUsage::Dynamic;
+			uniformBufferDesc.cpuAccessFlags = aes::CPUAccessFlagBits::Write;
+			uniformBufferDesc.bindFlags = aes::BindFlagBits::UniformBuffer;
+			uniformBuffer.init(uniformBufferDesc);
+		}
 		AES_LOG("buffers initialized");
 
 		aes::VertexInputLayout vertexInputLayout[3];
@@ -130,9 +140,56 @@ public:
 		//draw2d.init();
 	}
 
+	float angle = 0.0f;
+	float speed = 5.0f;
+	float wvpData[16];
+
 	void update(float dt) override
 	{
 		AES_PROFILE_FUNCTION();
+
+		SceCtrlData ct[6];
+		int res = sceCtrlReadBufferPositive(0, ct, 6);
+		AES_ASSERT(res >= 0);
+		int btn = 0;
+		for (int i = 0; i < res; i++) {
+			btn |= ct[i].buttons;
+		}
+
+		if (btn & SCE_CTRL_L)
+		{
+			angle -= speed * dt;
+		}
+
+		if (btn & SCE_CTRL_R)
+		{
+			angle += speed * dt;
+		}
+
+		float aspectRatio = (float)960 / (float)540;
+
+		float s = sin(angle);
+		float c = cos(angle);
+
+		wvpData[0] = c / aspectRatio;
+		wvpData[1] = s;
+		wvpData[2] = 0.0f;
+		wvpData[3] = 0.0f;
+
+		wvpData[4] = -s / aspectRatio;
+		wvpData[5] = c;
+		wvpData[6] = 0.0f;
+		wvpData[7] = 0.0f;
+
+		wvpData[8] = 0.0f;
+		wvpData[9] = 0.0f;
+		wvpData[10] = 1.0f;
+		wvpData[11] = 0.0f;
+
+		wvpData[12] = 0.0f;
+		wvpData[13] = 0.0f;
+		wvpData[14] = 0.0f;
+		wvpData[15] = 1.0f;
 
 		//draw2d.setMatrix(glm::mat4(1.0f));
 		////draw2d.setColor(aes::Color::Blue);
@@ -150,9 +207,14 @@ public:
 		AES_PROFILE_FUNCTION();
 		auto context = RHIRenderContext::instance();
 
+
 		context.setDrawPrimitiveMode(DrawPrimitiveType::Triangles);
 		context.setVertexShader(vertexShader);
 		context.setFragmentShader(fragmentShader);
+
+		uniformBuffer.setData(wvpData, sizeof(float) * 16);
+		context.bindVSUniformBuffer(uniformBuffer, 0);
+
 		context.bindVertexBuffer(vertexBuffer, sizeof(Vertex));
 		context.bindIndexBuffer(indexBuffer, IndexTypeFormat::Uint16);
 		context.bindFragmentTexture(texture, 0);

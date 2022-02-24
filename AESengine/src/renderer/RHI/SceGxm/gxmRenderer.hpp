@@ -70,6 +70,7 @@ namespace aes
 			void drawIndexed(uint indexCount, uint indexOffset = 0);
 
 			SceGxmShaderPatcher* getShaderPatcher() const;
+			SceGxmContext* getContext() const { return context; };
 
 		private:
 
