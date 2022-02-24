@@ -1,5 +1,5 @@
-#ifndef DRAW2D_HPP
-#define DRAW2D_HPP
+#ifndef AES_DRAW2D_HPP
+#define AES_DRAW2D_HPP
 
 #include <glm/glm.hpp>
 #include <vector>
@@ -38,7 +38,7 @@ namespace aes
 		{
 			glm::vec2 pos;
 			//glm::vec2 uv;
-			glm::vec4 color;
+			glm::vec4 color; // @Review use Color instead of vec4 ?
 		};
 
 		enum class DrawCommandType

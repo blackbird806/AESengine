@@ -1,5 +1,5 @@
 #!/bin/bash
-HOST='192.168.0.25'
+HOST='192.168.137.135'
 PORT='1337'
 USER=' '
 PASSWD=' '

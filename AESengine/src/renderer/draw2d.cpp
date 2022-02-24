@@ -31,15 +31,14 @@ Result<void> Draw2d::init()
 	auto const source_vs = readFileBin("app0:assets/shaders/vita/basic2d_vs.gxp");
 	vertexShaderDescription.source = source_vs.data();
 #else
-	vertexShaderDescription.source = readFile("assets/shaders/HLSL/draw2d.vs"); // TODO
+	vertexShaderDescription.source = readFile("assets/shaders/HLSL/draw2d.vs");
 #endif
 	vertexShaderDescription.verticesLayout = vertexInputLayout;
 	vertexShaderDescription.verticesStride = sizeof(Vertex);
-	AES_LOG("shader 1 start");
+
 	auto err = vertexShader.init(vertexShaderDescription);
 	if (!err)
 		return err;
-	AES_LOG("shader 1 initialized");
 
 	FragmentShaderDescription fragmentShaderDescription;
 #ifdef __vita__
@@ -47,39 +46,15 @@ Result<void> Draw2d::init()
 	fragmentShaderDescription.source = source_fs.data();
 	fragmentShaderDescription.gxpVertexProgram = vertexShader.getGxpShader();
 #else
-	fragmentShaderDescription.source = readFile("assets/shaders/HLSL/draw2d.fs"); // TODO
+	fragmentShaderDescription.source = readFile("assets/shaders/HLSL/draw2d.fs");
 #endif
 	err = fragmentShader.init(fragmentShaderDescription);
 	if (!err)
 		return err;
 	
-	AES_LOG("shader initialized");
 	ensureVertexBuffersCapacity(20 * sizeof(Vertex));
 	ensureIndexBuffersCapacity(40 * sizeof(Index_t));
-	AES_LOG("buffers initialized");
 
-	//BufferDescription viewBufferDesc;
-	//viewBufferDesc.bindFlags = BindFlagBits::UniformBuffer;
-	//viewBufferDesc.bufferUsage = BufferUsage::Immutable; // @Review default ?
-	//viewBufferDesc.cpuAccessFlags = CPUAccessFlagBits::None;
-	//viewBufferDesc.sizeInBytes = sizeof(glm::mat4);
-	//glm::mat4 viewMtr = glm::orthoLH_ZO(0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 100.0f);
-	//viewBufferDesc.initialData = &viewMtr; // TODO
-
-	//err = projectionBuffer.init(viewBufferDesc);
-	//if (!err)
-	//	return err;
-
-	//BlendInfo blendInfo = {};
-	//blendInfo.colorSrc = BlendFactor::One;
-	//blendInfo.colorDst = BlendFactor::OneMinusSrcColor;
-	//blendInfo.colorOp = BlendOp::Add;
-	//blendInfo.alphaSrc = BlendFactor::One;
-	//blendInfo.alphaDst = BlendFactor::Zero;
-	//blendInfo.alphaOp = BlendOp::Add;
-	//err = blendState.init(blendInfo);
-	//if (!err)
-	//	return err;
 	AES_LOG("draw2d initialized");
 	return {};
 }
@@ -148,13 +123,10 @@ void Draw2d::executeDrawCommands()
 	auto& context = RHIRenderContext::instance();
 	context.setVertexShader(vertexShader);
 	context.setFragmentShader(fragmentShader);
-	//context.setBlendState(blendState);
 
 	context.bindVertexBuffer(vertexBuffer, sizeof(Vertex));
 	context.bindIndexBuffer(indexBuffer, IndexTypeFormat::Uint16);
 
-	//context.bindVSUniformBuffer(projectionBuffer, 0);
-	
 	uint indicesOffset = 0;
 	uint indicesCount;
 

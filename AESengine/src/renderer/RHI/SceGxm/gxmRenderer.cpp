@@ -605,6 +605,7 @@ void GxmRenderer::setVertexShader(RHIVertexShader& vs)
 
 void GxmRenderer::setDrawPrimitiveMode(DrawPrimitiveType mode)
 {
+	AES_PROFILE_FUNCTION();
 	currentState.primitiveType = mode;
 	SceGxmPolygonMode polygonMode;
 	switch(mode)

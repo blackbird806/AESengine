@@ -1,18 +1,18 @@
 ﻿struct {
     float4x4 viewMatrix;
     float4x4 projectionMatrix;
-} CameraBuffer : BUFFER0;
+} CameraBuffer : BUFFER[0];
 
 uniform struct {
     float4x4 worldMatrix;
-} ModelBuffer : BUFFER1;
+} ModelBuffer : BUFFER[1];
 
 void main(float4 aPosition, float4 aColor,
 	out float4 position : POSITION,
 	out float4 color : COLOR)
 {
     // Change the position vector to be 4 units for proper matrix calculations.
-    input.position.w = 1.0f;
+    aPosition.w = 1.0f;
 
     // Calculate the position of the vertex against the world, view, and projection matrices.
     position = mul(aPosition, ModelBuffer.worldMatrix);

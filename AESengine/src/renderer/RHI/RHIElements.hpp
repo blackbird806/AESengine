@@ -1,5 +1,5 @@
-#ifndef RHI_ELEMENTS_HPP
-#define RHI_ELEMENTS_HPP
+#ifndef AES_RHIELEMENTS_HPP
+#define AES_RHIELEMENTS_HPP
 
 #include <cstddef>
 #include <cstdint>
@@ -9,7 +9,6 @@
 
 #include "core/aes.hpp"
 #include "core/utility.hpp"
-
 namespace aes
 {
 	enum CPUAccessFlagBits : uint8_t
