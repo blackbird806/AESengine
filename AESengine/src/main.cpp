@@ -89,7 +89,7 @@ struct LineRenderer
 	std::vector<aes::Vertex> vertices;
 	std::vector<uint32_t> indices;
 	aes::Color colorState = aes::Color::Blue;
-	
+
 	void init()
 	{
 		AES_PROFILE_FUNCTION();
@@ -264,6 +264,7 @@ public:
 			TestElement* element = (TestElement*)userData;
 			element->coll = true;
 		};
+#define USE_BSP
 #ifdef USE_BSP
 		std::vector<aes::BSPTree::Object> bspObjects;
 		bspObjects.reserve(std::size(testElements));
@@ -279,7 +280,6 @@ public:
 		bspTree->testAllCollisions(cb);
 #endif
 		// octree ========
-#define USE_OCTREE
 #ifdef USE_OCTREE
 		//for (int a = 0; a < 10'000; a++)
 		{
@@ -467,7 +467,7 @@ public:
 	}
 };
 
-int main(int a, char const** b)
+int main()
 {
 	std::ofstream logFile("AES_log.txt");
 	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(std::cout));

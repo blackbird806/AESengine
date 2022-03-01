@@ -54,9 +54,9 @@ namespace aes
 	public:
 		PmrRessourceAllocator(IAllocator& alloc);
 	private:
-		void* do_allocate(size_t _Bytes, size_t _Align) override;
-		void do_deallocate(void* _Ptr, size_t _Bytes, size_t _Align) override;
-		bool do_is_equal(const memory_resource& _That) const noexcept override;
+		void* do_allocate(size_t size, size_t align) override;
+		void do_deallocate(void* ptr, size_t size, size_t align) override;
+		bool do_is_equal(const memory_resource& rhs) const noexcept override;
 
 		IAllocator* allocator;
 	};
@@ -86,6 +86,7 @@ namespace aes
 		size_t totalSize, offset;
 	};
 
+	extern Mallocator globalAllocator;
 }
 
 #endif

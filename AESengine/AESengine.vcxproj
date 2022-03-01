@@ -92,6 +92,7 @@
     <ClInclude Include="src\core\reflection.hpp" />
     <ClInclude Include="src\core\simd.hpp" />
     <ClInclude Include="src\core\string_converter.hpp" />
+    <ClInclude Include="src\core\uniquePtr.hpp" />
     <ClInclude Include="src\core\utility.hpp" />
     <ClInclude Include="src\core\window.hpp" />
     <ClInclude Include="src\engine.hpp" />

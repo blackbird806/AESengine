@@ -2,10 +2,10 @@
 #define BSPTREE_HPP
 
 #include <span>
-#include <memory>
 #include <vector>
 #include "core/aes.hpp"
 #include "core/geometry.hpp"
+#include "core/uniquePtr.hpp"
 
 namespace aes
 {
