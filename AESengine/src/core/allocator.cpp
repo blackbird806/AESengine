@@ -104,26 +104,19 @@ void aes::MemoryProfiler::profileAlloc(void* ptr, size_t size)
 	
 }
 
-aes::PmrRessourceAllocator::PmrRessourceAllocator(IAllocator& alloc)
-	: allocator(&alloc)
+void* aes::IAllocator::do_allocate(size_t _Bytes, size_t _Align)
 {
-
+	return IAllocator::allocate(_Bytes, _Align);
 }
 
-void* aes::PmrRessourceAllocator::do_allocate(size_t _Bytes, size_t _Align)
+void aes::IAllocator::do_deallocate(void* _Ptr, size_t _Bytes, size_t _Align)
 {
-	return allocator->allocate(_Bytes, _Align);
+	IAllocator::deallocate(_Ptr);
 }
 
-void aes::PmrRessourceAllocator::do_deallocate(void* _Ptr, size_t _Bytes, size_t _Align)
+bool aes::IAllocator::do_is_equal(const memory_resource& rhs) const noexcept
 {
-	allocator->deallocate(_Ptr);
-}
-
-bool aes::PmrRessourceAllocator::do_is_equal(const memory_resource& _That) const noexcept
-{
-	auto const* otherPmr = dynamic_cast<aes::PmrRessourceAllocator const*>(&_That);
-	return otherPmr ? allocator == otherPmr->allocator : false;
+	return *this == rhs;
 }
 
 void* aes::Mallocator::allocate(size_t size, size_t align)

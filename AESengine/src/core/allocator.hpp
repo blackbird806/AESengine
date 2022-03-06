@@ -39,26 +39,17 @@ namespace aes
 		size_t nbAllocations = 0;
 	};
 
-	class IAllocator
+	class IAllocator : public std::pmr::memory_resource
 	{
 	public:
 		[[nodiscard]] virtual void* allocate(size_t size, size_t align = 1) = 0;
 		virtual void deallocate(void* ptr) = 0;
 
-		virtual ~IAllocator() {};
-	};
-
-	// compatibility layer between aes allocators and std pmr memory ressource
-	class PmrRessourceAllocator final : public std::pmr::memory_resource
-	{
-	public:
-		PmrRessourceAllocator(IAllocator& alloc);
-	private:
 		void* do_allocate(size_t size, size_t align) override;
 		void do_deallocate(void* ptr, size_t size, size_t align) override;
 		bool do_is_equal(const memory_resource& rhs) const noexcept override;
 
-		IAllocator* allocator;
+		virtual ~IAllocator() {}
 	};
 
 	class Mallocator final : public IAllocator

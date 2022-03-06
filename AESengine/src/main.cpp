@@ -73,22 +73,17 @@ VS_OUTPUT main(VS_INPUT input)
     return output;
 })";
 
-struct PlaneRenderer
-{
-	aes::RHIBuffer vertexBuffer;
-	aes::RHIBuffer indexBuffer;
-	std::vector<aes::Vertex> vertices;
-	std::vector<uint32_t> indices;
-	aes::Color colorState = aes::Color::Blue;
-};
-
 struct LineRenderer
 {
 	aes::RHIBuffer vertexBuffer;
 	aes::RHIBuffer indexBuffer;
-	std::vector<aes::Vertex> vertices;
-	std::vector<uint32_t> indices;
+	std::pmr::vector<aes::Vertex> vertices;
+	std::pmr::vector<uint32_t> indices;
 	aes::Color colorState = aes::Color::Blue;
+
+	LineRenderer() : vertices(&aes::globalAllocator), indices(&aes::globalAllocator)
+	{
+	}
 
 	void init()
 	{
