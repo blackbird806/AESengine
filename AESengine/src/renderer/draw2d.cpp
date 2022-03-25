@@ -117,6 +117,8 @@ void Draw2d::executeDrawCommands()
 	AES_PROFILE_FUNCTION();
 
 	iOff = 0;
+	ensureVertexBuffersCapacity(vertices.size() * sizeof(Vertex));
+	ensureIndexBuffersCapacity(indices.size() * sizeof(Index_t));
 	vertexBuffer.setData(vertices.data(), vertices.size() * sizeof(Vertex));
 	indexBuffer.setData(indices.data(), indices.size() * sizeof(Index_t));
 
@@ -155,14 +157,14 @@ void Draw2d::executeDrawCommands()
 
 // @Review
 
-Result<void> Draw2d::ensureVertexBuffersCapacity(size_t size)
+Result<void> Draw2d::ensureVertexBuffersCapacity(size_t sizeInBytes)
 {
 	AES_PROFILE_FUNCTION();
 
-	if (vertexBuffer.isValid() && vertexBuffer.getSize() > size)
+	if (vertexBuffer.isValid() && vertexBuffer.getSize() >= sizeInBytes)
 		return {};
 
-	size_t const newCapacity = size;
+	size_t const newCapacity = sizeInBytes;
 	
 	// reallocate buffers
 	BufferDescription vertexBufferDesc{};
@@ -187,14 +189,14 @@ Result<void> Draw2d::ensureVertexBuffersCapacity(size_t size)
 	return {};
 }
 
-Result<void> Draw2d::ensureIndexBuffersCapacity(size_t size)
+Result<void> Draw2d::ensureIndexBuffersCapacity(size_t sizeInBytes)
 {
 	AES_PROFILE_FUNCTION();
 
-	if (indexBuffer.isValid() && indexBuffer.getSize() > size)
+	if (indexBuffer.isValid() && indexBuffer.getSize() >= sizeInBytes)
 		return {};
 
-	size_t const newCapacity = size;
+	size_t const newCapacity = sizeInBytes;
 	
 	// reallocate buffers
 	BufferDescription indexBufferDesc{};

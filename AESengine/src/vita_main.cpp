@@ -191,6 +191,7 @@ public:
 		using namespace aes;
 
 		AES_PROFILE_FUNCTION();
+
 		auto context = RHIRenderContext::instance();
 
 		context.setDrawPrimitiveMode(DrawPrimitiveType::Triangles);

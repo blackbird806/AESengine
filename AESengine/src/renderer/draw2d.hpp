@@ -31,8 +31,8 @@ namespace aes
 
 		using Index_t = uint16_t;
 		
-		Result<void> ensureVertexBuffersCapacity(size_t size);
-		Result<void> ensureIndexBuffersCapacity(size_t size);
+		Result<void> ensureVertexBuffersCapacity(size_t sizeInBytes);
+		Result<void> ensureIndexBuffersCapacity(size_t sizeInBytes);
 		
 		struct Vertex
 		{
