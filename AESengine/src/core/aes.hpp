@@ -32,6 +32,7 @@
 	#define AES_ASSERTF(x, msg, ...) AES_ASSUME(x)
 	#define AES_DEBUG_BREAK()
 #endif
+#define AES_BOUNDS_CHECK(x) AES_ASSERT(x)
 
 #define AES_NOT_IMPLEMENTED() AES_DEBUG_BREAK()
 

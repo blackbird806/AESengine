@@ -10,8 +10,6 @@ namespace aes
 	// @Review
 	struct Color
 	{
-		Color() {}
-		
 		Color(uint32_t abgr) :
 			r(uint8_t(abgr & 0xff)),
 			g(uint8_t((abgr >> 8) & 0xff)),

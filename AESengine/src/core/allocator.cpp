@@ -20,7 +20,7 @@
 aes::Mallocator aes::globalAllocator{};
 
 // https://stackoverflow.com/questions/53922209/how-to-invoke-aligned-new-delete-properly
-static void* alignedAlloc(size_t size, std::size_t al) noexcept
+static void* alignedAlloc(size_t size, size_t al) noexcept
 {
 	AES_ASSERT(size % al == 0);
 #if _MSC_VER
@@ -99,19 +99,14 @@ void operator delete[](void* ptr, std::align_val_t al) noexcept
 
 #endif
 
-void aes::MemoryProfiler::profileAlloc(void* ptr, size_t size)
+void* aes::IAllocator::do_allocate(size_t size, size_t align)
 {
-	
+	return allocate(size, align);
 }
 
-void* aes::IAllocator::do_allocate(size_t _Bytes, size_t _Align)
+void aes::IAllocator::do_deallocate(void* ptr, size_t size, size_t align)
 {
-	return IAllocator::allocate(_Bytes, _Align);
-}
-
-void aes::IAllocator::do_deallocate(void* _Ptr, size_t _Bytes, size_t _Align)
-{
-	IAllocator::deallocate(_Ptr);
+	deallocate(ptr);
 }
 
 bool aes::IAllocator::do_is_equal(const memory_resource& rhs) const noexcept

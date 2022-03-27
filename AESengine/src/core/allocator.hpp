@@ -6,38 +6,38 @@
 
 namespace aes
 {
-	inline unsigned operator "" _ko(unsigned long long p)
+	inline unsigned long long operator "" _kb(unsigned long long p)
 	{
 		return p * 1024;
 	}
 
-	inline unsigned operator "" _mo(unsigned long long p)
+	inline unsigned long long operator "" _mb(unsigned long long p)
 	{
-		return p * 1024_ko;
+		return p * 1024_kb;
 	}
 
-	inline unsigned operator "" _go(unsigned long long p)
+	inline unsigned long long operator "" _gb(unsigned long long p)
 	{
-		return p * 1024_mo;
+		return p * 1024_mb;
 	}
 
-	class MemoryProfiler
-	{
-		
-	public:
-		static MemoryProfiler& instance()
-		{
-			static MemoryProfiler prof;
-			return prof;
-		}
+	//class MemoryProfiler
+	//{
+	//	
+	//public:
+	//	static MemoryProfiler& instance()
+	//	{
+	//		static MemoryProfiler prof;
+	//		return prof;
+	//	}
 
-		void profileAlloc(void* ptr, size_t size);
-		void profileDealloc(void* ptr){};
-		
-	private:
-		size_t memoryAllocated = 0;
-		size_t nbAllocations = 0;
-	};
+	//	void profileAlloc(void* ptr, size_t size) {};
+	//	void profileDealloc(void* ptr){};
+	//	
+	//private:
+	//	size_t memoryAllocated = 0;
+	//	size_t nbAllocations = 0;
+	//};
 
 	class IAllocator : public std::pmr::memory_resource
 	{

@@ -275,5 +275,11 @@
     <ClInclude Include="src\core\uniquePtr.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\core\array.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="core.natvis" />
   </ItemGroup>
 </Project>

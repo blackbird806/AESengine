@@ -77,6 +77,7 @@
   <ItemGroup>
     <ClInclude Include="src\core\aes.hpp" />
     <ClInclude Include="src\core\allocator.hpp" />
+    <ClInclude Include="src\core\array.hpp" />
     <ClInclude Include="src\core\color.hpp" />
     <ClInclude Include="src\core\console.hpp" />
     <ClInclude Include="src\core\debug.hpp" />
@@ -122,6 +123,11 @@
     <ClInclude Include="src\spatial\octree.hpp" />
     <ClInclude Include="src\UI\UI.hpp" />
     <ClInclude Include="thirdParty\tiny\tiny_obj_loader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="core.natvis">
+      <DeploymentContent>true</DeploymentContent>
+    </Natvis>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

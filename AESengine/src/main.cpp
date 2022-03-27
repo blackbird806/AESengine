@@ -4,6 +4,7 @@
 #include <random>
 
 #include "core/allocator.hpp"
+#include "core/array.hpp"
 #include "core/profiler.hpp"
 #include "core/debugMath.hpp"
 #include "engine.hpp"
@@ -77,11 +78,11 @@ struct LineRenderer
 {
 	aes::RHIBuffer vertexBuffer;
 	aes::RHIBuffer indexBuffer;
-	std::pmr::vector<aes::Vertex> vertices;
-	std::pmr::vector<uint32_t> indices;
+	aes::Array<aes::Vertex> vertices;
+	aes::Array<uint32_t> indices;
 	aes::Color colorState = aes::Color::Blue;
 
-	LineRenderer() : vertices(&aes::globalAllocator), indices(&aes::globalAllocator)
+	LineRenderer() : vertices(aes::globalAllocator), indices(aes::globalAllocator)
 	{
 	}
 
@@ -93,7 +94,7 @@ struct LineRenderer
 		BufferDescription vertexBufferInfo{};
 		vertexBufferInfo.bindFlags = BindFlagBits::VertexBuffer;
 		vertexBufferInfo.bufferUsage = BufferUsage::Dynamic;
-		vertexBufferInfo.sizeInBytes = 1024 * 1024 * 1024;
+		vertexBufferInfo.sizeInBytes = 1_mb;
 		vertexBufferInfo.cpuAccessFlags = CPUAccessFlagBits::Write;
 
 		auto err = vertexBuffer.init(vertexBufferInfo);
@@ -101,7 +102,7 @@ struct LineRenderer
 		BufferDescription indexBufferInfo{};
 		indexBufferInfo.bindFlags = BindFlagBits::IndexBuffer;
 		indexBufferInfo.bufferUsage = BufferUsage::Dynamic;
-		indexBufferInfo.sizeInBytes = 1024 * 1024 * 1024;
+		indexBufferInfo.sizeInBytes = 1_mb;
 		indexBufferInfo.cpuAccessFlags = CPUAccessFlagBits::Write;
 
 		err = indexBuffer.init(indexBufferInfo);
@@ -117,8 +118,8 @@ struct LineRenderer
 		AES_PROFILE_FUNCTION();
 
 		glm::vec4 const vcolor = colorState.toVec4();
-		vertices.push_back({ from, vcolor });
-		vertices.push_back({ to, vcolor });
+		vertices.push({ from, vcolor });
+		vertices.push({ to, vcolor });
 	}
 
 	void addAABB(aes::AABB const& aabb)
@@ -196,7 +197,7 @@ public:
 	
 	TestElement testElements[25];
 	aes::Octree octree;
-	std::unique_ptr<aes::BSPTree::BSPElement> bspTree;
+	aes::UniquePtr<aes::BSPTree::BSPElement> bspTree;
 	
 	Game(InitInfo const& info) : Engine(info)
 	{
@@ -256,19 +257,19 @@ public:
 		lineRenderer.setColor(aes::Color::Blue);
 		auto cb = [](void* userData)
 		{
-			TestElement* element = (TestElement*)userData;
+			TestElement* element = static_cast<TestElement*>(userData);
 			element->coll = true;
 		};
 #define USE_BSP
 #ifdef USE_BSP
-		std::vector<aes::BSPTree::Object> bspObjects;
+		aes::Array<aes::BSPTree::Object> bspObjects(globalAllocator);
 		bspObjects.reserve(std::size(testElements));
 		for (int i = 0; auto & e : testElements)
 		{
 			e.id = i++;
 			e.pos = glm::vec3(dis(gen), dis(gen), dis(gen));
 			e.size = glm::vec3(disS(gen), disS(gen), disS(gen));
-			bspObjects.push_back({ &e, aes::AABB::createHalfCenter(e.pos, e.size) });
+			bspObjects.push({ &e, aes::AABB::createHalfCenter(e.pos, e.size) });
 		}
 		
 		bspTree = aes::BSPTree::build(std::span(bspObjects));

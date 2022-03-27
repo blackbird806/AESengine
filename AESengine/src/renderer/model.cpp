@@ -75,7 +75,7 @@ Result<Model> aes::createCube()
 	Model cube;
 	auto const result = cube.init(getCubeVertices(), cubeIndices);
 	if (!result)
-		return { result.error() };
+		return { AESError{ result.error() } };
 	return { std::move(cube) };
 }
 
@@ -86,7 +86,7 @@ Result<Model> aes::createCube(glm::vec4 const& col)
 	Model cube;
 	auto const result = cube.init(getCubeVertices(col), cubeIndices);
 	if (!result)
-		return { result.error() };
+		return { AESError{ result.error() } };
 	return { std::move(cube) };
 }
 
