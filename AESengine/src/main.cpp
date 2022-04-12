@@ -421,11 +421,11 @@ public:
 			getViewportMousePos(lastMousePosX, lastMousePosY);
 		}
 		mainCamera.lookAt(mainCamera.pos + glm::normalize(direction));
-		//TestElement* elem = (TestElement*)bspTree->raycast({ mainCamera.pos, glm::normalize(direction) });
-		//if (elem)
-		//{
-		//	elem->coll = true;
-		//}
+		TestElement* elem = (TestElement*)bspTree->raycast({ mainCamera.pos, glm::normalize(direction) });
+		if (elem)
+		{
+			elem->coll = true;
+		}
 		
 		{
 			float const ex = 0.0055f;

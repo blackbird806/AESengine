@@ -42,12 +42,12 @@ namespace aes
 
 		template<typename T2, typename D2>
 		requires std::convertible_to<T2*, T*> && std::assignable_from<D2, D>
-		constexpr UniquePtr(UniquePtr<T2, D2>&& rhs) noexcept : ptr(rhs.ptr), deleter(std::move(rhs.deleter))
+		constexpr UniquePtr(UniquePtr<T2, D2>&& rhs) noexcept : ptr(rhs.release()), deleter(std::move(rhs.deleter))
 		{ }
 
 		template<typename T2, typename D2>
 		requires std::convertible_to<T2*, T*>
-		constexpr UniquePtr(UniquePtr<T2, D2>&& rhs) noexcept : ptr(rhs.ptr)
+		constexpr UniquePtr(UniquePtr<T2, D2>&& rhs) noexcept : ptr(rhs.release())
 		{ }
 
 		UniquePtr& operator=(UniquePtr const&) = delete;

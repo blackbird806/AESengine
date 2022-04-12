@@ -67,7 +67,7 @@ namespace aes
 
 		constexpr Array& operator=(Array&& rhs) noexcept
 		{
-			AES_ASSERT(alloc == rhs.alloc);
+			alloc = rhs.alloc;
 			buffer = rhs.buffer;
 			size_ = rhs.size_;
 			capacity_ = rhs.capacity_;
@@ -112,8 +112,8 @@ namespace aes
 					if (!err)
 						return err;
 				}
-				//for (uint32_t i = size_; i < n; i++)
-				//	new (&buffer[i]) T;
+				for (uint32_t i = size_; i < n; i++)
+					new (&buffer[i]) T;
 			}
 			else // size < n
 			{
@@ -133,6 +133,18 @@ namespace aes
 					return err;
 			}
 			buffer[size_++] = e;
+			return {};
+		}
+
+		constexpr Result<void> push(T&& e) noexcept
+		{
+			if (size_ == capacity_)
+			{
+				auto const err = grow();
+				if (!err)
+					return err;
+			}
+			buffer[size_++] = std::move(e);
 			return {};
 		}
 
@@ -176,9 +188,9 @@ namespace aes
 			// move next elements
 			for (uint32_t li = ipos - rangeSize; li < size_; li++)
 			{
-				//new (&workBuffer[ipos++]) T(std::move(buffer[li]));
+				new (&workBuffer[ipos++]) T(std::move(buffer[li]));
 			}
-
+			buffer = workBuffer;
 			size_ = newSize;
 			return {};
 		}
@@ -191,8 +203,7 @@ namespace aes
 		constexpr void pop() noexcept
 		{
 			AES_BOUNDS_CHECK(size_ > 0);
-			buffer[size_-1].~T();
-			size_--;
+			buffer[--size_].~T();
 		}
 
 		constexpr T const& operator[](uint32_t i) const noexcept
@@ -236,7 +247,7 @@ namespace aes
 			T* const newBuffer = alloc->allocate(size_ * sizeof(T), alignof(T));
 			if (!newBuffer)
 				return { AESError::MemoryAllocationFailed };
-			moveBuffer(newBuffer);
+			//moveBuffer(newBuffer);
 			alloc->deallocate(buffer);
 			buffer = newBuffer;
 			capacity_ = size_;
@@ -281,7 +292,7 @@ namespace aes
 			// geometric growth with 8 base
 			// todo try with other bases 4/16 ?
 			// maybe abstract capacity_ grow strategy ?
-			return capacity_ > 8 ? capacity_ * 2 : 8;
+			return capacity_ >= 8 ? capacity_ * 2 : 8;
 		}
 
 		IAllocator* alloc = nullptr;

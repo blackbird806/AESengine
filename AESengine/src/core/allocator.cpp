@@ -27,16 +27,16 @@ static void* alignedAlloc(size_t size, size_t al) noexcept
 	// msvc doesn't support c11 aligned_alloc
 	return _aligned_malloc(size, al);
 #else
-	return aligned_alloc((size_t)al, size);
+	return aligned_alloc(al, size);
 #endif
 }
 
 static void alignedFree(void* ptr) noexcept
 {
 #if _MSC_VER
-	return _aligned_free(ptr);
+	_aligned_free(ptr);
 #else
-	return free(ptr);
+	free(ptr);
 #endif
 }
 

@@ -50,7 +50,7 @@ namespace aes
 			{
 				
 			}
-			virtual ~Node() = default;
+			~Node() override = default;
 
 			void testAllCollisions(void(*)(void* userData)) const override;
 			void* raycast(Ray const& r) const override;
