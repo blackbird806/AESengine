@@ -77,7 +77,8 @@ namespace aes
 		size_t totalSize, offset;
 	};
 
-	extern Mallocator globalAllocator;
+	extern Mallocator mallocator;
+	extern IAllocator* globalAllocator;
 }
 
 #endif

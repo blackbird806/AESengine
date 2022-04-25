@@ -17,7 +17,8 @@
 
 #endif
 
-aes::Mallocator aes::globalAllocator{};
+aes::Mallocator aes::mallocator{};
+aes::IAllocator* aes::globalAllocator = &aes::mallocator;
 
 // https://stackoverflow.com/questions/53922209/how-to-invoke-aligned-new-delete-properly
 static void* alignedAlloc(size_t size, size_t al) noexcept

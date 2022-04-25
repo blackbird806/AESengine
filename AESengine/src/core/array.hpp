@@ -7,11 +7,6 @@
 
 namespace aes
 {
-	enum ArrayError : UnderlyingError_t
-	{
-		MemoryAllocationFailed
-	};
-
 	template<typename T>
 	class Array
 	{
@@ -47,11 +42,11 @@ namespace aes
 			alloc = rhs.alloc;
 			buffer = alloc->allocate(rhs.size_, alignof(T));
 			if (!buffer)
-				return { ArrayError::MemoryAllocationFailed };
+				return { AESError::MemoryAllocationFailed };
 			size_ = rhs.size_;
 			capacity_ = size_;
 
-			// @performance conditionaly use use memcpy here ?
+			// @performance conditionaly use memcpy here ?
 			for (uint32_t i = 0; i < size_; i++)
 				new (&buffer[i]) T(rhs.buffer[i]);
 
@@ -89,7 +84,7 @@ namespace aes
 
 			T* const newBuffer = static_cast<T*>(alloc->allocate(n * sizeof(T), alignof(T)));
 			if (!newBuffer)
-				return { ArrayError::MemoryAllocationFailed };
+				return { AESError::MemoryAllocationFailed };
 
 			// @Review @Performance allocator reallocate may improve performances here
 			moveBuffer(newBuffer);
@@ -164,7 +159,7 @@ namespace aes
 
 				T* const newBuffer = static_cast<T*>(alloc->allocate(newCapacity * sizeof(T), alignof(T)));
 				if (!newBuffer)
-					return { ArrayError::MemoryAllocationFailed };
+					return { AESError::MemoryAllocationFailed };
 				capacity_ = newCapacity;
 
 				// move previous elements in new buffer

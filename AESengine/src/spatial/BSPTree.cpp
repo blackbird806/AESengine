@@ -173,19 +173,18 @@ void* BSPTree::Node::raycast(Ray const& r) const
 	return frontResult;
 }
 
-UniquePtr<BSPTree::BSPElement> BSPTree::build(std::span<Object> objects, uint depth)
+UniquePtr<BSPTree::BSPElement> BSPTree::build(IAllocator& allocator, std::span<Object> objects, uint depth)
 {
 	AES_PROFILE_FUNCTION();
-
 	if (objects.empty())
 		return nullptr;
 
 	if (depth > maxDepth || objects.size() <= minLeafSize)
-		return makeUnique<Leaf>(Array<Object>(globalAllocator, objects));
+		return makeUnique<Leaf>(allocator, Array<Object>(allocator, objects));
 
 	Plane const splitPlane = pickSplittingPlane(objects);
 
-	Array<Object> backList(globalAllocator), frontList(globalAllocator);
+	Array<Object> backList(allocator), frontList(allocator);
 
 	for (auto const& o : objects)
 	{
@@ -206,7 +205,7 @@ UniquePtr<BSPTree::BSPElement> BSPTree::build(std::span<Object> objects, uint de
 		}
 	}
 	
-	return makeUnique<Node>(splitPlane, 
-		build(std::span(frontList.begin(), frontList.end()), depth + 1), 
-		build(std::span(backList.begin(), backList.end()), depth + 1));
+	return makeUnique<Node>(allocator, splitPlane,
+		build(allocator, std::span(frontList.begin(), frontList.end()), depth + 1), 
+		build(allocator, std::span(backList.begin(), backList.end()), depth + 1));
 }

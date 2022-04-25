@@ -82,7 +82,7 @@ struct LineRenderer
 	aes::Array<uint32_t> indices;
 	aes::Color colorState = aes::Color::Blue;
 
-	LineRenderer() : vertices(aes::globalAllocator), indices(aes::globalAllocator)
+	LineRenderer() : vertices(*aes::globalAllocator), indices(*aes::globalAllocator)
 	{
 	}
 
@@ -262,7 +262,10 @@ public:
 		};
 #define USE_BSP
 #ifdef USE_BSP
-		aes::Array<aes::BSPTree::Object> bspObjects(globalAllocator);
+		static aes::StackAllocator stackAlloc(mallocator, 16_mb);
+		//globalAllocator = &stackAlloc;
+		aes::Array<aes::BSPTree::Object> bspObjects(*globalAllocator);
+		//std::unique_ptr<>
 		bspObjects.reserve(std::size(testElements));
 		for (int i = 0; auto & e : testElements)
 		{
@@ -272,7 +275,7 @@ public:
 			bspObjects.push({ &e, aes::AABB::createHalfCenter(e.pos, e.size) });
 		}
 		
-		bspTree = aes::BSPTree::build(std::span(bspObjects));
+		bspTree = aes::BSPTree::build(*globalAllocator, std::span(bspObjects));
 		bspTree->testAllCollisions(cb);
 #endif
 		// octree ========
@@ -485,7 +488,7 @@ int main()
 
 	for (auto const& [_, v] : runningSession.profileDatas)
 	{
-		if (strstr(v.name, "Octree"))
+		if (strstr(v.name, "BSPTree"))
 		{
 			timmingFile << fmt::format("{}\n\ttotalTime: {}ms\n\tcount: {}\n\taverage: {}ms\n\tparent: {}\n",
 				v.name, v.elapsedTime, v.count, v.elapsedTime / v.count, v.parentName != nullptr ? v.parentName : "none");

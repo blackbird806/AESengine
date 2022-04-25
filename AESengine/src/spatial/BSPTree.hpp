@@ -32,11 +32,12 @@ namespace aes
 		
 		struct Leaf final : BSPElement
 		{
-			Leaf(Array<Object> obj) : objects(std::move(obj))
+			Leaf(Array<Object>&& obj) : objects(std::move(obj))
 			{
 				
 			}
-			virtual ~Leaf() = default;
+
+			~Leaf() override = default;
 
 			void testAllCollisions(void(*)(void* userData)) const override;
 			void* raycast(Ray const& r) const override;
@@ -63,7 +64,7 @@ namespace aes
 		static constexpr uint maxDepth = 16;
 		static constexpr uint minLeafSize = 2;
 		
-		static UniquePtr<BSPElement> build(std::span<Object> objects, uint depth = 0);
+		static UniquePtr<BSPElement> build(IAllocator& allocator, std::span<Object> objects, uint depth = 0);
 	};
 }
 

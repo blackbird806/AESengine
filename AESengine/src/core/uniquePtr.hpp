@@ -15,16 +15,36 @@ namespace aes
 	}
 
 	template<typename T>
-	struct DefaultDelete
+	struct GlobalAllocDelete
 	{
 		void operator()(T* ptr) noexcept
 		{
 			ptr->~T();
-			globalAllocator.deallocate(ptr);
+			globalAllocator->deallocate(ptr);
 		}
 	};
 
-	template<typename T, typename D = DefaultDelete<T>>
+	template<typename T>
+	struct AllocatorDelete
+	{
+		template <class>
+		friend struct AllocatorDelete;
+
+		AllocatorDelete() noexcept = default;
+		AllocatorDelete(IAllocator* a) noexcept : alloc(a) {}
+
+		template<typename T2>
+		AllocatorDelete(AllocatorDelete<T2> const& rhs) noexcept : alloc(rhs.alloc) {}
+
+		IAllocator* alloc = nullptr;
+		void operator()(T* ptr) noexcept
+		{
+			ptr->~T();
+			alloc->deallocate(ptr);
+		}
+	};
+
+	template<typename T, typename D = AllocatorDelete<T>>
 	class UniquePtr
 	{
 	public:
@@ -33,7 +53,7 @@ namespace aes
 
 		constexpr UniquePtr() noexcept : ptr(nullptr) {}
 		constexpr UniquePtr(T* p) noexcept : ptr(p) {}
-		constexpr UniquePtr(T* p, D&& d) noexcept : ptr(p), deleter(std::forward<D>(d)) {}
+		constexpr UniquePtr(T* p, D&& d) noexcept : ptr(p), deleter(std::move(d)) {}
 		constexpr UniquePtr(std::nullptr_t) : ptr(nullptr) {}
 		UniquePtr(UniquePtr const&) = delete;
 
@@ -41,34 +61,34 @@ namespace aes
 		{ }
 
 		template<typename T2, typename D2>
-		requires std::convertible_to<T2*, T*> && std::assignable_from<D2, D>
+		requires std::convertible_to<T2*, T*> && std::convertible_to<D2, D>
 		constexpr UniquePtr(UniquePtr<T2, D2>&& rhs) noexcept : ptr(rhs.release()), deleter(std::move(rhs.deleter))
 		{ }
-
+		
 		template<typename T2, typename D2>
 		requires std::convertible_to<T2*, T*>
 		constexpr UniquePtr(UniquePtr<T2, D2>&& rhs) noexcept : ptr(rhs.release())
 		{ }
-
+		
 		UniquePtr& operator=(UniquePtr const&) = delete;
 
 		template<typename T2, typename D2>
-		requires std::convertible_to<T2*, T*> && std::assignable_from<D2, D>
-		constexpr UniquePtr& operator=(UniquePtr<T2, D2>&& rhs) noexcept : ptr(rhs.ptr), deleter(std::move(rhs.deleter))
+		requires std::convertible_to<T2*, T*> && std::convertible_to<D2, D>
+		constexpr UniquePtr& operator=(UniquePtr<T2, D2>&& rhs) noexcept
 		{
 			ptr = rhs.release();
 			deleter = std::move(rhs.deleter);
 			return *this;
 		}
-
+		
 		template<typename T2, typename D2>
 		requires std::convertible_to<T2*, T*>
-		constexpr UniquePtr& operator=(UniquePtr<T2, D2>&& rhs) noexcept : ptr(rhs.ptr), deleter(std::move(rhs.deleter))
+		constexpr UniquePtr& operator=(UniquePtr<T2, D2>&& rhs) noexcept
 		{
 			ptr = rhs.release();
 			return *this;
 		}
-
+		
 		constexpr UniquePtr& operator=(UniquePtr&& rhs) noexcept
 		{
 			ptr = rhs.release();
@@ -146,25 +166,22 @@ namespace aes
 		[[no_unique_address]] D deleter;
 	};
 
+	/*
+	 * using global allocator without keeping alloc ref is dangerous because global alloc may change between allocation and deallocation
 	template<typename T, typename... Args>
 	UniquePtr<T> makeUnique(Args&&... args) noexcept
 	{
-		void* ptr = globalAllocator.allocate(sizeof(T), alignof(T));
+		void* ptr = globalAllocator->allocate(sizeof(T), alignof(T));
 		return UniquePtr<T>(::new(ptr) T(std::move(args)...));
 	}
+	*/
 
 	template<typename T, typename... Args>
 	auto makeUnique(IAllocator& alloc, Args&&... args) noexcept
 	{
 		void* ptr = alloc.allocate(sizeof(T), alignof(T));
-
-		auto del = [&alloc](void* p) noexcept
-		{
-			static_cast<T*>(p)->~T();
-			alloc.deallocate(p);
-		};
-
-		return UniquePtr<T>(::new(ptr) T(std::move(args)...), std::move(del));
+		AllocatorDelete<T> del(&alloc);
+		return UniquePtr<T, AllocatorDelete<T>>(::new(ptr) T(std::move(args)...), std::move(del));
 	}
 }
 

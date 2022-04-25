@@ -10,10 +10,10 @@ namespace aes {
 
 	using UnderlyingError_t = int32_t;
 
-	// @deprecated: create local enum errors instead
 	enum class AESError : UnderlyingError_t
 	{
 		Undefined,
+		MemoryAllocationFailed,
 		GPUBufferCreationFailed,
 		GPUTextureCreationFailed,
 		GPUBufferMappingFailed,
@@ -22,9 +22,6 @@ namespace aes {
 		FontInitFailed,
 		BlendStateCreationFailed,
 	};
-
-	template<typename T>
-	concept Enum = std::is_enum_v<T>;
 
 	template<typename T>
 	class Result
@@ -43,9 +40,7 @@ namespace aes {
 
 		}
 
-		template<Enum Etype>
-		requires std::same_as<std::underlying_type_t<Etype>, ErrorCodeType>
-		Result(Etype err) noexcept : value_(static_cast<ErrorCodeType>(err))
+		Result(AESError err) noexcept : value_(static_cast<ErrorCodeType>(err))
 		{
 
 		}
@@ -96,7 +91,7 @@ namespace aes {
 		}
 
 	private:
-		std::variant<ValueType, ErrorCodeType> value_;
+		std::variant<ErrorCodeType, ValueType> value_;
 	};
 
 	template<>
@@ -111,9 +106,7 @@ namespace aes {
 
 		}
 
-		template<Enum Etype>
-		requires std::same_as<std::underlying_type_t<Etype>, ErrorCodeType>
-		Result(Etype err) noexcept : value_(static_cast<ErrorCodeType>(err))
+		Result(AESError err) noexcept : value_(static_cast<ErrorCodeType>(err))
 		{
 
 		}
