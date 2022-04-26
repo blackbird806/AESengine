@@ -204,11 +204,13 @@ public:
 	Game(InitInfo const& info) : Engine(info), jobSystem(*aes::globalAllocator)
 	{
 		AES_LOG("Game initialized");
-		auto vert = aes::getCubeVertices();
-		aes::parrallelForEach(jobSystem, vert, [](auto& v)
+		std::atomic<int> sum;
+		aes::parrallelForEach(jobSystem, std::views::iota(1, 1000), [&sum](auto v)
 			{
-				AES_LOG("{}", v.pos);
+				AES_LOG("{}", v);
+				sum.fetch_add(v, std::memory_order::relaxed);
 			});
+		AES_LOG("sum {}", sum.load());
 	}
 
 	void start() override

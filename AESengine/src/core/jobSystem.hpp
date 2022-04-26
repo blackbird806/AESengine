@@ -5,10 +5,13 @@
 #include "error.hpp"
 #include "array.hpp"
 #include "allocator.hpp"
+#include "utility.hpp"
 #include <thread>
 #include <atomic>
+#include <memory>
 #include <functional>
 #include <ranges>
+#include <latch>
 
 namespace aes
 {
@@ -62,19 +65,18 @@ namespace aes
 
 	struct Job
 	{
-
 		Job(std::function<void()>&& fn) noexcept : task(fn)
 		{
 			
 		}
 
-		Job(Job const& rhs) noexcept : task(rhs.task), done(rhs.done.load())
+		Job(Job const& rhs) noexcept : task(rhs.task), done(rhs.done.load(std::memory_order::relaxed))
 		{}
 
 		Job& operator=(Job const& rhs)
 		{
 			task = rhs.task;
-			done = rhs.done.load();
+			done = rhs.done.load(std::memory_order::relaxed);
 			return *this;
 		}
 
@@ -95,9 +97,9 @@ namespace aes
 			{
 				threads[i] = std::jthread([this]()
 				{
-					while (!stop)
+					while (!stop.load(std::memory_order::memory_order_relaxed))
 					{
-						std::optional<Job> job;
+						std::shared_ptr<Job> job;
 						{
 							std::unique_lock l(sync);
 							if (!jobs.empty())
@@ -109,7 +111,7 @@ namespace aes
 						if (job)
 						{
 							job->task();
-							job->done = true;
+							job->done.store(true, std::memory_order::memory_order_relaxed);
 						}
 					}
 				});
@@ -117,10 +119,10 @@ namespace aes
 		}
 
 		template<typename F>
-		Job& run(F&& f)
+		std::shared_ptr<Job> run(F&& f)
 		{
 			std::unique_lock l(sync);
-			jobs.push(Job(std::move(f)));
+			jobs.push(std::make_shared<Job>(std::move(f)));
 			return jobs.back();
 		}
 
@@ -130,48 +132,51 @@ namespace aes
 			{
 				if (sync.try_lock())
 				{
+					AES_SCOPE(sync.unlock());
 					if (jobs.empty())
-					{
-						sync.unlock();
 						return;
-					}
-					sync.unlock();
 				}
 			}
 		}
 
 		~JobSystem()
 		{
-			stop = true;
+			stop.store(true, std::memory_order::memory_order_relaxed);
 		}
 
 	private:
 		std::atomic<bool> stop = false;
 		std::mutex sync;
-		Array<Job> jobs;
+		Array<std::shared_ptr<Job>> jobs;
 		Array<std::jthread> threads;
 	};
 
 	template<typename F, std::ranges::random_access_range R>
-	void parrallelForEach(JobSystem& js, R range, F&& f)
+	void parrallelForEach(JobSystem& js, R&& range, F const& f)
 	{
 		size_t const size = std::ranges::size(range);
 		size_t const sizePerWorker = size / JobSystem::nbWorkers;
-		Job* jobs[JobSystem::nbWorkers];
+		std::latch latch(JobSystem::nbWorkers);
 		for (size_t i = 0; i < JobSystem::nbWorkers; i++)
 		{
-			jobs[i] = &js.run([=]()
+			js.run([=, &latch]() mutable 
 				{
 					auto const begin = std::ranges::begin(range) + sizePerWorker * i;
-					auto const end = begin + sizePerWorker;
+					auto const end = [&]()
+					{
+						if (i == JobSystem::nbWorkers-1)
+							return std::ranges::end(range);
+						return begin + sizePerWorker;
+					}();
+
 					for (auto e = begin; e != end; ++e)
 					{
 						f(*e);
 					}
+					latch.count_down();
 				});
 		}
-		for (Job const* j : jobs)
-			j->done.wait(true);
+		latch.wait();
 	}
 
 }
