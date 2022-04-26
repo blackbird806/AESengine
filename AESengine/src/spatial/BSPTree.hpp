@@ -7,6 +7,7 @@
 #include "core/geometry.hpp"
 #include "core/uniquePtr.hpp"
 #include "core/array.hpp"
+#include "core/jobSystem.hpp"
 
 namespace aes
 {

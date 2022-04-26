@@ -85,6 +85,7 @@
     <ClInclude Include="src\core\error.hpp" />
     <ClInclude Include="src\core\geometry.hpp" />
     <ClInclude Include="src\core\input.hpp" />
+    <ClInclude Include="src\core\jobSystem.hpp" />
     <ClInclude Include="src\core\macro_helpers.hpp" />
     <ClInclude Include="src\core\maths.hpp" />
     <ClInclude Include="src\core\os.hpp" />

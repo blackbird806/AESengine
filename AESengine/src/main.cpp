@@ -17,6 +17,7 @@
 #include "spatial/octree.hpp"
 #include "spatial/BSPTree.hpp"
 #include "core/simd.hpp"
+#include "core/jobSystem.hpp"
 
 const char pxShader[] = R"(
 struct VS_OUTPUT
@@ -187,6 +188,7 @@ class Game : public aes::Engine
 
 public:
 
+	aes::JobSystem jobSystem;
 	LineRenderer lineRenderer;
 	aes::RHIFragmentShader fragmentShader;
 	aes::RHIVertexShader vertexShader;
@@ -199,9 +201,14 @@ public:
 	aes::Octree octree;
 	aes::UniquePtr<aes::BSPTree::BSPElement> bspTree;
 	
-	Game(InitInfo const& info) : Engine(info)
+	Game(InitInfo const& info) : Engine(info), jobSystem(*aes::globalAllocator)
 	{
 		AES_LOG("Game initialized");
+		auto vert = aes::getCubeVertices();
+		aes::parrallelForEach(jobSystem, vert, [](auto& v)
+			{
+				AES_LOG("{}", v.pos);
+			});
 	}
 
 	void start() override
@@ -265,7 +272,6 @@ public:
 		static aes::StackAllocator stackAlloc(mallocator, 16_mb);
 		//globalAllocator = &stackAlloc;
 		aes::Array<aes::BSPTree::Object> bspObjects(*globalAllocator);
-		//std::unique_ptr<>
 		bspObjects.reserve(std::size(testElements));
 		for (int i = 0; auto & e : testElements)
 		{

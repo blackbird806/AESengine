@@ -42,6 +42,13 @@ namespace aes
 	class IAllocator : public std::pmr::memory_resource
 	{
 	public:
+
+		template<typename T>
+		[[nodiscard]] void* allocate(size_t size)
+		{
+			return allocate(size * sizeof(T), alignof(T));
+		}
+
 		[[nodiscard]] virtual void* allocate(size_t size, size_t align = 1) = 0;
 		virtual void deallocate(void* ptr) = 0;
 

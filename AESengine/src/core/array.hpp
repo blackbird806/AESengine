@@ -37,6 +37,11 @@ namespace aes
 			*this = std::move(rhs);
 		}
 
+		IAllocator* getAllocator() const noexcept
+		{
+			return alloc;
+		}
+
 		constexpr Result<void> copyFrom(Array const& rhs) noexcept
 		{
 			alloc = rhs.alloc;
@@ -127,7 +132,7 @@ namespace aes
 				if (!err)
 					return err;
 			}
-			buffer[size_++] = e;
+			new (&buffer[size_++]) T(e);
 			return {};
 		}
 
@@ -139,7 +144,7 @@ namespace aes
 				if (!err)
 					return err;
 			}
-			buffer[size_++] = std::move(e);
+			new (&buffer[size_++]) T(std::move(e));
 			return {};
 		}
 
