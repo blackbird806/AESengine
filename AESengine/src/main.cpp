@@ -95,7 +95,7 @@ struct LineRenderer
 		BufferDescription vertexBufferInfo{};
 		vertexBufferInfo.bindFlags = BindFlagBits::VertexBuffer;
 		vertexBufferInfo.bufferUsage = BufferUsage::Dynamic;
-		vertexBufferInfo.sizeInBytes = 1_mb;
+		vertexBufferInfo.sizeInBytes = 10_mb;
 		vertexBufferInfo.cpuAccessFlags = CPUAccessFlagBits::Write;
 
 		auto err = vertexBuffer.init(vertexBufferInfo);
@@ -103,7 +103,7 @@ struct LineRenderer
 		BufferDescription indexBufferInfo{};
 		indexBufferInfo.bindFlags = BindFlagBits::IndexBuffer;
 		indexBufferInfo.bufferUsage = BufferUsage::Dynamic;
-		indexBufferInfo.sizeInBytes = 1_mb;
+		indexBufferInfo.sizeInBytes = 5_mb;
 		indexBufferInfo.cpuAccessFlags = CPUAccessFlagBits::Write;
 
 		err = indexBuffer.init(indexBufferInfo);
@@ -205,11 +205,11 @@ public:
 	{
 		AES_LOG("Game initialized");
 		std::atomic<int> sum;
-		aes::parrallelForEach(jobSystem, std::views::iota(1, 1000), [&sum](auto v)
-			{
-				AES_LOG("{}", v);
-				sum.fetch_add(v, std::memory_order::relaxed);
-			});
+		//aes::parallelForEach(jobSystem, std::views::iota(1, 2), [&sum](auto v)
+		//	{
+		//		AES_LOG("{}", v);
+		//		sum.fetch_add(v, std::memory_order::relaxed);
+		//	});
 		AES_LOG("sum {}", sum.load());
 	}
 
@@ -271,8 +271,6 @@ public:
 		};
 #define USE_BSP
 #ifdef USE_BSP
-		static aes::StackAllocator stackAlloc(mallocator, 16_mb);
-		//globalAllocator = &stackAlloc;
 		aes::Array<aes::BSPTree::Object> bspObjects(*globalAllocator);
 		bspObjects.reserve(std::size(testElements));
 		for (int i = 0; auto & e : testElements)
@@ -326,13 +324,32 @@ public:
 			}
 		}
 		AES_LOG("cubes created");
-
 		lineRenderer.init();
+
+		// draw center transform
 		lineRenderer.addLine(glm::vec3(0, 0, 0), glm::vec3(10, 0, 0));
 		lineRenderer.setColor(aes::Color::Green);
 		lineRenderer.addLine(glm::vec3(0, 0, 0), glm::vec3(0, 10, 0));
 		lineRenderer.setColor(aes::Color::Red);
 		lineRenderer.addLine(glm::vec3(0, 0, 0), glm::vec3(0, 0, 10));
+
+		// draw grid
+		for (int i = 0; i < 30; i++)
+		{
+			for (int j = 0; j < 30; j++)
+			{
+				for (int k = 0; k < 30; k++)
+				{
+					glm::vec3 const p = glm::vec3(i, j, k) * 15.0f;
+					lineRenderer.setColor(aes::Color::Blue);
+					lineRenderer.addLine(p, p + glm::vec3(10, 0, 0));
+					lineRenderer.setColor(aes::Color::Green);
+					lineRenderer.addLine(p, p + glm::vec3(0, 10, 0));
+					lineRenderer.setColor(aes::Color::Red);
+					lineRenderer.addLine(p, p + glm::vec3(0, 0, 10));
+				}
+			}
+		}
 
 		{
 			aes::BufferDescription viewDesc;
@@ -367,7 +384,7 @@ public:
 	void update(float dt) override
 	{
 		AES_PROFILE_FUNCTION();
-		
+
 		glm::vec4 movePos = { 0.0f, 0.f, 0.f, 0.0f };
 
 		if (getKeyState(aes::Key::W) == aes::InputState::Down)
@@ -445,7 +462,22 @@ public:
 			uint windowWidth = 960, windowHeight = 544;
 			mainWindow->getScreenSize(windowWidth, windowHeight);
 			float const aspect = (float)windowWidth / (float)windowHeight;
-			mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
+			if (isKeyPressed(aes::Key::Num1))
+			{
+				mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
+			}
+			if (isKeyPressed(aes::Key::Num2))
+			{
+				mainCamera.projMatrix = glm::perspectiveRH_ZO(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
+			}
+			if (isKeyPressed(aes::Key::Num3))
+			{
+				mainCamera.projMatrix = glm::perspectiveRH_NO(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
+			}
+			if (isKeyPressed(aes::Key::Num4))
+			{
+				mainCamera.projMatrix = glm::perspectiveLH_NO(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
+			}
 		}
 		aes::CameraBuffer const camBuf{ glm::transpose(mainCamera.viewMatrix), glm::transpose(mainCamera.projMatrix) };
 		viewBuffer.setDataFromPOD(camBuf);
@@ -494,7 +526,7 @@ int main()
 	
 	std::ofstream timmingFile("prof.txt");
 
-	for (auto const& [_, v] : runningSession.profileDatas)
+	for (auto const& v : runningSession.profileDatas | std::views::values)
 	{
 		if (strstr(v.name, "BSPTree"))
 		{

@@ -152,7 +152,7 @@ namespace aes
 	};
 
 	template<typename F, std::ranges::random_access_range R>
-	void parrallelForEach(JobSystem& js, R&& range, F const& f)
+	void parallelForEach(JobSystem& js, R&& range, F const& f)
 	{
 		size_t const size = std::ranges::size(range);
 		size_t const sizePerWorker = size / JobSystem::nbWorkers;
