@@ -17,7 +17,7 @@ Engine::Engine(InitInfo const& info) :
 #else
 	mainWindow(std::make_unique<EmptyWindow>()),
 #endif
-	appName(info.appName)
+	appName(info.appName), keyJustPressed(globalAllocator)
 {
 
 }
@@ -41,6 +41,9 @@ void Engine::init()
 		if (action == InputAction::Pressed)
 		{
 			self.onKeyPressed(k);
+			if (self.keyStates[k] == InputState::Up)
+				self.keyJustPressed.push(k);
+
 			self.keyStates[k] = InputState::Down;
 		}
 		else
@@ -67,7 +70,7 @@ void Engine::run()
 	{
 		AES_PROFILE_FRAME();
 		auto const start = std::chrono::high_resolution_clock::now();
-		
+
 		mainWindow->pollEvents();
 		renderer.startFrame();
 
@@ -75,7 +78,8 @@ void Engine::run()
 		draw();
 
 		renderer.endFrame();
-		
+		keyJustPressed.clear();
+
 		auto const end = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<float> const deltaTimeInSec = end - start;
 		deltaTime = deltaTimeInSec.count();
@@ -92,6 +96,11 @@ InputState Engine::getKeyState(Key k) noexcept
 bool Engine::isKeyDown(Key k) noexcept
 {
 	return keyStates[k] == InputState::Down;
+}
+
+bool Engine::isKeyPressed(Key k) noexcept
+{
+	return std::ranges::find(keyJustPressed, k) != keyJustPressed.end();
 }
 
 void Engine::getViewportMousePos(float& x, float& y) const noexcept

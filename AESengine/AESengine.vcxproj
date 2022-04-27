@@ -79,6 +79,7 @@
   <ItemGroup>
     <ClInclude Include="src\core\aes.hpp" />
     <ClInclude Include="src\core\allocator.hpp" />
+    <ClInclude Include="src\core\array.hpp" />
     <ClInclude Include="src\core\color.hpp" />
     <ClInclude Include="src\core\console.hpp" />
     <ClInclude Include="src\core\debug.hpp" />
@@ -86,6 +87,7 @@
     <ClInclude Include="src\core\error.hpp" />
     <ClInclude Include="src\core\geometry.hpp" />
     <ClInclude Include="src\core\input.hpp" />
+    <ClInclude Include="src\core\jobSystem.hpp" />
     <ClInclude Include="src\core\macro_helpers.hpp" />
     <ClInclude Include="src\core\maths.hpp" />
     <ClInclude Include="src\core\os.hpp" />
@@ -94,6 +96,7 @@
     <ClInclude Include="src\core\reflection.hpp" />
     <ClInclude Include="src\core\simd.hpp" />
     <ClInclude Include="src\core\string_converter.hpp" />
+    <ClInclude Include="src\core\uniquePtr.hpp" />
     <ClInclude Include="src\core\utility.hpp" />
     <ClInclude Include="src\core\window.hpp" />
     <ClInclude Include="src\engine.hpp" />
@@ -124,6 +127,11 @@
     <ClInclude Include="src\spatial\octree.hpp" />
     <ClInclude Include="src\UI\UI.hpp" />
     <ClInclude Include="thirdParty\tiny\tiny_obj_loader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="core.natvis">
+      <DeploymentContent>true</DeploymentContent>
+    </Natvis>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

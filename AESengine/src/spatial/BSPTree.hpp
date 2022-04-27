@@ -2,10 +2,12 @@
 #define BSPTREE_HPP
 
 #include <span>
-#include <memory>
 #include <vector>
 #include "core/aes.hpp"
 #include "core/geometry.hpp"
+#include "core/uniquePtr.hpp"
+#include "core/array.hpp"
+#include "core/jobSystem.hpp"
 
 namespace aes
 {
@@ -31,38 +33,39 @@ namespace aes
 		
 		struct Leaf final : BSPElement
 		{
-			Leaf(std::vector<Object> obj) : objects(std::move(obj))
+			Leaf(Array<Object>&& obj) : objects(std::move(obj))
 			{
 				
 			}
-			virtual ~Leaf() = default;
+
+			~Leaf() override = default;
 
 			void testAllCollisions(void(*)(void* userData)) const override;
 			void* raycast(Ray const& r) const override;
-			std::vector<Object> objects;
+			Array<Object> objects;
 		};
 
 		struct Node final : BSPElement
 		{
-			Node(Plane const& p, std::unique_ptr<BSPElement> f, std::unique_ptr<BSPElement> b)
+			Node(Plane const& p, UniquePtr<BSPElement> f, UniquePtr<BSPElement> b)
 				: plane(p), front(std::move(f)), back(std::move(b))
 			{
 				
 			}
-			virtual ~Node() = default;
+			~Node() override = default;
 
 			void testAllCollisions(void(*)(void* userData)) const override;
 			void* raycast(Ray const& r) const override;
 
 			Plane plane;
-			std::unique_ptr<BSPElement> front;
-			std::unique_ptr<BSPElement> back;
+			UniquePtr<BSPElement> front;
+			UniquePtr<BSPElement> back;
 		};
 
 		static constexpr uint maxDepth = 16;
 		static constexpr uint minLeafSize = 2;
 		
-		static std::unique_ptr<BSPElement> build(std::span<Object> objects, uint depth = 0);
+		static UniquePtr<BSPElement> build(IAllocator& allocator, std::span<Object> objects, uint depth = 0);
 	};
 }
 

@@ -64,7 +64,7 @@ namespace aes {
 	class Flags
 	{
 	public:
-		using MaskType = typename std::underlying_type<BitType>::type;
+		using MaskType = std::underlying_type_t<BitType>;
 
 		// constructors
 		constexpr Flags() : mask(0) {}

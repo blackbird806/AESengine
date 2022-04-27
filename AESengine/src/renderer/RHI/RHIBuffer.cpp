@@ -14,7 +14,7 @@ Result<void> RHIBuffer::setData(void* data, size_t size)
 	else
 	{
 		AES_LOG_ERROR("failed to map model buffer data : {}", rdata.error());
-		return { rdata.error() };
+		return { AESError{ rdata.error() } };
 	}
 	unmap();
 	return {};

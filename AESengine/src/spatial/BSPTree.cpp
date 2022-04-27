@@ -1,4 +1,5 @@
 #include "BSPTree.hpp"
+#include <ranges>
 
 using namespace aes;
 
@@ -18,10 +19,10 @@ namespace
 		// Loop over all polygon vertices and count how many vertices
 		// lie in front of and how many lie behind of the thickened plane
 		int numInFront = 0, numBehind = 0;
-		auto vertices = obj.bounds.getVertices();
+		auto const vertices = obj.bounds.getVertices();
 		for (int i = 0; i < vertices.size(); i++) 
 		{
-			glm::vec3 p = vertices[i];
+			glm::vec3 const p = vertices[i];
 			switch (classifyPointToPlane(plane, p))
 			{
 			case PointPlanePlacement::Front:
@@ -30,6 +31,8 @@ namespace
 			case PointPlanePlacement::Back:
 				numBehind++;
 				break;
+			case OnPlane:
+			default: ;
 			}
 		}
 		// If vertices on both sides of the plane, the polygon is straddling
@@ -170,40 +173,39 @@ void* BSPTree::Node::raycast(Ray const& r) const
 	return frontResult;
 }
 
-std::unique_ptr<BSPTree::BSPElement> BSPTree::build(std::span<Object> objects, uint depth)
+UniquePtr<BSPTree::BSPElement> BSPTree::build(IAllocator& allocator, std::span<Object> objects, uint depth)
 {
 	AES_PROFILE_FUNCTION();
-
 	if (objects.empty())
 		return nullptr;
 
 	if (depth > maxDepth || objects.size() <= minLeafSize)
-		return std::make_unique<Leaf>(std::vector<Object>(objects.begin(), objects.end()));
+		return makeUnique<Leaf>(allocator, Array<Object>(allocator, objects));
 
 	Plane const splitPlane = pickSplittingPlane(objects);
 
-	std::vector<Object> backList, frontList;
+	Array<Object> backList(allocator), frontList(allocator);
 
 	for (auto const& o : objects)
 	{
 		switch (classifyObjectToPlane(o, splitPlane))
 		{
 		case ObjectPlanePlacement::Front:
-			frontList.push_back(o);
+			frontList.push(o);
 			break;
 		case ObjectPlanePlacement::Back:
-			backList.push_back(o);
+			backList.push(o);
 			break;
 		case ObjectPlanePlacement::Straddling:
 			// split polygon ?
-			frontList.push_back(o);
-			backList.push_back(o);
+			frontList.push(o);
+			backList.push(o);
 			break;
 		default: AES_UNREACHABLE();
 		}
 	}
 	
-	return std::make_unique<Node>(splitPlane, 
-		build(std::span(frontList.begin(), frontList.end()), depth + 1), 
-		build(std::span(backList.begin(), backList.end()), depth + 1));
+	return makeUnique<Node>(allocator, splitPlane,
+		build(allocator, std::span(frontList.begin(), frontList.end()), depth + 1), 
+		build(allocator, std::span(backList.begin(), backList.end()), depth + 1));
 }

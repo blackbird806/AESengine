@@ -3,6 +3,8 @@
 #include <fstream>
 #include <random>
 
+#include "core/allocator.hpp"
+#include "core/array.hpp"
 #include "core/profiler.hpp"
 #include "core/debugMath.hpp"
 #include "engine.hpp"
@@ -14,7 +16,7 @@
 #include "core/color.hpp"
 #include "spatial/octree.hpp"
 #include "spatial/BSPTree.hpp"
-#include "core/simd.hpp"
+#include "core/jobSystem.hpp"
 
 const char pxShader[] = R"(
 struct VS_OUTPUT
@@ -72,23 +74,18 @@ VS_OUTPUT main(VS_INPUT input)
     return output;
 })";
 
-struct PlaneRenderer
-{
-	aes::RHIBuffer vertexBuffer;
-	aes::RHIBuffer indexBuffer;
-	std::vector<aes::Vertex> vertices;
-	std::vector<uint32_t> indices;
-	aes::Color colorState = aes::Color::Blue;
-};
-
 struct LineRenderer
 {
 	aes::RHIBuffer vertexBuffer;
 	aes::RHIBuffer indexBuffer;
-	std::vector<aes::Vertex> vertices;
-	std::vector<uint32_t> indices;
+	aes::Array<aes::Vertex> vertices;
+	aes::Array<uint32_t> indices;
 	aes::Color colorState = aes::Color::Blue;
-	
+
+	LineRenderer() : vertices(aes::globalAllocator), indices(aes::globalAllocator)
+	{
+	}
+
 	void init()
 	{
 		AES_PROFILE_FUNCTION();
@@ -96,16 +93,16 @@ struct LineRenderer
 
 		BufferDescription vertexBufferInfo{};
 		vertexBufferInfo.bindFlags = BindFlagBits::VertexBuffer;
+		vertexBufferInfo.sizeInBytes = 10_mb;
 		vertexBufferInfo.usage = MemoryUsage::Dynamic;
-		vertexBufferInfo.sizeInBytes = 1024 * 1024 * 1024;
 		vertexBufferInfo.cpuAccessFlags = CPUAccessFlagBits::Write;
 
 		auto err = vertexBuffer.init(vertexBufferInfo);
 
 		BufferDescription indexBufferInfo{};
 		indexBufferInfo.bindFlags = BindFlagBits::IndexBuffer;
+		indexBufferInfo.sizeInBytes = 5_mb;
 		indexBufferInfo.usage = MemoryUsage::Dynamic;
-		indexBufferInfo.sizeInBytes = 1024 * 1024 * 1024;
 		indexBufferInfo.cpuAccessFlags = CPUAccessFlagBits::Write;
 
 		err = indexBuffer.init(indexBufferInfo);
@@ -121,8 +118,8 @@ struct LineRenderer
 		AES_PROFILE_FUNCTION();
 
 		glm::vec4 const vcolor = colorState.toVec4();
-		vertices.push_back({ from, vcolor });
-		vertices.push_back({ to, vcolor });
+		vertices.push({ from, vcolor });
+		vertices.push({ to, vcolor });
 	}
 
 	void addAABB(aes::AABB const& aabb)
@@ -190,6 +187,7 @@ class Game : public aes::Engine
 
 public:
 
+	aes::JobSystem jobSystem;
 	LineRenderer lineRenderer;
 	aes::RHIFragmentShader fragmentShader;
 	aes::RHIVertexShader vertexShader;
@@ -200,15 +198,24 @@ public:
 	
 	TestElement testElements[25];
 	aes::Octree octree;
-	std::unique_ptr<aes::BSPTree::BSPElement> bspTree;
+	aes::UniquePtr<aes::BSPTree::BSPElement> bspTree;
 	
-	Game(InitInfo const& info) : Engine(info)
+	Game(InitInfo const& info) : Engine(info), jobSystem(aes::globalAllocator)
 	{
 		AES_LOG("Game initialized");
+		std::atomic<int> sum;
+		//aes::parallelForEach(jobSystem, std::views::iota(1, 2), [&sum](auto v)
+		//	{
+		//		AES_LOG("{}", v);
+		//		sum.fetch_add(v, std::memory_order::relaxed);
+		//	});
+		AES_LOG("sum {}", sum.load());
 	}
 
 	void start() override
 	{
+		using namespace aes;
+
 		AES_PROFILE_FUNCTION();
 		AES_LOG("start");
 
@@ -258,25 +265,25 @@ public:
 		lineRenderer.setColor(aes::Color::Blue);
 		auto cb = [](void* userData)
 		{
-			TestElement* element = (TestElement*)userData;
+			TestElement* element = static_cast<TestElement*>(userData);
 			element->coll = true;
 		};
+#define USE_BSP
 #ifdef USE_BSP
-		std::vector<aes::BSPTree::Object> bspObjects;
+		aes::Array<aes::BSPTree::Object> bspObjects(globalAllocator);
 		bspObjects.reserve(std::size(testElements));
 		for (int i = 0; auto & e : testElements)
 		{
 			e.id = i++;
 			e.pos = glm::vec3(dis(gen), dis(gen), dis(gen));
 			e.size = glm::vec3(disS(gen), disS(gen), disS(gen));
-			bspObjects.push_back({ &e, aes::AABB::createHalfCenter(e.pos, e.size) });
+			bspObjects.push({ &e, aes::AABB::createHalfCenter(e.pos, e.size) });
 		}
 		
-		bspTree = aes::BSPTree::build(std::span(bspObjects));
+		bspTree = aes::BSPTree::build(globalAllocator, std::span(bspObjects));
 		bspTree->testAllCollisions(cb);
 #endif
 		// octree ========
-#define USE_OCTREE
 #ifdef USE_OCTREE
 		//for (int a = 0; a < 10'000; a++)
 		{
@@ -316,13 +323,32 @@ public:
 			}
 		}
 		AES_LOG("cubes created");
-
 		lineRenderer.init();
+
+		// draw center transform
 		lineRenderer.addLine(glm::vec3(0, 0, 0), glm::vec3(10, 0, 0));
 		lineRenderer.setColor(aes::Color::Green);
 		lineRenderer.addLine(glm::vec3(0, 0, 0), glm::vec3(0, 10, 0));
 		lineRenderer.setColor(aes::Color::Red);
 		lineRenderer.addLine(glm::vec3(0, 0, 0), glm::vec3(0, 0, 10));
+
+		// draw grid
+		for (int i = 0; i < 30; i++)
+		{
+			for (int j = 0; j < 30; j++)
+			{
+				for (int k = 0; k < 30; k++)
+				{
+					glm::vec3 const p = glm::vec3(i, j, k) * 15.0f;
+					lineRenderer.setColor(aes::Color::Blue);
+					lineRenderer.addLine(p, p + glm::vec3(10, 0, 0));
+					lineRenderer.setColor(aes::Color::Green);
+					lineRenderer.addLine(p, p + glm::vec3(0, 10, 0));
+					lineRenderer.setColor(aes::Color::Red);
+					lineRenderer.addLine(p, p + glm::vec3(0, 0, 10));
+				}
+			}
+		}
 
 		{
 			aes::BufferDescription viewDesc;
@@ -357,7 +383,7 @@ public:
 	void update(float dt) override
 	{
 		AES_PROFILE_FUNCTION();
-		
+
 		glm::vec4 movePos = { 0.0f, 0.f, 0.f, 0.0f };
 
 		if (getKeyState(aes::Key::W) == aes::InputState::Down)
@@ -422,11 +448,11 @@ public:
 			getViewportMousePos(lastMousePosX, lastMousePosY);
 		}
 		mainCamera.lookAt(mainCamera.pos + glm::normalize(direction));
-		//TestElement* elem = (TestElement*)bspTree->raycast({ mainCamera.pos, glm::normalize(direction) });
-		//if (elem)
-		//{
-		//	elem->coll = true;
-		//}
+		TestElement* elem = (TestElement*)bspTree->raycast({ mainCamera.pos, glm::normalize(direction) });
+		if (elem)
+		{
+			elem->coll = true;
+		}
 		
 		{
 			float const ex = 0.0055f;
@@ -435,10 +461,27 @@ public:
 			uint windowWidth = 960, windowHeight = 544;
 			mainWindow->getScreenSize(windowWidth, windowHeight);
 			float const aspect = (float)windowWidth / (float)windowHeight;
+
+			if (isKeyPressed(aes::Key::Num1))
+			{
+			}
+			if (isKeyPressed(aes::Key::Num2))
+			{
+			}
+			if (isKeyPressed(aes::Key::Num3))
+			{
+			}
+			if (isKeyPressed(aes::Key::Num4))
+			{
+			}
+			if (isKeyPressed(aes::Key::Num0))
+			{
+			}
+
 			mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
+			aes::CameraBuffer const camBuf{ glm::transpose(mainCamera.viewMatrix), glm::transpose(mainCamera.projMatrix) };
+			viewBuffer.setDataFromPOD(camBuf);
 		}
-		aes::CameraBuffer const camBuf{ glm::transpose(mainCamera.viewMatrix), glm::transpose(mainCamera.projMatrix) };
-		viewBuffer.setDataFromPOD(camBuf);
 	}
 
 	void draw() override
@@ -464,7 +507,7 @@ public:
 	}
 };
 
-int main(int a, char const** b)
+int main()
 {
 	std::ofstream logFile("AES_log.txt");
 	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(std::cout));
@@ -484,9 +527,9 @@ int main(int a, char const** b)
 	
 	std::ofstream timmingFile("prof.txt");
 
-	for (auto const& [_, v] : runningSession.profileDatas)
+	for (auto const& v : runningSession.profileDatas | std::views::values)
 	{
-		if (strstr(v.name, "Octree"))
+		if (strstr(v.name, "BSPTree"))
 		{
 			timmingFile << fmt::format("{}\n\ttotalTime: {}ms\n\tcount: {}\n\taverage: {}ms\n\tparent: {}\n",
 				v.name, v.elapsedTime, v.count, v.elapsedTime / v.count, v.parentName != nullptr ? v.parentName : "none");

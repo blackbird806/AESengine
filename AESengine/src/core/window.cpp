@@ -1,8 +1,6 @@
 #include "window.hpp"
 #include "aes.hpp"
 
-#include <string>
-
 using namespace aes;
 
 void Window::setResizeCallback(ResizeCallbackT func)

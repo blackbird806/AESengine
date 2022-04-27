@@ -1,5 +1,5 @@
-#ifndef ERROR_HPP
-#define ERROR_HPP
+#ifndef AES_ERROR_HPP
+#define AES_ERROR_HPP
 
 #include <variant>
 #include <utility>
@@ -8,9 +8,12 @@
 
 namespace aes {
 
-	enum class AESError
+	using UnderlyingError_t = int32_t;
+
+	enum class AESError : UnderlyingError_t
 	{
 		Undefined,
+		MemoryAllocationFailed,
 		GPUBufferCreationFailed,
 		GPUTextureCreationFailed,
 		GPUBufferMappingFailed,
@@ -20,12 +23,12 @@ namespace aes {
 		BlendStateCreationFailed,
 	};
 
-	template<typename T, typename ErrorCode = AESError>
+	template<typename T>
 	class Result
 	{
 	public:
 		using ValueType = T;
-		using ErrorCodeType = ErrorCode;
+		using ErrorCodeType = UnderlyingError_t;
 
 		Result(T&& val) noexcept : value_(std::forward<T>(val))
 		{
@@ -37,7 +40,7 @@ namespace aes {
 
 		}
 
-		Result(ErrorCodeType err) noexcept : value_(err)
+		Result(AESError err) noexcept : value_(static_cast<ErrorCodeType>(err))
 		{
 
 		}
@@ -88,23 +91,22 @@ namespace aes {
 		}
 
 	private:
-		std::variant<ValueType, ErrorCodeType> value_;
+		std::variant<ErrorCodeType, ValueType> value_;
 	};
 
-
-	template<typename ErrorCode>
-	class Result<void, ErrorCode>
+	template<>
+	class Result<void>
 	{
 	public:
 		using ValueType = void;
-		using ErrorCodeType = ErrorCode;
+		using ErrorCodeType = UnderlyingError_t;
 
 		Result() noexcept
 		{
 
 		}
 
-		Result(ErrorCodeType err) noexcept : value_(err)
+		Result(AESError err) noexcept : value_(static_cast<ErrorCodeType>(err))
 		{
 
 		}

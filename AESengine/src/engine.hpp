@@ -4,6 +4,7 @@
 #include "core/aes.hpp"
 #include "core/debug.hpp"
 #include "core/window.hpp"
+#include "core/array.hpp"
 #include "renderer/RHI/RHIRenderContext.hpp"
 #include "renderer/camera.hpp"
 #include <unordered_map>
@@ -72,6 +73,7 @@ namespace aes {
 		RHIRenderContext renderer;
 
 		std::unordered_map<Key, InputState> keyStates;
+		Array<Key> keyJustPressed;
 	};
 }
 

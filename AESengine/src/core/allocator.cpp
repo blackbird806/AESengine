@@ -17,6 +17,32 @@
 
 #endif
 
+aes::Mallocator aes::mallocator{};
+aes::IAllocator& aes::globalAllocator = aes::mallocator;
+aes::IAllocator* aes::contextAllocator = &aes::mallocator;
+
+// https://stackoverflow.com/questions/53922209/how-to-invoke-aligned-new-delete-properly
+static void* alignedAlloc(size_t size, size_t al) noexcept
+{
+	AES_ASSERT(size % al == 0);
+#if _MSC_VER
+	// msvc doesn't support c11 aligned_alloc
+	return _aligned_malloc(size, al);
+#else
+	return aligned_alloc(al, size);
+#endif
+}
+
+static void alignedFree(void* ptr) noexcept
+{
+#if _MSC_VER
+	_aligned_free(ptr);
+#else
+	free(ptr);
+#endif
+}
+
+
 // @TODO
 #if 0 
 
@@ -32,26 +58,6 @@ void* operator new[](size_t size) noexcept
 	auto* ptr = malloc(size);
 	AES_PROFILE_MEMORY_ALLOC(ptr, size);
 	return ptr;
-}
-// https://stackoverflow.com/questions/53922209/how-to-invoke-aligned-new-delete-properly
-static void* alignedAlloc(size_t size, std::align_val_t al) noexcept
-{
-	AES_ASSERT(size % (size_t)al == 0);
-#if _MSC_VER
-	// msvc doesn't support c11 aligned_alloc
-	return _aligned_malloc(size, (size_t)al);
-#else
-	return aligned_alloc((size_t)al, size);
-#endif
-}
-
-static void alignedFree(void* ptr) noexcept
-{
-#if _MSC_VER
-	return _aligned_free(ptr);
-#else
-	return free(ptr);
-#endif
 }
 
 void* operator new(size_t size, std::align_val_t al)
@@ -95,19 +101,39 @@ void operator delete[](void* ptr, std::align_val_t al) noexcept
 
 #endif
 
-void aes::MemoryProfiler::profileAlloc(void* ptr, size_t size)
+void* aes::IAllocator::do_allocate(size_t size, size_t align)
 {
-	
+	return allocate(size, align);
 }
 
-aes::StackAllocator::StackAllocator(size_t size) : totalSize(size), offset(0)
+void aes::IAllocator::do_deallocate(void* ptr, size_t size, size_t align)
 {
-	start = new uint8_t[totalSize];
+	deallocate(ptr);
+}
+
+bool aes::IAllocator::do_is_equal(const memory_resource& rhs) const noexcept
+{
+	return *this == rhs;
+}
+
+void* aes::Mallocator::allocate(size_t size, size_t align)
+{
+	return alignedAlloc(size, align);
+}
+
+void aes::Mallocator::deallocate(void* ptr)
+{
+	alignedFree(ptr);
+}
+
+aes::StackAllocator::StackAllocator(IAllocator& base, size_t size) : baseAllocator(&base),
+	start(static_cast<uint8_t*>(base.allocate(size))), totalSize(size), offset(0)
+{
 }
 
 aes::StackAllocator::~StackAllocator()
 {
-	delete[] start;
+	baseAllocator->deallocate(start);
 }
 
 void* aes::StackAllocator::allocate(size_t size, size_t alignement)
