@@ -20,7 +20,7 @@ namespace aes
 		void operator()(T* ptr) noexcept
 		{
 			ptr->~T();
-			globalAllocator->deallocate(ptr);
+			globalAllocator.deallocate(ptr);
 		}
 	};
 
@@ -166,15 +166,15 @@ namespace aes
 		[[no_unique_address]] D deleter;
 	};
 
-	/*
-	 * using global allocator without keeping alloc ref is dangerous because global alloc may change between allocation and deallocation
+	template<typename T>
+	using GUniquePtr = UniquePtr<T, GlobalAllocDelete<T>>;
+
 	template<typename T, typename... Args>
-	UniquePtr<T> makeUnique(Args&&... args) noexcept
+	auto makeUnique(Args&&... args) noexcept
 	{
-		void* ptr = globalAllocator->allocate(sizeof(T), alignof(T));
-		return UniquePtr<T>(::new(ptr) T(std::move(args)...));
+		void* ptr = globalAllocator.allocate(sizeof(T), alignof(T));
+		return UniquePtr<T, GlobalAllocDelete<T>>(::new(ptr) T(std::move(args)...));
 	}
-	*/
 
 	template<typename T, typename... Args>
 	auto makeUnique(IAllocator& alloc, Args&&... args) noexcept

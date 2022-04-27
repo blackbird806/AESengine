@@ -16,7 +16,6 @@
 #include "core/color.hpp"
 #include "spatial/octree.hpp"
 #include "spatial/BSPTree.hpp"
-#include "core/simd.hpp"
 #include "core/jobSystem.hpp"
 
 const char pxShader[] = R"(
@@ -83,7 +82,7 @@ struct LineRenderer
 	aes::Array<uint32_t> indices;
 	aes::Color colorState = aes::Color::Blue;
 
-	LineRenderer() : vertices(*aes::globalAllocator), indices(*aes::globalAllocator)
+	LineRenderer() : vertices(aes::globalAllocator), indices(aes::globalAllocator)
 	{
 	}
 
@@ -201,7 +200,7 @@ public:
 	aes::Octree octree;
 	aes::UniquePtr<aes::BSPTree::BSPElement> bspTree;
 	
-	Game(InitInfo const& info) : Engine(info), jobSystem(*aes::globalAllocator)
+	Game(InitInfo const& info) : Engine(info), jobSystem(aes::globalAllocator)
 	{
 		AES_LOG("Game initialized");
 		std::atomic<int> sum;
@@ -271,7 +270,7 @@ public:
 		};
 #define USE_BSP
 #ifdef USE_BSP
-		aes::Array<aes::BSPTree::Object> bspObjects(*globalAllocator);
+		aes::Array<aes::BSPTree::Object> bspObjects(globalAllocator);
 		bspObjects.reserve(std::size(testElements));
 		for (int i = 0; auto & e : testElements)
 		{
@@ -281,7 +280,7 @@ public:
 			bspObjects.push({ &e, aes::AABB::createHalfCenter(e.pos, e.size) });
 		}
 		
-		bspTree = aes::BSPTree::build(*globalAllocator, std::span(bspObjects));
+		bspTree = aes::BSPTree::build(globalAllocator, std::span(bspObjects));
 		bspTree->testAllCollisions(cb);
 #endif
 		// octree ========
@@ -462,25 +461,27 @@ public:
 			uint windowWidth = 960, windowHeight = 544;
 			mainWindow->getScreenSize(windowWidth, windowHeight);
 			float const aspect = (float)windowWidth / (float)windowHeight;
+
 			if (isKeyPressed(aes::Key::Num1))
 			{
-				mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
 			}
 			if (isKeyPressed(aes::Key::Num2))
 			{
-				mainCamera.projMatrix = glm::perspectiveRH_ZO(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
 			}
 			if (isKeyPressed(aes::Key::Num3))
 			{
-				mainCamera.projMatrix = glm::perspectiveRH_NO(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
 			}
 			if (isKeyPressed(aes::Key::Num4))
 			{
-				mainCamera.projMatrix = glm::perspectiveLH_NO(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
 			}
+			if (isKeyPressed(aes::Key::Num0))
+			{
+			}
+
+			mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
+			aes::CameraBuffer const camBuf{ glm::transpose(mainCamera.viewMatrix), glm::transpose(mainCamera.projMatrix) };
+			viewBuffer.setDataFromPOD(camBuf);
 		}
-		aes::CameraBuffer const camBuf{ glm::transpose(mainCamera.viewMatrix), glm::transpose(mainCamera.projMatrix) };
-		viewBuffer.setDataFromPOD(camBuf);
 	}
 
 	void draw() override

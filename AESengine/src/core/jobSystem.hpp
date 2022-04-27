@@ -2,7 +2,6 @@
 #define AES_JOBSYSTEM_HPP
 
 #include "aes.hpp"
-#include "error.hpp"
 #include "array.hpp"
 #include "allocator.hpp"
 #include "utility.hpp"
@@ -15,54 +14,6 @@
 
 namespace aes
 {
-	template<typename T>
-	class LfreeQueue
-	{
-	public:
-
-		LfreeQueue(IAllocator& alloc, uint32_t size) : allocator(&alloc)
-		{
-			data = allocator->allocate<T>(size);
-			end = data + size;
-			head = 0;
-			tail = 1;
-		}
-
-		uint32_t capacity() const noexcept
-		{
-			return end - data;
-		}
-
-		uint32_t adjacentNext(uint32_t i) const
-		{
-			return (i + 1) % capacity();
-		}
-
-		Result<void> enqueue(T const& value)
-		{
-			if (!isIndexEmpty(adjacentNext(tail)))
-				return { AESError::Undefined };
-
-		}
-
-	private:
-
-		bool isIndexEmpty(uint32_t i) const
-		{
-			AES_ASSERT(i < capacity());
-			if (tail > head)
-			{
-				return i > tail || i < head;
-			}
-			return i > tail && i < head;
-		}
-
-		IAllocator* allocator;
-		std::atomic<T*> data;
-		std::atomic<T*> end;
-		std::atomic<uint32_t> head, tail;
-	};
-
 	struct Job
 	{
 		Job(std::function<void()>&& fn) noexcept : task(fn)

@@ -85,7 +85,8 @@ namespace aes
 	};
 
 	extern Mallocator mallocator;
-	extern IAllocator* globalAllocator;
+	extern IAllocator& globalAllocator;
+	extern IAllocator* contextAllocator;
 }
 
 #endif
