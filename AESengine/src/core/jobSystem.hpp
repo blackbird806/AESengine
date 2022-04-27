@@ -10,7 +10,6 @@
 #include <memory>
 #include <functional>
 #include <ranges>
-#include <latch>
 
 namespace aes
 {
@@ -21,13 +20,13 @@ namespace aes
 			
 		}
 
-		Job(Job const& rhs) noexcept : task(rhs.task), done(rhs.done.load(std::memory_order::relaxed))
+		Job(Job const& rhs) noexcept : task(rhs.task), done(rhs.done.load(std::memory_order_relaxed))
 		{}
 
 		Job& operator=(Job const& rhs)
 		{
 			task = rhs.task;
-			done = rhs.done.load(std::memory_order::relaxed);
+			done = rhs.done.load(std::memory_order_relaxed);
 			return *this;
 		}
 
@@ -48,7 +47,7 @@ namespace aes
 			{
 				threads[i] = std::jthread([this]()
 				{
-					while (!stop.load(std::memory_order::memory_order_relaxed))
+					while (!stop.load(std::memory_order_relaxed))
 					{
 						std::shared_ptr<Job> job;
 						{
@@ -62,7 +61,7 @@ namespace aes
 						if (job)
 						{
 							job->task();
-							job->done.store(true, std::memory_order::memory_order_relaxed);
+							job->done.store(true, std::memory_order_relaxed);
 						}
 					}
 				});
@@ -92,7 +91,7 @@ namespace aes
 
 		~JobSystem()
 		{
-			stop.store(true, std::memory_order::memory_order_relaxed);
+			stop.store(true, std::memory_order_relaxed);
 		}
 
 	private:
@@ -107,7 +106,8 @@ namespace aes
 	{
 		size_t const size = std::ranges::size(range);
 		size_t const sizePerWorker = size / JobSystem::nbWorkers;
-		std::latch latch(JobSystem::nbWorkers);
+
+		std::atomic<int> latch(JobSystem::nbWorkers);
 		for (size_t i = 0; i < JobSystem::nbWorkers; i++)
 		{
 			js.run([=, &latch]() mutable 
@@ -124,10 +124,12 @@ namespace aes
 					{
 						f(*e);
 					}
-					latch.count_down();
+					latch.fetch_sub(1, std::memory_order_relaxed);
 				});
 		}
-		latch.wait();
+
+		while (latch.load(std::memory_order_relaxed))
+		{ }
 	}
 
 }

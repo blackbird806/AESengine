@@ -204,11 +204,11 @@ public:
 	{
 		AES_LOG("Game initialized");
 		std::atomic<int> sum;
-		//aes::parallelForEach(jobSystem, std::views::iota(1, 2), [&sum](auto v)
-		//	{
-		//		AES_LOG("{}", v);
-		//		sum.fetch_add(v, std::memory_order::relaxed);
-		//	});
+		aes::parallelForEach(jobSystem, std::views::iota(1, 20), [&sum](auto v)
+			{
+				AES_LOG("{}", v);
+				sum.fetch_add(v, std::memory_order_relaxed);
+			});
 		AES_LOG("sum {}", sum.load());
 	}
 

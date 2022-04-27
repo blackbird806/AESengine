@@ -29,7 +29,9 @@ static void* alignedAlloc(size_t size, size_t al) noexcept
 	// msvc doesn't support c11 aligned_alloc
 	return _aligned_malloc(size, al);
 #else
-	return aligned_alloc(al, size);
+	// vita toolchains don't seems to support aligned alloc
+	// TODO write a custom version
+	return malloc(size);
 #endif
 }
 

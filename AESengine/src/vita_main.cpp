@@ -25,7 +25,6 @@ public:
 	aes::RHITexture texture;
 	aes::RHIFragmentShader fragmentShader;
 	aes::RHIVertexShader vertexShader;
-	aes::Camera camera;
 
 	Game(InitInfo const& info) : Engine(info)
 	{
@@ -66,8 +65,8 @@ public:
 
 		{
 			aes::BufferDescription viewBufferDesc;
-			viewBufferDesc.sizeInBytes = sizeof(glm::mat4) * 2;
-			viewBufferDesc.usage = aes::MemoryUsage::Default;
+			viewBufferDesc.sizeInBytes = sizeof(CameraBuffer);
+			viewBufferDesc.usage = aes::MemoryUsage::Dynamic;
 			viewBufferDesc.cpuAccessFlags = aes::CPUAccessFlagBits::Write;
 			viewBufferDesc.bindFlags = aes::BindFlagBits::UniformBuffer;
 			viewBuffer.init(viewBufferDesc);
@@ -106,7 +105,7 @@ public:
 		vertexShaderDescription.verticesLayout = vertexInputLayout;
 		vertexShaderDescription.verticesStride = sizeof(Vertex);
 		auto err = vertexShader.init(vertexShaderDescription);
-		AES_LOG("vertex shader err init");
+		AES_LOG("vertex shader init");
 
 		aes::FragmentShaderDescription fragmentShaderDescription;
 		static auto const source_fs = aes::readFileBin("app0:assets/shaders/vita/basic3d_fs.gxp");
@@ -133,8 +132,8 @@ public:
 		sceCtrlSetSamplingMode(SCE_CTRL_MODE_ANALOG_WIDE);
 	}
 
-	float speed = 1.0f;
-	glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, 0.2f));
+	float speed = 2.0f;
+	glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, 0.8f));
 
 	void update(float dt) override
 	{
@@ -146,12 +145,10 @@ public:
 
 		if (ct.buttons & SCE_CTRL_DOWN)
 		{
-			//camera.pos.z -= speed * dt;
 			transform = glm::translate(transform, glm::vec3(0.0f, 0.0f, speed * dt));
 		}
 		if (ct.buttons & SCE_CTRL_UP)
 		{
-			//camera.pos.z += speed * dt;
 			transform = glm::translate(transform, glm::vec3(0.0f, 0.0f, -speed * dt));
 		}
 
@@ -167,19 +164,36 @@ public:
 
 		if (ct.ly > 150)
 		{
-			camera.pos.x += speed;
+			mainCamera.pos.z += speed * dt;
 		}
 		if (ct.ly < 100)
 		{
-			camera.pos.x -= speed;
+			mainCamera.pos.z -= speed * dt;
+		}
+
+		if (ct.lx > 150)
+		{
+			mainCamera.pos.x += speed * dt;
+		}
+		if (ct.lx < 100)
+		{
+			mainCamera.pos.x -= speed * dt;
+		}
+
+		if (ct.rx > 150)
+		{
+			mainCamera.pos.y += speed * dt;
+		}
+		if (ct.rx < 100)
+		{
+			mainCamera.pos.y -= speed * dt;
 		}
 
 		uint windowWidth = 960, windowHeight = 544;
 		float const aspect = (float)windowWidth / (float)windowHeight;
 
-		camera.lookAt(camera.pos + glm::vec3(0, 0, 1));
-		camera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), aspect, 0.01f, 100.0f);
-		//aes::CameraBuffer const camBuf{ glm::transpose(mainCamera.viewMatrix), glm::transpose(mainCamera.projMatrix) };
+		mainCamera.viewMatrix = glm::lookAtRH(mainCamera.pos, mainCamera.pos + glm::vec3(0, 0, 1), { 0.0f, 1.0f, 0.0f });
+		mainCamera.projMatrix = glm::perspectiveRH_NO(glm::radians(45.0f), aspect, 0.01f, 100.0f);
 		aes::CameraBuffer const camBuf{ mainCamera.viewMatrix, mainCamera.projMatrix };
 		viewBuffer.setDataFromPOD(camBuf);
 		//transform = glm::rotate(transform, speed * dt, glm::vec3(1.0f, 1.0f, 1.0f));
@@ -203,7 +217,7 @@ public:
 
 		context.bindVertexBuffer(vertexBuffer, sizeof(Vertex));
 		context.bindIndexBuffer(indexBuffer, IndexTypeFormat::Uint16);
-		context.bindFragmentTexture(texture, 0);
+		//context.bindFragmentTexture(texture, 0);
 		context.drawIndexed(36, 0);
 	}
 };

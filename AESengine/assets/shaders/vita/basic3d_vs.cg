@@ -11,11 +11,9 @@ void main(float3 aPosition, float4 aColor,
 	out float4 position : POSITION,
 	out float4 color : COLOR)
 {
-    // Calculate the position of the vertex against the world, view, and projection matrices.
     position = mul(float4(aPosition, 1.0f), ModelBuffer.worldMatrix);
     position = mul(position, CameraBuffer.viewMatrix);
     position = mul(position, CameraBuffer.projectionMatrix);
 
-    // Store the input color for the pixel shader to use.
     color = aColor;
 }
