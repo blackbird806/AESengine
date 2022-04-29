@@ -2,13 +2,10 @@
 #define DEBUG_HPP
 
 #include <vector>
-#include <ostream>
+#include <iosfwd>
 #include <memory>
 #include <fmt/format.h>
 #include "macro_helpers.hpp"
-
-// Deprecated
-#define AES_ENSURE(x) if (!(x)) { AES_ERROR("Ensure error experssion: " #x " is false"); }
 
 #ifdef __vita__
 #define AES_LOG(msg, ...) ::aes::Logger::instance().log(fmt::format("info : " msg "\n" __VA_OPT__(,) __VA_ARGS__))
@@ -20,13 +17,6 @@
 #define AES_LOG_RAW(msg, ...) ::aes::Logger::instance().log(fmt::format(msg "\n", __VA_ARGS__))
 #define AES_WARN(msg, ...) ::aes::Logger::instance().log(fmt::format("warn : " msg "\n", __VA_ARGS__))
 #define AES_LOG_ERROR(msg, ...) ::aes::Logger::instance().log(fmt::format(" error : " __FUNCTION__ " : " AES_STRINGIFY(__LINE__) ": " msg "\n", __VA_ARGS__))
-#endif
-
-// @Review
-#ifdef AES_DEBUG
-#define AES_ERROR(msg, ...) AES_DEBUG_BREAK();
-#else
-#define  AES_ERROR(msg, ...) AES_LOG_ERROR(msg, __VA_ARGS__);
 #endif
 
 namespace aes {

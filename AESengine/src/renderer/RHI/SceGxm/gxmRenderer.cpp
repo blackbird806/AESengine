@@ -580,7 +580,7 @@ void GxmRenderer::bindFragmentTexture(RHITexture& tex, uint index)
 void GxmRenderer::bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset)
 {
 	AES_PROFILE_FUNCTION();
-	auto err = sceGxmSetVertexStream(context, (uint32_t)offset, buffer.getHandle());
+	auto err = sceGxmSetVertexStream(context, 0, buffer.getHandle());
 	AES_GXM_CHECK(err);
 }
 

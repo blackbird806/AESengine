@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <span>
+#include <random>
 #include <glm/gtx/transform.hpp>
 #include "core/profiler.hpp"
 #include "core/debugMath.hpp"
@@ -7,24 +9,129 @@
 #include "core/os.hpp"
 #include "core/utility.hpp"
 #include "core/color.hpp"
+#include "core/array.hpp"
+#include "core/uniquePtr.hpp"
 #include "renderer/RHI/RHIRenderContext.hpp"
 #include "renderer/draw2d.hpp"
 #include "renderer/RHI/RHITexture.hpp"
 #include "renderer/textureUtility.hpp"
 #include "renderer/model.hpp"
 #include "renderer/camera.hpp"
+#include "spatial/BSPTree.hpp"
+#include "core/geometry.hpp"
+
+struct LineRenderer
+{
+	aes::RHIBuffer vertexBuffer;
+	aes::RHIBuffer indexBuffer;
+	aes::Array<aes::Vertex> vertices;
+	aes::Array<uint32_t> indices;
+	aes::Color colorState = aes::Color::Blue;
+
+	LineRenderer() : vertices(aes::globalAllocator), indices(aes::globalAllocator)
+	{
+	}
+
+	void init()
+	{
+		AES_PROFILE_FUNCTION();
+		using namespace aes;
+
+		BufferDescription vertexBufferInfo{};
+		vertexBufferInfo.bindFlags = BindFlagBits::VertexBuffer;
+		vertexBufferInfo.sizeInBytes = 2_mb;
+		vertexBufferInfo.usage = MemoryUsage::Dynamic;
+		vertexBufferInfo.cpuAccessFlags = CPUAccessFlagBits::Write;
+
+		auto err = vertexBuffer.init(vertexBufferInfo);
+
+		BufferDescription indexBufferInfo{};
+		indexBufferInfo.bindFlags = BindFlagBits::IndexBuffer;
+		indexBufferInfo.sizeInBytes = 1_mb;
+		indexBufferInfo.usage = MemoryUsage::Dynamic;
+		indexBufferInfo.cpuAccessFlags = CPUAccessFlagBits::Write;
+
+		err = indexBuffer.init(indexBufferInfo);
+	}
+
+	void setColor(aes::Color color)
+	{
+		colorState = color;
+	}
+
+	void addLine(glm::vec3 const& from, glm::vec3 const& to)
+	{
+		AES_PROFILE_FUNCTION();
+
+		glm::vec4 const vcolor = colorState.toVec4();
+		vertices.push({ from, vcolor });
+		vertices.push({ to, vcolor });
+	}
+
+	void addAABB(aes::AABB const& aabb)
+	{
+		AES_PROFILE_FUNCTION();
+		addLine(glm::vec3(aabb.min), glm::vec3(aabb.min.x, aabb.min.y, aabb.max.z));
+		addLine(glm::vec3(aabb.min), glm::vec3(aabb.min.x, aabb.max.y, aabb.min.z));
+		addLine(glm::vec3(aabb.min), glm::vec3(aabb.max.x, aabb.min.y, aabb.min.z));
+
+		addLine(glm::vec3(aabb.max), glm::vec3(aabb.min.x, aabb.max.y, aabb.max.z));
+		addLine(glm::vec3(aabb.max), glm::vec3(aabb.max.x, aabb.min.y, aabb.max.z));
+		addLine(glm::vec3(aabb.max), glm::vec3(aabb.max.x, aabb.max.y, aabb.min.z));
+
+		addLine(glm::vec3(aabb.min.x, aabb.max.y, aabb.min.z), glm::vec3(aabb.max.x, aabb.max.y, aabb.min.z));
+		addLine(glm::vec3(aabb.max.x, aabb.min.y, aabb.min.z), glm::vec3(aabb.max.x, aabb.max.y, aabb.min.z));
+		addLine(glm::vec3(aabb.max.x, aabb.min.y, aabb.max.z), glm::vec3(aabb.max.x, aabb.min.y, aabb.min.z));
+
+		addLine(glm::vec3(aabb.min.x, aabb.max.y, aabb.max.z), glm::vec3(aabb.min.x, aabb.max.y, aabb.min.z));
+		addLine(glm::vec3(aabb.min.x, aabb.min.y, aabb.max.z), glm::vec3(aabb.min.x, aabb.max.y, aabb.max.z));
+		addLine(glm::vec3(aabb.min.x, aabb.min.y, aabb.max.z), glm::vec3(aabb.max.x, aabb.min.y, aabb.max.z));
+	}
+
+	void clear()
+	{
+		vertices.clear();
+	}
+
+	void draw()
+	{
+		AES_PROFILE_FUNCTION();
+		indices.resize(vertices.size());
+		for (uint32_t i = 0; i < vertices.size(); i++)
+			indices[i] = i;
+
+		vertexBuffer.setData(std::span(vertices));
+		indexBuffer.setData(std::span(indices));
+		aes::RHIRenderContext::instance().bindVertexBuffer(vertexBuffer, sizeof(aes::Vertex));
+		aes::RHIRenderContext::instance().bindIndexBuffer(indexBuffer, aes::IndexTypeFormat::Uint32);
+		aes::RHIRenderContext::instance().setDrawPrimitiveMode(aes::DrawPrimitiveType::Lines);
+		aes::RHIRenderContext::instance().drawIndexed(indices.size());
+	}
+
+};
+
+struct TestElement
+{
+	int id;
+	glm::vec3 pos;
+	glm::vec3 size;
+	aes::Model model;
+	bool coll = false;
+};
 
 class Game : public aes::Engine
 {
 
 public:
 
-	aes::RHIBuffer vertexBuffer;
-	aes::RHIBuffer indexBuffer;
 	aes::RHIBuffer viewBuffer, modelBuffer;
 	aes::RHITexture texture;
 	aes::RHIFragmentShader fragmentShader;
 	aes::RHIVertexShader vertexShader;
+	TestElement testElements[25];
+	LineRenderer lineRenderer;
+
+	aes::UniquePtr<aes::BSPTree::BSPElement> bspTree;
 
 	Game(InitInfo const& info) : Engine(info)
 	{
@@ -39,29 +146,6 @@ public:
 		AES_LOG("start");
 
 		auto vertices = getCubeVertices();
-
-		{
-			aes::BufferDescription vertexBufferDescription;
-			vertexBufferDescription.sizeInBytes = sizeof(aes::Vertex) * vertices.size();
-			vertexBufferDescription.usage = aes::MemoryUsage::Dynamic;
-			vertexBufferDescription.cpuAccessFlags = aes::CPUAccessFlagBits::Write;
-			vertexBufferDescription.bindFlags = aes::BindFlagBits::VertexBuffer;
-			vertexBufferDescription.initialData = vertices.data();
-			vertexBuffer.init(vertexBufferDescription);
-		}
-
-		uint16_t indices[36];
-		for (int i = 0; auto& index : indices)
-			index = cubeIndices[i++];
-		{
-			aes::BufferDescription indexBufferDescription;
-			indexBufferDescription.sizeInBytes = sizeof(indices);
-			indexBufferDescription.usage = aes::MemoryUsage::Dynamic;
-			indexBufferDescription.cpuAccessFlags = aes::CPUAccessFlagBits::Write;
-			indexBufferDescription.bindFlags = aes::BindFlagBits::IndexBuffer;
-			indexBufferDescription.initialData = indices;
-			indexBuffer.init(indexBufferDescription);
-		}
 
 		{
 			aes::BufferDescription viewBufferDesc;
@@ -130,10 +214,62 @@ public:
 
 		// enable sticks
 		sceCtrlSetSamplingMode(SCE_CTRL_MODE_ANALOG_WIDE);
+
+		// generate test elements
+		std::random_device rd;  // Will be used to obtain a seed for the random number engine
+		std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+		std::uniform_real_distribution dis(-10.0f, 10.0f);
+		std::uniform_real_distribution disS(1.0f, 2.0f);
+		lineRenderer.setColor(aes::Color::Blue);
+		auto cb = [](void* userData)
+		{
+			TestElement* element = static_cast<TestElement*>(userData);
+			element->coll = true;
+		};
+#define USE_BSP
+#ifdef USE_BSP
+		aes::Array<aes::BSPTree::Object> bspObjects(globalAllocator);
+		bspObjects.reserve(std::size(testElements));
+		for (int i = 0; auto & e : testElements)
+		{
+			e.id = i++;
+			e.pos = glm::vec3(dis(gen), dis(gen), dis(gen));
+			e.size = glm::vec3(disS(gen), disS(gen), disS(gen));
+			bspObjects.push({ &e, aes::AABB::createHalfCenter(e.pos, e.size) });
+		}
+
+		bspTree = aes::BSPTree::build(globalAllocator, std::span(bspObjects));
+		bspTree->testAllCollisions(cb);
+#endif
+
+		// create a minor color difference in order to distinct objects
+		float decR = 1.0f, decG = 1.0f;
+		for (auto& e : testElements)
+		{
+			if (e.coll)
+			{
+				e.model = aes::createCube({ decR, 0.0, 0.0, 1.0 }).value();
+				decR -= 0.05f;
+			}
+			else
+			{
+				e.model = aes::createCube({ 0.0, decG, 0.0, 1.0 }).value();
+				decG -= 0.025f;
+			}
+		}
+		AES_LOG("cubes created");
+		lineRenderer.init();
+
+		// draw center transform
+		lineRenderer.setColor(aes::Color::Blue);
+		lineRenderer.addLine(glm::vec3(0, 0, 0), glm::vec3(10, 0, 0));
+		//lineRenderer.setColor(aes::Color::Green);
+		//lineRenderer.addLine(glm::vec3(0, 0, 0), glm::vec3(0, 10, 0));
+		//lineRenderer.setColor(aes::Color::Red);
+		//lineRenderer.addLine(glm::vec3(0, 0, 0), glm::vec3(0, 0, 10));
 	}
 
 	float speed = 2.0f;
-	glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, 0.8f));
 
 	void update(float dt) override
 	{
@@ -142,25 +278,6 @@ public:
 		SceCtrlData ct;
 		int res = sceCtrlReadBufferPositive(0, &ct, 1);
 		AES_ASSERT(res >= 0);
-
-		if (ct.buttons & SCE_CTRL_DOWN)
-		{
-			transform = glm::translate(transform, glm::vec3(0.0f, 0.0f, speed * dt));
-		}
-		if (ct.buttons & SCE_CTRL_UP)
-		{
-			transform = glm::translate(transform, glm::vec3(0.0f, 0.0f, -speed * dt));
-		}
-
-		if (ct.buttons & SCE_CTRL_RIGHT)
-		{
-			transform = glm::translate(transform, glm::vec3(speed * dt, 0.0f, 0.0f));
-		}
-
-		if (ct.buttons & SCE_CTRL_LEFT)
-		{
-			transform = glm::translate(transform, glm::vec3(-speed * dt, 0.0f, 0.0f));
-		}
 
 		if (ct.ly > 150)
 		{
@@ -180,11 +297,11 @@ public:
 			mainCamera.pos.x -= speed * dt;
 		}
 
-		if (ct.rx > 150)
+		if (ct.ry > 150)
 		{
 			mainCamera.pos.y += speed * dt;
 		}
-		if (ct.rx < 100)
+		if (ct.ry < 100)
 		{
 			mainCamera.pos.y -= speed * dt;
 		}
@@ -192,12 +309,11 @@ public:
 		uint windowWidth = 960, windowHeight = 544;
 		float const aspect = (float)windowWidth / (float)windowHeight;
 
-		mainCamera.viewMatrix = glm::lookAtRH(mainCamera.pos, mainCamera.pos + glm::vec3(0, 0, 1), { 0.0f, 1.0f, 0.0f });
-		mainCamera.projMatrix = glm::perspectiveRH_NO(glm::radians(45.0f), aspect, 0.01f, 100.0f);
+		mainCamera.viewMatrix = glm::lookAtLH(mainCamera.pos, mainCamera.pos + glm::vec3(0, 0, 1), { 0.0f, 1.0f, 0.0f });
+		mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), aspect, 0.01f, 100.0f);
 		aes::CameraBuffer const camBuf{ mainCamera.viewMatrix, mainCamera.projMatrix };
 		viewBuffer.setDataFromPOD(camBuf);
-		//transform = glm::rotate(transform, speed * dt, glm::vec3(1.0f, 1.0f, 1.0f));
-		modelBuffer.setDataFromPOD(transform);
+		modelBuffer.setDataFromPOD(glm::mat4(1.0f));
 	}
 
 	void draw() override
@@ -208,17 +324,25 @@ public:
 
 		auto context = RHIRenderContext::instance();
 
-		context.setDrawPrimitiveMode(DrawPrimitiveType::Triangles);
+		//context.setDrawPrimitiveMode(DrawPrimitiveType::Triangles);
 		context.setVertexShader(vertexShader);
 		context.setFragmentShader(fragmentShader);
 
 		context.bindVSUniformBuffer(viewBuffer, 0);
 		context.bindVSUniformBuffer(modelBuffer, 1);
+		lineRenderer.draw();
 
-		context.bindVertexBuffer(vertexBuffer, sizeof(Vertex));
-		context.bindIndexBuffer(indexBuffer, IndexTypeFormat::Uint16);
-		//context.bindFragmentTexture(texture, 0);
-		context.drawIndexed(36, 0);
+		//for (auto& e : testElements)
+		//{
+
+		//	//context.bindVertexBuffer(vertexBuffer, sizeof(Vertex));
+		//	//context.bindIndexBuffer(indexBuffer, IndexTypeFormat::Uint16);
+		//	////context.bindFragmentTexture(texture, 0);
+		//	//context.drawIndexed(36, 0);
+		//	e.model.toWorld = glm::translate(glm::mat4(1.0f), e.pos);
+		//	e.model.toWorld = glm::scale(e.model.toWorld, e.size);
+		//	//e.model.draw();
+		//}
 	}
 };
 

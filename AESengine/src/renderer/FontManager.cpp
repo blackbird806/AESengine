@@ -172,7 +172,7 @@ Result<void> FontManager::init()
 	HRESULT result = device->CreateTexture2D(&textureDesc, &subresource, &defaultFont.texture);
 	if (FAILED(result))
 	{
-		AES_ERROR("Failed to create font texture");
+		AES_LOG_ERROR("Failed to create font texture");
 		return { AESError::GPUTextureCreationFailed };
 	}
 
@@ -207,7 +207,7 @@ Result<void> FontManager::init()
 	result = device->CreateShaderResourceView(defaultFont.texture, &resourceViewDesc, &defaultFont.textureView);
 	if (FAILED(result))
 	{
-		AES_ERROR("Failed to create CreateShaderResourceView");
+		AES_LOG_ERROR("Failed to create CreateShaderResourceView");
 		return { AESError::Undefined };
 	}
 	
@@ -222,7 +222,7 @@ Result<void> FontManager::init()
 	result = device->CreateBuffer(&vertexBufferDesc, nullptr, &vertexBuffer);
 	if (FAILED(result))
 	{
-		AES_ERROR("Failed to create font vertex buffer");
+		AES_LOG_ERROR("Failed to create font vertex buffer");
 		return { AESError::GPUBufferCreationFailed };
 	}
 
@@ -237,7 +237,7 @@ Result<void> FontManager::init()
 	result = device->CreateBuffer(&indexBufferDesc, nullptr, &indexBuffer);
 	if (FAILED(result))
 	{
-		AES_ERROR("Failed to create font index buffer");
+		AES_LOG_ERROR("Failed to create font index buffer");
 		return { AESError::GPUBufferCreationFailed };
 	}
 	
@@ -249,13 +249,13 @@ Result<void> FontManager::init()
 	result = D3DCompile(pxShader, sizeof(pxShader), "pixelShader", nullptr, nullptr, "main", "ps_5_0", 0, 0, &pixelShaderBuffer, &errorMessage);
 	if (FAILED(result))
 	{
-		AES_ERROR("failed to compile pixed shader : {}", (char*)errorMessage->GetBufferPointer());
+		AES_LOG_ERROR("failed to compile pixed shader : {}", (char*)errorMessage->GetBufferPointer());
 		return { AESError::ShaderCompilationFailed };
 	}
 	result = D3DCompile(vShader, sizeof(vShader), "vertexShader", nullptr, nullptr, "main", "vs_5_0", 0, 0, &vertexShaderBuffer, &errorMessage);
 	if (FAILED(result))
 	{
-		AES_ERROR("failed to compile vertex shader : {}", (char*)errorMessage->GetBufferPointer());
+		AES_LOG_ERROR("failed to compile vertex shader : {}", (char*)errorMessage->GetBufferPointer());
 		return { AESError::ShaderCompilationFailed };
 	}
 
@@ -263,7 +263,7 @@ Result<void> FontManager::init()
 	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), nullptr, &vertexShader);
 	if (FAILED(result))
 	{
-		AES_ERROR("failed to create vertex shader");
+		AES_LOG_ERROR("failed to create vertex shader");
 		return { AESError::ShaderCreationFailed };
 	}
 
@@ -271,7 +271,7 @@ Result<void> FontManager::init()
 	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), nullptr, &pixelShader);
 	if (FAILED(result))
 	{
-		AES_ERROR("failed to create pixel shader");
+		AES_LOG_ERROR("failed to create pixel shader");
 		return { AESError::ShaderCreationFailed };
 	}
 
@@ -295,7 +295,7 @@ Result<void> FontManager::init()
 	result = device->CreateInputLayout(polygonLayout, std::size(polygonLayout), vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &layout);
 	if (FAILED(result))
 	{
-		AES_ERROR("failed to create InputLayout");
+		AES_LOG_ERROR("failed to create InputLayout");
 		return { AESError::Undefined }; //@TODO
 	}
 

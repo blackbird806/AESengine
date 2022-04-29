@@ -13,7 +13,6 @@
 	#define AES_RESTRICT(x) __restrict__ x
 #elif defined (__GNUC__)
 	#define AES_RESTRICT(x) __restrict__ x
-#else
 	#define AES_ASSUME(x)
 #endif
 
@@ -51,6 +50,8 @@ using uchar = unsigned char;
 
 #include "profiler.hpp"
 #include "debug.hpp"
+
+#define AES_FATAL_ERROR(msg) AES_LOG_ERROR(msg); std::abort();
 
 #endif
 
