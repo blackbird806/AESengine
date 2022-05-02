@@ -1,5 +1,5 @@
-#ifndef UTILITY_HPP
-#define UTILITY_HPP
+#ifndef AES_UTILITY_HPP
+#define AES_UTILITY_HPP
 
 #include <string>
 #include <string_view>
@@ -12,8 +12,8 @@
 
 namespace aes {
 	
-	std::string readFile(std::string const& file);
-	std::vector<uint8_t> readFileBin(std::string const& file);
+	std::string readFile(std::string_view file);
+	std::vector<uint8_t> readFileBin(std::string_view file);
 
 	std::vector<std::string> split(std::string_view a, char sep);
 

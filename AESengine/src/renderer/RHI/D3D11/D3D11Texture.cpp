@@ -35,9 +35,12 @@ Result<void> D3D11Texture::init(TextureDescription const& info)
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.SampleDesc.Quality = 0;
 	textureDesc.Usage = rhiMemoryUsageToApi(info.usage);
-	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE; // @Review
 	textureDesc.CPUAccessFlags = rhiCPUAccessFlagsToApi(info.cpuAccess);
-	textureDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
+	if (textureDesc.MipLevels > 1)
+	{
+		textureDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
+	}
 
 	HRESULT err;
 	if (info.initialData)
@@ -54,7 +57,7 @@ Result<void> D3D11Texture::init(TextureDescription const& info)
 
 	if (FAILED(err))
 	{
-		AES_LOG_ERROR("D3D11 CreateTexture2D failed !");
+		AES_LOG_ERROR("D3D11 CreateTexture2D failed, err: {}", err);
 		return { AESError::GPUTextureCreationFailed };
 	}
 

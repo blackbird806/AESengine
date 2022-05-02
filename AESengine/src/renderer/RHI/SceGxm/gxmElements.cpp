@@ -67,3 +67,30 @@ SceGxmTextureFormat aes::rhiFormatToApiTextureFormat(RHIFormat format)
 	}
 	AES_ASSERT(false); // unsupported format type
 }
+
+
+SceGxmTextureFilter aes::rhiTextureFilterToApi(TextureFilter filter)
+{
+	switch(filter)
+	{
+		case TextureFilter::Point:
+			return SCE_GXM_TEXTURE_FILTER_POINT;
+		case TextureFilter::Linear:
+			return SCE_GXM_TEXTURE_FILTER_LINEAR;
+	}
+	AES_UNREACHABLE();
+}
+
+SceGxmTextureAddrMode aes::rhiTextureAddressModeToApi(TextureAddressMode mode)
+{
+	switch(mode)
+	{
+		case TextureAddressMode::Repeat:
+			return SCE_GXM_TEXTURE_ADDR_REPEAT;
+		case TextureAddressMode::Mirror:
+			return SCE_GXM_TEXTURE_ADDR_MIRROR;
+		case TextureAddressMode::Clamp:
+			return SCE_GXM_TEXTURE_ADDR_CLAMP;
+	}
+	AES_UNREACHABLE();
+}

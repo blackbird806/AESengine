@@ -33,7 +33,7 @@ void D3D11Renderer::init(Window& window)
 	HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
 	if (FAILED(result))
 	{
-		AES_ERROR("failed to create CreateDXGIFactory");
+		AES_FATAL_ERROR("failed to create CreateDXGIFactory");
 	}
 
 	// Use the factory to create an adapter for the primary graphics interface (video card).
@@ -41,7 +41,7 @@ void D3D11Renderer::init(Window& window)
 	result = factory->EnumAdapters(0, &adapter);
 	if (FAILED(result))
 	{
-		AES_ERROR("failed to create IDXGIAdapter");
+		AES_FATAL_ERROR("failed to create IDXGIAdapter");
 	}
 
 	// Enumerate the primary adapter output (monitor).
@@ -49,7 +49,7 @@ void D3D11Renderer::init(Window& window)
 	result = adapter->EnumOutputs(0, &adapterOutput);
 	if (FAILED(result))
 	{
-		AES_ERROR("failed to create IDXGIOutput");
+		AES_FATAL_ERROR("failed to create IDXGIOutput");
 	}
 
 	// Get the number of modes that fit the DXGI_FORMAT_R8G8B8A8_UNORM display format for the adapter output (monitor).
@@ -57,7 +57,7 @@ void D3D11Renderer::init(Window& window)
 	result = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, nullptr);
 	if (FAILED(result))
 	{
-		AES_ERROR("failed to get DisplayModeList");
+		AES_FATAL_ERROR("failed to get DisplayModeList");
 	}
 
 	// Create a list to hold all the possible display modes for this monitor/video card combination.
@@ -67,7 +67,7 @@ void D3D11Renderer::init(Window& window)
 	result = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, displayModeList.data());
 	if (FAILED(result))
 	{
-		AES_ERROR("failed to get DisplayModeList");
+		AES_FATAL_ERROR("failed to get DisplayModeList");
 	}
 
 	// Now go through all the display modes and find the one that matches the screen width and height.
@@ -92,7 +92,7 @@ void D3D11Renderer::init(Window& window)
 	result = adapter->GetDesc(&adapterDesc);
 	if (FAILED(result))
 	{
-		AES_ERROR("failed getDesc");
+		AES_FATAL_ERROR("failed getDesc");
 	}
 
 	// Store the dedicated video card memory in megabytes.
@@ -103,7 +103,7 @@ void D3D11Renderer::init(Window& window)
 	int const error = wcstombs_s(&stringLength, videoCardDescription, 128, adapterDesc.Description, 128);
 	if (error != 0)
 	{
-		AES_ERROR("failed to convert videocardName");
+		AES_FATAL_ERROR("failed to convert videocardName");
 	}
 	AES_LOG("graphic card : {}\nvideo memory : {} MB", videoCardDescription, videoCardMemory);
 
@@ -278,14 +278,14 @@ void D3D11Renderer::createDevice()
 		&featureLevel, 1, D3D11_SDK_VERSION, &device, nullptr, &deviceContext);
 	if (FAILED(result))
 	{
-		AES_ERROR("failed to create D3D11 device");
+		AES_FATAL_ERROR("failed to create D3D11 device");
 	}
 	
 #ifdef AES_DEBUG
 	result = device->QueryInterface(IID_PPV_ARGS(&debugInterface));
 	if (FAILED(result))
 	{
-		AES_ERROR("failed to query debug interface");
+		AES_FATAL_ERROR("failed to query debug interface");
 	}
 #endif
 }
@@ -348,7 +348,7 @@ void D3D11Renderer::createSwapchain()
 	HRESULT result = factory->CreateSwapChain(device, &swapChainDesc, &swapChain);
 	if (FAILED(result))
 	{
-		AES_ERROR("D3D11CreateDeviceAndSwapChain failed");
+		AES_FATAL_ERROR("D3D11CreateDeviceAndSwapChain failed");
 	}
 }
 
@@ -361,13 +361,13 @@ void D3D11Renderer::createRenderTarget()
 	HRESULT result = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID*>(&backBufferPtr));
 	if (FAILED(result))
 	{
-		AES_ERROR("swapChain->GetBuffer failed");
+		AES_FATAL_ERROR("swapChain->GetBuffer failed");
 	}
 	
 	result = device->CreateRenderTargetView(backBufferPtr, nullptr, &renderTargetView);
 	if (FAILED(result))
 	{
-		AES_ERROR("device->CreateRenderTargetView failed");
+		AES_FATAL_ERROR("device->CreateRenderTargetView failed");
 	}
 
 	backBufferPtr->Release();
@@ -398,7 +398,7 @@ void D3D11Renderer::createDepthStencil()
 	auto result = device->CreateTexture2D(&depthBufferDesc, nullptr, &depthStencilBuffer);
 	if (FAILED(result))
 	{
-		AES_ERROR("device depthStencilBuffer failed");
+		AES_FATAL_ERROR("device depthStencilBuffer failed");
 	}
 
 	// Initialize the description of the stencil state.
@@ -425,7 +425,7 @@ void D3D11Renderer::createDepthStencil()
 	result = device->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
 	if (FAILED(result))
 	{
-		AES_ERROR("device->CreateDepthStencilState failed");
+		AES_FATAL_ERROR("device->CreateDepthStencilState failed");
 	}
 
 	deviceContext->OMSetDepthStencilState(depthStencilState, 1);
@@ -438,7 +438,7 @@ void D3D11Renderer::createDepthStencil()
 	result = device->CreateDepthStencilView(depthStencilBuffer, &depthStencilViewDesc, &depthStencilView);
 	if (FAILED(result))
 	{
-		AES_ERROR("device->CreateDepthStencilView failed");
+		AES_FATAL_ERROR("device->CreateDepthStencilView failed");
 	}
 
 	deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
@@ -463,7 +463,7 @@ void D3D11Renderer::setupRasterizerState()
 	HRESULT const result = device->CreateRasterizerState(&rasterDesc, &rasterState);
 	if (FAILED(result))
 	{
-		AES_ERROR("device->rasterState failed");
+		AES_FATAL_ERROR("device->rasterState failed");
 	}
 	deviceContext->RSSetState(rasterState);
 }

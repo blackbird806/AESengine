@@ -15,6 +15,9 @@ namespace aes
 	UINT rhiCPUAccessFlagsToApi(CPUAccessFlags flags);
 	D3D11_BLEND_OP rhiBlendOpToApi(BlendOp op);
 	D3D11_BLEND rhiBlendFactorToApi(BlendFactor blend);
+
+	D3D11_FILTER rhiTextureFilterToApi(TextureFilter filter);
+	D3D11_TEXTURE_ADDRESS_MODE rhiTextureAddressModeToApi(TextureAddressMode adressMode);
 }
 
 #endif

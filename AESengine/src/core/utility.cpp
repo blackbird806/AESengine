@@ -3,17 +3,17 @@
 #include <sstream>
 #include <fstream>
 
-std::string aes::readFile(std::string const& file)
+std::string aes::readFile(std::string_view file)
 {
-	std::ifstream const in(file);
+	std::ifstream const in(file.data());
 	std::ostringstream sstr;
 	sstr << in.rdbuf();
 	return sstr.str();
 }
 
-std::vector<uint8_t> aes::readFileBin(std::string const& file)
+std::vector<uint8_t> aes::readFileBin(std::string_view file)
 {
-	std::ifstream input(file, std::ios::binary);
+	std::ifstream input(file.data(), std::ios::binary);
 	return std::vector<uint8_t>(std::istreambuf_iterator<char>(input), {});
 }
 

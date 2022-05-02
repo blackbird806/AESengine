@@ -17,7 +17,7 @@ std::wstring aes::to_wstring(std::string_view in)
 	mbstate_t state{};
 	wchar_t wc;
 	while (size_t len = mbrtowc(&wc, ptr, end - ptr, &state)) {
-		AES_ENSURE(len != static_cast<size_t>(-1)) // bad encoding
+		AES_ASSERT(len != static_cast<size_t>(-1)); // bad encoding
 		if (len == static_cast<size_t>(-2)) // valid but incomplete
 			break;                         // nothing to do more
 		out.push_back(wc);

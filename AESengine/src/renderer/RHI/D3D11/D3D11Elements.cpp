@@ -123,4 +123,30 @@ D3D11_BLEND aes::rhiBlendFactorToApi(BlendFactor blend)
 	AES_UNREACHABLE();
 }
 
+D3D11_FILTER aes::rhiTextureFilterToApi(TextureFilter filter)
+{
+	switch(filter)
+	{
+	case TextureFilter::Point:
+		return D3D11_FILTER_MIN_MAG_MIP_POINT;
+	case TextureFilter::Linear:
+		return D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	}
+	AES_UNREACHABLE();
+}
+
+D3D11_TEXTURE_ADDRESS_MODE aes::rhiTextureAddressModeToApi(TextureAddressMode adressMode)
+{
+	switch(adressMode)
+	{
+	case TextureAddressMode::Repeat:
+		return D3D11_TEXTURE_ADDRESS_WRAP;
+	case TextureAddressMode::Mirror:
+		return D3D11_TEXTURE_ADDRESS_MIRROR;
+	case TextureAddressMode::Clamp:
+		return D3D11_TEXTURE_ADDRESS_CLAMP;
+	}
+	AES_UNREACHABLE();
+}
+
 

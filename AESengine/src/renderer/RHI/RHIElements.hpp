@@ -76,6 +76,19 @@ namespace aes
 		TexCoord
 	};
 
+	enum class TextureAddressMode
+	{
+		Repeat,
+		Mirror,
+		Clamp,
+	};
+
+	enum class TextureFilter
+	{
+		Point,
+		Linear,
+	};
+
 	constexpr const char* getSemanticName(SemanticType e)
 	{
 		switch (e)
@@ -95,6 +108,15 @@ namespace aes
 		BindFlags bindFlags;
 		CPUAccessFlags cpuAccessFlags;
 		void* initialData = nullptr;
+	};
+
+	struct SamplerDescription
+	{
+		TextureFilter filter;
+		TextureAddressMode addressU;
+		TextureAddressMode addressV;
+		uint32_t lodMin;
+		uint32_t lodBias;
 	};
 
 	enum class RHIFormat

@@ -17,6 +17,7 @@ namespace aes {
 		GPUBufferCreationFailed,
 		GPUTextureCreationFailed,
 		GPUBufferMappingFailed,
+		SamplerCreationFailed,
 		ShaderCompilationFailed,
 		ShaderCreationFailed,
 		FontInitFailed,

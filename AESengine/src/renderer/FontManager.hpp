@@ -36,7 +36,6 @@ namespace aes {
 		ID3D11SamplerState* sampleState;
 		ID3D11ShaderResourceView* textureView;
 
-
 		int width, height;
 		std::vector<BackedChars> backedChars;
 	};

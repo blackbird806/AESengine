@@ -10,6 +10,7 @@
 #include "engine.hpp"
 #include "renderer/model.hpp"
 #include "renderer/material.hpp"
+#include "renderer/fontRenderer.hpp"
 #include "core/os.hpp"
 #include "core/utility.hpp"
 #include "core/geometry.hpp"
@@ -17,6 +18,7 @@
 #include "spatial/octree.hpp"
 #include "spatial/BSPTree.hpp"
 #include "core/jobSystem.hpp"
+
 
 const char pxShader[] = R"(
 struct VS_OUTPUT
@@ -194,12 +196,14 @@ public:
 	aes::RHIBuffer viewBuffer;
 	aes::RHIBuffer identityModelBuffer;
 	aes::Material defaultMtrl;
-	
+	aes::FontRenderer fontRenderer;
+	aes::FontRessource defaultFont;
+
 	TestElement testElements[25];
 	aes::Octree octree;
 	aes::UniquePtr<aes::BSPTree::BSPElement> bspTree;
 	
-	Game(InitInfo const& info) : Engine(info), jobSystem(aes::globalAllocator)
+	Game(InitInfo const& info) : Engine(info), jobSystem(aes::globalAllocator), defaultFont(aes::globalAllocator)
 	{
 		AES_LOG("Game initialized");
 		std::atomic<int> sum;
@@ -217,6 +221,10 @@ public:
 
 		AES_PROFILE_FUNCTION();
 		AES_LOG("start");
+
+		fontRenderer.init();
+		auto fontData = readFileBin("assets/fonts/courier.ttf");
+		defaultFont = createFontRessource(aes::globalAllocator, fontData).value();
 
 		aes::FragmentShaderDescription fragmentShaderDescription;
 		fragmentShaderDescription.source = pxShader;

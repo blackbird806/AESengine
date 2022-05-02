@@ -12,6 +12,8 @@ namespace aes
 	SceGxmParameterSemantic rhiSemanticTypeToApi(SemanticType type);
 	uint8_t rhiMemoryUsageToApi(MemoryUsage usage);
 	SceGxmTextureFormat rhiFormatToApiTextureFormat(RHIFormat format);
+	SceGxmTextureFilter rhiTextureFilterToApi(TextureFilter filter);
+	SceGxmTextureAddrMode rhiTextureAddressModeToApi(TextureAddressMode mode);
 }
 
 #endif

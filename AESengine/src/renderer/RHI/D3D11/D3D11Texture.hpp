@@ -11,6 +11,7 @@ namespace aes
 	class D3D11Texture
 	{
 	public:
+		D3D11Texture() = default;
 		D3D11Texture(D3D11Texture&& rhs) noexcept;
 		D3D11Texture& operator=(D3D11Texture&& rhs) noexcept;
 		Result<void> init(TextureDescription const& info);
