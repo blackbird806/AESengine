@@ -32,12 +32,11 @@ Result<void> D3D11Buffer::init(BufferDescription const& desc)
 	AES_ASSERT(desc.sizeInBytes != 0);
 	
 	size = desc.sizeInBytes;
-	bindFlags = desc.bindFlags;
 	
 	D3D11_BUFFER_DESC bufferDesc;
 	bufferDesc.Usage = rhiMemoryUsageToApi(desc.usage);
 	bufferDesc.ByteWidth = size;
-	bufferDesc.BindFlags = rhiBufferBindFlagsToApi(bindFlags);
+	bufferDesc.BindFlags = rhiBufferBindFlagsToApi(desc.bindFlags);
 	bufferDesc.CPUAccessFlags = rhiCPUAccessFlagsToApi(desc.cpuAccessFlags);
 	bufferDesc.MiscFlags = 0;
 	bufferDesc.StructureByteStride = 0;

@@ -1,7 +1,6 @@
 #include "D3D11renderer.hpp"
 #include "core/debug.hpp"
-#include "renderer/RHI/RHIBuffer.hpp"
-#include "renderer/RHI/RHIElements.hpp"
+
 #include "D3D11Elements.hpp"
 #include <vector>
 
@@ -156,6 +155,20 @@ void D3D11Renderer::bindFSUniformBuffer(RHIBuffer& buffer, uint slot)
 	AES_PROFILE_FUNCTION();
 	ID3D11Buffer* handle = buffer.getHandle();
 	deviceContext->PSSetConstantBuffers(slot, 1, &handle);
+}
+
+void D3D11Renderer::setVertexSampler(RHISampler& sampler, uint index)
+{
+	AES_PROFILE_FUNCTION();
+	ID3D11SamplerState* samplerStates[] = { sampler.getSamplerState() };
+	deviceContext->VSSetSamplers(index, 1, samplerStates);
+}
+
+void D3D11Renderer::setFragmentSampler(RHISampler& sampler, uint index)
+{
+	AES_PROFILE_FUNCTION();
+	ID3D11SamplerState* samplerStates[] = { sampler.getSamplerState() };
+	deviceContext->PSSetSamplers(index, 1, samplerStates);
 }
 
 void D3D11Renderer::bindVertexTexture(RHITexture& tex, uint index)

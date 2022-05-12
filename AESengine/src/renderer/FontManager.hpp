@@ -19,10 +19,10 @@ namespace aes {
 		float textSize;
 	};
 
-	struct BackedChars
+	struct GlyphOld
 	{
-		glm::vec2 bmin;
-		glm::vec2 bmax;
+		glm::vec2 u;
+		glm::vec2 v;
 
 		float xoff, yoff, xadvance;
 		float xoff2, yoff2;
@@ -37,7 +37,7 @@ namespace aes {
 		ID3D11ShaderResourceView* textureView;
 
 		int width, height;
-		std::vector<BackedChars> backedChars;
+		std::vector<GlyphOld> backedChars;
 	};
 
 	class FontManager

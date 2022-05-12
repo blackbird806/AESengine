@@ -11,6 +11,7 @@
 #include "renderer/model.hpp"
 #include "renderer/material.hpp"
 #include "renderer/fontRenderer.hpp"
+#include "renderer/draw2d.hpp"
 #include "core/os.hpp"
 #include "core/utility.hpp"
 #include "core/geometry.hpp"
@@ -18,7 +19,6 @@
 #include "spatial/octree.hpp"
 #include "spatial/BSPTree.hpp"
 #include "core/jobSystem.hpp"
-
 
 const char pxShader[] = R"(
 struct VS_OUTPUT
@@ -196,23 +196,23 @@ public:
 	aes::RHIBuffer viewBuffer;
 	aes::RHIBuffer identityModelBuffer;
 	aes::Material defaultMtrl;
-	aes::FontRenderer fontRenderer;
 	aes::FontRessource defaultFont;
+	aes::Draw2d draw2d;
 
 	TestElement testElements[25];
 	aes::Octree octree;
 	aes::UniquePtr<aes::BSPTree::BSPElement> bspTree;
 	
-	Game(InitInfo const& info) : Engine(info), jobSystem(aes::globalAllocator), defaultFont(aes::globalAllocator)
+	Game(InitInfo const& info) : Engine(info), jobSystem(aes::globalAllocator), defaultFont(aes::globalAllocator), draw2d(aes::globalAllocator)
 	{
 		AES_LOG("Game initialized");
-		std::atomic<int> sum;
-		aes::parallelForEach(jobSystem, std::views::iota(1, 20), [&sum](auto v)
-			{
-				AES_LOG("{}", v);
-				sum.fetch_add(v, std::memory_order_relaxed);
-			});
-		AES_LOG("sum {}", sum.load());
+		//std::atomic<int> sum;
+		//aes::parallelForEach(jobSystem, std::views::iota(1, 20), [&sum](auto v)
+		//	{
+		//		AES_LOG("{}", v);
+		//		sum.fetch_add(v, std::memory_order_relaxed);
+		//	});
+		//AES_LOG("sum {}", sum.load());
 	}
 
 	void start() override
@@ -222,16 +222,20 @@ public:
 		AES_PROFILE_FUNCTION();
 		AES_LOG("start");
 
-		fontRenderer.init();
 		auto fontData = readFileBin("assets/fonts/courier.ttf");
 		defaultFont = createFontRessource(aes::globalAllocator, fontData).value();
+
+		if (!draw2d.init())
+		{
+			AES_FATAL_ERROR("draw2d creation failed");
+		}
 
 		aes::FragmentShaderDescription fragmentShaderDescription;
 		fragmentShaderDescription.source = pxShader;
 
 		if (!fragmentShader.init(fragmentShaderDescription))
 		{
-			AES_ASSERTF(false, "fragment shader creation failed");
+			AES_FATAL_ERROR("fragment shader creation failed");
 		}
 
 		AES_LOG("fragment shader created");
@@ -485,31 +489,44 @@ public:
 			{
 			}
 
-			mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
+			if (aspect > DBL_EPSILON && !isnan(aspect))
+				mainCamera.projMatrix = glm::perspectiveLH_ZO(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
 			aes::CameraBuffer const camBuf{ glm::transpose(mainCamera.viewMatrix), glm::transpose(mainCamera.projMatrix) };
 			viewBuffer.setDataFromPOD(camBuf);
 		}
+
+		//draw2d.drawImage(defaultFont.texture, { {-1, -1}, {0, 0} });
+		draw2d.drawText(defaultFont, "hello world", {0, 0});
+		//draw2d.setColor(aes::Color::Red);
+		//draw2d.drawPoint({ 0, 0 });
+		//draw2d.drawPoint({ 0.4, 0 });
+		//draw2d.setColor(aes::Color::Blue);
+		//draw2d.drawPoint({ 0, 0.4 });
+		//draw2d.drawPoint({ 0.4, 0.4 });
+		//draw2d.setColor(aes::Color::White);
+		//draw2d.drawFillRect({ {0, 0}, {0.4, 0.4} });
 	}
 
 	void draw() override
 	{
 		AES_PROFILE_FUNCTION();
 		
-		aes::Material::BindInfo bindInfo;
+		//aes::Material::BindInfo bindInfo;
 
-		for (auto& e : testElements)
-		{
-			bindInfo.vsBuffers.push_back(std::make_pair("ModelBuffer", &e.model.modelBuffer));
-			bindInfo.vsBuffers.push_back(std::make_pair("CameraBuffer", &viewBuffer));
-			defaultMtrl.bind(bindInfo);
+		//for (auto& e : testElements)
+		//{
+		//	bindInfo.vsBuffers.push_back(std::make_pair("ModelBuffer", &e.model.modelBuffer));
+		//	bindInfo.vsBuffers.push_back(std::make_pair("CameraBuffer", &viewBuffer));
+		//	defaultMtrl.bind(bindInfo);
 
-			e.model.toWorld = glm::translate(glm::mat4(1.0f), e.pos);
-			e.model.toWorld = glm::scale(e.model.toWorld, e.size);
-			e.model.draw();
-		}
-		
-		aes::RHIRenderContext::instance().bindVSUniformBuffer(identityModelBuffer, 1);
-		lineRenderer.draw();
+		//	e.model.toWorld = glm::translate(glm::mat4(1.0f), e.pos);
+		//	e.model.toWorld = glm::scale(e.model.toWorld, e.size);
+		//	e.model.draw();
+		//}
+		//
+		//aes::RHIRenderContext::instance().bindVSUniformBuffer(identityModelBuffer, 1);
+		//lineRenderer.draw();
+		draw2d.executeDrawCommands();
 	}
 };
 
@@ -518,7 +535,8 @@ int main()
 	std::ofstream logFile("AES_log.txt");
 	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(std::cout));
 	//aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(logFile));
-	
+
+
 	AES_START_PROFILE_SESSION("startup");
 	Game game({
 		.appName = "aes engine"

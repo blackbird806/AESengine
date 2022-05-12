@@ -147,6 +147,15 @@
     <ClCompile Include="thirdParty\stb\stb_rect_pack.cpp">
       <Filter>ThirdParty\stb</Filter>
     </ClCompile>
+    <ClCompile Include="src\test\test_font.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test\test_draw2d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test\test_draw3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\window.hpp">
@@ -306,6 +315,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11Sampler.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\test\tests.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

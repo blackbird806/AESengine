@@ -32,7 +32,7 @@ DXGI_FORMAT aes::rhiFormatToApi(RHIFormat format)
 	case RHIFormat::R32G32B32A32_Float:
 		return DXGI_FORMAT_R32G32B32A32_FLOAT;
 	case RHIFormat::R8G8B8A8_Uint:
-		return DXGI_FORMAT_R8G8B8A8_UINT;
+		return DXGI_FORMAT_R8G8B8A8_UNORM;
 	default: ;
 	}
 	AES_UNREACHABLE();

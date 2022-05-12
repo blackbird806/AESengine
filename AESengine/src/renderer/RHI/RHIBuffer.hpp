@@ -32,6 +32,12 @@ namespace aes
 			return setData((void*)&t, sizeof(t));
 		}
 	};
+
+	// realloc a RHIBuffer conserving its content
+	Result<void> reallocRHIBuffer(RHIBuffer& buffer, BufferDescription const& reallocDesc);
+
+	// realloc buffer only if reallocDesc.sizeInBytes > buffer.size
+	Result<void> ensureRHIBufferCapacity(RHIBuffer& buffer, BufferDescription const& reallocDesc);
 }
 
 #endif

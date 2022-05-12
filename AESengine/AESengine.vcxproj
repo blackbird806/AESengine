@@ -71,6 +71,9 @@
     <ClCompile Include="src\renderer\textureUtility.cpp" />
     <ClCompile Include="src\spatial\BSPTree.cpp" />
     <ClCompile Include="src\spatial\octree.cpp" />
+    <ClCompile Include="src\test\test_draw2d.cpp" />
+    <ClCompile Include="src\test\test_draw3d.cpp" />
+    <ClCompile Include="src\test\test_font.cpp" />
     <ClCompile Include="src\UI\UI.cpp" />
     <ClCompile Include="thirdParty\aini\aini.cpp" />
     <ClCompile Include="thirdParty\fmt\src\format.cc" />
@@ -131,6 +134,7 @@
     <ClInclude Include="src\renderer\vertex.hpp" />
     <ClInclude Include="src\spatial\BSPTree.hpp" />
     <ClInclude Include="src\spatial\octree.hpp" />
+    <ClInclude Include="src\test\tests.hpp" />
     <ClInclude Include="src\UI\UI.hpp" />
     <ClInclude Include="thirdParty\tiny\tiny_obj_loader.h" />
   </ItemGroup>

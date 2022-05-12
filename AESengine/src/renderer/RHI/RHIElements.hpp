@@ -9,6 +9,7 @@
 
 #include "core/aes.hpp"
 #include "core/utility.hpp"
+
 namespace aes
 {
 	enum CPUAccessFlagBits : uint8_t
@@ -147,9 +148,9 @@ namespace aes
 
 	struct VertexInputLayout
 	{
-		[[deprecated("use parameterName instead")]] // used only by d3d11
-		SemanticType semantic;
-		const char* parameterName;
+		// @Review use semantic for gxm too ?
+		SemanticType semantic;		// used only by d3d11
+		const char* parameterName;	// used only by gxm
 		RHIFormat format;
 		uint32_t offset;
 	};
@@ -160,13 +161,13 @@ namespace aes
 		std::variant<std::string, Binary> source;
 	};
 
-	struct VertexShaderDescription : public ShaderDescription
+	struct VertexShaderDescription : ShaderDescription
 	{
 		std::span<VertexInputLayout> verticesLayout;
 		uint32_t verticesStride;
 	};
 
-	struct FragmentShaderDescription : public ShaderDescription
+	struct FragmentShaderDescription : ShaderDescription
 	{
 		// TODO: clean this
 		void const* gxpVertexProgram; 

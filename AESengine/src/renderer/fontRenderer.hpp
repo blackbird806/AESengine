@@ -11,26 +11,27 @@
 
 namespace aes
 {
-	struct BackedChars
+	struct Glyph
 	{
-		glm::vec2 bmin;
-		glm::vec2 bmax;
+		char c;
+		glm::vec2 x, y;
+		glm::vec2 u;
+		glm::vec2 v;
 
 		float xoff, yoff, xadvance;
 		float xoff2, yoff2;
-
-		glm::vec2 getSize() const;
 	};
 
 	struct FontRessource
 	{
 		FontRessource(IAllocator&) noexcept;
 
+		std::optional<Glyph> getGlyph(char c) const;
+
 		RHITexture texture;
 		RHISampler sampler;
 
-		uint width, height;
-		Array<BackedChars> backedChars;
+		Array<Glyph> glyphs;
 	};
 
 	Result<FontRessource> createFontRessource(IAllocator& allocator, std::span<uint8_t> fontData);
@@ -55,8 +56,10 @@ namespace aes
 
 		RHIBuffer vertexBuffer;
 		RHIBuffer indexBuffer;
-		//Array<Vertex> vertices;
-		//Array<uint16_t> indices;
+
+
+		Array<Vertex> vertices;
+		Array<uint16_t> indices;
 	};
 }
 

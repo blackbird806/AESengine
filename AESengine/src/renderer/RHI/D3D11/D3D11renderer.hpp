@@ -7,13 +7,14 @@
 
 #include <dxgi.h>
 #include <d3d11.h>
-
-#include "D3D11Shader.hpp"
+#include "renderer/RHI/RHIBuffer.hpp"
+#include "renderer/RHI/RHIShader.hpp"
+#include "renderer/RHI/RHISampler.hpp"
+#include "renderer/RHI/RHITexture.hpp"
+#include "renderer/RHI/RHIElements.hpp"
 #include "D3D11BlendState.hpp"
-#include "D3D11Texture.hpp"
 
 namespace aes {
-	class RHIBuffer;
 
 	class D3D11Renderer
 	{
@@ -28,6 +29,9 @@ namespace aes {
 		void bindVSUniformBuffer(RHIBuffer& buffer, uint slot);
 		void bindFSUniformBuffer(RHIBuffer& buffer, uint slot);
 
+
+		void setVertexSampler(RHISampler& sampler, uint index);
+		void setFragmentSampler(RHISampler& sampler, uint index);
 		void bindVertexTexture(RHITexture& tex, uint index);
 		void bindFragmentTexture(RHITexture& tex, uint index);
 

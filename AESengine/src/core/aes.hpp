@@ -51,7 +51,7 @@ using uchar = unsigned char;
 #include "profiler.hpp"
 #include "debug.hpp"
 
-#define AES_FATAL_ERROR(msg) AES_LOG_ERROR(msg); std::abort();
+#define AES_FATAL_ERROR(msg) {AES_LOG_ERROR(msg); std::abort();}
 
 #endif
 

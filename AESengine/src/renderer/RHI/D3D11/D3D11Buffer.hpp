@@ -1,5 +1,5 @@
-#ifndef D3D11BUFFER_HPP
-#define D3D11BUFFER_HPP
+#ifndef AES_D3D11BUFFER_HPP
+#define AES_D3D11BUFFER_HPP
 
 #include <d3d11.h>
 
@@ -29,7 +29,6 @@ namespace aes
 		
 	protected:
 
-		BindFlags bindFlags;
 		ID3D11Buffer* apiBuffer;
 		size_t size = 0;
 	};

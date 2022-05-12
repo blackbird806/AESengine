@@ -18,3 +18,33 @@ Result<void> RHIBuffer::setData(void* data, size_t size)
 	unmap();
 	return {};
 }
+
+Result<void> aes::reallocRHIBuffer(RHIBuffer& buffer, BufferDescription const& reallocDesc)
+{
+	AES_PROFILE_FUNCTION();
+
+	RHIBuffer newBuffer;
+	auto err = newBuffer.init(reallocDesc);
+	if (!err)
+		return err;
+
+	if (buffer.isValid())
+	{
+		err = buffer.copyTo(newBuffer);
+		if (!err)
+			return err;
+	}
+	buffer = std::move(newBuffer);
+}
+
+Result<void> aes::ensureRHIBufferCapacity(RHIBuffer& buffer, BufferDescription const& reallocDesc)
+{
+	AES_PROFILE_FUNCTION();
+
+	if (buffer.isValid() && buffer.getSize() >= reallocDesc.sizeInBytes)
+		return {};
+
+	reallocRHIBuffer(buffer, reallocDesc);
+
+	return {};
+}

@@ -1,5 +1,5 @@
-#ifndef GEOMETRY_HPP
-#define GEOMETRY_HPP
+#ifndef AES_GEOMETRY_HPP
+#define AES_GEOMETRY_HPP
 
 #include <glm/glm.hpp>
 #include <array>
@@ -43,6 +43,11 @@ namespace aes {
 				.minR = { max.x, min.y }
 			};
 		}
+	};
+
+	struct Triangle2D
+	{
+		glm::vec2 a, b, c;
 	};
 
 	struct Circle

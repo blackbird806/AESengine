@@ -70,9 +70,9 @@ static std::vector<uint32_t> createCheckboard(uint resX, uint resY, float segmen
 	return bitmap;
 }
 
-glm::vec2 BackedChars::getSize() const
+glm::vec2 GlyphOld::getSize() const
 {
-	return bmax - bmin;
+	return v - u;
 }
 
 // https://github.com/justinmeiners/stb-truetype-example/blob/master/main.c
@@ -111,9 +111,9 @@ Result<void> FontManager::init()
 	std::transform(backedChars.begin(), backedChars.end(), std::back_inserter(defaultFont.backedChars),
 	[&](auto const& pc)
 	{
-		return BackedChars{
-			.bmin = glm::vec2{pc.x0, pc.y0},
-			.bmax = glm::vec2{pc.x1, pc.y1},
+		return GlyphOld{
+			.u = glm::vec2{pc.x0, pc.y0},
+			.v = glm::vec2{pc.x1, pc.y1},
 			.xoff = pc.xoff, .yoff = pc.yoff,
 			.xadvance = pc.xadvance,
 		};
@@ -330,7 +330,7 @@ void FontManager::drawString(GraphicString const& gstring)
 	{
 		char const character = gstring.str[i];
 		
-		BackedChars const pchar = defaultFont.backedChars[(int)character];
+		GlyphOld const pchar = defaultFont.backedChars[(int)character];
 		glm::vec2 const charSize = pchar.getSize() / glm::vec2(defaultFont.width, defaultFont.height);
 
 		// @TODO
@@ -364,17 +364,17 @@ void FontManager::drawString(GraphicString const& gstring)
 		glm::vec2 uv_down_right;
 		glm::vec2 uv_down_left;
 
-		uv_down_left.x = defaultFont.backedChars[(int)character].bmin.x / defaultFont.width;
-		uv_down_left.y = defaultFont.backedChars[(int)character].bmax.y / defaultFont.height;
+		uv_down_left.x = defaultFont.backedChars[(int)character].u.x / defaultFont.width;
+		uv_down_left.y = defaultFont.backedChars[(int)character].v.y / defaultFont.height;
 
-		uv_down_right.x = defaultFont.backedChars[(int)character].bmax.x / defaultFont.width;
-		uv_down_right.y = defaultFont.backedChars[(int)character].bmax.y / defaultFont.height;
+		uv_down_right.x = defaultFont.backedChars[(int)character].v.x / defaultFont.width;
+		uv_down_right.y = defaultFont.backedChars[(int)character].v.y / defaultFont.height;
 
-		uv_up_right.x = defaultFont.backedChars[(int)character].bmax.x / defaultFont.width;
-		uv_up_right.y = defaultFont.backedChars[(int)character].bmin.y / defaultFont.height;
+		uv_up_right.x = defaultFont.backedChars[(int)character].v.x / defaultFont.width;
+		uv_up_right.y = defaultFont.backedChars[(int)character].u.y / defaultFont.height;
 
-		uv_up_left.x = defaultFont.backedChars[(int)character].bmin.x / defaultFont.width;
-		uv_up_left.y = defaultFont.backedChars[(int)character].bmin.y / defaultFont.height;
+		uv_up_left.x = defaultFont.backedChars[(int)character].u.x / defaultFont.width;
+		uv_up_left.y = defaultFont.backedChars[(int)character].u.y / defaultFont.height;
 		
 		vertices.push_back(Vertex{ vertex_up_left, uv_up_left });
 		vertices.push_back(Vertex{ vertex_down_left, uv_down_left });
