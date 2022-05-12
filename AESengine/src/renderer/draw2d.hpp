@@ -30,6 +30,7 @@ namespace aes
 		void drawLine(Line2D const& line);
 		void drawPoint(glm::vec2 p, float size = 0.05f);
 		void drawFillRect(Rect const& rect);
+		void drawRect(Rect const& rect);
 		void drawImage(RHITexture& texture, Rect const& rect);
 		void drawText(FontRessource& font, std::string_view str, glm::vec2 pos);
 

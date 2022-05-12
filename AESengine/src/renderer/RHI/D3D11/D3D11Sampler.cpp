@@ -6,7 +6,8 @@ using namespace aes;
 
 D3D11Sampler::D3D11Sampler(D3D11Sampler&& rhs) noexcept
 {
-	*this = std::move(rhs);
+	samplerState = rhs.samplerState;
+	rhs.samplerState = nullptr;
 }
 
 Result<void> D3D11Sampler::init(SamplerDescription const& desc)
@@ -36,18 +37,24 @@ Result<void> D3D11Sampler::init(SamplerDescription const& desc)
 
 D3D11Sampler& D3D11Sampler::operator=(D3D11Sampler&& rhs) noexcept
 {
+	destroy();
 	samplerState = rhs.samplerState;
 	rhs.samplerState = nullptr;
 	return *this;
 }
 
-D3D11Sampler::~D3D11Sampler()
+void D3D11Sampler::destroy() noexcept
 {
 	if (samplerState)
 	{
 		samplerState->Release();
 		samplerState = nullptr;
 	}
+}
+
+D3D11Sampler::~D3D11Sampler()
+{
+	destroy();
 }
 
 ID3D11SamplerState* D3D11Sampler::getSamplerState()

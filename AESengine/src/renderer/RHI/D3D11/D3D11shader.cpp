@@ -10,6 +10,47 @@
 
 using namespace aes;
 
+
+D3D11Shader::D3D11Shader(D3D11Shader&& rhs) noexcept : reflector(rhs.reflector)
+{
+	rhs.reflector = nullptr;
+}
+
+D3D11Shader& D3D11Shader::operator=(D3D11Shader&& rhs) noexcept
+{
+	reflector = rhs.reflector;
+	rhs.reflector = nullptr;
+	return *this;
+}
+
+std::vector<UniformBufferReflectionInfo> D3D11Shader::getUniformBufferInfos() const
+{
+	AES_PROFILE_FUNCTION();
+
+	D3D11_SHADER_DESC shaderDesc;
+	reflector->GetDesc(&shaderDesc);
+
+	std::vector<UniformBufferReflectionInfo> bufferInfos(shaderDesc.ConstantBuffers);
+	for (uint i = 0; i < shaderDesc.ConstantBuffers; i++)
+	{
+		ID3D11ShaderReflectionConstantBuffer* D3DbufferInfo = reflector->GetConstantBufferByIndex(i);
+		D3D11_SHADER_BUFFER_DESC bufferDesc;
+		D3DbufferInfo->GetDesc(&bufferDesc);
+
+		bufferInfos[i].name = bufferDesc.Name;
+		bufferInfos[i].size = bufferDesc.Size;
+		bufferInfos[i].index = i;
+	}
+
+	return bufferInfos;
+}
+
+D3D11Shader::~D3D11Shader()
+{
+	if (reflector)
+		reflector->Release();
+}
+
 Result<void> D3D11VertexShader::init(VertexShaderDescription const& desc)
 {
 	AES_PROFILE_FUNCTION();
@@ -91,6 +132,7 @@ D3D11VertexShader& D3D11VertexShader::operator=(D3D11VertexShader&& rhs) noexcep
 D3D11VertexShader::~D3D11VertexShader()
 {
 	AES_PROFILE_FUNCTION();
+	D3D11Shader::~D3D11Shader();
 
 	if (vertexShader) // if shader is valid so is layout and reflector
 	{
@@ -99,54 +141,14 @@ D3D11VertexShader::~D3D11VertexShader()
 	}
 }
 
-ID3D11InputLayout* D3D11VertexShader::getInputLayout()
-{
-	return layout;
-}
-
-D3D11Shader::D3D11Shader(D3D11Shader&& rhs) noexcept : reflector(rhs.reflector)
-{
-	rhs.reflector = nullptr;
-}
-
-D3D11Shader& D3D11Shader::operator=(D3D11Shader&& rhs) noexcept
-{
-	reflector = rhs.reflector;
-	rhs.reflector = nullptr;
-	return *this;
-}
-
-std::vector<UniformBufferReflectionInfo> D3D11Shader::getUniformBufferInfos() const
-{
-	AES_PROFILE_FUNCTION();
-
-	D3D11_SHADER_DESC shaderDesc;
-	reflector->GetDesc(&shaderDesc);
-
-	std::vector<UniformBufferReflectionInfo> bufferInfos(shaderDesc.ConstantBuffers);
-	for (uint i = 0; i < shaderDesc.ConstantBuffers; i++)
-	{
-		ID3D11ShaderReflectionConstantBuffer* D3DbufferInfo = reflector->GetConstantBufferByIndex(i);
-		D3D11_SHADER_BUFFER_DESC bufferDesc;
-		D3DbufferInfo->GetDesc(&bufferDesc);
-		
-		bufferInfos[i].name = bufferDesc.Name;
-		bufferInfos[i].size = bufferDesc.Size;
-		bufferInfos[i].index = i;
-	}
-
-	return bufferInfos;
-}
-
-D3D11Shader::~D3D11Shader()
-{
-	if (reflector)
-		reflector->Release();
-}
-
 ID3D11VertexShader* D3D11VertexShader::getHandle()
 {
 	return vertexShader;
+}
+
+ID3D11InputLayout* D3D11VertexShader::getInputLayout()
+{
+	return layout;
 }
 
 Result<void> D3D11FragmentShader::init(FragmentShaderDescription const& desc)
@@ -201,6 +203,7 @@ D3D11FragmentShader& D3D11FragmentShader::operator=(D3D11FragmentShader&& rhs) n
 D3D11FragmentShader::~D3D11FragmentShader()
 {
 	AES_PROFILE_FUNCTION();
+	D3D11Shader::~D3D11Shader();
 
 	if (pixelShader)
 		pixelShader->Release();

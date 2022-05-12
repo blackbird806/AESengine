@@ -44,6 +44,7 @@ namespace aes
 
 		constexpr Result<void> copyFrom(Array const& rhs) noexcept
 		{
+			clear();
 			alloc = rhs.alloc;
 			buffer = static_cast<T*>(alloc->allocate<T>(rhs.size_));
 			if (!buffer)
@@ -67,6 +68,7 @@ namespace aes
 
 		constexpr Array& operator=(Array&& rhs) noexcept
 		{
+			clear();
 			alloc = rhs.alloc;
 			buffer = rhs.buffer;
 			size_ = rhs.size_;

@@ -15,16 +15,25 @@ D3D11Buffer::D3D11Buffer(D3D11Buffer&& rhs) noexcept
 
 D3D11Buffer& D3D11Buffer::operator=(D3D11Buffer&& rhs) noexcept
 {
+	destroy();
 	apiBuffer = rhs.apiBuffer;
 	size = rhs.size;
 	rhs.apiBuffer = nullptr;
 	return *this;
 }
 
-D3D11Buffer::~D3D11Buffer()
+void D3D11Buffer::destroy() noexcept
 {
 	if (apiBuffer)
+	{
 		apiBuffer->Release();
+		apiBuffer = nullptr;
+	}
+}
+
+D3D11Buffer::~D3D11Buffer()
+{
+	destroy();
 }
 
 Result<void> D3D11Buffer::init(BufferDescription const& desc)

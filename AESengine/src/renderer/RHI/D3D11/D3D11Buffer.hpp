@@ -15,6 +15,7 @@ namespace aes
 		D3D11Buffer() {}
 		D3D11Buffer(D3D11Buffer&&) noexcept;
 		D3D11Buffer& operator=(D3D11Buffer&& rhs) noexcept;
+		void destroy() noexcept;
 		~D3D11Buffer();
 		
 		Result<void> init(BufferDescription const& desc);

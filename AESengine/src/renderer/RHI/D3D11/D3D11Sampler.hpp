@@ -15,6 +15,7 @@ namespace aes
 		Result<void> init(SamplerDescription const& desc);
 
 		D3D11Sampler& operator=(D3D11Sampler&&) noexcept;
+		void destroy() noexcept;
 		~D3D11Sampler();
 
 		ID3D11SamplerState* getSamplerState();

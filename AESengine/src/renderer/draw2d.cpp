@@ -149,6 +149,7 @@ void Draw2d::drawLine(Line2D const& line)
 
 void Draw2d::drawPoint(glm::vec2 p, float size)
 {
+	AES_PROFILE_FUNCTION();
 	drawLine({ {p.x - size, p.y}, {p.x + size, p.y} });
 	drawLine({ {p.x, p.y - size}, {p.x, p.y + size} });
 }
@@ -173,6 +174,16 @@ void Draw2d::drawFillRect(Rect const& rect)
 	colorIndices.push(colorOffset + 2);
 	colorIndices.push(colorOffset + 0);
 	colorOffset += 4;
+}
+
+void Draw2d::drawRect(Rect const& rect)
+{
+	AES_PROFILE_FUNCTION();
+	RectBounds const b = rect.getBounds();
+	drawLine({ b.minL, b.minR });
+	drawLine({ b.minL, b.topL });
+	drawLine({ b.topL, b.topR });
+	drawLine({ b.minR, b.topR });
 }
 
 void Draw2d::drawImage(RHITexture& texture, Rect const& rect)
