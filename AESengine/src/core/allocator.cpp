@@ -5,6 +5,8 @@
 #include <memory>
 #include <cstdlib>
 
+using namespace aes;
+
 #ifdef AES_ENABLE_PROFILING
 
 #define AES_PROFILE_MEMORY_ALLOC(ptr, size) ::aes::MemoryProfiler::instance().profileAlloc(ptr, size)
@@ -159,4 +161,85 @@ size_t aes::StackAllocator::getMarker() const
 {
 	return offset;
 }
+
+HeterogenPoolAllocator::HeterogenPoolAllocator(IAllocator& base) : baseAllocator(&base)
+{
+}
+
+// TODO will crash if not enough memory in base allocator 
+void* HeterogenPoolAllocator::allocate(size_t size, size_t align)
+{
+	std::unique_lock lock(mtx);
+
+	Node* allocatedNode = nullptr;
+	if (first == nullptr)
+	{
+		void* mem = baseAllocator->allocate(size, align);
+		Node* newNode = new (baseAllocator->allocate(sizeof(Node))) Node{ size, mem, nullptr, false };
+		first = newNode;
+		return mem;
+	}
+
+	for (Node* n = first; n != nullptr; n = n->next)
+	{
+		if (n->isFree && n->size >= size)
+		{
+			n->isFree = false;
+			allocatedNode = n;
+		}
+	}
+
+	// no node found allocate a new one
+	if (allocatedNode == nullptr)
+	{
+		void* mem = baseAllocator->allocate(size, align);
+		allocatedNode = new (baseAllocator->allocate(sizeof(Node))) Node{ size, mem, nullptr, false };
+		allocatedNode->next = first;
+		first = allocatedNode;
+	}
+
+	return allocatedNode->mem;
+}
+
+void HeterogenPoolAllocator::deallocate(void* ptr)
+{
+	std::unique_lock lock(mtx);
+
+	for(Node* n = first; n != nullptr; n = n->next)
+	{
+		if (n->mem == ptr)
+		{
+			n->isFree = true;
+		}
+	}
+}
+
+void HeterogenPoolAllocator::purge()
+{
+	std::unique_lock lock(mtx);
+
+	Node* prev = nullptr;
+	for (Node* n = first; n != nullptr; n = n->next)
+	{
+		if (n->isFree)
+		{
+			if (prev)
+			{
+				prev->next = n->next;
+
+				baseAllocator->deallocate(n->mem);
+				baseAllocator->deallocate(n);
+			}
+			else // first is removed
+			{
+				first = n->next;
+				baseAllocator->deallocate(n->mem);
+				baseAllocator->deallocate(n);
+				continue;
+			}
+		}
+		prev = n;
+	}
+}
+
 
