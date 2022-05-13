@@ -73,10 +73,10 @@ public:
 
 	void update(float deltaTime) override
 	{
-		Glyph g = defaultFont.getGlyph('a').value();
-		draw2d.drawImage(defaultFont.texture, { {-1, -1}, {1, 1} });
-		draw2d.drawRect({ {g.u.x, g.v.x}, {g.u.y, g.v.y} });
-		//draw2d.drawText(defaultFont, "hello world", { 0, 0 });
+		Glyph g = defaultFont.getGlyph('G').value();
+		draw2d.drawRect({ {g.u[0], g.v[0]}, {g.u[1], g.v[1]}});
+		draw2d.drawText(defaultFont, "hello world", { 0, 0 });
+		draw2d.drawText(defaultFont, "hoayooo\noui\n\tu", { -1, 0.5 });
 	}
 
 	void draw() override

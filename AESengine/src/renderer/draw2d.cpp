@@ -212,21 +212,40 @@ void Draw2d::drawText(FontRessource& font, std::string_view str, glm::vec2 pos)
 {
 	AES_PROFILE_FUNCTION();
 
+
+	glm::vec2 p = pos;
 	for (uint i = 0; i < str.size(); i++)
 	{
 		commands.push(Command{ DrawCommandType::Image, currentState.color, &font.texture });
 
 		auto const c = str[i];
+		if (c == '\r') {
+			p.x = float(int(pos.x));
+			continue;
+		}
+		if (c == ' ') {
+			p.x += 0.025f;
+			continue;
+		}
+		if (c == '\t') {
+			p.x += 0.1f;
+			continue;
+		}
+		if (c == '\n') {
+			p.x = float(int(pos.x));
+			p.y -= 0.1f;
+			continue;
+		}
+
 		auto const glyph = *font.getGlyph(c);
-		//glm::vec2 const gsize = { glyph.u[1] - glyph.u[0], glyph.v[1] - glyph.v[0] };
-		glm::vec2 const gsize = { 0.07f, 0.1f };
+		glm::vec2 const gsize = { glyph.u[1] - glyph.u[0], glyph.v[1] - glyph.v[0] };
 
-		textureVertices.push({ pos,						 { glyph.u[0], glyph.v[1]} });
-		textureVertices.push({ {pos.x + gsize.x, pos.y}, { glyph.u[1], glyph.v[1]} });
-		textureVertices.push({ {pos.x, pos.y + gsize.y}, { glyph.u[0], glyph.v[0]} });
-		textureVertices.push({ pos + gsize,				 { glyph.u[1], glyph.v[0]} });
+		textureVertices.push({ p,						{ glyph.u[0], glyph.v[1]} });
+		textureVertices.push({ {p.x + gsize.x, p.y},	{ glyph.u[1], glyph.v[1]} });
+		textureVertices.push({ {p.x, p.y + gsize.y},	{ glyph.u[0], glyph.v[0]} });
+		textureVertices.push({ p + gsize,				{ glyph.u[1], glyph.v[0]} });
 
-		pos.x += 0.1f;
+		p.x += gsize.x;
 
 		textureIndices.push(textureOffset + 3);
 		textureIndices.push(textureOffset + 1);

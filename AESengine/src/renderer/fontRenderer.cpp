@@ -59,13 +59,13 @@ Result<FontRessource> aes::createFontRessource(IAllocator& allocator, std::span<
 	{
 		auto const& pc = packChars[i];
 		fontRessource.glyphs[i] = Glyph{
-				.c = static_cast<char>(startChar + i),
-				.x = {pc.x0, pc.x1},
-				.y = {pc.y0, pc.y1},
-				.u = {(float)pc.x0 / width, (float)(pc.x0 + pc.x1) / width},
-				.v = {(float)pc.y0 / height, (float)(pc.y0 + pc.y1) / height},
-				.xoff = pc.xoff, .yoff = pc.yoff,
-				.xadvance = pc.xadvance,
+			.c = static_cast<char>(startChar + i),
+			.x = {pc.x0, pc.x1},
+			.y = {pc.y0, pc.y1},
+			.u = {(float)pc.x0 / width, (float)(pc.x1) / width},
+			.v = {(float)pc.y0 / height, (float)(pc.y1) / height},
+			.xoff = pc.xoff, .yoff = pc.yoff,
+			.xadvance = pc.xadvance/width,
 		};
 	}
 
@@ -78,8 +78,6 @@ Result<FontRessource> aes::createFontRessource(IAllocator& allocator, std::span<
 		uint8_t const alpha = bitmap[i];
 		pixels[i] = Color(alpha, alpha, alpha, alpha);
 	}
-
-	//stbi_write_png("out.png", width, height, 4, pixels.data(), width * 4);
 
 	{
 		TextureDescription desc;
