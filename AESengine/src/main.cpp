@@ -5,6 +5,7 @@
 
 #include "core/allocator.hpp"
 #include "core/array.hpp"
+#include "core/circularQueue.hpp"
 #include "core/profiler.hpp"
 #include "core/debugMath.hpp"
 #include "engine.hpp"
@@ -203,13 +204,46 @@ public:
 	Game(InitInfo const& info) : Engine(info), jobSystem(aes::globalAllocator)
 	{
 		AES_LOG("Game initialized");
-		std::atomic<int> sum;
-		//aes::parallelForEach(jobSystem, std::views::iota(1, 2), [&sum](auto v)
+		aes::CircularQueue<int, 32> queue;
+
+		jobSystem.run([&queue]()
+			{
+				for (int i = 0; i < 16; i++)
+				{
+					queue.push_back(i);
+				}
+			});
+
+		jobSystem.run([&queue]()
+			{
+				while(true)
+				{
+					if (!queue.empty())
+					{
+						int e = queue.pop_front();
+						AES_LOG("{}", e);
+					}
+				}
+			});
+
+		for (int i = 0; i < 12; i++)
+		{
+			queue.push_back(i*2);
+		}
+		jobSystem.wait();
+
+		//aes::HeterogenPoolAllocator parallelAlloc(aes::mallocator);
+		//aes::parallelForEach(jobSystem, std::views::iota(1, 30), [&parallelAlloc](auto v)
 		//	{
-		//		AES_LOG("{}", v);
-		//		sum.fetch_add(v, std::memory_order::relaxed);
+		//		aes::Array<int> ints(parallelAlloc);
+		//		for (int i = 0; i < 32; i++)
+		//		{
+		//			ints.push(v);
+		//			ints.shrink();
+		//		}
+
+		//		AES_LOG("{}", ints.size());
 		//	});
-		AES_LOG("sum {}", sum.load());
 	}
 
 	void start() override

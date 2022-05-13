@@ -203,8 +203,6 @@ void* HeterogenPoolAllocator::allocate(size_t size, size_t align)
 
 void HeterogenPoolAllocator::deallocate(void* ptr)
 {
-	std::unique_lock lock(mtx);
-
 	for(Node* n = first; n != nullptr; n = n->next)
 	{
 		if (n->mem == ptr)
