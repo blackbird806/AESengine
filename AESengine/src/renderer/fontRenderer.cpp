@@ -50,7 +50,7 @@ Result<FontRessource> aes::createFontRessource(IAllocator& allocator, std::span<
 
 	stbtt_PackSetOversampling(&packContext, 2, 2);
 	char const startChar = ' ';
-	stbtt_PackFontRange(&packContext, fontData.data(), 0, 40, startChar, 127, packChars.data());
+	stbtt_PackFontRange(&packContext, fontData.data(), 0, 20, startChar, 127, packChars.data());
 
 	stbtt_PackEnd(&packContext);
 

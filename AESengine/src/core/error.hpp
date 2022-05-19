@@ -127,6 +127,47 @@ namespace aes {
 		std::variant<std::monostate, ErrorCodeType> value_;
 	};
 
+	inline const char* to_string(AESError err)
+	{
+#define CASE(X) case AESError::X: return #X;
+		switch (err)
+		{
+			CASE(Undefined)
+			CASE(MemoryAllocationFailed)
+			CASE(GPUBufferCreationFailed)
+			CASE(GPUTextureCreationFailed)
+			CASE(GPUBufferMappingFailed)
+			CASE(SamplerCreationFailed)
+			CASE(ShaderCompilationFailed)
+			CASE(ShaderCreationFailed)
+			CASE(FontInitFailed)
+			CASE(BlendStateCreationFailed)
+		}
+#undef CASE(X)
+		AES_UNREACHABLE();
+	}
+
+	inline std::ostream& operator<<(std::ostream& stream, AESError err)
+	{
+		stream << to_string(err);
+		return stream;
+	}
 }
+
+template<>
+struct fmt::formatter<aes::AESError> 
+{
+	template<typename ParseContext>
+	constexpr auto parse(ParseContext& ctx)
+	{
+		return ctx.begin();
+	}
+
+	template<typename FormatContext>
+	auto format(aes::AESError const& err, FormatContext& ctx)
+	{
+		return fmt::format_to(ctx.out(), "{}", to_string(err));
+	};
+};
 
 #endif

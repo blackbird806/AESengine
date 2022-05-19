@@ -39,7 +39,8 @@ D3D11Buffer::~D3D11Buffer()
 Result<void> D3D11Buffer::init(BufferDescription const& desc)
 {
 	AES_ASSERT(desc.sizeInBytes != 0);
-	
+	AES_ASSERT(desc.sizeInBytes % 16 == 0); // D3D11 buffers size must be a multiple of 16
+
 	size = desc.sizeInBytes;
 	
 	D3D11_BUFFER_DESC bufferDesc;
@@ -67,6 +68,7 @@ Result<void> D3D11Buffer::init(BufferDescription const& desc)
 	
 	if (FAILED(result))
 	{
+		AES_LOG_ERROR("Failed to create GPU buffer");
 		return { AESError::GPUBufferCreationFailed };
 	}
 	

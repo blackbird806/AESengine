@@ -9,9 +9,10 @@
 using namespace aes;
 
 Draw2d::Draw2d(IAllocator& alloc) :
-	commands(alloc),
-	colorVertices(alloc), colorIndices(alloc),
-	textureVertices(alloc), textureIndices(alloc)
+	statesStack(alloc),
+	commands(alloc), colorVertices(alloc),
+	colorIndices(alloc), textureVertices(alloc),
+	textureIndices(alloc)
 {
 
 }
@@ -101,6 +102,7 @@ Result<void> Draw2d::init()
 			return err;
 	}
 
+	// init default sampler
 	{
 		SamplerDescription samplerDesc{};
 		samplerDesc.addressU = TextureAddressMode::Clamp;
@@ -109,6 +111,20 @@ Result<void> Draw2d::init()
 		samplerDesc.lodMin = 0.0f;
 		samplerDesc.lodBias = 0;
 		sampler.init(samplerDesc);
+	}
+
+	// init uniform buffer
+	{
+		BufferDescription bufferDesc{};
+		bufferDesc.usage = MemoryUsage::Dynamic;
+		bufferDesc.bindFlags = BindFlagBits::UniformBuffer;
+		bufferDesc.cpuAccessFlags = CPUAccessFlagBits::Write;
+		bufferDesc.sizeInBytes = sizeof(UniformBuffer);
+		UniformBuffer defaultContent{};
+		bufferDesc.initialData = &defaultContent;
+		auto err = uniformBuffer.init(bufferDesc);
+		if (!err)
+			return err;
 	}
 
 	ensureColorVertexBufferCapacity(200 * sizeof(ColorVertex));
@@ -127,10 +143,21 @@ void Draw2d::setColor(Color color)
 	currentState.color = color;
 }
 
-void Draw2d::setMatrix(glm::mat2 const& mat)
+void Draw2d::setMatrix(glm::mat3 const& mat)
 {
 	AES_PROFILE_FUNCTION();
 	currentState.transformationMatrix = mat;
+}
+
+void Draw2d::pushState()
+{
+	statesStack.push(currentState);
+}
+
+void Draw2d::popState()
+{
+	currentState = statesStack.back();
+	statesStack.pop();
 }
 
 void Draw2d::drawLine(Line2D const& line)
@@ -138,10 +165,8 @@ void Draw2d::drawLine(Line2D const& line)
 	AES_PROFILE_FUNCTION();
 	commands.push(Command{ DrawCommandType::Line, currentState.color });
 	
-	glm::vec2 const from = line.p1 * currentState.transformationMatrix;
-	glm::vec2 const to = line.p2 * currentState.transformationMatrix;
-	colorVertices.push({ from, currentState.color });
-	colorVertices.push({ to, currentState.color });
+	colorVertices.push({ line.p1, currentState.color });
+	colorVertices.push({ line.p2, currentState.color });
 	colorIndices.push(colorOffset + 0);
 	colorIndices.push(colorOffset + 1);
 	colorOffset += 2;
@@ -159,11 +184,7 @@ void Draw2d::drawFillRect(Rect const& rect)
 	AES_PROFILE_FUNCTION();
 	commands.push(Command{ DrawCommandType::FillRect, currentState.color });
 
-	Rect const transformedRect{
-		rect.min * currentState.transformationMatrix, 
-		rect.max * currentState.transformationMatrix };
-	
-	RectBounds const bounds = transformedRect.getBounds();
+	RectBounds const bounds = rect.getBounds();
 	colorVertices.push({ bounds.minL, currentState.color });
 	colorVertices.push({ bounds.minR, currentState.color });
 	colorVertices.push({ bounds.topL, currentState.color });
@@ -190,12 +211,9 @@ void Draw2d::drawImage(RHITexture& texture, Rect const& rect)
 {
 	AES_PROFILE_FUNCTION();
 
-	commands.push(Command{ DrawCommandType::Image, currentState.color, &texture });
-	Rect const transformedRect{
-		rect.min * currentState.transformationMatrix,
-		rect.max * currentState.transformationMatrix };
+	commands.push(Command{ DrawCommandType::Image, currentState, &texture });
 
-	RectBounds const bounds = transformedRect.getBounds();
+	RectBounds const bounds = rect.getBounds();
 	textureVertices.push({ bounds.minL, {0, 1} });
 	textureVertices.push({ bounds.minR, {1, 1} });
 	textureVertices.push({ bounds.topL, {0, 0} });
@@ -212,12 +230,9 @@ void Draw2d::drawText(FontRessource& font, std::string_view str, glm::vec2 pos)
 {
 	AES_PROFILE_FUNCTION();
 
-
 	glm::vec2 p = pos;
 	for (uint i = 0; i < str.size(); i++)
 	{
-		commands.push(Command{ DrawCommandType::Image, currentState.color, &font.texture });
-
 		auto const c = str[i];
 		if (c == '\r') {
 			p.x = float(int(pos.x));
@@ -237,13 +252,14 @@ void Draw2d::drawText(FontRessource& font, std::string_view str, glm::vec2 pos)
 			continue;
 		}
 
+		commands.push(Command{ DrawCommandType::Image, currentState, &font.texture });
 		auto const glyph = *font.getGlyph(c);
 		glm::vec2 const gsize = { glyph.u[1] - glyph.u[0], glyph.v[1] - glyph.v[0] };
 
-		textureVertices.push({ p,						{ glyph.u[0], glyph.v[1]} });
-		textureVertices.push({ {p.x + gsize.x, p.y},	{ glyph.u[1], glyph.v[1]} });
-		textureVertices.push({ {p.x, p.y + gsize.y},	{ glyph.u[0], glyph.v[0]} });
-		textureVertices.push({ p + gsize,				{ glyph.u[1], glyph.v[0]} });
+		textureVertices.push({ p,								{ glyph.u[0], glyph.v[1]} });
+		textureVertices.push({ glm::vec2{p.x + gsize.x, p.y},	{ glyph.u[1], glyph.v[1]} });
+		textureVertices.push({ glm::vec2{p.x, p.y + gsize.y},	{ glyph.u[0], glyph.v[0]} });
+		textureVertices.push({ (p + gsize),						{ glyph.u[1], glyph.v[0]} });
 
 		p.x += gsize.x;
 
@@ -277,8 +293,11 @@ void Draw2d::executeDrawCommands()
 	uint textureIndicesOffset = 0;
 	uint indicesCount;
 
+	context.bindVSUniformBuffer(uniformBuffer, 0);
 	for (auto const& cmd : commands)
 	{
+		uniformBuffer.setDataFromPOD(glm::mat4(cmd.state.transformationMatrix));
+
 		// @Review only draw triangles ?
 		if (cmd.type == DrawCommandType::Line)
 		{

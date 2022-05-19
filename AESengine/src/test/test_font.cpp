@@ -1,3 +1,6 @@
+#include <iostream>
+#include <glm/gtx/matrix_transform_2d.hpp>
+
 #include "tests.hpp"
 
 #include "core/allocator.hpp"
@@ -73,10 +76,29 @@ public:
 
 	void update(float deltaTime) override
 	{
-		Glyph g = defaultFont.getGlyph('G').value();
-		draw2d.drawRect({ {g.u[0], g.v[0]}, {g.u[1], g.v[1]}});
-		draw2d.drawText(defaultFont, "hello world", { 0, 0 });
-		draw2d.drawText(defaultFont, "hoayooo\noui\n\tu", { -1, 0.5 });
+		uint wx, wy;
+		mainWindow->getScreenSize(wx, wy);
+		float aspect = (float)wx / wy;
+
+		float xstart = -0.25;
+
+		/*draw2d.setMatrix(glm::scale(glm::mat3(1.0f), { 0.25, 0.25 * aspect }));
+		draw2d.drawText(defaultFont, "hello world", { xstart, 1.0 });*/
+
+		draw2d.setMatrix(glm::scale(glm::mat3(1.0f), { 0.5, 0.5 * aspect }));
+		draw2d.drawText(defaultFont, "hello world", { xstart, 0.5 });
+		draw2d.drawPoint({ xstart, 0.5});
+
+		draw2d.setMatrix(glm::scale(glm::mat3(1.0f), { 1.0, aspect }));
+		draw2d.drawText(defaultFont, "hello world", { xstart, 0.0 });
+		draw2d.drawPoint({ xstart, 0 });
+
+		draw2d.setMatrix(glm::scale(glm::mat3(1.0f), { 2.0, 2.0 * aspect }));
+		draw2d.drawText(defaultFont, "hello world", { xstart, -0.15 });
+
+		draw2d.setMatrix(glm::mat3(1.0f));
+
+		draw2d.drawImage(defaultFont.texture, { {-1, -1}, {1, 1}});
 	}
 
 	void draw() override

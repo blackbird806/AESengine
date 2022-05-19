@@ -26,7 +26,9 @@ namespace aes
 		Result<void> init();
 		
 		void setColor(Color color);
-		void setMatrix(glm::mat2 const&);
+		void setMatrix(glm::mat3 const&);
+		void pushState();
+		void popState();
 		void drawLine(Line2D const& line);
 		void drawPoint(glm::vec2 p, float size = 0.05f);
 		void drawFillRect(Rect const& rect);
@@ -58,27 +60,34 @@ namespace aes
 			glm::vec2 uv;
 		};
 
+		struct UniformBuffer
+		{
+			glm::mat4 transformMtr = glm::mat4(1.0f);
+		};
+
 		enum class DrawCommandType
 		{
 			Line,
 			FillRect,
 			Image
 		};
-		
-		struct Command
-		{
-			DrawCommandType type;
-			Color color;
-			RHITexture* texture = nullptr;
-		};
 
 		struct State
 		{
 			Color color = Color::Blue;
-			glm::mat2 transformationMatrix = glm::mat2(1.0f);
+			glm::mat3 transformationMatrix = glm::mat3(1.0f);
+		};
+
+		struct Command
+		{
+			DrawCommandType type;
+			State state;
+			RHITexture* texture = nullptr;
 		};
 		
 		State currentState;
+		Array<State> statesStack;
+
 		Array<Command> commands;
 
 		Array<ColorVertex> colorVertices;
@@ -102,7 +111,7 @@ namespace aes
 		RHIBuffer textureVertexBuffer;
 		RHIBuffer textureIndexBuffer;
 
-		RHIBuffer projectionBuffer;
+		RHIBuffer uniformBuffer;
 	};
 }
 

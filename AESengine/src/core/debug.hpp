@@ -1,5 +1,5 @@
-#ifndef DEBUG_HPP
-#define DEBUG_HPP
+#ifndef AES_DEBUG_HPP
+#define AES_DEBUG_HPP
 
 #include <vector>
 #include <iosfwd>
@@ -18,6 +18,9 @@
 #define AES_WARN(msg, ...) ::aes::Logger::instance().log(fmt::format("warn : " msg "\n", __VA_ARGS__))
 #define AES_LOG_ERROR(msg, ...) ::aes::Logger::instance().log(fmt::format(" error : " __FUNCTION__ " : " AES_STRINGIFY(__LINE__) ": " msg "\n", __VA_ARGS__))
 #endif
+
+#define AES_CHECKR(r) if (!r) { AES_LOG_ERROR("{}", r.error()); return r; };
+#define AES_CHECK(r) if (!r) { AES_LOG_ERROR("{}", r.error()); };
 
 namespace aes {
 
