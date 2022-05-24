@@ -39,10 +39,12 @@ public:
 		vertexShaderDescription.verticesStride = sizeof(aes::Vertex);
 
 		aes::VertexInputLayout vertexInputLayout[2];
+		vertexInputLayout[0].parameterName = "aPosition";
 		vertexInputLayout[0].semantic = aes::SemanticType::Position;
 		vertexInputLayout[0].offset = 0;
 		vertexInputLayout[0].format = aes::RHIFormat::R32G32B32_Float;
 
+		vertexInputLayout[1].parameterName = "aColor";
 		vertexInputLayout[1].semantic = aes::SemanticType::Color;
 		vertexInputLayout[1].offset = sizeof(glm::vec3);
 		vertexInputLayout[1].format = aes::RHIFormat::R32G32B32A32_Float;

@@ -143,7 +143,7 @@ namespace aes {
 			CASE(FontInitFailed)
 			CASE(BlendStateCreationFailed)
 		}
-#undef CASE(X)
+#undef CASE
 		AES_UNREACHABLE();
 	}
 

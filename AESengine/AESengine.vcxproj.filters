@@ -22,9 +22,6 @@
     <Filter Include="ThirdParty\stb">
       <UniqueIdentifier>{edc2130c-9a41-4e11-bb66-58818b3ad3ea}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ThirdParty\tiny">
-      <UniqueIdentifier>{5766d58f-d333-4445-bc83-5b104d05f63d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ThirdParty\aini">
       <UniqueIdentifier>{aa6863d0-bc21-4de6-9ec1-f7ace0f1dd84}</UniqueIdentifier>
     </Filter>
@@ -74,9 +71,6 @@
     </ClCompile>
     <ClCompile Include="src\renderer\Renderer2D.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="thirdParty\tiny\tiny_obj_loader.cpp">
-      <Filter>ThirdParty\tiny</Filter>
     </ClCompile>
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11Shader.cpp">
       <Filter>Source Files</Filter>
@@ -156,6 +150,9 @@
     <ClCompile Include="src\test\test_draw3d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\renderer\RHI\RHIValidation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\window.hpp">
@@ -217,9 +214,6 @@
     </ClInclude>
     <ClInclude Include="src\core\color.hpp">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="thirdParty\tiny\tiny_obj_loader.h">
-      <Filter>ThirdParty\tiny</Filter>
     </ClInclude>
     <ClInclude Include="src\core\reflection.hpp">
       <Filter>Header Files</Filter>

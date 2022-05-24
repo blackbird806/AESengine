@@ -25,23 +25,22 @@ D3D11Texture& D3D11Texture::operator=(D3D11Texture&& rhs) noexcept
 
 Result<void> D3D11Texture::init(TextureDescription const& info)
 {
+	validateTextureDescription(info);
+
 	ID3D11Device* device = D3D11Renderer::instance().getDevice();
 
 	D3D11_TEXTURE2D_DESC textureDesc = {};
 	textureDesc.Height = info.height;
 	textureDesc.Width = info.width;
-	textureDesc.MipLevels = info.mipsLevel;
+	textureDesc.MipLevels = 1; // info.mipsLevel;
 	textureDesc.ArraySize = 1;
 	textureDesc.Format = rhiFormatToApi(info.format);
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.SampleDesc.Quality = 0;
 	textureDesc.Usage = rhiMemoryUsageToApi(info.usage);
-	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE; // @Review
+	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;  // @Review
 	textureDesc.CPUAccessFlags = rhiCPUAccessFlagsToApi(info.cpuAccess);
-	if (textureDesc.MipLevels > 1)
-	{
-		textureDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
-	}
+	//textureDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
 	HRESULT err;
 	if (info.initialData)
@@ -76,6 +75,7 @@ Result<void> D3D11Texture::init(TextureDescription const& info)
 		AES_LOG_ERROR("D3D11 CreateShaderResourceView failed !");
 		return { AESError::GPUTextureCreationFailed };
 	}
+	//D3D11Renderer::instance().getDeviceContext()->GenerateMips(textureView);
 
 	return {};
 }

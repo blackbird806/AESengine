@@ -9,28 +9,9 @@
 #include "renderer/draw2d.hpp"
 #include "core/utility.hpp"
 #include "core/color.hpp"
+#include "renderer/textureUtility.hpp"
 
 using namespace aes;
-
-static Array<uint32_t> createCheckboard(uint resX, uint resY, float segmentSizef = 0.1f)
-{
-	uint const segmentSizeX = std::round(resX * segmentSizef);
-	uint const segmentSizeY = std::round(resY * segmentSizef);
-
-	Array<uint32_t> bitmap(aes::globalAllocator);
-	bitmap.resize(resX * resY);
-	for (uint i = 0; i < resX; i++)
-	{
-		uint const segmentNumI = i / segmentSizeX;
-		for (uint j = 0; j < resY; j++)
-		{
-			int const segmentNumJ = j / segmentSizeY;
-
-			bitmap[i + j * resX] = segmentNumI % 2 != segmentNumJ % 2 ? Color::Blue : Color::Red;
-		}
-	}
-	return bitmap;
-}
 
 class TestFontApp : public Engine
 {
@@ -49,7 +30,9 @@ public:
 	{
 		{
 			uint const w = 1024, h = 1024;
-			auto colors = createCheckboard(w, h);
+			Array<Color> colors(globalAllocator);
+			colors.resize(w * h);
+			buildCheckboard(colors, w, h, Color::Green, Color::Blue, 0.25f);
 			TextureDescription desc;
 			desc.width = w;
 			desc.height = h;
@@ -61,14 +44,19 @@ public:
 			checkboard.init(desc);
 		}
 
-		auto fontData = readFileBin("assets/fonts/courier.ttf");
-		auto fontResult = createFontRessource(aes::globalAllocator, fontData);
+		{ 
+			auto const fontData = readFileBin("assets/fonts/courier.ttf");
+			FontParams params{};
+			params.fontData = fontData;
+			params.fontSize = 15;
+			params.oversampling = 2;
+			auto fontResult = createFontRessource(aes::globalAllocator, params);
 
-		if (!fontResult)
-			AES_FATAL_ERROR("font creation failed");
+			if (!fontResult)
+				AES_FATAL_ERROR("font creation failed");
 
-		defaultFont = std::move(fontResult.value());
-		//defaultFont.texture = std::move(checkboard);
+			defaultFont = std::move(fontResult.value());
+		}
 
 		if (!draw2d.init())
 			AES_FATAL_ERROR("draw2d creation failed");
@@ -82,23 +70,10 @@ public:
 
 		float xstart = -0.25;
 
-		/*draw2d.setMatrix(glm::scale(glm::mat3(1.0f), { 0.25, 0.25 * aspect }));
-		draw2d.drawText(defaultFont, "hello world", { xstart, 1.0 });*/
-
-		draw2d.setMatrix(glm::scale(glm::mat3(1.0f), { 0.5, 0.5 * aspect }));
-		draw2d.drawText(defaultFont, "hello world", { xstart, 0.5 });
-		draw2d.drawPoint({ xstart, 0.5});
-
 		draw2d.setMatrix(glm::scale(glm::mat3(1.0f), { 1.0, aspect }));
 		draw2d.drawText(defaultFont, "hello world", { xstart, 0.0 });
-		draw2d.drawPoint({ xstart, 0 });
-
-		draw2d.setMatrix(glm::scale(glm::mat3(1.0f), { 2.0, 2.0 * aspect }));
-		draw2d.drawText(defaultFont, "hello world", { xstart, -0.15 });
-
-		draw2d.setMatrix(glm::mat3(1.0f));
-
-		draw2d.drawImage(defaultFont.texture, { {-1, -1}, {1, 1}});
+		//draw2d.drawImage(defaultFont.texture, { {-1, -1}, {1, 1}});
+		draw2d.drawImage(checkboard, { {-1, -1}, {0.0, 0.0}});
 	}
 
 	void draw() override

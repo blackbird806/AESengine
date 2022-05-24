@@ -13,7 +13,7 @@ namespace aes
 {
 	struct Glyph
 	{
-		char c;
+		int32_t c;
 		glm::vec2 x, y;
 		glm::vec2 u;
 		glm::vec2 v;
@@ -34,33 +34,17 @@ namespace aes
 		Array<Glyph> glyphs;
 	};
 
-	Result<FontRessource> createFontRessource(IAllocator& allocator, std::span<uint8_t> fontData);
-
-	class FontRenderer
+	struct FontParams
 	{
-	public:
-		struct Vertex
-		{
-			glm::vec2 pos;
-			glm::vec2 uv;
-			glm::vec4 color;
-		};
-
-		Result<void> init();
-
-		void setFont(FontRessource& font);
-		void debugDraw();
-
-	private:
-		FontRessource* currentFont = nullptr;
-
-		RHIBuffer vertexBuffer;
-		RHIBuffer indexBuffer;
-
-
-		Array<Vertex> vertices;
-		Array<uint16_t> indices;
+		std::span<uint8_t const> fontData;
+		float fontSize = 20;
+		int startUnicode = ' ';
+		int numCharInRange = 127;
+		uint textureWidth = 1024, textureHeight = 1024;
+		uint oversampling = 2;
 	};
+
+	Result<FontRessource> createFontRessource(IAllocator& allocator, FontParams const& params);
 }
 
 #endif

@@ -105,8 +105,8 @@ Result<void> Draw2d::init()
 	// init default sampler
 	{
 		SamplerDescription samplerDesc{};
-		samplerDesc.addressU = TextureAddressMode::Clamp;
-		samplerDesc.addressV = TextureAddressMode::Clamp;
+		samplerDesc.addressU = TextureAddressMode::Repeat;
+		samplerDesc.addressV = TextureAddressMode::Repeat;
 		samplerDesc.filter = TextureFilter::Linear;
 		samplerDesc.lodMin = 0.0f;
 		samplerDesc.lodBias = 0;
@@ -226,6 +226,7 @@ void Draw2d::drawImage(RHITexture& texture, Rect const& rect)
 	textureOffset += 4;
 }
 
+// TODO check https://github.com/ocornut/imgui/blob/master/imgui_draw.cpp#L3542
 void Draw2d::drawText(FontRessource& font, std::string_view str, glm::vec2 pos)
 {
 	AES_PROFILE_FUNCTION();

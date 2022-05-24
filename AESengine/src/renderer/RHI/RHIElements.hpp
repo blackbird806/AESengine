@@ -183,6 +183,12 @@ namespace aes
 		void* initialData = nullptr;
 	};
 
+	// theses functions assert if structure is invalid according to RHI
+	// furthers assertions can still be triggered for platform/API specific constraints
+	void validateVertexShaderDescription(VertexShaderDescription const& desc);
+	void validateTextureDescription(TextureDescription const& desc);
+	void validateBufferDescription(BufferDescription const& desc);
 }
+
 
 #endif

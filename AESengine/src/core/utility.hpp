@@ -106,6 +106,12 @@ namespace aes {
 		}
 
 		// assignment operators
+		constexpr Flags<BitType>& operator=(MaskType const& rhs)
+		{
+			mask = rhs;
+			return *this;
+		}
+
 		constexpr Flags<BitType>& operator=(Flags<BitType> const& rhs) = default;
 
 		constexpr Flags<BitType>& operator|=(Flags<BitType> const& rhs) 

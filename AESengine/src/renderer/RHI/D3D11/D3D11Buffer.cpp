@@ -38,7 +38,7 @@ D3D11Buffer::~D3D11Buffer()
 
 Result<void> D3D11Buffer::init(BufferDescription const& desc)
 {
-	AES_ASSERT(desc.sizeInBytes != 0);
+	validateBufferDescription(desc);
 	AES_ASSERT(desc.sizeInBytes % 16 == 0); // D3D11 buffers size must be a multiple of 16
 
 	size = desc.sizeInBytes;
