@@ -272,9 +272,6 @@
     <ClInclude Include="src\renderer\RHI\RHIShaderReflection.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\RHI\RHIBlendState.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11BlendState.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>

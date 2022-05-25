@@ -1,5 +1,5 @@
-#ifndef D3D11BLENDSTATE_HPP
-#define D3D11BLENDSTATE_HPP
+#ifndef AES_D3D11BLENDSTATE_HPP
+#define AES_D3D11BLENDSTATE_HPP
 
 #include <d3d11.h>
 
@@ -8,16 +8,8 @@
 
 namespace aes
 {
-	struct BlendInfo
-	{
-		BlendOp colorOp;
-		BlendOp alphaOp;
-		BlendFactor colorSrc;
-		BlendFactor colorDst;
-		BlendFactor alphaSrc;
-		BlendFactor alphaDst;
-	};
-	
+	// blend stated is proper to d3d11 so no RHI interface here
+	// for a platform independent blend, you must specify it in the fragment shader (this is a constraint from GXM)
 	class D3D11BlendState
 	{
 	public:
@@ -33,8 +25,6 @@ namespace aes
 		private:
 		ID3D11BlendState* blendState = nullptr;
 	};
-	
-	using RHIBlendState = D3D11BlendState;
 }
 
 #endif

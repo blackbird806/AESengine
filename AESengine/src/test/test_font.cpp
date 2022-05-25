@@ -45,11 +45,11 @@ public:
 		}
 
 		{ 
-			auto const fontData = readFileBin("assets/fonts/courier.ttf");
+			auto const fontData = readFileBin("assets/fonts/ProggyClean.ttf");
 			FontParams params{};
 			params.fontData = fontData;
-			params.fontSize = 15;
-			params.oversampling = 2;
+			params.fontSize = 60;
+			params.oversampling = 1;
 			auto fontResult = createFontRessource(aes::globalAllocator, params);
 
 			if (!fontResult)
@@ -66,18 +66,44 @@ public:
 	{
 		uint wx, wy;
 		mainWindow->getScreenSize(wx, wy);
-		float aspect = (float)wx / wy;
+		float const aspect = (float)wx / wy;
 
-		float xstart = -0.25;
+		float xstart = 0.0;
+		static float scale = 1.0;
 
-		draw2d.setMatrix(glm::scale(glm::mat3(1.0f), { 1.0, aspect }));
-		draw2d.drawText(defaultFont, "hello world", { xstart, 0.0 });
-		//draw2d.drawImage(defaultFont.texture, { {-1, -1}, {1, 1}});
-		draw2d.drawImage(checkboard, { {-1, -1}, {0.0, 0.0}});
+		if (isKeyDown(Key::Down))
+			scale -= 0.1 * deltaTime;
+		if (isKeyDown(Key::Up))
+			scale += 0.1 * deltaTime;
+		if (isKeyPressed(Key::Space))
+			scale = 1.0;
+
+		draw2d.setMatrix(glm::scale(glm::mat3(1.0f), { scale, scale * aspect }));
+		draw2d.drawText(defaultFont, fmt::format("hello world\nscale {}", scale), {xstart, 0.0});
+
+		draw2d.drawImage(defaultFont.texture, { {-0.5, -0.5}, {0.5, 0.5}});
+		//draw2d.drawImage(checkboard, { {-1, -1}, {0.0, 0.0}});
 	}
 
 	void draw() override
 	{
+		static ID3D11BlendState* pBlendState;;
+		AES_ONCE(
+			D3D11_BLEND_DESC desc;
+			ZeroMemory(&desc, sizeof(desc));
+			desc.AlphaToCoverageEnable = false;
+			desc.RenderTarget[0].BlendEnable = true;
+			desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+			desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+			desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+			desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+			desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+			desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+			desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+			RHIRenderContext::instance().getDevice()->CreateBlendState(&desc, &pBlendState));
+		const float blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
+		RHIRenderContext::instance().getDeviceContext()->OMSetBlendState(pBlendState, blend_factor, 0xffffffff);
+
 		draw2d.executeDrawCommands();
 	}
 };

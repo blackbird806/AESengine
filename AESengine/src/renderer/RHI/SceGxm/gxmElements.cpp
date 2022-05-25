@@ -94,3 +94,51 @@ SceGxmTextureAddrMode aes::rhiTextureAddressModeToApi(TextureAddressMode mode)
 	}
 	AES_UNREACHABLE();
 }
+
+uint8_t aes::rhiBlendOpToApi(BlendOp blendop)
+{
+	switch(blendop)
+	{
+		case BlendOp::Add:
+			return SCE_GXM_BLEND_FUNC_ADD;
+		case BlendOp::Sub:
+			return SCE_GXM_BLEND_FUNC_SUBSTRACT;
+	}
+
+	// TODO
+	// SCE_GXM_BLEND_FUNC_NONE,
+	// SCE_GXM_BLEND_FUNC_REVERSE_SUBTRACT,
+    // SCE_GXM_BLEND_FUNC_MIN,
+    // SCE_GXM_BLEND_FUNC_MAX
+
+	AES_UNREACHABLE();
+}
+
+uint8_t aes::rhiBlendFactorToApi(BlendFactor blendfactor)
+{
+	switch (blendFactor)
+	{
+		case BlendFactor::Zero: return SCE_GXM_BLEND_FACTOR_ZERO;
+		case BlendFactor::One: return SCE_GXM_BLEND_FACTOR_ONE;
+		case BlendFactor::SrcColor: return SCE_GXM_BLEND_FACTOR_SRC_COLOR;
+		case BlendFactor::SrcAlpha: return SCE_GXM_BLEND_FACTOR_SRC_ALPHA;
+		case BlendFactor::DstColor: return SCE_GXM_BLEND_FACTOR_DST_COLOR;
+		case BlendFactor::DstAlpha: return SCE_GXM_BLEND_FACTOR_DST_ALPHA;
+		case BlendFactor::OneMinusSrcColor: return SCE_GXM_BLEND_FACTOR_ONE_MINUS_SRC_COLOR;
+		case BlendFactor::OneMinusDstColor: return SCE_GXM_BLEND_FACTOR_ONE_MINUS_DST_COLOR;
+	}
+
+	// TODO 
+	// SCE_GXM_BLEND_FACTOR_ONE_MINUS_DST_ALPHA,
+	// SCE_GXM_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+	// SCE_GXM_BLEND_FACTOR_SRC_ALPHA_SATURATE,
+    // SCE_GXM_BLEND_FACTOR_DST_ALPHA_SATURATE
+
+	AES_UNREACHABLE();
+}
+
+uint8_t aes::rhiColorMaskToApi(ColorMaskFlags colorMask)
+{
+	// rhi maps directly to gxm
+	return (uint8_t)colorMask;
+}

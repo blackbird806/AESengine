@@ -21,11 +21,13 @@ Result<void> D3D11BlendState::init(BlendInfo& info)
 	blendDesc.RenderTarget[0].SrcBlendAlpha = rhiBlendFactorToApi(info.alphaSrc);
 	blendDesc.RenderTarget[0].DestBlendAlpha = rhiBlendFactorToApi(info.alphaDst);
 	blendDesc.RenderTarget[0].BlendOpAlpha = rhiBlendOpToApi(info.alphaOp);
+	// TODO
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = 0x0f;
 
 	auto err = device->CreateBlendState(&blendDesc, &blendState);
 	if (FAILED(err))
 	{
+		AES_LOG_ERROR("failed to create D3D11 Blendstate");
 		return { AESError::BlendStateCreationFailed };
 	}
 	return {};

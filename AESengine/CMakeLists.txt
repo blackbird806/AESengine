@@ -62,8 +62,9 @@ file(
   source_files 
   
   src/engine.cpp
-  src/vita_main.cpp
+  src/main.cpp
   src/core/*
+  src/test/*
   src/spatial/*
   src/renderer/camera.cpp
   src/renderer/model.cpp

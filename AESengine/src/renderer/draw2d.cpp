@@ -236,7 +236,7 @@ void Draw2d::drawText(FontRessource& font, std::string_view str, glm::vec2 pos)
 	{
 		auto const c = str[i];
 		if (c == '\r') {
-			p.x = float(int(pos.x));
+			p.x = float(pos.x);
 			continue;
 		}
 		if (c == ' ') {
@@ -248,7 +248,7 @@ void Draw2d::drawText(FontRessource& font, std::string_view str, glm::vec2 pos)
 			continue;
 		}
 		if (c == '\n') {
-			p.x = float(int(pos.x));
+			p.x = float(pos.x);
 			p.y -= 0.1f;
 			continue;
 		}

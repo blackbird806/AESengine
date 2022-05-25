@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <string>
 #include <span>
+#include <optional>
 #include <variant>
 
 #include "core/aes.hpp"
@@ -12,7 +13,7 @@
 
 namespace aes
 {
-	enum CPUAccessFlagBits : uint8_t
+	enum class CPUAccessFlagBits : uint8_t
 	{
 		None = 0x0,
 		Read = 0x1,
@@ -53,6 +54,18 @@ namespace aes
 		OneMinusSrcColor,
 		OneMinusDstColor,
 	};
+
+	// gxm rhiColorMaskToApi must be modified too in case of modification of this enum
+	enum class ColorMaskBits
+	{
+		None = 0x0,
+		A = 0x1,
+		R = 0x2,
+		G = 0x4,
+		B = 0x8,
+		All = (A | R | G | B)
+	};
+	using ColorMaskFlags = Flags<ColorMaskBits>;
 
 	enum class DrawPrimitiveType
 	{
@@ -101,6 +114,17 @@ namespace aes
 		}
 		AES_UNREACHABLE();
 	}
+
+	struct BlendInfo
+	{
+		ColorMaskFlags colorMask;
+		BlendOp colorOp;
+		BlendOp alphaOp;
+		BlendFactor colorSrc;
+		BlendFactor colorDst;
+		BlendFactor alphaSrc;
+		BlendFactor alphaDst;
+	};
 
 	struct BufferDescription
 	{
@@ -169,6 +193,9 @@ namespace aes
 
 	struct FragmentShaderDescription : ShaderDescription
 	{
+		// because of gxm blend info is bound to the fragment shader
+		std::optional<BlendInfo> blendInfo;
+
 		// TODO: clean this
 		void const* gxpVertexProgram; 
 	};

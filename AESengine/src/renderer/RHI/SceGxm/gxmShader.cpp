@@ -235,13 +235,33 @@ Result<void> GxmFragmentShader::init(FragmentShaderDescription const& desc)
 	auto& context = RHIRenderContext::instance();
 	auto err = sceGxmShaderPatcherRegisterProgram(context.getShaderPatcher(), gxpShader, &id);
 	if (err != SCE_OK)
+	{
+		AES_LOG_ERROR("failed to register fragment shader");
 		return { AESError::ShaderCreationFailed };
+	}
 	
-	err = sceGxmShaderPatcherCreateFragmentProgram(context.getShaderPatcher(), id, SCE_GXM_OUTPUT_REGISTER_FORMAT_UCHAR4, vita_msaa_mode, nullptr, 
+	SceGxmBlendInfo* pblendInfo = nullptr;
+	SceGxmBlendInfo blendInfo{};
+	if (desc.blendInfo)
+	{
+		blendInfo.colorFunc = rhiBlendOpToApi(desc.blendInfo->colorOp);
+		blendInfo.alphaFunc = rhiBlendOpToApi(desc.blendInfo->alphaOp);
+		blendInfo.colorSrc  = rhiBlendFactorToApi(desc.blendInfo->colorSrc);
+		blendInfo.colorDst  = rhiBlendFactorToApi(desc.blendInfo->colorDst);
+		blendInfo.alphaSrc  = rhiBlendFactorToApi(desc.blendInfo->alphaSrc);
+		blendInfo.alphaDst  = rhiBlendFactorToApi(desc.blendInfo->alphaDst);
+		blendInfo.colorMask = rhiColorMaskToApi(desc.blendInfo->colorMask);
+		pblendInfo = &blendInfo;
+	}
+
+	err = sceGxmShaderPatcherCreateFragmentProgram(context.getShaderPatcher(), id, SCE_GXM_OUTPUT_REGISTER_FORMAT_UCHAR4, vita_msaa_mode, pblendInfo, 
 		(SceGxmProgram const*)desc.gxpVertexProgram, &fragmentShader);
 
 	if (err != SCE_OK)
+	{
+		AES_LOG_ERROR("failed to create fragment shader");
 		return { AESError::ShaderCreationFailed };
+	}
 
 	return {};
 }

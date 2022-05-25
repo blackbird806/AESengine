@@ -14,6 +14,9 @@ namespace aes
 	SceGxmTextureFormat rhiFormatToApiTextureFormat(RHIFormat format);
 	SceGxmTextureFilter rhiTextureFilterToApi(TextureFilter filter);
 	SceGxmTextureAddrMode rhiTextureAddressModeToApi(TextureAddressMode mode);
+	uint8_t  rhiBlendOpToApi(BlendOp blendop);
+	uint8_t  rhiBlendFactorToApi(BlendFactor blendfactor);
+	uint8_t  rhiColorMaskToApi(ColorMaskFlags colorMask);
 }
 
 #endif
