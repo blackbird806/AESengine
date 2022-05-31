@@ -103,7 +103,7 @@ namespace aes {
 	bool ray_AABBIntersect(Ray const& r, AABB const& aabb);
 	bool ray_PlaneIntersect(Ray const& r, Plane const& p);
 	
-	enum PointPlanePlacement
+	enum class PointPlanePlacement
 	{
 		Back = -1,
 		OnPlane = 0,
