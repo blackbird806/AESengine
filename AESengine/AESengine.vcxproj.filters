@@ -1,322 +1,108 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="ThirdParty">
-      <UniqueIdentifier>{0432616c-4d2b-40d6-a91f-4e85d8cce4c8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ThirdParty\fmt">
-      <UniqueIdentifier>{e18408e8-b048-4a50-aa8e-0f38f42b4658}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ThirdParty\stb">
-      <UniqueIdentifier>{edc2130c-9a41-4e11-bb66-58818b3ad3ea}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ThirdParty\aini">
-      <UniqueIdentifier>{aa6863d0-bc21-4de6-9ec1-f7ace0f1dd84}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="thirdParty\fmt\src\format.cc">
-      <Filter>ThirdParty\fmt</Filter>
-    </ClCompile>
-    <ClCompile Include="thirdParty\fmt\src\os.cc">
-      <Filter>ThirdParty\fmt</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\string_converter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\engine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\debug.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderer\camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\maths.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\allocator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\console.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="thirdParty\stb\stb_truetype.cpp">
-      <Filter>ThirdParty\stb</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderer\FontManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\utility.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderer\Renderer2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderer\RHI\D3D11\D3D11Shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderer\RHI\D3D11\D3D11renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderer\RHI\D3D11\D3D11Model.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderer\RHI\D3D11\D3D11Buffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderer\RHI\RHIBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderer\RHI\D3D11\D3D11Elements.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\platformWindows\win_window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\UI\imgui.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderer\draw2d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderer\model.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderer\material.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\profiler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderer\RHI\D3D11\D3D11BlendState.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="thirdParty\aini\aini.cpp">
-      <Filter>ThirdParty\aini</Filter>
-    </ClCompile>
-    <ClCompile Include="src\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\geometry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\spatial\octree.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\spatial\BSPTree.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderer\RHI\D3D11\D3D11Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderer\textureUtility.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderer\RHI\D3D11\D3D11Sampler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderer\fontRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="thirdParty\stb\stb_rect_pack.cpp">
-      <Filter>ThirdParty\stb</Filter>
-    </ClCompile>
-    <ClCompile Include="src\test\test_font.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\test\test_draw2d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\test\test_draw3d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderer\RHI\RHIValidation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\test\test_imgui.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\core\window.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\os.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\aes.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\string_converter.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\profiler.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\debug.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\vertex.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\camera.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\maths.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\allocator.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\macro_helpers.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\input.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\debugMath.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\error.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\console.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\FontManager.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\utility.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\Renderer2D.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\color.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\reflection.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\RHI\D3D11\D3D11Texture.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\RHI\D3D11\D3D11Shader.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\RHI\D3D11\D3D11renderer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\RHI\D3D11\D3D11Model.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\RHI\RHIBuffer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\RHI\D3D11\D3D11Buffer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\RHI\RHI.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\RHI\RHIElements.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\RHI\RHIRenderContext.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\RHI\D3D11\D3D11Elements.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\platformWindows\win_window.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\geometry.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\UI\imgui.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\draw2d.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\RHI\RHIShader.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\model.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\material.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\RHI\RHIShaderReflection.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\RHI\D3D11\D3D11BlendState.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\spatial\octree.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\spatial\BSPTree.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\simd.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\RHI\RHITexture.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\textureUtility.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\uniquePtr.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\array.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\jobSystem.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\circularQueue.hpp">
-    <ClInclude Include="src\renderer\fontRenderer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\RHI\RHISampler.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\RHI\D3D11\D3D11Sampler.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\test\tests.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <Natvis Include="core.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\core\allocator.cpp" />
+    <ClCompile Include="src\core\console.cpp" />
+    <ClCompile Include="src\core\debug.cpp" />
+    <ClCompile Include="src\core\geometry.cpp" />
+    <ClCompile Include="src\core\input.cpp" />
+    <ClCompile Include="src\core\maths.cpp" />
+    <ClCompile Include="src\core\platformWindows\win_window.cpp" />
+    <ClCompile Include="src\core\profiler.cpp" />
+    <ClCompile Include="src\core\string_converter.cpp" />
+    <ClCompile Include="src\core\utility.cpp" />
+    <ClCompile Include="src\core\window.cpp" />
+    <ClCompile Include="src\engine.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\renderer\camera.cpp" />
+    <ClCompile Include="src\renderer\draw2d.cpp" />
+    <ClCompile Include="src\renderer\FontManager.cpp" />
+    <ClCompile Include="src\renderer\fontRenderer.cpp" />
+    <ClCompile Include="src\renderer\material.cpp" />
+    <ClCompile Include="src\renderer\model.cpp" />
+    <ClCompile Include="src\renderer\Renderer2D.cpp" />
+    <ClCompile Include="src\renderer\RHI\D3D11\D3D11BlendState.cpp" />
+    <ClCompile Include="src\renderer\RHI\D3D11\D3D11Buffer.cpp" />
+    <ClCompile Include="src\renderer\RHI\D3D11\D3D11Elements.cpp" />
+    <ClCompile Include="src\renderer\RHI\D3D11\D3D11Model.cpp" />
+    <ClCompile Include="src\renderer\RHI\D3D11\D3D11renderer.cpp" />
+    <ClCompile Include="src\renderer\RHI\D3D11\D3D11Sampler.cpp" />
+    <ClCompile Include="src\renderer\RHI\D3D11\D3D11Shader.cpp" />
+    <ClCompile Include="src\renderer\RHI\D3D11\D3D11Texture.cpp" />
+    <ClCompile Include="src\renderer\RHI\RHIBuffer.cpp" />
+    <ClCompile Include="src\renderer\RHI\RHIValidation.cpp" />
+    <ClCompile Include="src\renderer\textureUtility.cpp" />
+    <ClCompile Include="src\spatial\BSPTree.cpp" />
+    <ClCompile Include="src\spatial\octree.cpp" />
+    <ClCompile Include="src\test\test_draw2d.cpp" />
+    <ClCompile Include="src\test\test_draw3d.cpp" />
+    <ClCompile Include="src\test\test_font.cpp" />
+    <ClCompile Include="src\test\test_imgui.cpp" />
+    <ClCompile Include="src\UI\imgui.cpp" />
+    <ClCompile Include="thirdParty\aini\aini.cpp" />
+    <ClCompile Include="thirdParty\fmt\src\format.cc" />
+    <ClCompile Include="thirdParty\fmt\src\os.cc" />
+    <ClCompile Include="thirdParty\stb\stb_rect_pack.cpp" />
+    <ClCompile Include="thirdParty\stb\stb_truetype.cpp" />
+    <ClCompile Include="src\test\test_octree.cpp" />
+    <ClCompile Include="src\test\test_bsp.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\core\aes.hpp" />
+    <ClInclude Include="src\core\allocator.hpp" />
+    <ClInclude Include="src\core\array.hpp" />
+    <ClInclude Include="src\core\circularQueue.hpp" />
+    <ClInclude Include="src\core\color.hpp" />
+    <ClInclude Include="src\core\console.hpp" />
+    <ClInclude Include="src\core\debug.hpp" />
+    <ClInclude Include="src\core\debugMath.hpp" />
+    <ClInclude Include="src\core\error.hpp" />
+    <ClInclude Include="src\core\geometry.hpp" />
+    <ClInclude Include="src\core\input.hpp" />
+    <ClInclude Include="src\core\jobSystem.hpp" />
+    <ClInclude Include="src\core\macro_helpers.hpp" />
+    <ClInclude Include="src\core\maths.hpp" />
+    <ClInclude Include="src\core\os.hpp" />
+    <ClInclude Include="src\core\platformWindows\win_window.hpp" />
+    <ClInclude Include="src\core\profiler.hpp" />
+    <ClInclude Include="src\core\reflection.hpp" />
+    <ClInclude Include="src\core\simd.hpp" />
+    <ClInclude Include="src\core\string_converter.hpp" />
+    <ClInclude Include="src\core\uniquePtr.hpp" />
+    <ClInclude Include="src\core\utility.hpp" />
+    <ClInclude Include="src\core\window.hpp" />
+    <ClInclude Include="src\engine.hpp" />
+    <ClInclude Include="src\renderer\camera.hpp" />
+    <ClInclude Include="src\renderer\draw2d.hpp" />
+    <ClInclude Include="src\renderer\FontManager.hpp" />
+    <ClInclude Include="src\renderer\fontRenderer.hpp" />
+    <ClInclude Include="src\renderer\material.hpp" />
+    <ClInclude Include="src\renderer\model.hpp" />
+    <ClInclude Include="src\renderer\Renderer2D.hpp" />
+    <ClInclude Include="src\renderer\RHI\D3D11\D3D11BlendState.hpp" />
+    <ClInclude Include="src\renderer\RHI\D3D11\D3D11Buffer.hpp" />
+    <ClInclude Include="src\renderer\RHI\D3D11\D3D11Elements.hpp" />
+    <ClInclude Include="src\renderer\RHI\D3D11\D3D11Model.hpp" />
+    <ClInclude Include="src\renderer\RHI\D3D11\D3D11renderer.hpp" />
+    <ClInclude Include="src\renderer\RHI\D3D11\D3D11Sampler.hpp" />
+    <ClInclude Include="src\renderer\RHI\D3D11\D3D11Shader.hpp" />
+    <ClInclude Include="src\renderer\RHI\D3D11\D3D11Texture.hpp" />
+    <ClInclude Include="src\renderer\RHI\RHI.hpp" />
+    <ClInclude Include="src\renderer\RHI\RHIBuffer.hpp" />
+    <ClInclude Include="src\renderer\RHI\RHIElements.hpp" />
+    <ClInclude Include="src\renderer\RHI\RHIRenderContext.hpp" />
+    <ClInclude Include="src\renderer\RHI\RHISampler.hpp" />
+    <ClInclude Include="src\renderer\RHI\RHIShader.hpp" />
+    <ClInclude Include="src\renderer\RHI\RHIShaderReflection.hpp" />
+    <ClInclude Include="src\renderer\RHI\RHITexture.hpp" />
+    <ClInclude Include="src\renderer\textureUtility.hpp" />
+    <ClInclude Include="src\renderer\vertex.hpp" />
+    <ClInclude Include="src\spatial\BSPTree.hpp" />
+    <ClInclude Include="src\spatial\octree.hpp" />
+    <ClInclude Include="src\test\tests.hpp" />
+    <ClInclude Include="src\UI\imgui.hpp" />
   </ItemGroup>
 </Project>

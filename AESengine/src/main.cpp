@@ -12,6 +12,8 @@ int main()
 #endif
 
 	//aes::test_fonts();
-	aes::test_imgui();
+	//aes::test_imgui();
+	aes::test_bsp();
+
 	return 0;
 }

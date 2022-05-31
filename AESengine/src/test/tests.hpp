@@ -7,6 +7,9 @@ namespace aes
 	void test_imgui();
 	void test_draw2d();
 	void test_draw3d();
+
+	void test_octree();
+	void test_bsp();
 }
 
 #endif

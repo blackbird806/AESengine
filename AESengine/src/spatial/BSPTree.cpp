@@ -31,7 +31,7 @@ namespace
 			case PointPlanePlacement::Back:
 				numBehind++;
 				break;
-			case OnPlane:
+			case PointPlanePlacement::OnPlane:
 			default: ;
 			}
 		}
