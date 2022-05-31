@@ -246,10 +246,10 @@ namespace aes
 			if (size_ == capacity_)
 				return {};
 
-			T* const newBuffer = alloc->allocate(size_ * sizeof(T), alignof(T));
+			T* const newBuffer = static_cast<T*>(alloc->allocate(size_ * sizeof(T), alignof(T)));
 			if (!newBuffer)
 				return { AESError::MemoryAllocationFailed };
-			//moveBuffer(newBuffer);
+			moveBuffer(newBuffer);
 			alloc->deallocate(buffer);
 			buffer = newBuffer;
 			capacity_ = size_;

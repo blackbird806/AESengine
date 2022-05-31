@@ -3,6 +3,8 @@
 
 #include "core/aes.hpp"
 #include <memory_resource>
+#include <mutex>
+#include <atomic>
 
 namespace aes
 {
@@ -82,6 +84,33 @@ namespace aes
 		IAllocator* baseAllocator;
 		uint8_t* start;
 		size_t totalSize, offset;
+	};
+
+	class HeterogenPoolAllocator final : public IAllocator
+	{
+	public:
+
+		HeterogenPoolAllocator(IAllocator& base);
+		[[nodiscard]] void* allocate(size_t size, size_t align) override;
+		void deallocate(void* ptr) override;
+
+		// remove all unallocated nodes
+		void purge();
+
+	private:
+
+		struct Node
+		{
+			size_t size;
+			void* mem;
+
+			Node* next;
+			std::atomic<bool> isFree;
+		};
+
+		IAllocator* baseAllocator;
+		std::mutex mtx;
+		Node* first = nullptr;
 	};
 
 	extern Mallocator mallocator;

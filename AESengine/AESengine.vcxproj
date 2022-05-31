@@ -87,6 +87,7 @@
     <ClInclude Include="src\core\aes.hpp" />
     <ClInclude Include="src\core\allocator.hpp" />
     <ClInclude Include="src\core\array.hpp" />
+    <ClInclude Include="src\core\circularQueue.hpp" />
     <ClInclude Include="src\core\color.hpp" />
     <ClInclude Include="src\core\console.hpp" />
     <ClInclude Include="src\core\debug.hpp" />

@@ -302,6 +302,7 @@
     <ClInclude Include="src\core\jobSystem.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\core\circularQueue.hpp">
     <ClInclude Include="src\renderer\fontRenderer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>

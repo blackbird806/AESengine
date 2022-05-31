@@ -56,12 +56,14 @@ namespace aes
 							{
 								job = jobs.back();
 								jobs.pop();
+								processedJobs++;
 							}
 						}
 						if (job)
 						{
 							job->task();
-							job->done.store(true, std::memory_order_relaxed);
+							job->done.store(true, std::memory_order::memory_order_relaxed);
+							processedJobs--;
 						}
 					}
 				});
@@ -83,7 +85,8 @@ namespace aes
 				if (sync.try_lock())
 				{
 					AES_SCOPE(sync.unlock());
-					if (jobs.empty())
+
+					if (jobs.empty() && processedJobs == 0)
 						return;
 				}
 			}
@@ -98,6 +101,7 @@ namespace aes
 		std::atomic<bool> stop = false;
 		std::mutex sync;
 		Array<std::shared_ptr<Job>> jobs;
+		std::atomic<uint>processedJobs = 0;
 		Array<std::jthread> threads;
 	};
 
