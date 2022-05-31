@@ -1,5 +1,5 @@
-#ifndef WIN_WINDOW_HPP
-#define WIN_WINDOW_HPP
+#ifndef AES_WIN_WINDOW_HPP
+#define AES_WIN_WINDOW_HPP
 
 #include "core/aes.hpp"
 #include "core/os.hpp"

@@ -55,8 +55,8 @@ Result<void> D3D11VertexShader::init(VertexShaderDescription const& desc)
 {
 	AES_PROFILE_FUNCTION();
 
-	ID3D10Blob* errorMessage = nullptr;
-	ID3D10Blob* vertexShaderBuffer = nullptr;
+	ID3DBlob* errorMessage = nullptr;
+	ID3DBlob* vertexShaderBuffer = nullptr;
 
 	ID3D11Device* device = D3D11Renderer::instance().getDevice();
 
@@ -155,8 +155,8 @@ Result<void> D3D11FragmentShader::init(FragmentShaderDescription const& desc)
 {
 	AES_PROFILE_FUNCTION();
 
-	ID3D10Blob* errorMessage = nullptr;
-	ID3D10Blob* pixelShaderBuffer = nullptr;
+	ID3DBlob* errorMessage = nullptr;
+	ID3DBlob* pixelShaderBuffer = nullptr;
 
 	ID3D11Device* device = D3D11Renderer::instance().getDevice();
 	
@@ -182,6 +182,10 @@ Result<void> D3D11FragmentShader::init(FragmentShaderDescription const& desc)
 	
 	D3DReflect(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&reflector);
 	pixelShaderBuffer->Release();
+
+	if (desc.blendInfo)
+		blendState.init(*desc.blendInfo);
+
 	return {};
 }
 

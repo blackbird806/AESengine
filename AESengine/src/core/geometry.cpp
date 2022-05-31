@@ -4,6 +4,12 @@
 #include "aes.hpp"
 #include "renderer/RHI/RHI.hpp"
 
+bool aes::pointInRect(glm::vec2 p, Rect const& r)
+{
+	return p.x > r.min.x && p.x < r.max.x&&
+		p.y > r.min.y && p.y < r.max.y;
+}
+
 std::array<glm::vec3, 8> aes::AABB::getVertices() const
 {
 	AES_PROFILE_FUNCTION();

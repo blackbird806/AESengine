@@ -53,6 +53,8 @@ namespace aes
 		DstAlpha,
 		OneMinusSrcColor,
 		OneMinusDstColor,
+		OneMinusSrcAlpha,
+		OneMinusDstAlpha,
 	};
 
 	// gxm rhiColorMaskToApi must be modified too in case of modification of this enum
@@ -107,10 +109,10 @@ namespace aes
 	{
 		switch (e)
 		{
-		case SemanticType::Position: return "POSITION";
-		case SemanticType::Normal: return "NORMAL";
-		case SemanticType::Color: return "COLOR";
-		case SemanticType::TexCoord: return "TEXCOORD";
+			case SemanticType::Position: return "POSITION";
+			case SemanticType::Normal: return "NORMAL";
+			case SemanticType::Color: return "COLOR";
+			case SemanticType::TexCoord: return "TEXCOORD";
 		}
 		AES_UNREACHABLE();
 	}

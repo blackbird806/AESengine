@@ -201,6 +201,8 @@ void D3D11Renderer::bindIndexBuffer(RHIBuffer& buffer, IndexTypeFormat typeForma
 void D3D11Renderer::setFragmentShader(RHIFragmentShader& fs)
 {
 	AES_PROFILE_FUNCTION();
+	if (fs.blendState.getHandle() != nullptr)
+		setBlendState(fs.blendState);
 	deviceContext->PSSetShader(fs.getHandle(), nullptr, 0);
 }
 
@@ -217,7 +219,7 @@ void D3D11Renderer::setDrawPrimitiveMode(DrawPrimitiveType mode)
 	deviceContext->IASetPrimitiveTopology(rhiPrimitiveTypeToApi(mode));
 }
 
-void D3D11Renderer::setBlendState(RHIBlendState& blendState)
+void D3D11Renderer::setBlendState(D3D11BlendState& blendState)
 {
 	AES_PROFILE_FUNCTION();
 	deviceContext->OMSetBlendState(blendState.getHandle(), nullptr, 0xffffffff);

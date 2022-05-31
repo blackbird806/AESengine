@@ -4,6 +4,7 @@
 namespace aes
 {
 	void test_fonts();
+	void test_imgui();
 	void test_draw2d();
 	void test_draw3d();
 }

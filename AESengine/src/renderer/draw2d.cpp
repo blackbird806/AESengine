@@ -89,6 +89,15 @@ Result<void> Draw2d::init()
 		if (!err)
 			return err;
 
+		BlendInfo blendInfo{};
+		blendInfo.colorMask = ColorMaskBits::All;
+		blendInfo.alphaOp = BlendOp::Add;
+		blendInfo.colorOp = BlendOp::Add;
+		blendInfo.alphaDst = BlendFactor::OneMinusDstAlpha;
+		blendInfo.alphaSrc = BlendFactor::One;
+		blendInfo.colorDst = BlendFactor::OneMinusSrcAlpha;
+		blendInfo.colorSrc = BlendFactor::SrcAlpha;
+
 		FragmentShaderDescription fragmentShaderDescription;
 #ifdef __vita__
 		auto const source_fs = readFileBin("app0:assets/shaders/vita/texture2d_fs.gxp");
@@ -96,6 +105,7 @@ Result<void> Draw2d::init()
 		fragmentShaderDescription.gxpVertexProgram = vertexShader.getGxpShader();
 #else
 		fragmentShaderDescription.source = readFile("assets/shaders/HLSL/texture2d.fs");
+		fragmentShaderDescription.blendInfo = blendInfo;
 #endif
 		err = textureFragmentShader.init(fragmentShaderDescription);
 		if (!err)

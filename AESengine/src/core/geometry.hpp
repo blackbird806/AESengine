@@ -45,6 +45,8 @@ namespace aes {
 		}
 	};
 
+	bool pointInRect(glm::vec2 p, Rect const& r);
+
 	struct Triangle2D
 	{
 		glm::vec2 a, b, c;

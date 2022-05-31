@@ -1,5 +1,5 @@
-#ifndef MATH_HPP
-#define MATH_HPP
+#ifndef AES_MATH_HPP
+#define AES_MATH_HPP
 
 namespace aes {
 	

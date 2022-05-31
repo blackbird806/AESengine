@@ -1,10 +1,11 @@
-#ifndef D3D11SHADER_HPP
-#define D3D11SHADER_HPP
+#ifndef AES_D3D11SHADER_HPP
+#define AES_D3D11SHADER_HPP
 
 #include <d3d11.h>
 #include <d3d11shader.h>
 #include "core/error.hpp"
 #include "renderer/RHI/RHIShaderReflection.hpp"
+#include "D3D11BlendState.hpp"
 
 namespace aes {
 	
@@ -58,9 +59,9 @@ namespace aes {
 		~D3D11FragmentShader() override;
 
 		ID3D11PixelShader* getHandle();
+		D3D11BlendState blendState;
 
 	private:
-		
 		ID3D11PixelShader* pixelShader;
 	};
 

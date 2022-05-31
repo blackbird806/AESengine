@@ -126,11 +126,9 @@ uint8_t aes::rhiBlendFactorToApi(BlendFactor blendfactor)
 		case BlendFactor::DstAlpha: return SCE_GXM_BLEND_FACTOR_DST_ALPHA;
 		case BlendFactor::OneMinusSrcColor: return SCE_GXM_BLEND_FACTOR_ONE_MINUS_SRC_COLOR;
 		case BlendFactor::OneMinusDstColor: return SCE_GXM_BLEND_FACTOR_ONE_MINUS_DST_COLOR;
+		case BlendFactor::OneMinusSrcAlpha: return SCE_GXM_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+		case BlendFactor::OneMinusDstAlpha: return SCE_GXM_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
 	}
-
-	// TODO 
-	// SCE_GXM_BLEND_FACTOR_ONE_MINUS_DST_ALPHA,
-	// SCE_GXM_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
 	// SCE_GXM_BLEND_FACTOR_SRC_ALPHA_SATURATE,
     // SCE_GXM_BLEND_FACTOR_DST_ALPHA_SATURATE
 

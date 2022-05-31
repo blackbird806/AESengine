@@ -9,7 +9,7 @@ D3D11BlendState::D3D11BlendState(D3D11BlendState&& rhs) noexcept : blendState(rh
 	rhs.blendState = nullptr;
 }
 
-Result<void> D3D11BlendState::init(BlendInfo& info)
+Result<void> D3D11BlendState::init(BlendInfo const& info)
 {
 	ID3D11Device* device = D3D11Renderer::instance().getDevice();
 

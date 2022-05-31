@@ -42,7 +42,7 @@ namespace aes {
 		void setVertexShader(RHIVertexShader& vs);
 
 		void setDrawPrimitiveMode(DrawPrimitiveType mode);
-		void setBlendState(RHIBlendState& blendState);
+		void setBlendState(D3D11BlendState& blendState);
 		void drawIndexed(uint indexCount, uint indexOffset = 0);
 		
 		void startFrame();

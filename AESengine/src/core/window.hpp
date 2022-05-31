@@ -1,5 +1,5 @@
-#ifndef WINDOW_HPP
-#define WINDOW_HPP
+#ifndef AES_WINDOW_HPP
+#define AES_WINDOW_HPP
 
 #include "aes.hpp"
 #include "input.hpp"

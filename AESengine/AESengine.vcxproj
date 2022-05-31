@@ -75,7 +75,8 @@
     <ClCompile Include="src\test\test_draw2d.cpp" />
     <ClCompile Include="src\test\test_draw3d.cpp" />
     <ClCompile Include="src\test\test_font.cpp" />
-    <ClCompile Include="src\UI\UI.cpp" />
+    <ClCompile Include="src\test\test_imgui.cpp" />
+    <ClCompile Include="src\UI\imgui.cpp" />
     <ClCompile Include="thirdParty\aini\aini.cpp" />
     <ClCompile Include="thirdParty\fmt\src\format.cc" />
     <ClCompile Include="thirdParty\fmt\src\os.cc" />
@@ -134,7 +135,7 @@
     <ClInclude Include="src\spatial\BSPTree.hpp" />
     <ClInclude Include="src\spatial\octree.hpp" />
     <ClInclude Include="src\test\tests.hpp" />
-    <ClInclude Include="src\UI\UI.hpp" />
+    <ClInclude Include="src\UI\imgui.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="core.natvis">

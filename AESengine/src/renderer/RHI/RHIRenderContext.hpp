@@ -1,5 +1,5 @@
-#ifndef RHI_RENDER_CONTEXT_HPP
-#define RHI_RENDER_CONTEXT_HPP
+#ifndef AES_RHIRENDERCONTEXT_HPP
+#define AES_RHIRENDERCONTEXT_HPP
 
 #include "renderer/RHI/RHI.hpp"
 
