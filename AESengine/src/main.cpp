@@ -16,6 +16,7 @@ int main()
 
 	//aes::test_bsp();
 	//aes::test_octree();
+	aes::test_jobSystem();
 
 	return 0;
 }
