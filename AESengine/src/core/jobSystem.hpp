@@ -56,14 +56,14 @@ namespace aes
 							{
 								job = jobs.back();
 								jobs.pop();
-								processedJobs++;
+								++processedJobs;
 							}
 						}
 						if (job)
 						{
 							job->task();
 							job->done.store(true, std::memory_order::memory_order_relaxed);
-							processedJobs--;
+							--processedJobs;
 						}
 					}
 				});
@@ -100,6 +100,7 @@ namespace aes
 	private:
 		std::atomic<bool> stop = false;
 		std::mutex sync;
+		// should be a queue instead of a stack
 		Array<std::shared_ptr<Job>> jobs;
 		std::atomic<uint>processedJobs = 0;
 		Array<std::jthread> threads;

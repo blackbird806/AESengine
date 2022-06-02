@@ -77,6 +77,7 @@
     <ClCompile Include="src\test\test_draw3d.cpp" />
     <ClCompile Include="src\test\test_font.cpp" />
     <ClCompile Include="src\test\test_imgui.cpp" />
+    <ClCompile Include="src\test\test_jobSystem.cpp" />
     <ClCompile Include="src\test\test_octree.cpp" />
     <ClCompile Include="src\UI\imgui.cpp" />
     <ClCompile Include="thirdParty\aini\aini.cpp" />

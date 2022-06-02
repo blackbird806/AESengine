@@ -175,14 +175,14 @@ struct TestElement
 
 static void debugDrawOctree(aes::Octree const& tree, LineRenderer& render)
 {
-	for (auto const& [_, node] : tree)
+	for (auto const& node : tree | std::views::values)
 	{
 		render.setColor(aes::Color(0, 0, 255));
 		render.addAABB(aes::AABB::createHalfCenter(node.center, glm::vec3(node.halfSize)));
 	}
 }
 
-class Game : public aes::Engine
+class TestOctreeApp : public aes::Engine
 {
 
 public:
@@ -199,7 +199,7 @@ public:
 
 	aes::Octree octree;
 
-	Game(InitInfo const& info) : Engine(info)
+	TestOctreeApp(InitInfo const& info) : Engine(info)
 	{
 		AES_LOG("Game initialized");
 	}
@@ -414,6 +414,7 @@ public:
 			aes::CameraBuffer const camBuf{ glm::transpose(mainCamera.viewMatrix), glm::transpose(mainCamera.projMatrix) };
 			viewBuffer.setDataFromPOD(camBuf);
 		}
+		debugDrawOctree(octree, lineRenderer);
 	}
 
 	void draw() override
@@ -442,7 +443,7 @@ public:
 void aes::test_octree()
 {
 	AES_START_PROFILE_SESSION("startup");
-	Game game({
+	TestOctreeApp game({
 		.appName = "aes engine"
 		});
 

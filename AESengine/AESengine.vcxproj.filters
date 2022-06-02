@@ -49,6 +49,7 @@
     <ClCompile Include="thirdParty\stb\stb_truetype.cpp" />
     <ClCompile Include="src\test\test_octree.cpp" />
     <ClCompile Include="src\test\test_bsp.cpp" />
+    <ClCompile Include="src\test\test_jobSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\aes.hpp" />

@@ -237,6 +237,7 @@ void Draw2d::drawImage(RHITexture& texture, Rect const& rect)
 }
 
 // TODO check https://github.com/ocornut/imgui/blob/master/imgui_draw.cpp#L3542
+// https://www.braynzarsoft.net/viewtutorial/q16390-11-drawing-text-in-directx-12
 void Draw2d::drawText(FontRessource& font, std::string_view str, glm::vec2 pos)
 {
 	AES_PROFILE_FUNCTION();

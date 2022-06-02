@@ -13,7 +13,9 @@ int main()
 
 	//aes::test_fonts();
 	//aes::test_imgui();
-	aes::test_bsp();
+
+	//aes::test_bsp();
+	//aes::test_octree();
 
 	return 0;
 }

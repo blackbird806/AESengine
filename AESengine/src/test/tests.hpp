@@ -10,6 +10,7 @@ namespace aes
 
 	void test_octree();
 	void test_bsp();
+	void test_jobSystem();
 }
 
 #endif

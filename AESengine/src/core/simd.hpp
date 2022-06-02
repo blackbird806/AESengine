@@ -1,7 +1,7 @@
 #ifndef AES_SIMD_HPP
 #define AES_SIMD_HPP
 
-#if true //def AES_ENABLE_SIMD
+#if true //TODO def AES_ENABLE_SIMD
 
 	// r64_t ==> 64bits simd register	
 	// r128_t ==> 128bits simd register
@@ -15,7 +15,7 @@
 			using r128_t = float32x4_t;
 		}
 	#else
-		#define AES_SSE	
+		#define AES_SSE
 		#define AES_SSE2
 		#define AES_SSE3
 		#define AES_SSSE3

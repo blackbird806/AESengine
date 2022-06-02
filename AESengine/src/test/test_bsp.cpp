@@ -174,7 +174,7 @@ struct TestElement
 	bool coll = false;
 };
 
-class Game : public aes::Engine
+class TestBSPApp : public aes::Engine
 {
 
 public:
@@ -190,7 +190,7 @@ public:
 	TestElement testElements[25];
 	aes::UniquePtr<aes::BSPTree::BSPElement> bspTree;
 
-	Game(InitInfo const& info) : Engine(info)
+	TestBSPApp(InitInfo const& info) : Engine(info)
 	{
 		AES_LOG("Game initialized");
 	}
@@ -438,7 +438,7 @@ void aes::test_bsp()
 {
 
 	AES_START_PROFILE_SESSION("startup");
-	Game game({
+	TestBSPApp game({
 		.appName = "aes engine"
 		});
 
