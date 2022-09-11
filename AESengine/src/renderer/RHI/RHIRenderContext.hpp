@@ -9,5 +9,4 @@
 #include "renderer/RHI/SceGxm/gxmRenderer.hpp"
 #endif
 
-
 #endif

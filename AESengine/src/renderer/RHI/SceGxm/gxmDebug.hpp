@@ -6,7 +6,7 @@
 #include "gxmCompatibilty.h"
 
 #define AES_GXM_CHECK(err) if (err != SCE_OK) { AES_LOG_ERROR("AES_GXM_CHECK {}", sceGxmErrorToString(err)); AES_DEBUG_BREAK(); } 
-
+// @Review replace with generic SCE_ERROR if possible
 	inline const char* sceGxmErrorToString(unsigned int err)
 	{
 #define AES_ERR_CASE(x) case x: return #x;
@@ -25,6 +25,10 @@
 			// AES_ERR_CASE(SCE_GXM_ERROR_INVALID_PRIMITIVE_TYPE)
 			AES_ERR_CASE(SCE_GXM_ERROR_INVALID_SAMPLER_RESULT_TYPE_PRECISION)
 			AES_ERR_CASE(SCE_GXM_ERROR_INVALID_SAMPLER_RESULT_TYPE_COMPONENT_COUNT)
+			AES_ERR_CASE(SCE_GXM_ERROR_ALREADY_INITIALIZED)
+			AES_ERR_CASE(SCE_GXM_ERROR_INVALID_VALUE)
+			AES_ERR_CASE(SCE_GXM_ERROR_OUT_OF_MEMORY)
+			AES_ERR_CASE(SCE_GXM_ERROR_DRIVER)
 			// AES_ERR_CASE(SCE_GXM_ERROR_BUFFER_OVERRUN)
 			default:
 				return "unknown";

@@ -124,6 +124,7 @@
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11Texture.hpp" />
     <ClInclude Include="src\renderer\RHI\RHI.hpp" />
     <ClInclude Include="src\renderer\RHI\RHIBuffer.hpp" />
+    <ClInclude Include="src\renderer\RHI\RHIDevice.hpp" />
     <ClInclude Include="src\renderer\RHI\RHIElements.hpp" />
     <ClInclude Include="src\renderer\RHI\RHIRenderContext.hpp" />
     <ClInclude Include="src\renderer\RHI\RHISampler.hpp" />

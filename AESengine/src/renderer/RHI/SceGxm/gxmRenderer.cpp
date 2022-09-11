@@ -622,13 +622,13 @@ void GxmRenderer::setDrawPrimitiveMode(DrawPrimitiveType mode)
 			polygonMode = SCE_GXM_POLYGON_MODE_POINT;
 			break;
 	}
+	// @Review I'm not sure of what this function is doing since sceGxmDraw has a PrimitiveType parameter
 	sceGxmSetFrontPolygonMode(context, polygonMode);
 }
 
 void GxmRenderer::drawIndexed(uint indexCount, uint indexOffset)
 {
 	AES_PROFILE_FUNCTION();
-	// @Review
 	if (currentState.indexBufferInfo.typeFormat == IndexTypeFormat::Uint16)
 	{
 			int err = sceGxmDraw(context, rhiPrimitiveTypeToApi(currentState.primitiveType),

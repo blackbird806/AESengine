@@ -140,3 +140,14 @@ uint8_t aes::rhiColorMaskToApi(ColorMaskFlags colorMask)
 	// rhi maps directly to gxm
 	return (uint8_t)colorMask;
 }
+
+SceGxmCullMode aes::rhiCullModeToApi(CullMode mode)
+{
+	switch(mode)
+	{
+		case CullMode::None: 				return SCE_GXM_CULL_NONE;
+		case CullMode::Clockwise:			return SCE_GXM_CULL_CW;
+		case CullMode::CounterClockwise:	return SCE_GXM_CULL_CCW;
+	}
+	AES_UNREACHABLE();
+}

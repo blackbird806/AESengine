@@ -78,6 +78,13 @@ namespace aes
 		Points,
 	};
 
+	enum class CullMode
+	{
+		None,
+		Clockwise,
+		CounterClockwise
+	};
+
 	enum class IndexTypeFormat
 	{
 		Uint16,

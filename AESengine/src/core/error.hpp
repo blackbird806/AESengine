@@ -14,6 +14,7 @@ namespace aes {
 	{
 		Undefined,
 		MemoryAllocationFailed,
+		RHIDeviceCreationFailed,
 		GPUBufferCreationFailed,
 		GPUTextureCreationFailed,
 		GPUBufferMappingFailed,

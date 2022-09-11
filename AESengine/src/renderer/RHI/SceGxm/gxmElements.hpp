@@ -17,6 +17,7 @@ namespace aes
 	uint8_t  rhiBlendOpToApi(BlendOp blendop);
 	uint8_t  rhiBlendFactorToApi(BlendFactor blendfactor);
 	uint8_t  rhiColorMaskToApi(ColorMaskFlags colorMask);
+	SceGxmCullMode rhiCullModeToApi(CullMode mode);
 }
 
 #endif
