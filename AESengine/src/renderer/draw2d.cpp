@@ -236,7 +236,7 @@ void Draw2d::drawImage(RHITexture& texture, Rect const& rect)
 	textureOffset += 4;
 }
 
-// TODO check https://github.com/ocornut/imgui/blob/master/imgui_draw.cpp#L3542
+// check https://github.com/ocornut/imgui/blob/master/imgui_draw.cpp#L3542
 void Draw2d::drawText(FontRessource& font, std::string_view str, glm::vec2 pos)
 {
 	AES_PROFILE_FUNCTION();
@@ -246,7 +246,7 @@ void Draw2d::drawText(FontRessource& font, std::string_view str, glm::vec2 pos)
 	{
 		auto const c = str[i];
 		if (c == '\r') {
-			p.x = float(pos.x);
+			p.x = pos.x;
 			continue;
 		}
 		if (c == ' ') {
@@ -258,8 +258,8 @@ void Draw2d::drawText(FontRessource& font, std::string_view str, glm::vec2 pos)
 			continue;
 		}
 		if (c == '\n') {
-			p.x = float(pos.x);
-			p.y -= 0.1f;
+			p.x = pos.x;
+			p.y -= font.yAdvance;
 			continue;
 		}
 
@@ -267,12 +267,21 @@ void Draw2d::drawText(FontRessource& font, std::string_view str, glm::vec2 pos)
 		auto const glyph = *font.getGlyph(c);
 		glm::vec2 const gsize = { glyph.u[1] - glyph.u[0], glyph.v[1] - glyph.v[0] };
 
-		textureVertices.push({ p,								{ glyph.u[0], glyph.v[1]} });
-		textureVertices.push({ glm::vec2{p.x + gsize.x, p.y},	{ glyph.u[1], glyph.v[1]} });
-		textureVertices.push({ glm::vec2{p.x, p.y + gsize.y},	{ glyph.u[0], glyph.v[0]} });
-		textureVertices.push({ (p + gsize),						{ glyph.u[1], glyph.v[0]} });
+		auto dp = p;
+		dp.y = p.y - (gsize.y + glyph.yoff);
+
+		textureVertices.push({ dp,								{ glyph.u[0], glyph.v[1]} });
+		textureVertices.push({ glm::vec2{dp.x + gsize.x, dp.y},	{ glyph.u[1], glyph.v[1]} });
+		textureVertices.push({ glm::vec2{dp.x, dp.y + gsize.y},	{ glyph.u[0], glyph.v[0]} });
+		textureVertices.push({ (dp + gsize),					{ glyph.u[1], glyph.v[0]} });
+
+		//textureVertices.push({ p,								{ glyph.u[0], glyph.v[1]} });
+		//textureVertices.push({ glm::vec2{p.x + gsize.x, p.y},	{ glyph.u[1], glyph.v[1]} });
+		//textureVertices.push({ glm::vec2{p.x, p.y + gsize.y},	{ glyph.u[0], glyph.v[0]} });
+		//textureVertices.push({ (p + gsize),					{ glyph.u[1], glyph.v[0]} });
 
 		p.x += gsize.x;
+		//p.x += glyph.xadvance;
 
 		textureIndices.push(textureOffset + 3);
 		textureIndices.push(textureOffset + 1);

@@ -76,6 +76,7 @@
     <ClCompile Include="src\test\test_draw3d.cpp" />
     <ClCompile Include="src\test\test_font.cpp" />
     <ClCompile Include="src\test\test_imgui.cpp" />
+    <ClCompile Include="src\test\test_RHI.cpp" />
     <ClCompile Include="src\UI\imgui.cpp" />
     <ClCompile Include="thirdParty\aini\aini.cpp" />
     <ClCompile Include="thirdParty\fmt\src\format.cc" />
@@ -127,6 +128,7 @@
     <ClInclude Include="src\renderer\RHI\RHIDevice.hpp" />
     <ClInclude Include="src\renderer\RHI\RHIElements.hpp" />
     <ClInclude Include="src\renderer\RHI\RHIRenderContext.hpp" />
+    <ClInclude Include="src\renderer\RHI\RHIRenderTarget.hpp" />
     <ClInclude Include="src\renderer\RHI\RHISampler.hpp" />
     <ClInclude Include="src\renderer\RHI\RHIShader.hpp" />
     <ClInclude Include="src\renderer\RHI\RHIShaderReflection.hpp" />

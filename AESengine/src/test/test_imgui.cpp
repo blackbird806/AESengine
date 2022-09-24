@@ -70,6 +70,7 @@ public:
 		imgui.label(fmt::format("fps : {}", 60 / deltaTime));
 		imgui.label(fmt::format("mouse pos {:.2} {:.2}", indata.cursorPos.x, indata.cursorPos.y));
 		imgui.label(fmt::format("mouse state {}", indata.cursorDown));
+		imgui.label("[TEST] \\/*.,-_=+^");
 		imgui.label("hello world");
 		if (imgui.button("button 1"))
 		{

@@ -38,7 +38,7 @@ void* aes::graphicsAlloc(SceKernelMemBlockType type, uint32_t size, uint32_t ali
 	return mem;
 }
 
-void* fragmentUsseAlloc(uint32_t size, SceUID* uid, uint32_t* usseOffset)
+static void* fragmentUsseAlloc(uint32_t size, SceUID* uid, uint32_t* usseOffset)
 {
 	// align to memblock alignment for LPDDR
 	size = aes::align(size, 4096);

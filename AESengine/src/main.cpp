@@ -11,7 +11,7 @@ int main()
 	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(std::cout));
 #endif
 
-	//aes::test_fonts();
-	aes::test_imgui();
+	aes::test_fonts();
+	//aes::test_imgui();
 	return 0;
 }

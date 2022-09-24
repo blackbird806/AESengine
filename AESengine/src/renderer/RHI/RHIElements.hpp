@@ -112,6 +112,13 @@ namespace aes
 		Linear,
 	};
 
+	enum class MultiSampleMode
+	{
+		None,
+		X2,
+		X4,
+	};
+
 	constexpr const char* getSemanticName(SemanticType e)
 	{
 		switch (e)
@@ -219,12 +226,17 @@ namespace aes
 		void* initialData = nullptr;
 	};
 
+	struct RenderTargetDescription
+	{
+		TextureDescription textureDesc;
+		MultiSampleMode multiSampleMode;
+	};
+
 	// theses functions assert if structure is invalid according to RHI
 	// furthers assertions can still be triggered for platform/API specific constraints
 	void validateVertexShaderDescription(VertexShaderDescription const& desc);
 	void validateTextureDescription(TextureDescription const& desc);
 	void validateBufferDescription(BufferDescription const& desc);
 }
-
 
 #endif

@@ -3,6 +3,7 @@
 
 namespace aes
 {
+	void test_RHI();
 	void test_fonts();
 	void test_imgui();
 	void test_draw2d();

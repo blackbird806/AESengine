@@ -19,7 +19,6 @@ namespace aes
 		glm::vec2 v;
 
 		float xoff, yoff, xadvance;
-		float xoff2, yoff2;
 	};
 
 	struct FontRessource
@@ -30,7 +29,7 @@ namespace aes
 
 		RHITexture texture;
 		RHISampler sampler;
-
+		float yAdvance = 0.1f;
 		Array<Glyph> glyphs;
 	};
 
@@ -38,8 +37,8 @@ namespace aes
 	{
 		std::span<uint8_t const> fontData;
 		float fontSize = 20;
-		int startUnicode = ' ';
-		int numCharInRange = 127;
+		int startUnicode = 32; // 32 => space
+		int numCharInRange = 127 - 32;
 		uint textureWidth = 1024, textureHeight = 1024;
 		uint oversampling = 2;
 	};

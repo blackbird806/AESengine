@@ -23,6 +23,7 @@ namespace aes {
 		ShaderCreationFailed,
 		FontInitFailed,
 		BlendStateCreationFailed,
+		RenderTargetCreationFailed,
 	};
 
 	template<typename T>

@@ -40,18 +40,26 @@ Result<FontRessource> aes::createFontRessource(IAllocator& allocator, FontParams
 	int const width = static_cast<int>(params.textureWidth);
 	int const height = static_cast<int>(params.textureHeight);
 
+	int lineGap, ascent, descent;
+	stbtt_GetFontVMetrics(&info, &ascent, &descent, &lineGap);
+	fontRessource.yAdvance = (float)(ascent - descent + lineGap) / (float)width;
+
 	stbtt_pack_context packContext;
 	Array<unsigned char> bitmap(allocator);
 	bitmap.resize(width * height);
 	Array<stbtt_packedchar> packChars(allocator);
 	packChars.resize(params.numCharInRange);
 
-	stbtt_PackBegin(&packContext, bitmap.data(), width, height, 0, 1, nullptr);
+	float const SF = stbtt_ScaleForPixelHeight(&info, params.fontSize);
 
+	stbtt_PackBegin(&packContext, bitmap.data(), width, height, 0, 1, nullptr);
 	stbtt_PackSetOversampling(&packContext, params.oversampling, params.oversampling);
 	stbtt_PackFontRange(&packContext, params.fontData.data(), 0, params.fontSize, params.startUnicode, params.numCharInRange, packChars.data());
-
 	stbtt_PackEnd(&packContext);
+
+	int fontBoundBoxX0, fontBoundBoxX1, fontBoundBoxY0, fontBoundBoxY1;
+	stbtt_GetFontBoundingBox(&info, &fontBoundBoxX0, &fontBoundBoxX1, &fontBoundBoxY0, &fontBoundBoxY1);
+	float const baseline = SF * (float) -fontBoundBoxY0;
 
 	fontRessource.glyphs.resize(packChars.size());
 	for (int32_t i = 0; i < packChars.size(); i++)
@@ -63,8 +71,8 @@ Result<FontRessource> aes::createFontRessource(IAllocator& allocator, FontParams
 			.y = {pc.y0, pc.y1},
 			.u = {(float)pc.x0 / width, (float)(pc.x1) / width},
 			.v = {(float)pc.y0 / height, (float)(pc.y1) / height},
-			.xoff = pc.xoff, .yoff = pc.yoff,
-			.xadvance = pc.xadvance/width,
+			.xoff = pc.xoff/width, .yoff = pc.yoff/height,
+			.xadvance = SF * pc.xadvance/width,
 		};
 	}
 

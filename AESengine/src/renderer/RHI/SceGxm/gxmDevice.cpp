@@ -40,7 +40,7 @@ void* aes::graphicsAlloc(SceKernelMemBlockType type, uint32_t size, uint32_t ali
 	return mem;
 }
 
-void* fragmentUsseAlloc(uint32_t size, SceUID* uid, uint32_t* usseOffset)
+static void* fragmentUsseAlloc(uint32_t size, SceUID* uid, uint32_t* usseOffset)
 {
 	// align to memblock alignment for LPDDR
 	size = aes::align(size, 4096);
@@ -97,6 +97,28 @@ void aes::graphicsFree(SceUID uid)
 	// free the memory block
 	err = sceKernelFreeMemBlock(uid);
 	AES_ASSERT(err == SCE_OK);
+}
+
+GxmDevice::GxmDevice(GxmDevice&& rhs) noexcept
+{
+	*this = std::move(rhs);
+}
+
+GxmDevice& operator=(GxmDevice&& rhs) noexcept
+{
+	context = rhs.context;
+	vdmRingBufferUid = rhs.vdmRingBufferUid;
+	vertexRingBufferUid = rhs.vertexRingBufferUid;
+	fragmentRingBufferUid = rhs.fragmentRingBufferUid;
+	fragmentUsseRingBufferUid = rhs.fragmentUsseRingBufferUid;
+	hostMem = rhs.hostMem;
+	currentState = rhs.currentState;
+	rhs.context = nullptr;
+}
+
+GxmDevice::~GxmDevice()
+{
+	destroy();
 }
 
 Result<void> GxmDevice::init()
@@ -159,6 +181,9 @@ void GxmDevice::destroy()
 {
 	AES_PROFILE_FUNCTION();
 
+	if (context == nullptr)
+		return;
+
 	// wait until rendering is done
 	sceGxmFinish(context);
 
@@ -168,6 +193,7 @@ void GxmDevice::destroy()
 	graphicsFree(vertexRingBufferUid);
 	graphicsFree(vdmRingBufferUid);
 	globalAllocator.deallocate(hostMem);
+	context = nullptr;
 }
 
 void GxmDevice::drawIndexed(uint indexCount, uint indexOffset)
@@ -176,7 +202,7 @@ void GxmDevice::drawIndexed(uint indexCount, uint indexOffset)
 
 	if (currentState.indexBufferInfo.typeFormat == IndexTypeFormat::Uint16)
 	{
-			int err = sceGxmDraw(context, rhiPrimitiveTypeToApi(currentState.primitiveType),
+		int err = sceGxmDraw(context, rhiPrimitiveTypeToApi(currentState.primitiveType),
 				rhiIndexFormatToApi(currentState.indexBufferInfo.typeFormat),
 				((uint16_t*)currentState.indexBufferInfo.buffer) + indexOffset,
 				(uint32_t)indexCount);

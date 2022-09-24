@@ -156,6 +156,9 @@
     <ClCompile Include="src\test\test_imgui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\test\test_RHI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\window.hpp">
@@ -315,6 +318,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\RHI\RHIDevice.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\RHI\RHIRenderTarget.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
