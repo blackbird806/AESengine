@@ -14,8 +14,8 @@ namespace aes
 
 		~GxmTexture() noexcept;
 		SceGxmTexture const* getHandle() const;
-		private:
 		
+		private:
 		SceUID memID;
 		SceGxmTexture texture;
 	};

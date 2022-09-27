@@ -52,7 +52,7 @@ Result<void> Draw2d::init()
 #ifdef __vita__
 		auto const source_fs = readFileBin("app0:assets/shaders/vita/basic2d_fs.gxp");
 		fragmentShaderDescription.source = source_fs.data();
-		fragmentShaderDescription.gxpVertexProgram = vertexShader.getGxpShader();
+		fragmentShaderDescription.gxpVertexProgram = colorVertexShader.getGxpShader();
 #else
 		fragmentShaderDescription.source = readFile("assets/shaders/HLSL/draw2d.fs");
 #endif
@@ -73,7 +73,6 @@ Result<void> Draw2d::init()
 		vertexInputLayout[1].parameterName = "aTexcoord";
 		vertexInputLayout[1].offset = sizeof(glm::vec2);
 		vertexInputLayout[1].format = RHIFormat::R32G32_Float;
-
 
 		VertexShaderDescription vertexShaderDescription;
 #ifdef __vita__
@@ -102,7 +101,7 @@ Result<void> Draw2d::init()
 #ifdef __vita__
 		auto const source_fs = readFileBin("app0:assets/shaders/vita/texture2d_fs.gxp");
 		fragmentShaderDescription.source = source_fs.data();
-		fragmentShaderDescription.gxpVertexProgram = vertexShader.getGxpShader();
+		fragmentShaderDescription.gxpVertexProgram = textureVertexShader.getGxpShader();
 #else
 		fragmentShaderDescription.source = readFile("assets/shaders/HLSL/texture2d.fs");
 		fragmentShaderDescription.blendInfo = blendInfo;

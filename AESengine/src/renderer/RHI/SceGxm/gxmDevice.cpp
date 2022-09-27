@@ -7,7 +7,8 @@
 
 using namespace aes;
 
-void* aes::graphicsAlloc(SceKernelMemBlockType type, uint32_t size, uint32_t alignement, uint32_t attribs, SceUID* uid, const char* name)
+// TODO move this in a specific header
+static void* graphicsAlloc(SceKernelMemBlockType type, uint32_t size, uint32_t alignement, uint32_t attribs, SceUID* uid, const char* name)
 {
 	AES_ASSERT(uid != nullptr);
 	
@@ -83,7 +84,7 @@ static void* vertexUsseAlloc(uint32_t size, SceUID* uid, uint32_t* usseOffset)
 	return mem;
 }
 
-void aes::graphicsFree(SceUID uid)
+static void graphicsFree(SceUID uid)
 {
 	// grab the base address
 	void* mem = nullptr;
@@ -99,12 +100,56 @@ void aes::graphicsFree(SceUID uid)
 	AES_ASSERT(err == SCE_OK);
 }
 
+static void vertexUsseFree(SceUID uid)
+{
+	// grab the base address
+	void* mem = nullptr;
+	uint32_t err = sceKernelGetMemBlockBase(uid, &mem);
+	AES_ASSERT(err == SCE_OK);
+
+	// unmap memory
+	err = sceGxmUnmapVertexUsseMemory(mem);
+	AES_ASSERT(err == SCE_OK);
+
+	// free the memory block
+	err = sceKernelFreeMemBlock(uid);
+	AES_ASSERT(err == SCE_OK);
+}
+
+static void fragmentUsseFree(SceUID uid)
+{
+	// grab the base address
+	void* mem = nullptr;
+	uint32_t err = sceKernelGetMemBlockBase(uid, &mem);
+	AES_ASSERT(err == SCE_OK);
+
+	// unmap memory
+	err = sceGxmUnmapFragmentUsseMemory(mem);
+	AES_ASSERT(err == SCE_OK);
+
+	// free the memory block
+	err = sceKernelFreeMemBlock(uid);
+	AES_ASSERT(err == SCE_OK);
+}
+
+static void* patcherHostAlloc(void* userData, uint32_t size)
+{
+	AES_UNUSED(userData);
+	return malloc(size); // TODO use allocator here
+}
+
+static void patcherHostFree(void* userData, void* mem)
+{
+	AES_UNUSED(userData);
+	free(mem);
+}
+
 GxmDevice::GxmDevice(GxmDevice&& rhs) noexcept
 {
 	*this = std::move(rhs);
 }
 
-GxmDevice& operator=(GxmDevice&& rhs) noexcept
+GxmDevice& GxmDevice::operator=(GxmDevice&& rhs) noexcept
 {
 	context = rhs.context;
 	vdmRingBufferUid = rhs.vdmRingBufferUid;
@@ -114,6 +159,7 @@ GxmDevice& operator=(GxmDevice&& rhs) noexcept
 	hostMem = rhs.hostMem;
 	currentState = rhs.currentState;
 	rhs.context = nullptr;
+	return *this;
 }
 
 GxmDevice::~GxmDevice()
@@ -131,21 +177,21 @@ Result<void> GxmDevice::init()
 		SCE_GXM_DEFAULT_VDM_RING_BUFFER_SIZE,
 		4,
 		SCE_GXM_MEMORY_ATTRIB_READ,
-		&vdmRingBufferUid);
+		&vdmRingBufferUid, "vdmRingBuffer");
 	
 	void* vertexRingBuffer = graphicsAlloc(
 		SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
 		SCE_GXM_DEFAULT_VERTEX_RING_BUFFER_SIZE,
 		4,
 		SCE_GXM_MEMORY_ATTRIB_READ,
-		&vertexRingBufferUid);
+		&vertexRingBufferUid, "vertexRingBuffer");
 	
 	void* fragmentRingBuffer = graphicsAlloc(
 		SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
 		SCE_GXM_DEFAULT_FRAGMENT_RING_BUFFER_SIZE,
 		4,
 		SCE_GXM_MEMORY_ATTRIB_READ,
-		&fragmentRingBufferUid);
+		&fragmentRingBufferUid, "fragmentRingBuffer");
 	
 	uint32_t fragmentUsseRingBufferOffset;
 	void* fragmentUsseRingBuffer = fragmentUsseAlloc(
@@ -168,7 +214,7 @@ Result<void> GxmDevice::init()
 	contextParams.fragmentUsseRingBufferMemSize = SCE_GXM_DEFAULT_FRAGMENT_USSE_RING_BUFFER_SIZE;
 	contextParams.fragmentUsseRingBufferOffset = fragmentUsseRingBufferOffset;
 
-	err = sceGxmCreateContext(&contextParams, &context);
+	auto err = sceGxmCreateContext(&contextParams, &context);
 	if (err != SCE_OK)
 	{
 		AES_LOG_ERROR("GXM failed to create render context, code : {}", err);
@@ -202,14 +248,14 @@ void GxmDevice::drawIndexed(uint indexCount, uint indexOffset)
 
 	if (currentState.indexBufferInfo.typeFormat == IndexTypeFormat::Uint16)
 	{
-		int err = sceGxmDraw(context, rhiPrimitiveTypeToApi(currentState.primitiveType),
+		auto err = sceGxmDraw(context, rhiPrimitiveTypeToApi(currentState.primitiveType),
 				rhiIndexFormatToApi(currentState.indexBufferInfo.typeFormat),
 				((uint16_t*)currentState.indexBufferInfo.buffer) + indexOffset,
 				(uint32_t)indexCount);
 		AES_ASSERT(err == SCE_OK);
 	}
 	else {
-		int err = sceGxmDraw(context, rhiPrimitiveTypeToApi(currentState.primitiveType),
+		auto err = sceGxmDraw(context, rhiPrimitiveTypeToApi(currentState.primitiveType),
 					rhiIndexFormatToApi(currentState.indexBufferInfo.typeFormat),
 					((uint32_t*)currentState.indexBufferInfo.buffer) + indexOffset,
 					(uint32_t)indexCount);
@@ -257,7 +303,7 @@ void GxmDevice::setVertexShader(RHIVertexShader& vs)
 	sceGxmSetVertexProgram(context, vs.getHandle());
 }
 
-Result<void> GxmDevice::setVertexBuffer(RHIBuffer& buffer, uint stride, uint offset = 0)
+Result<void> GxmDevice::setVertexBuffer(RHIBuffer& buffer, uint stride, uint offset)
 {
 	AES_PROFILE_FUNCTION();
 	auto const err = sceGxmSetVertexStream(context, 0, buffer.getHandle());
@@ -273,16 +319,16 @@ Result<void> GxmDevice::setVertexBuffer(RHIBuffer& buffer, uint stride, uint off
 Result<void> GxmDevice::setIndexBuffer(RHIBuffer& buffer, IndexTypeFormat typeFormat, uint offset)
 {
 	AES_PROFILE_FUNCTION();
-	currentState.indexBufferInfo.typeFormat = format;
+	currentState.indexBufferInfo.typeFormat = typeFormat;
 	currentState.indexBufferInfo.buffer = buffer.getHandle();
 	return {};
 }
 
-Result<void> GxmDevice::bindFragmentUniformBuffer(RHIBUffer& buffer, uint slot)
+Result<void> GxmDevice::bindFragmentUniformBuffer(RHIBuffer& buffer, uint slot)
 {
 	AES_PROFILE_FUNCTION();
 	AES_ASSERT(slot < SCE_GXM_MAX_UNIFORM_BUFFERS);
-	auto const err = sceGxmSetFragmentUniformBuffer(context, index, tex.getHandle());
+	auto const err = sceGxmSetFragmentUniformBuffer(context, slot, buffer.getHandle());
 	if (err != SCE_OK)
 	{
 		AES_LOG_ERROR("failed to set gxm fragment uniform buffer error : {}", err);
@@ -292,7 +338,7 @@ Result<void> GxmDevice::bindFragmentUniformBuffer(RHIBUffer& buffer, uint slot)
 	return {};
 }
 
-Result<void> GxmDevice::bindVertexUniformBuffer(RHIBUffer& buffer, uint slot);
+Result<void> GxmDevice::bindVertexUniformBuffer(RHIBuffer& buffer, uint slot)
 {
 	AES_PROFILE_FUNCTION();
 	AES_ASSERT(slot < SCE_GXM_MAX_UNIFORM_BUFFERS);
@@ -306,7 +352,7 @@ Result<void> GxmDevice::bindVertexUniformBuffer(RHIBUffer& buffer, uint slot);
 	return {};
 }
 
-Result<void> GxmDevice::bindFragmentTexture(RHITexture& buffer, uint slot)
+Result<void> GxmDevice::bindFragmentTexture(RHITexture& tex, uint slot)
 {
 	AES_PROFILE_FUNCTION();
 	auto const err = sceGxmSetFragmentTexture(context, slot, tex.getHandle());
@@ -319,7 +365,7 @@ Result<void> GxmDevice::bindFragmentTexture(RHITexture& buffer, uint slot)
 	return {};
 }
 
-Result<void> GxmDevice::bindVertexTexture(RHITexture& buffer, uint slot)
+Result<void> GxmDevice::bindVertexTexture(RHITexture& tex, uint slot)
 {
 	AES_PROFILE_FUNCTION();
 	auto const err = sceGxmSetVertexTexture(context, slot, tex.getHandle());

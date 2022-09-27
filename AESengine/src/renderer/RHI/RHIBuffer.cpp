@@ -35,6 +35,8 @@ Result<void> aes::reallocRHIBuffer(RHIBuffer& buffer, BufferDescription const& r
 			return err;
 	}
 	buffer = std::move(newBuffer);
+	
+	return {};
 }
 
 Result<void> aes::ensureRHIBufferCapacity(RHIBuffer& buffer, BufferDescription const& reallocDesc)

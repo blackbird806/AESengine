@@ -1,8 +1,7 @@
 #ifndef AES_GXMRENDERTARGET_HPP
 #define AES_GXMRENDERTARGET_HPP
 
-// @review only include needed gxm headers
-#include <vitasdk.h>
+#include <psp2/gxm.h>
 #include "gxmCompatibilty.h"
 #include "gxmTexture.hpp"
 
@@ -24,7 +23,7 @@ namespace aes
 		GxmTexture texture;
 
 		uint32_t flags;
-		SceGxmRenderTarget gxmRenderTarget;
+		SceGxmRenderTarget* gxmRenderTarget;
 		SceGxmColorSurface colorSurface;
 		SceGxmDepthStencilSurface depthStencilSurface;
 	};

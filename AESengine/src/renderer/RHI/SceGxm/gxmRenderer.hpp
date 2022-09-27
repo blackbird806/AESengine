@@ -8,6 +8,7 @@
 #include "../RHIBuffer.hpp"
 #include "../RHITexture.hpp"
 #include "../RHIShader.hpp"
+#include "../RHISampler.hpp"
 #include <glm/glm.hpp>
 #include <vitasdk.h>
 #include "gxmCompatibilty.h"
@@ -65,6 +66,8 @@ namespace aes
 
 			void setFragmentShader(RHIFragmentShader& fs);
 			void setVertexShader(RHIVertexShader& vs);
+
+			void setFragmentSampler(RHISampler& sampler, uint index);
 
 			void setDrawPrimitiveMode(DrawPrimitiveType mode);
 			void drawIndexed(uint indexCount, uint indexOffset = 0);

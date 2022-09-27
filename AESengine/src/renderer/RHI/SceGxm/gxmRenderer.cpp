@@ -1,3 +1,8 @@
+/*
+	DEPRECATED
+	OLD renderer class, will be replaced by the new RHI + platform independent renderer
+*/
+
 #include "gxmRenderer.hpp"
 #include "core/utility.hpp"
 #include "gxmElements.hpp"
@@ -601,6 +606,12 @@ void GxmRenderer::setVertexShader(RHIVertexShader& vs)
 {
 	AES_PROFILE_FUNCTION();
 	sceGxmSetVertexProgram(context, vs.getHandle());
+}
+
+void GxmRenderer::setFragmentSampler(RHISampler& sampler, uint index)
+{
+	AES_PROFILE_FUNCTION();
+	// voided this class is deprecated anyway
 }
 
 void GxmRenderer::setDrawPrimitiveMode(DrawPrimitiveType mode)

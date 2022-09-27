@@ -3,9 +3,12 @@
 
 #include "core/aes.hpp"
 #include "core/error.hpp"
+#include "renderer/RHI/RHIElements.hpp"
+#include "gxmShader.hpp"
+#include "gxmTexture.hpp"
+#include "renderer/RHI/RHIBuffer.hpp"
 
-// @review only include needed gxm headers
-#include <vitasdk.h>
+#include <psp2/gxm.h>
 #include "gxmCompatibilty.h"
 
 namespace aes
@@ -49,8 +52,8 @@ namespace aes
 
 		// resources binding
 
-		Result<void> bindFragmentUniformBuffer(RHIBUffer& buffer, uint slot);
-		Result<void> bindVertexUniformBuffer(RHIBUffer& buffer, uint slot);
+		Result<void> bindFragmentUniformBuffer(RHIBuffer& buffer, uint slot);
+		Result<void> bindVertexUniformBuffer(RHIBuffer& buffer, uint slot);
 		Result<void> bindFragmentTexture(RHITexture& buffer, uint slot);
 		Result<void> bindVertexTexture(RHITexture& buffer, uint slot);
 

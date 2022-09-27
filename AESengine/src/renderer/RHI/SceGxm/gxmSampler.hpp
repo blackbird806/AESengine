@@ -10,6 +10,7 @@ namespace aes
 	class GxmSampler
 	{
 		public:
+		GxmSampler() = default;
 		GxmSampler(GxmSampler&&) noexcept;
 		Result<void> init(SamplerDescription const& desc);
 

@@ -4,7 +4,6 @@
 #include <unordered_map>
 #include <string>
 #include <chrono>
-#include <optional>
 
 #include "macro_helpers.hpp"
 
@@ -16,9 +15,6 @@
 #define AES_PROFILE_FRAME()
 #define AES_PROFILE_FRAMEN(name)
 
-#define AES_START_PROFILE_SESSION(name) ::aes::Instrumentor::instance().startSession(name);
-#define AES_STOP_PROFILE_SESSION() ::aes::Instrumentor::instance().stopSession();
-
 #else
 
 #define AES_PROFILE_FUNCTION()
@@ -27,11 +23,10 @@
 #define AES_PROFILE_FRAME()
 #define AES_PROFILE_FRAMEN(name)
 
-#define AES_START_PROFILE_SESSION(name) 
-#define AES_STOP_PROFILE_SESSION() 
-
 #endif
 
+#define AES_START_PROFILE_SESSION(name) ::aes::Instrumentor::instance().startSession(name);
+#define AES_STOP_PROFILE_SESSION() ::aes::Instrumentor::instance().stopSession();
 
 namespace aes
 {

@@ -30,14 +30,28 @@ Result<void> GxmSampler::apply(SceGxmTexture* tex)
 	AES_PROFILE_FUNCTION();
 	AES_ASSERT(tex);
 
-	sceGxmTextureSetLodBias(tex, description.lodBias);
-	sceGxmTextureSetLodMin(tex, description.lodMin);
+	auto err = sceGxmTextureSetLodBias(tex, description.lodBias);
 
-	sceGxmTextureSetUAddrMode(tex, description.addressU);
-	sceGxmTextureSetVAddrMode(tex, description.addressV);
+	// unsuported by vita sdk for now
+	// @TODO see if we can do a trick like vitagl to replace this call
+	// see: https://github.com/Rinnegatamante/vitaGL/blob/master/source/utils/gxm_utils.c#L90
+	// sceGxmTextureSetLodMin(tex, description.lodMin);
 
-	sceGxmTextureSetMipFilter(tex, description.filter);
-	sceGxmTextureSetMagFilter(tex, description.filter);
-	sceGxmTextureSetMinFilter(tex, description.filter);
+	err = sceGxmTextureSetUAddrMode(tex, description.addressU);
+	err = sceGxmTextureSetVAddrMode(tex, description.addressV);
+
+	// @Review what is a mipfilter ?
+	// err = sceGxmTextureSetMipFilter(tex, filter);
+
+	err = sceGxmTextureSetMagFilter(tex, description.filter);
+	err = sceGxmTextureSetMinFilter(tex, description.filter);
+	
+	if (err != SCE_OK)
+	{
+		AES_LOG_ERROR("failed to apply GXM sampler err {}", err);
+		return { AESError::SamplerApplicationFailed };
+	}
+
+	return {};
 }
 

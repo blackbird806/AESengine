@@ -68,6 +68,16 @@ SceGxmTextureFormat aes::rhiFormatToApiTextureFormat(RHIFormat format)
 	AES_ASSERT(false); // unsupported format type
 }
 
+SceGxmColorFormat aes::rhiFormatToApiColorFormat(RHIFormat format)
+{
+	switch(format)
+	{
+		case RHIFormat::R8G8B8A8_Uint: return SCE_GXM_COLOR_FORMAT_U8U8U8U8_RGBA;
+		case RHIFormat::R16G16_Float: return SCE_GXM_COLOR_FORMAT_F16F16_RG; // @review
+		case RHIFormat::R16G16B16A16_Float: return SCE_GXM_COLOR_FORMAT_F16F16F16F16_RGBA;
+	}
+	AES_ASSERT(false); // unsupported format type
+}
 
 SceGxmTextureFilter aes::rhiTextureFilterToApi(TextureFilter filter)
 {
@@ -102,7 +112,7 @@ uint8_t aes::rhiBlendOpToApi(BlendOp blendop)
 		case BlendOp::Add:
 			return SCE_GXM_BLEND_FUNC_ADD;
 		case BlendOp::Sub:
-			return SCE_GXM_BLEND_FUNC_SUBSTRACT;
+			return SCE_GXM_BLEND_FUNC_SUBTRACT;
 	}
 
 	// TODO
@@ -116,7 +126,7 @@ uint8_t aes::rhiBlendOpToApi(BlendOp blendop)
 
 uint8_t aes::rhiBlendFactorToApi(BlendFactor blendfactor)
 {
-	switch (blendFactor)
+	switch (blendfactor)
 	{
 		case BlendFactor::Zero: return SCE_GXM_BLEND_FACTOR_ZERO;
 		case BlendFactor::One: return SCE_GXM_BLEND_FACTOR_ONE;
@@ -143,7 +153,7 @@ uint8_t aes::rhiColorMaskToApi(ColorMaskFlags colorMask)
 
 SceGxmCullMode aes::rhiCullModeToApi(CullMode mode)
 {
-	switch(mode)
+	switch (mode)
 	{
 		case CullMode::None: 				return SCE_GXM_CULL_NONE;
 		case CullMode::Clockwise:			return SCE_GXM_CULL_CW;
@@ -151,3 +161,15 @@ SceGxmCullMode aes::rhiCullModeToApi(CullMode mode)
 	}
 	AES_UNREACHABLE();
 }
+
+SceGxmMultisampleMode aes::rhiMultisampleModeToApi(MultisampleMode mode)
+{
+	switch (mode)
+	{
+		case MultisampleMode::None: return SCE_GXM_MULTISAMPLE_NONE;
+		case MultisampleMode::X2: return SCE_GXM_MULTISAMPLE_2X;
+		case MultisampleMode::X4: return SCE_GXM_MULTISAMPLE_4X;
+	}
+	AES_UNREACHABLE();
+}
+

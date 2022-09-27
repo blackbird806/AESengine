@@ -58,7 +58,7 @@ namespace aes
 	};
 
 	// gxm rhiColorMaskToApi must be modified too in case of modification of this enum
-	enum class ColorMaskBits
+	enum class ColorMaskBits : uint8_t
 	{
 		None = 0x0,
 		A = 0x1,
@@ -112,7 +112,7 @@ namespace aes
 		Linear,
 	};
 
-	enum class MultiSampleMode
+	enum class MultisampleMode
 	{
 		None,
 		X2,
@@ -229,7 +229,7 @@ namespace aes
 	struct RenderTargetDescription
 	{
 		TextureDescription textureDesc;
-		MultiSampleMode multiSampleMode;
+		MultisampleMode multisampleMode;
 	};
 
 	// theses functions assert if structure is invalid according to RHI
