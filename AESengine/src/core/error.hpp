@@ -24,6 +24,7 @@ namespace aes {
 		FontInitFailed,
 		BlendStateCreationFailed,
 		RenderTargetCreationFailed,
+		SamplerApplicationFailed
 	};
 
 	template<typename T>

@@ -32,7 +32,7 @@ Result<void> GxmTexture::init(TextureDescription const& info)
 		AES_LOG_ERROR("sceGxmTextureInitLinear failed : {}", err);
 		return { AESError::GPUTextureCreationFailed };
 	}
-	err = sceGxmTextureSetMipmapCount(texture, info.mipsLevel);
+	err = sceGxmTextureSetMipmapCount(&texture, info.mipsLevel);
 	if (err != SCE_OK)
 	{
 		AES_LOG_ERROR("sceGxmTextureSetMipmapCount failed : {}", err);
