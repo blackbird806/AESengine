@@ -7,6 +7,10 @@
 #include "core/array.hpp"
 #include "core/geometry.hpp"
 
+/*
+ * AES Object Oriented ImGui implementation, heavly inspired by Dear ImGui and microUI
+ */
+
 namespace aes
 {
 	using ImGuiId = int;

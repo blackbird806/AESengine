@@ -1,8 +1,9 @@
-#ifndef CAMERA_HPP
-#define CAMERA_HPP
+#ifndef AES_CAMERA_HPP
+#define AES_CAMERA_HPP
 
 #include <glm/glm.hpp>
 
+// Sample camera class, should be deprecated when the new renderer will be advanced enough
 namespace aes {
 
 	class Camera

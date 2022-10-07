@@ -7,6 +7,8 @@
 #include "RHI/RHIBuffer.hpp"
 #include "core/error.hpp"
 
+// DEPRECATED materials will be redesigned when the new RHI will be advanced enough
+
 namespace aes
 {
 	/*

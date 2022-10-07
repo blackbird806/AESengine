@@ -39,6 +39,7 @@ namespace aes
 	//	size_t nbAllocations = 0;
 	//};
 
+	// @Review memory_resource will be useless as we may not use std containers
 	class IAllocator : public std::pmr::memory_resource
 	{
 	public:

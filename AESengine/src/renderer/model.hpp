@@ -9,6 +9,9 @@
 #include "material.hpp"
 #include "vertex.hpp"
 
+/*
+ * Simple and dumb model RHI compliant
+ */
 namespace aes
 {
 	constexpr uint32_t cubeIndices[] = {

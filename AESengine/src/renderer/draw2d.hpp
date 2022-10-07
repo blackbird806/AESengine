@@ -18,6 +18,9 @@ namespace aes
 {
 	struct FontRessource;
 
+	/*
+	 * Batch 2D renderer inspired by Blah and SDL2
+	 */
 	class Draw2d
 	{
 	public:

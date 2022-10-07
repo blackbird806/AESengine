@@ -9,6 +9,9 @@
 #include "renderer/RHI/RHISampler.hpp"
 #include "core/array.hpp"
 
+// Font system RHI complient
+// We want simple and efficient bitmap based font rendering
+
 namespace aes
 {
 	struct Glyph

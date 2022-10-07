@@ -8,6 +8,10 @@
 #undef near
 #undef far
 
+/*
+ * Geometry structs and collisions funcs
+ */
+
 namespace aes {
 
 	struct Line2D

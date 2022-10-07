@@ -1,5 +1,5 @@
-#ifndef ENGINE_HPP
-#define ENGINE_HPP
+#ifndef AES_ENGINE_HPP
+#define AES_ENGINE_HPP
 
 #include "core/aes.hpp"
 #include "core/debug.hpp"
@@ -12,6 +12,9 @@
 
 namespace aes {
 
+	/*
+	 * We may want to completly redesign this class in the future to thread AES more as a framework rather than as an engine
+	 */
 	class Engine
 	{
 	public:

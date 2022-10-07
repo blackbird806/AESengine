@@ -1,5 +1,5 @@
-#ifndef COLOR_HPP
-#define COLOR_HPP
+#ifndef AES_COLOR_HPP
+#define AES_COLOR_HPP
 
 #include <cstdint>
 
@@ -7,6 +7,7 @@
 
 namespace aes
 {
+	// Inspired by Color class of lumix engine
 	// @Review
 	struct Color
 	{

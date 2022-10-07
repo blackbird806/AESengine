@@ -8,6 +8,9 @@
 #include <cstdint>
 #include "core/error.hpp"
 
+// DEPRECATED file, only D3D implementation
+// I will keep this until the new impl is finished
+
 // https://loulou.developpez.com/tutoriels/moteur3d/partie6/
 namespace aes {
 

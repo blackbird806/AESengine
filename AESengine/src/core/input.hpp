@@ -1,6 +1,9 @@
-#ifndef INPUT_HPP
-#define INPUT_HPP
+#ifndef AES_INPUT_HPP
+#define AES_INPUT_HPP
 
+/*
+ * PC inputs 
+ * */
 namespace aes
 {
 	enum class Key

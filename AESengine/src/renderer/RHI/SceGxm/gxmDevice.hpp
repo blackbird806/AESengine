@@ -13,6 +13,8 @@
 
 namespace aes
 {
+	Result<void> initializeGraphicsAPI();
+
 	class GxmDevice
 	{
 		struct IndexBufferInfo
@@ -28,6 +30,7 @@ namespace aes
 		};
 
 		public:
+		GxmDevice() = default;
 		GxmDevice(GxmDevice&&) noexcept;
 		~GxmDevice();
 		GxmDevice& operator=(GxmDevice&&) noexcept;

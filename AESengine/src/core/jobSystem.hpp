@@ -11,6 +11,11 @@
 #include <functional>
 #include <ranges>
 
+
+/*
+ * A simple and dumb jobsystem originally implemented for a school exercice
+ * will be redesigned in the engine
+ */
 namespace aes
 {
 	struct Job

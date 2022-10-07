@@ -7,6 +7,10 @@
 
 namespace aes
 {
+	/*
+	 * Generic Array class similar to std vector
+	 * always store the allocator pointer
+	 */
 	template<typename T>
 	class Array
 	{

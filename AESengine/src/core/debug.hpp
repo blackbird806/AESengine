@@ -7,6 +7,10 @@
 #include <fmt/format.h>
 #include "macro_helpers.hpp"
 
+// loging system should be completly revised
+// we may want to get rif of macros and use std::source_location
+// also we want filters, warning level and more ....
+// maybe take inspiration from spd log ?
 #ifdef __vita__
 #define AES_LOG(msg, ...) ::aes::Logger::instance().log(fmt::format("info : " msg "\n" __VA_OPT__(,) __VA_ARGS__))
 #define AES_LOG_RAW(msg, ...) ::aes::Logger::instance().log(fmt::format(msg "\n" __VA_OPT__(,) __VA_ARGS__))
@@ -23,7 +27,8 @@
 #define AES_CHECK(r) if (!r) { AES_LOG_ERROR("{}", r.error()); };
 
 namespace aes {
-
+	// The Sink interface is used to dispatch log message
+	// a typical sink implementation will show the log message in the console or send it over network for remote debugging
 	class Sink
 	{
 	public:

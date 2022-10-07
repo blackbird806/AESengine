@@ -7,6 +7,60 @@
 
 using namespace aes;
 
+struct DisplayData
+{
+	void* address;
+};
+
+// displayCallback may be called on another thread
+static void displayCallback(void const* callbackData)
+{
+	// @TODO clean this
+	auto constexpr vita_display_width = 960;
+	auto constexpr vita_display_height = 544;
+	auto constexpr vita_display_stride_in_pixels = 1024;
+	auto constexpr vita_display_pixel_format = SCE_DISPLAY_PIXELFORMAT_A8B8G8R8;
+	auto constexpr vita_display_color_format = SCE_GXM_COLOR_FORMAT_U8U8U8U8_RGBA;
+
+	DisplayData const* displayData = (DisplayData const*)callbackData;
+	SceDisplayFrameBuf frameBuf {
+		.size = sizeof(SceDisplayFrameBuf),
+		.base = displayData->address,
+		.pitch = vita_display_stride_in_pixels,
+		.pixelformat = vita_display_pixel_format,
+		.width = vita_display_width,
+		.height = vita_display_height
+	};
+
+	// TODO Thread safe assert / Logs
+	sceDisplaySetFrameBuf(&frameBuf, (SceDisplaySetBufSync) SCE_DISPLAY_UPDATETIMING_NEXTVSYNC);
+	sceDisplayWaitVblankStart();
+}
+
+Result<void> aes::initializeGraphicsAPI()
+{
+	// @TODO clean this
+	auto constexpr vita_display_max_pending_swaps = 2;
+
+	// Set up parameters
+	SceGxmInitializeParams initializeParams;
+	memset(&initializeParams, 0, sizeof(SceGxmInitializeParams));
+	initializeParams.flags = 0;
+	initializeParams.displayQueueMaxPendingCount = vita_display_max_pending_swaps;
+	initializeParams.displayQueueCallback = displayCallback;
+	initializeParams.displayQueueCallbackDataSize = sizeof(DisplayData);
+	initializeParams.parameterBufferSize = SCE_GXM_DEFAULT_PARAMETER_BUFFER_SIZE;
+
+	// Start libgxm
+	err = sceGxmInitialize(&initializeParams);
+	if (err != SCE_OK)
+	{
+		AES_LOG_ERROR("sceGxmInitialize faileerr: {}", err);
+		return { AESError::Undefined };
+	}
+	return {};
+}
+
 // TODO move this in a specific header
 static void* graphicsAlloc(SceKernelMemBlockType type, uint32_t size, uint32_t alignement, uint32_t attribs, SceUID* uid, const char* name)
 {

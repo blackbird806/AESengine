@@ -1,8 +1,10 @@
-#ifndef DEBUG_MATH_HPP
-#define DEBUG_MATH_HPP
+#ifndef AES_DEBUG_MATH_HPP
+#define AES_DEBUG_MATH_HPP
 
 #include <fmt/format.h>
 #include <glm/glm.hpp>
+
+// TODO proper maths formatter
 
 template<int D, typename T>
 struct fmt::formatter<glm::vec<D, T>>

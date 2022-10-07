@@ -1,5 +1,5 @@
-#ifndef RHI_HPP
-#define RHI_HPP
+#ifndef AES_RHI_HPP
+#define AES_RHI_HPP
 
 #include "core/aes.hpp"
 

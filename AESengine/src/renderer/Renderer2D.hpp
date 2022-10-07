@@ -5,7 +5,9 @@
 #include <vector>
 #include "core/geometry.hpp"
 // include d3d11 after geometry since geometry use near and far identifiers that are defined in the global namespace by the shitty windows API
-#include <d3d11.h> 
+#include <d3d11.h>
+
+// DEPRECATED
 
 namespace aes {
 

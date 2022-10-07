@@ -14,7 +14,7 @@ namespace aes
 	// References:
 	// Realtime collision detection ch8 p356
 	// Game physics engine developement 12.4.1 p251
-	
+	// Naive implementation, @Review we may want to try a more advanced implementation 
 	class BSPTree
 	{
 	public:

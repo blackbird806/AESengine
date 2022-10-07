@@ -11,6 +11,10 @@
 
 namespace aes
 {
+	/*
+	 * LinearOctree implementation, originally written for a school exercice.
+	 * I keep it since it may be userfull in the future
+	 */
 	class Octree
 	{
 	public:
