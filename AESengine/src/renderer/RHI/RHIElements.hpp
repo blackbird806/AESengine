@@ -13,6 +13,7 @@
 
 namespace aes
 {
+	// @TODO merge CPUAccessFlags and MemoryUsage
 	enum class CPUAccessFlagBits : uint8_t
 	{
 		None = 0x0,
@@ -228,7 +229,8 @@ namespace aes
 
 	struct RenderTargetDescription
 	{
-		TextureDescription textureDesc;
+		uint width, height;
+		RHIFormat format;
 		MultisampleMode multisampleMode;
 	};
 

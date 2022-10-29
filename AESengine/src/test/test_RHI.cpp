@@ -11,8 +11,10 @@ using namespace aes;
 
 class TestRHIApp
 {
-	aes::RHIFragmentShader fragmentShader;
-	aes::RHIVertexShader vertexShader;
+	RHIDevice device;
+	RHIRenderTarget renderTarget;
+	RHIFragmentShader fragmentShader;
+	RHIVertexShader vertexShader;
 
 public:
 
@@ -20,9 +22,18 @@ public:
 	{
 		AES_LOG("[TEST] RHI");
 
+		initializeGraphicsAPI();
+
 		// create device
+		device.init();
 
 		// create RT
+		RenderTargetDescription rtDesc = {};
+		rtDesc.width = 960;
+		rtDesc.height = 544;
+		rtDesc.format = RHIFormat::R8G8B8A8_Uint;
+		rtDesc.multisampleMode = MultisampleMode::None;
+		renderTarget.init(rtDesc);
 
 		aes::FragmentShaderDescription fragmentShaderDescription;
 		fragmentShaderDescription.source = readFile("assets/shaders/HLSL/draw3d.fs");

@@ -4,6 +4,7 @@
 #include "core/allocator.hpp"
 #include "gxmElements.hpp"
 #include "gxmDebug.hpp"
+#include "gxmMemory.hpp"
 
 using namespace aes;
 
@@ -52,47 +53,12 @@ Result<void> aes::initializeGraphicsAPI()
 	initializeParams.parameterBufferSize = SCE_GXM_DEFAULT_PARAMETER_BUFFER_SIZE;
 
 	// Start libgxm
-	err = sceGxmInitialize(&initializeParams);
-	if (err != SCE_OK)
+	if (sceGxmInitialize(&initializeParams) != SCE_OK)
 	{
-		AES_LOG_ERROR("sceGxmInitialize faileerr: {}", err);
+		AES_LOG_ERROR("sceGxmInitialize failed !");
 		return { AESError::Undefined };
 	}
 	return {};
-}
-
-// TODO move this in a specific header
-static void* graphicsAlloc(SceKernelMemBlockType type, uint32_t size, uint32_t alignement, uint32_t attribs, SceUID* uid, const char* name)
-{
-	AES_ASSERT(uid != nullptr);
-	
-	// Page align the size
-	if (type == SCE_KERNEL_MEMBLOCK_TYPE_USER_CDRAM_RW)
-	{
-		// 	CDRAM memblock must be 256Kib aligned
-		AES_ASSERT(alignement <= 256 * 1024);
-		size = aes::align(size, 256 * 1024);
-	} 
-	else
-	{
-		// LPDDR memblocks must be 4KiB aligned
-		AES_ASSERT(alignement <= 4 * 1024);
-		size = aes::align(size, 4 * 1024);
-	}
-	
-	uint32_t err = SCE_OK;
-	*uid = sceKernelAllocMemBlock(name, type, size, nullptr);
-	AES_ASSERT(*uid > SCE_OK);
-
-	void* mem = nullptr;
-	err = (SceGxmErrorCode) sceKernelGetMemBlockBase(*uid, &mem);
-	AES_ASSERT(err == SCE_OK);
-
-	// map for the GPU
-	err = (SceGxmErrorCode) sceGxmMapMemory(mem, size, (SceGxmMemoryAttribFlags)attribs);
-	AES_ASSERT(err == SCE_OK);
-	
-	return mem;
 }
 
 static void* fragmentUsseAlloc(uint32_t size, SceUID* uid, uint32_t* usseOffset)
@@ -136,22 +102,6 @@ static void* vertexUsseAlloc(uint32_t size, SceUID* uid, uint32_t* usseOffset)
 	AES_ASSERT(err == SCE_OK);
 
 	return mem;
-}
-
-static void graphicsFree(SceUID uid)
-{
-	// grab the base address
-	void* mem = nullptr;
-	uint32_t err = sceKernelGetMemBlockBase(uid, &mem);
-	AES_ASSERT(err == SCE_OK);
-
-	// unmap memory
-	err = sceGxmUnmapMemory(mem);
-	AES_ASSERT(err == SCE_OK);
-
-	// free the memory block
-	err = sceKernelFreeMemBlock(uid);
-	AES_ASSERT(err == SCE_OK);
 }
 
 static void vertexUsseFree(SceUID uid)
