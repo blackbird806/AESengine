@@ -1,6 +1,7 @@
 #include "gxmMemory.hpp"
 #include "gxmCompatibilty.h"
 #include "core/aes.hpp"
+#include "core/utility.hpp"
 
 using namespace aes;
 

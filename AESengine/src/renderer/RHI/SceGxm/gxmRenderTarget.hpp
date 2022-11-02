@@ -11,7 +11,9 @@ namespace aes
 {
 	class GxmRenderTarget
 	{
+		friend class GxmDevice;
 		public:
+
 		GxmRenderTarget() = default;
 		GxmRenderTarget(GxmRenderTarget&&) noexcept;
 		~GxmRenderTarget();

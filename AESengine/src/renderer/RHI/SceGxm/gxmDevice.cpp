@@ -267,6 +267,24 @@ void GxmDevice::drawIndexed(uint indexCount, uint indexOffset)
 	}
 }
 
+void GxmDevice::beginRenderPass(RHIRenderTarget& rt)
+{
+	auto err = sceGxmBeginScene(
+		context,
+		0,
+		rt.gxmRenderTarget,
+		NULL,
+		NULL,
+		rt.syncObject,
+		&rt.colorSurface,
+		&rt.depthStencilSurface);
+}	
+
+void GxmDevice::endRenderPass()
+{
+	sceGxmEndScene(context, NULL, NULL);
+}
+
 void GxmDevice::setCullMode(CullMode mode)
 {
 	sceGxmSetCullMode(context, rhiCullModeToApi(mode));

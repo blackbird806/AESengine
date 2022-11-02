@@ -12,6 +12,7 @@
 #include <glm/glm.hpp>
 #include <vitasdk.h>
 #include "gxmCompatibilty.h"
+#include "gxmMemory.hpp"
 
 namespace aes
 {
@@ -26,10 +27,6 @@ namespace aes
 	auto constexpr vita_display_max_pending_swaps = 2;
 	auto constexpr vita_texture_max_resolution = 4096;
 	auto constexpr vita_texture_max_mip_count = 13;
-
-	// allocate memory for GPU use
-	void* graphicsAlloc(SceKernelMemBlockType type, uint32_t size, uint32_t alignement, uint32_t attribs, SceUID* uid, const char* name = "default");
-	void graphicsFree(SceUID uid);
 
 	class GxmRenderer
 	{

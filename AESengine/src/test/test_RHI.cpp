@@ -1,11 +1,11 @@
 #include "tests.hpp"
 
+#include <glm/glm.hpp>
 #include "core/allocator.hpp"
-#include "engine.hpp"
 #include "core/color.hpp"
-#include "renderer/vertex.hpp"
 #include "renderer/RHI/RHIDevice.hpp"
 #include "renderer/RHI/RHIRenderTarget.hpp"
+#include "renderer/RHI/RHIShader.hpp"
 
 using namespace aes;
 
@@ -15,6 +15,7 @@ class TestRHIApp
 	RHIRenderTarget renderTarget;
 	RHIFragmentShader fragmentShader;
 	RHIVertexShader vertexShader;
+	RHIBuffer vertexBuffer, indexBuffer;
 
 public:
 
@@ -23,9 +24,11 @@ public:
 		AES_LOG("[TEST] RHI");
 
 		initializeGraphicsAPI();
+		AES_LOG("graphics api initialized");
 
 		// create device
 		device.init();
+		AES_LOG("device created successfully");
 
 		// create RT
 		RenderTargetDescription rtDesc = {};
@@ -36,7 +39,8 @@ public:
 		renderTarget.init(rtDesc);
 
 		aes::FragmentShaderDescription fragmentShaderDescription;
-		fragmentShaderDescription.source = readFile("assets/shaders/HLSL/draw3d.fs");
+		static auto const clearShaderData_fs = aes::readFileBin("app0:assets/shaders/vita/clear_fs.gxp");
+		fragmentShaderDescription.source = clearShaderData_fs.data();
 
 		if (!fragmentShader.init(fragmentShaderDescription))
 			AES_FATAL_ERROR("fragment shader creation failed");
@@ -44,20 +48,15 @@ public:
 		AES_LOG("fragment shader created");
 
 		aes::VertexShaderDescription vertexShaderDescription;
+		static auto const clearShaderData_vs = aes::readFileBin("app0:assets/shaders/vita/clear_vs.gxp");
+		vertexShaderDescription.source = clearShaderData_vs.data();
+		vertexShaderDescription.verticesStride = sizeof(glm::vec2);
 
-		vertexShaderDescription.source = readFile("assets/shaders/HLSL/draw3d.vs");
-		vertexShaderDescription.verticesStride = sizeof(aes::Vertex);
-
-		aes::VertexInputLayout vertexInputLayout[2];
+		aes::VertexInputLayout vertexInputLayout[1];
 		vertexInputLayout[0].parameterName = "aPosition";
 		vertexInputLayout[0].semantic = aes::SemanticType::Position;
 		vertexInputLayout[0].offset = 0;
-		vertexInputLayout[0].format = aes::RHIFormat::R32G32B32_Float;
-
-		vertexInputLayout[1].parameterName = "aColor";
-		vertexInputLayout[1].semantic = aes::SemanticType::Color;
-		vertexInputLayout[1].offset = sizeof(glm::vec3);
-		vertexInputLayout[1].format = aes::RHIFormat::R32G32B32A32_Float;
+		vertexInputLayout[0].format = aes::RHIFormat::R32G32_Float;
 
 		vertexShaderDescription.verticesLayout = vertexInputLayout;
 
@@ -65,6 +64,40 @@ public:
 			AES_FATAL_ERROR("vertex shader creation failed");
 
 		AES_LOG("vertex shader created");
+
+		glm::vec2 tri[] = {
+			{-1.0f, -1.0f},
+			{3.0f, -1.0f},
+			{-1.0f, 3.0f},
+		};
+
+		aes::BufferDescription vertexBufferDesc = {};
+		vertexBufferDesc.sizeInBytes = sizeof(glm::vec2) * 3;
+		vertexBufferDesc.bindFlags = aes::BindFlagBits::VertexBuffer;
+		vertexBufferDesc.cpuAccessFlags = CPUAccessFlagBits::None;
+		vertexBufferDesc.usage = MemoryUsage::Immutable;
+		vertexBufferDesc.initialData = tri;
+
+		vertexBuffer.init(vertexBufferDesc);
+
+		uint16_t indices[] = {1, 2, 3};
+
+		aes::BufferDescription indexBufferDesc = {};
+		indexBufferDesc.sizeInBytes = sizeof(uint16_t) * 3;
+		indexBufferDesc.bindFlags = aes::BindFlagBits::IndexBuffer;
+		indexBufferDesc.cpuAccessFlags = CPUAccessFlagBits::None;
+		indexBufferDesc.usage = MemoryUsage::Immutable;
+		indexBufferDesc.initialData = indices;
+
+		indexBuffer.init(vertexBufferDesc);
+
+		device.beginRenderPass(renderTarget);
+			device.setVertexBuffer(vertexBuffer, sizeof(glm::vec2));
+			device.setIndexBuffer(indexBuffer, IndexTypeFormat::Uint16);
+			device.setFragmentShader(fragmentShader);
+			device.setVertexShader(vertexShader);
+			device.drawIndexed(3);
+		device.endRenderPass();
 	}
 
 	void draw()

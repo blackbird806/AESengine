@@ -7,6 +7,7 @@
 #include "gxmShader.hpp"
 #include "gxmTexture.hpp"
 #include "renderer/RHI/RHIBuffer.hpp"
+#include "renderer/RHI/RHIRenderTarget.hpp"
 
 #include <psp2/gxm.h>
 #include "gxmCompatibilty.h"
@@ -41,6 +42,9 @@ namespace aes
 		// draw calls
 
 		void drawIndexed(uint indexCount, uint indexOffset = 0);
+
+		void beginRenderPass(RHIRenderTarget& rt);
+		void endRenderPass();
 
 		// state modification
 

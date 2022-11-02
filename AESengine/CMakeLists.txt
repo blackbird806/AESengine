@@ -63,16 +63,18 @@ file(
   
   src/engine.cpp
   src/main.cpp
-  src/core/*
-  src/test/*
-  src/spatial/*
+  src/core/*.cpp
+  src/test/*.cpp
+  src/spatial/*.cpp
+  src/UI/*.cpp
   src/renderer/camera.cpp
   src/renderer/model.cpp
   src/renderer/draw2d.cpp
   src/renderer/material.cpp
   src/renderer/textureUtility.cpp
-  src/renderer/RHI/*
-  src/renderer/RHI/SceGxm/*
+  src/renderer/fontRenderer.cpp
+  src/renderer/RHI/*.cpp
+  src/renderer/RHI/SceGxm/*.cpp
 
   thirdParty/fmt/src/*
   thirdParty/stb/*

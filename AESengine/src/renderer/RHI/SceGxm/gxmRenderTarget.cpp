@@ -112,3 +112,8 @@ void GxmRenderTarget::destroy()
 		depthSurfaceData = nullptr;
 	}
 }
+
+GxmRenderTarget::~GxmRenderTarget()
+{
+	destroy();
+}
