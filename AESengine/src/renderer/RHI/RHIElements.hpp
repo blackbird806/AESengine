@@ -212,6 +212,7 @@ namespace aes
 	{
 		// because of gxm blend info is bound to the fragment shader
 		std::optional<BlendInfo> blendInfo;
+		MultisampleMode multisampleMode; // used by gxm for shaderpatcher 
 
 		// TODO: clean this
 		void const* gxpVertexProgram; 

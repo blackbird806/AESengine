@@ -23,8 +23,10 @@ Result<void> GxmRenderTarget::init(RenderTargetDescription const& info)
 		AES_LOG_ERROR("sceGxmCreateRenderTarget failed");
 		return { AESError::RenderTargetCreationFailed };
 	}
+	// this is 1024 in examples, but I don't really know what influence this parameter
+	auto constexpr vita_display_stride_in_pixels = 1024;
 
-	size_t const colorSurfaceSize = info.width * info.height * getFormatSize(info.format);
+	size_t const colorSurfaceSize = vita_display_stride_in_pixels * info.height * 4;
 	colorSurfaceData = graphicsAlloc(
 		SCE_KERNEL_MEMBLOCK_TYPE_USER_CDRAM_RW,
 		colorSurfaceSize,
@@ -37,8 +39,7 @@ Result<void> GxmRenderTarget::init(RenderTargetDescription const& info)
 		return { AESError::RenderTargetCreationFailed };
 	}
 
-	// this is 1024 in examples, but I don't really know what influence this parameter
-	auto constexpr vita_display_stride_in_pixels = 1024;
+
 	if (sceGxmColorSurfaceInit(&colorSurface, 
 			// I'm still unsure if it's a great idea to confound color format and texture format
 			// it seems that vitaGL does this as well (https://github.com/Rinnegatamante/vitaGL/blob/master/source/framebuffers.c#L36)

@@ -1,6 +1,6 @@
 # AESEngine
 
-A 3D C++20 game engine targeting windows and ps vita, using minimal dependencies.
+A personal 3D C++20 game engine targeting windows and ps vita, using minimal dependencies.
 
 
 ### Dependencies

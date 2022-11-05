@@ -8,7 +8,7 @@
 
 /*
  * Error class Inspired by rust and Boost leaf
- * However returning error sucks we may want to go back to exceptions in the future
+ * However returning error sucks, we may want to go back to exceptions in the future
  */
 namespace aes {
 

@@ -12,7 +12,7 @@ using namespace aes;
 class TestRHIApp
 {
 	RHIDevice device;
-	RHIRenderTarget renderTarget;
+	RHIRenderTarget renderTargets[2];
 	RHIFragmentShader fragmentShader;
 	RHIVertexShader vertexShader;
 	RHIBuffer vertexBuffer, indexBuffer;
@@ -30,17 +30,21 @@ public:
 		device.init();
 		AES_LOG("device created successfully");
 
-		// create RT
-		RenderTargetDescription rtDesc = {};
-		rtDesc.width = 960;
-		rtDesc.height = 544;
-		rtDesc.format = RHIFormat::R8G8B8A8_Uint;
-		rtDesc.multisampleMode = MultisampleMode::None;
-		renderTarget.init(rtDesc);
+		// create RTs
+		for (size_t i = 0; i < std::size(renderTargets); i++)
+		{
+			RenderTargetDescription rtDesc = {};
+			rtDesc.width = 960;
+			rtDesc.height = 544;
+			rtDesc.format = RHIFormat::R8G8B8A8_Uint;
+			rtDesc.multisampleMode = MultisampleMode::None;
+			renderTargets[i].init(rtDesc);
+		}
 
 		aes::FragmentShaderDescription fragmentShaderDescription;
 		static auto const clearShaderData_fs = aes::readFileBin("app0:assets/shaders/vita/clear_fs.gxp");
 		fragmentShaderDescription.source = clearShaderData_fs.data();
+		fragmentShaderDescription.multisampleMode = MultisampleMode::None;
 
 		if (!fragmentShader.init(fragmentShaderDescription))
 			AES_FATAL_ERROR("fragment shader creation failed");
@@ -91,13 +95,18 @@ public:
 
 		indexBuffer.init(vertexBufferDesc);
 
-		device.beginRenderPass(renderTarget);
-			device.setVertexBuffer(vertexBuffer, sizeof(glm::vec2));
-			device.setIndexBuffer(indexBuffer, IndexTypeFormat::Uint16);
-			device.setFragmentShader(fragmentShader);
-			device.setVertexShader(vertexShader);
+		device.setDrawPrimitiveMode(DrawPrimitiveType::Triangles);
+		device.setCullMode(CullMode::None);
+		device.setVertexBuffer(vertexBuffer, sizeof(glm::vec2));
+		device.setIndexBuffer(indexBuffer, IndexTypeFormat::Uint16);
+		device.setFragmentShader(fragmentShader);
+		device.setVertexShader(vertexShader);
+
+		device.beginRenderPass(renderTargets[0]);
 			device.drawIndexed(3);
 		device.endRenderPass();
+
+		device.swapBuffers(renderTargets[0], renderTargets[0]);
 	}
 
 	void draw()

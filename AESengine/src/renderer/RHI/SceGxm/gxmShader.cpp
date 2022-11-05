@@ -1,6 +1,6 @@
 #include "gxmShader.hpp"
 #include "gxmElements.hpp"
-#include "gxmRenderer.hpp"
+#include "gxmDevice.hpp"
 #include "core/utility.hpp"
 #include <vector>
 
@@ -27,7 +27,7 @@ GxmShader::~GxmShader()
 {
 	AES_PROFILE_FUNCTION();
 
-	sceGxmShaderPatcherUnregisterProgram(RHIRenderContext::instance().getShaderPatcher(), id);
+	sceGxmShaderPatcherUnregisterProgram(gxmShaderPatcher, id);
 }
 
 static size_t getProgramParameterTypeSize(SceGxmParameterType type)
@@ -146,7 +146,7 @@ GxmVertexShader& GxmVertexShader::operator=(GxmVertexShader&& rhs) noexcept
 GxmVertexShader::~GxmVertexShader()
 {
 	AES_PROFILE_FUNCTION();
-	sceGxmShaderPatcherReleaseVertexProgram(RHIRenderContext::instance().getShaderPatcher(), vertexShader);
+	sceGxmShaderPatcherReleaseVertexProgram(gxmShaderPatcher, vertexShader);
 }
 
 Result<void> GxmVertexShader::init(VertexShaderDescription const& desc)
@@ -159,8 +159,7 @@ Result<void> GxmVertexShader::init(VertexShaderDescription const& desc)
 	AES_ASSERT(sceGxmProgramCheck(gxpShader) == SCE_OK);
 	AES_ASSERT(sceGxmProgramGetType(gxpShader) == SCE_GXM_VERTEX_PROGRAM);
 
-	auto& context = RHIRenderContext::instance();
-	auto err = sceGxmShaderPatcherRegisterProgram(context.getShaderPatcher(), gxpShader, &id);
+	auto err = sceGxmShaderPatcherRegisterProgram(gxmShaderPatcher, gxpShader, &id);
 	if (err != SCE_OK)
 	{
 		AES_LOG_ERROR("sceGxmShaderPatcherRegisterProgram {}", err);
@@ -183,10 +182,10 @@ Result<void> GxmVertexShader::init(VertexShaderDescription const& desc)
 	
 	SceGxmVertexStream vertexStream;
 	vertexStream.stride = desc.verticesStride;
-	// vertexStream.indexSource = SCE_GXM_INDEX_SOURCE_INDEX_16BIT; // @Review
-	vertexStream.indexSource = SCE_GXM_INDEX_SOURCE_INDEX_32BIT; // @Review
+	vertexStream.indexSource = SCE_GXM_INDEX_SOURCE_INDEX_16BIT; // @Review
+	// vertexStream.indexSource = SCE_GXM_INDEX_SOURCE_INDEX_32BIT; // @Review
 
-	err = sceGxmShaderPatcherCreateVertexProgram(context.getShaderPatcher(), id, verticesAttributes.data(), verticesAttributes.size(), &vertexStream, 1, &vertexShader);
+	err = sceGxmShaderPatcherCreateVertexProgram(gxmShaderPatcher, id, verticesAttributes.data(), verticesAttributes.size(), &vertexStream, 1, &vertexShader);
 	if (err != SCE_OK)
 	{
 		AES_LOG_ERROR("sceGxmShaderPatcherCreateVertexProgram {}", err);
@@ -219,7 +218,7 @@ GxmFragmentShader& GxmFragmentShader::operator=(GxmFragmentShader&& rhs) noexcep
 GxmFragmentShader::~GxmFragmentShader()
 {
 	AES_PROFILE_FUNCTION();
-	sceGxmShaderPatcherReleaseFragmentProgram(RHIRenderContext::instance().getShaderPatcher(), fragmentShader);
+	sceGxmShaderPatcherReleaseFragmentProgram(gxmShaderPatcher, fragmentShader);
 }
 
 Result<void> GxmFragmentShader::init(FragmentShaderDescription const& desc)
@@ -232,8 +231,7 @@ Result<void> GxmFragmentShader::init(FragmentShaderDescription const& desc)
 	AES_ASSERT(sceGxmProgramCheck(gxpShader) == SCE_OK);
 	AES_ASSERT(sceGxmProgramGetType(gxpShader) == SCE_GXM_FRAGMENT_PROGRAM);
 
-	auto& context = RHIRenderContext::instance();
-	auto err = sceGxmShaderPatcherRegisterProgram(context.getShaderPatcher(), gxpShader, &id);
+	auto err = sceGxmShaderPatcherRegisterProgram(gxmShaderPatcher, gxpShader, &id);
 	if (err != SCE_OK)
 	{
 		AES_LOG_ERROR("failed to register fragment shader");
@@ -254,8 +252,8 @@ Result<void> GxmFragmentShader::init(FragmentShaderDescription const& desc)
 		pblendInfo = &blendInfo;
 	}
 
-	err = sceGxmShaderPatcherCreateFragmentProgram(context.getShaderPatcher(), id, SCE_GXM_OUTPUT_REGISTER_FORMAT_UCHAR4, vita_msaa_mode, pblendInfo, 
-		(SceGxmProgram const*)desc.gxpVertexProgram, &fragmentShader);
+	err = sceGxmShaderPatcherCreateFragmentProgram(gxmShaderPatcher, id, SCE_GXM_OUTPUT_REGISTER_FORMAT_UCHAR4, 
+		rhiMultisampleModeToApi(desc.multisampleMode), pblendInfo, (SceGxmProgram const*)desc.gxpVertexProgram, &fragmentShader);
 
 	if (err != SCE_OK)
 	{

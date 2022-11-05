@@ -14,7 +14,10 @@
 
 namespace aes
 {
-	Result<void> initializeGraphicsAPI();
+	inline SceGxmShaderPatcher* gxmShaderPatcher = nullptr;
+
+	void initializeGraphicsAPI();
+	void terminateGraphicsAPI();
 
 	class GxmDevice
 	{
@@ -31,6 +34,7 @@ namespace aes
 		};
 
 		public:
+		
 		GxmDevice() = default;
 		GxmDevice(GxmDevice&&) noexcept;
 		~GxmDevice();
@@ -38,6 +42,9 @@ namespace aes
 		
 		Result<void> init();
 		void destroy();
+
+		// not sure about this name
+		void swapBuffers(RHIRenderTarget const& oldBuffer, RHIRenderTarget const& newBuffer);
 
 		// draw calls
 

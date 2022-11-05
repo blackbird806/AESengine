@@ -38,28 +38,6 @@ static void displayCallback(void const* callbackData)
 	sceDisplayWaitVblankStart();
 }
 
-Result<void> aes::initializeGraphicsAPI()
-{
-	// @TODO clean this
-	auto constexpr vita_display_max_pending_swaps = 2;
-
-	// Set up parameters
-	SceGxmInitializeParams initializeParams;
-	memset(&initializeParams, 0, sizeof(SceGxmInitializeParams));
-	initializeParams.flags = 0;
-	initializeParams.displayQueueMaxPendingCount = vita_display_max_pending_swaps;
-	initializeParams.displayQueueCallback = displayCallback;
-	initializeParams.displayQueueCallbackDataSize = sizeof(DisplayData);
-	initializeParams.parameterBufferSize = SCE_GXM_DEFAULT_PARAMETER_BUFFER_SIZE;
-
-	// Start libgxm
-	if (sceGxmInitialize(&initializeParams) != SCE_OK)
-	{
-		AES_LOG_ERROR("sceGxmInitialize failed !");
-		return { AESError::Undefined };
-	}
-	return {};
-}
 
 static void* fragmentUsseAlloc(uint32_t size, SceUID* uid, uint32_t* usseOffset)
 {
@@ -139,14 +117,97 @@ static void fragmentUsseFree(SceUID uid)
 static void* patcherHostAlloc(void* userData, uint32_t size)
 {
 	AES_UNUSED(userData);
-	return malloc(size); // TODO use allocator here
+	return globalAllocator.allocate(size);
 }
 
 static void patcherHostFree(void* userData, void* mem)
 {
 	AES_UNUSED(userData);
-	free(mem);
+	globalAllocator.deallocate(mem);
 }
+
+SceUID patcherBufferUid;
+SceUID patcherVertexUsseUid;
+SceUID patcherFragmentUsseUid;
+
+void aes::initializeGraphicsAPI()
+{
+	// @TODO clean this
+	auto constexpr vita_display_max_pending_swaps = 2;
+
+	// Set up parameters
+	SceGxmInitializeParams initializeParams;
+	memset(&initializeParams, 0, sizeof(SceGxmInitializeParams));
+	initializeParams.flags = 0;
+	initializeParams.displayQueueMaxPendingCount = vita_display_max_pending_swaps;
+	initializeParams.displayQueueCallback = displayCallback;
+	initializeParams.displayQueueCallbackDataSize = sizeof(DisplayData);
+	initializeParams.parameterBufferSize = SCE_GXM_DEFAULT_PARAMETER_BUFFER_SIZE;
+
+	// Start libgxm
+	auto err = sceGxmInitialize(&initializeParams);
+	AES_ASSERT(err == SCE_OK);
+
+	// @Review buffer sizes
+	uint32_t const patcherBufferSize 		= 64 * 1024;
+	uint32_t const patcherVertexUsseSize 	= 64 * 1024;
+	uint32_t const patcherFragmentUsseSize 	= 64 * 1024;
+
+	// allocate memory for buffers and USSE code
+	void* patcherBuffer = graphicsAlloc(
+		SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE,
+		patcherBufferSize,
+		4,
+		SCE_GXM_MEMORY_ATTRIB_READ | SCE_GXM_MEMORY_ATTRIB_WRITE,
+		&patcherBufferUid, "patcher buffer");
+
+	uint32_t patcherVertexUsseOffset;
+	void* patcherVertexUsse = vertexUsseAlloc(
+		patcherVertexUsseSize,
+		&patcherVertexUsseUid,
+		&patcherVertexUsseOffset);
+
+	uint32_t patcherFragmentUsseOffset;
+	void* patcherFragmentUsse = fragmentUsseAlloc(
+		patcherFragmentUsseSize,
+		&patcherFragmentUsseUid,
+		&patcherFragmentUsseOffset);
+
+	// create a shader patcher
+	SceGxmShaderPatcherParams patcherParams {};
+	patcherParams.userData = nullptr;
+	patcherParams.hostAllocCallback = &patcherHostAlloc;
+	patcherParams.hostFreeCallback = &patcherHostFree;
+	patcherParams.bufferAllocCallback = nullptr;
+	patcherParams.bufferFreeCallback = nullptr;
+	patcherParams.bufferMem = patcherBuffer;
+	patcherParams.bufferMemSize = patcherBufferSize;
+	patcherParams.vertexUsseAllocCallback = nullptr;
+	patcherParams.vertexUsseFreeCallback = nullptr;
+	patcherParams.vertexUsseMem = patcherVertexUsse;
+	patcherParams.vertexUsseMemSize = patcherVertexUsseSize;
+	patcherParams.vertexUsseOffset = patcherVertexUsseOffset;
+	patcherParams.fragmentUsseAllocCallback = nullptr;
+	patcherParams.fragmentUsseFreeCallback = nullptr;
+	patcherParams.fragmentUsseMem = patcherFragmentUsse;
+	patcherParams.fragmentUsseMemSize = patcherFragmentUsseSize;
+	patcherParams.fragmentUsseOffset = patcherFragmentUsseOffset;
+
+	err = sceGxmShaderPatcherCreate(&patcherParams, &gxmShaderPatcher);
+	AES_ASSERT(err == SCE_OK);
+}
+
+void aes::terminateGraphicsAPI()
+{
+	sceGxmShaderPatcherDestroy(gxmShaderPatcher);
+	fragmentUsseFree(patcherFragmentUsseUid);
+	vertexUsseFree(patcherVertexUsseUid);
+	graphicsFree(patcherBufferUid);
+
+	sceGxmTerminate();
+	AES_LOG("GXM terminated successfully");
+}
+
 
 GxmDevice::GxmDevice(GxmDevice&& rhs) noexcept
 {
@@ -227,6 +288,21 @@ Result<void> GxmDevice::init()
 	return {};
 }
 
+void GxmDevice::swapBuffers(RHIRenderTarget const& oldBuffer, RHIRenderTarget const& newBuffer)
+{
+	AES_PROFILE_FUNCTION();
+
+	// PA heartbeat to notify end of frame
+	auto err = sceGxmPadHeartbeat(&newBuffer.colorSurface, newBuffer.syncObject);
+	AES_GXM_CHECK(err);
+
+	// queue the display swap for this frame
+	DisplayData displayData;
+	displayData.address = newBuffer.colorSurfaceData;
+	err = sceGxmDisplayQueueAddEntry(oldBuffer.syncObject, newBuffer.syncObject, &displayData);
+	AES_GXM_CHECK(err);
+}
+
 void GxmDevice::destroy()
 {
 	AES_PROFILE_FUNCTION();
@@ -269,6 +345,7 @@ void GxmDevice::drawIndexed(uint indexCount, uint indexOffset)
 
 void GxmDevice::beginRenderPass(RHIRenderTarget& rt)
 {
+	AES_PROFILE_FUNCTION();
 	auto err = sceGxmBeginScene(
 		context,
 		0,
@@ -282,11 +359,13 @@ void GxmDevice::beginRenderPass(RHIRenderTarget& rt)
 
 void GxmDevice::endRenderPass()
 {
+	AES_PROFILE_FUNCTION();
 	sceGxmEndScene(context, NULL, NULL);
 }
 
 void GxmDevice::setCullMode(CullMode mode)
 {
+	AES_PROFILE_FUNCTION();
 	sceGxmSetCullMode(context, rhiCullModeToApi(mode));
 }
 
