@@ -8,12 +8,12 @@
 #include "renderer/RHI/RHIShader.hpp"
 
 using namespace aes;
+
 struct vert
 {
 	glm::vec2 pos;
 	glm::vec3 col;
 };
-
 
 class TestRHIApp
 {

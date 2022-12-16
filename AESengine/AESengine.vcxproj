@@ -39,6 +39,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\core\aesException.cpp" />
     <ClCompile Include="src\core\allocator.cpp" />
     <ClCompile Include="src\core\console.cpp" />
     <ClCompile Include="src\core\debug.cpp" />
@@ -61,6 +62,7 @@
     <ClCompile Include="src\renderer\Renderer2D.cpp" />
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11BlendState.cpp" />
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11Buffer.cpp" />
+    <ClCompile Include="src\renderer\RHI\D3D11\D3D11Device.cpp" />
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11Elements.cpp" />
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11Model.cpp" />
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11renderer.cpp" />
@@ -86,6 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\aes.hpp" />
+    <ClInclude Include="src\core\aesException.hpp" />
     <ClInclude Include="src\core\allocator.hpp" />
     <ClInclude Include="src\core\array.hpp" />
     <ClInclude Include="src\core\color.hpp" />
@@ -117,6 +120,7 @@
     <ClInclude Include="src\renderer\Renderer2D.hpp" />
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11BlendState.hpp" />
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11Buffer.hpp" />
+    <ClInclude Include="src\renderer\RHI\D3D11\D3D11Device.hpp" />
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11Elements.hpp" />
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11Model.hpp" />
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11renderer.hpp" />
@@ -310,7 +314,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ExceptionHandling>false</ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
       <SupportJustMyCode>true</SupportJustMyCode>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalOptions>/w34996 %(AdditionalOptions)</AdditionalOptions>
@@ -331,7 +335,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ExceptionHandling>false</ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
       <SupportJustMyCode>true</SupportJustMyCode>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalOptions>/w34996 %(AdditionalOptions)</AdditionalOptions>
@@ -353,7 +357,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
-      <ExceptionHandling>false</ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalOptions>/w34996 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -376,7 +380,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
-      <ExceptionHandling>false</ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalOptions>/w34996 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -399,7 +403,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include;$(SolutionDir)thirdParty/kc_TrueTypeAssembler/</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
-      <ExceptionHandling>false</ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalOptions>/w34996 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -422,7 +426,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include;$(SolutionDir)thirdParty/kc_TrueTypeAssembler/</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
-      <ExceptionHandling>false</ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalOptions>/w34996 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -444,7 +448,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ExceptionHandling>false</ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
       <SupportJustMyCode>true</SupportJustMyCode>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <StringPooling>true</StringPooling>
@@ -468,7 +472,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
-      <ExceptionHandling>false</ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <StringPooling>true</StringPooling>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
@@ -493,7 +497,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
-      <ExceptionHandling>false</ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <StringPooling>true</StringPooling>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
