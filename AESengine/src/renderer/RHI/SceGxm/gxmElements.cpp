@@ -8,7 +8,7 @@ SceGxmPrimitiveType aes::rhiPrimitiveTypeToApi(DrawPrimitiveType type)
 {
 	switch (type)
 	{
-		case DrawPrimitiveType::Triangles: return SCE_GXM_PRIMITIVE_TRIANGLES; 
+		case DrawPrimitiveType::TrianglesFill: return SCE_GXM_PRIMITIVE_TRIANGLES; 
 		case DrawPrimitiveType::Points: return SCE_GXM_PRIMITIVE_POINTS; 
 		case DrawPrimitiveType::TriangleStrip: return SCE_GXM_PRIMITIVE_TRIANGLE_STRIP; 
 		case DrawPrimitiveType::Lines: return SCE_GXM_PRIMITIVE_LINES; 
@@ -16,6 +16,7 @@ SceGxmPrimitiveType aes::rhiPrimitiveTypeToApi(DrawPrimitiveType type)
 		default:
 			AES_ASSERTF(false, "DrawPrimitiveType not supported {}", type);
 	}
+	AES_UNREACHABLE();
 }
 
 SceGxmIndexFormat aes::rhiIndexFormatToApi(IndexTypeFormat format)
@@ -170,6 +171,26 @@ SceGxmMultisampleMode aes::rhiMultisampleModeToApi(MultisampleMode mode)
 		case MultisampleMode::X2: return SCE_GXM_MULTISAMPLE_2X;
 		case MultisampleMode::X4: return SCE_GXM_MULTISAMPLE_4X;
 	}
+	AES_UNREACHABLE();
+}
+
+SceGxmPolygonMode aes::rhiPolygonModeToApi(DrawPrimitiveType type)
+{
+		switch(mode)
+	{
+		case DrawPrimitiveType::Lines:
+			return SCE_GXM_POLYGON_MODE_LINE;
+		case DrawPrimitiveType::TrianglesFill:
+		case DrawPrimitiveType::TriangleStrip:
+			return SCE_GXM_POLYGON_MODE_TRIANGLE_FILL;
+		case DrawPrimitiveType::Points:
+			return SCE_GXM_POLYGON_MODE_POINT;
+		case DrawPrimitiveType::TrianglesLine:
+			return SCE_GXM_POLYGON_MODE_TRIANGLE_LINE;
+		default:
+	AES_ASSERT(false); // unsupported polygon type
+	}
+
 	AES_UNREACHABLE();
 }
 

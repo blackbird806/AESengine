@@ -20,6 +20,7 @@ namespace aes
 	uint8_t  rhiColorMaskToApi(ColorMaskFlags colorMask);
 	SceGxmCullMode rhiCullModeToApi(CullMode mode);
 	SceGxmMultisampleMode rhiMultisampleModeToApi(MultisampleMode mode);
+	SceGxmPolygonMode rhiPolygonModeToApi(DrawPrimitiveType type);
 }
 
 #endif

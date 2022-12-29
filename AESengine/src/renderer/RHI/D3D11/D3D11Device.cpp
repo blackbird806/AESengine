@@ -1,9 +1,15 @@
 #include "D3D11Device.hpp"
-#include <d3d11.h>
 #include <dxgi.h>
 
 using namespace aes;
 
+void aes::initializeGraphicsAPI()
+{
+}
+
+void aes::terminateGraphicsAPI()
+{
+}
 
 Result<void> D3D11Device::init()
 {
@@ -154,4 +160,15 @@ D3D11Device& D3D11Device::operator=(D3D11Device&& rhs) noexcept
 	rhs.debugInterface = nullptr;
 #endif
 	return *this;
+}
+
+void D3D11Device::drawIndexed(uint indexCount, uint indexOffset)
+{
+	AES_PROFILE_FUNCTION();
+	deviceContext->DrawIndexed(indexCount, indexOffset, 0);
+}
+
+void D3D11Device::setCullMode(CullMode mode)
+{
+
 }

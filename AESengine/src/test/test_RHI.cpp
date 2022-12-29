@@ -179,7 +179,7 @@ public:
 	void draw()
 	{
 		// clear
-		device.setDrawPrimitiveMode(DrawPrimitiveType::Triangles);
+		device.setDrawPrimitiveMode(DrawPrimitiveType::TrianglesFill);
 		device.setCullMode(CullMode::None);
 		device.setVertexBuffer(clearVertexBuffer, sizeof(glm::vec2));
 		device.setIndexBuffer(clearIndexBuffer, IndexTypeFormat::Uint16);
@@ -211,7 +211,7 @@ void aes::test_RHI()
 	TestRHIApp app;
 	auto startupSession = AES_STOP_PROFILE_SESSION();
 
-	while (1)
+	//while (1)
 	{
 		app.draw();
 	}

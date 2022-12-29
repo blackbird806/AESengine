@@ -373,23 +373,8 @@ void GxmDevice::setDrawPrimitiveMode(DrawPrimitiveType mode)
 {
 	AES_PROFILE_FUNCTION();
 	currentState.primitiveType = mode;
-	SceGxmPolygonMode polygonMode;
-	switch(mode)
-	{
-		case DrawPrimitiveType::Lines:
-		case DrawPrimitiveType::LineStrip:
-			polygonMode = SCE_GXM_POLYGON_MODE_LINE;
-			break;
-		case DrawPrimitiveType::Triangles:
-		case DrawPrimitiveType::TriangleStrip:
-			polygonMode = SCE_GXM_POLYGON_MODE_TRIANGLE_FILL;
-			break;
-		case DrawPrimitiveType::Points:
-			polygonMode = SCE_GXM_POLYGON_MODE_POINT;
-			break;
-	}
 	// @Review I'm still not sure of what this function is doing since sceGxmDraw has a PrimitiveType parameter
-	sceGxmSetFrontPolygonMode(context, polygonMode);
+	sceGxmSetFrontPolygonMode(context, rhiPolygonModeToApi(mode));
 }
 
 void GxmDevice::setFragmentShader(RHIFragmentShader& fs)

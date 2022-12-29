@@ -77,7 +77,7 @@ D3D_PRIMITIVE_TOPOLOGY aes::rhiPrimitiveTypeToApi(DrawPrimitiveType primitiveMod
 			return D3D_PRIMITIVE_TOPOLOGY_LINELIST;
 		case DrawPrimitiveType::LineStrip:
 			return D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
-		case DrawPrimitiveType::Triangles:
+		case DrawPrimitiveType::TrianglesFill:
 			return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 		case DrawPrimitiveType::TriangleStrip:
 			return D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;

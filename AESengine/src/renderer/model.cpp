@@ -138,7 +138,7 @@ void Model::draw()
 	modelBuffer.setDataFromPOD(glm::transpose(toWorld));
 
 	RHIRenderContext& renderContext = RHIRenderContext::instance();
-	renderContext.setDrawPrimitiveMode(DrawPrimitiveType::Triangles);
+	renderContext.setDrawPrimitiveMode(DrawPrimitiveType::TrianglesFill);
 	renderContext.bindVertexBuffer(vertexBuffer, sizeof(Vertex));
 	renderContext.bindIndexBuffer(indexBuffer, IndexTypeFormat::Uint32);
 	renderContext.drawIndexed(indexCount);

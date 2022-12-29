@@ -74,7 +74,8 @@ namespace aes
 	{
 		Lines,
 		LineStrip,
-		Triangles,
+		TrianglesFill,
+		TrianglesLine,
 		TriangleStrip,
 		Points,
 	};
@@ -233,6 +234,12 @@ namespace aes
 		uint width, height;
 		RHIFormat format;
 		MultisampleMode multisampleMode;
+	};
+
+	struct RasterizerState
+	{
+		CullMode cullMode;
+		DrawPrimitiveType primitiveType;
 	};
 
 	// theses functions assert if structure is invalid according to RHI
