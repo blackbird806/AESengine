@@ -33,7 +33,7 @@ namespace aes {
 	};
 
 	template<typename T>
-	class Result
+	class [[nodiscard]] Result
 	{
 	public:
 		using ValueType = T;

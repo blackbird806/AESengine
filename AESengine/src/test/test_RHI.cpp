@@ -70,7 +70,7 @@ public:
 			AES_LOG("clear vertex shader created");
 		}
 		{
-			aes::FragmentShaderDescription fragmentShaderDescription;
+			aes::FragmentShaderDescription fragmentShaderDescription{};
 			auto const clearShaderData_fs = aes::readFileBin("app0:assets/shaders/vita/clear_fs.gxp");
 			fragmentShaderDescription.source = clearShaderData_fs.data();
 			fragmentShaderDescription.multisampleMode = MultisampleMode::None;
@@ -96,6 +96,7 @@ public:
 			vertexBufferDesc.initialData = tri;
 
 			clearVertexBuffer.init(vertexBufferDesc);
+			AES_LOG("clear vertex buffer created");
 		}
 		{
 			uint16_t indices[] = {0, 1, 2};
@@ -108,6 +109,7 @@ public:
 			indexBufferDesc.initialData = indices;
 
 			clearIndexBuffer.init(indexBufferDesc);
+			AES_LOG("clear index buffer created");
 		}
 		// geometry init
 		{

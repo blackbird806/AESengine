@@ -176,7 +176,7 @@ SceGxmMultisampleMode aes::rhiMultisampleModeToApi(MultisampleMode mode)
 
 SceGxmPolygonMode aes::rhiPolygonModeToApi(DrawPrimitiveType type)
 {
-		switch(mode)
+	switch(type)
 	{
 		case DrawPrimitiveType::Lines:
 			return SCE_GXM_POLYGON_MODE_LINE;

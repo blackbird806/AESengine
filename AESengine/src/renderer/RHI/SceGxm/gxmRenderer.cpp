@@ -576,7 +576,7 @@ void GxmRenderer::setDrawPrimitiveMode(DrawPrimitiveType mode)
 		case DrawPrimitiveType::LineStrip:
 			polygonMode = SCE_GXM_POLYGON_MODE_LINE;
 			break;
-		case DrawPrimitiveType::Triangles:
+		case DrawPrimitiveType::TrianglesFill:
 		case DrawPrimitiveType::TriangleStrip:
 			polygonMode = SCE_GXM_POLYGON_MODE_TRIANGLE_FILL;
 			break;

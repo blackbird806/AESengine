@@ -146,7 +146,11 @@ GxmVertexShader& GxmVertexShader::operator=(GxmVertexShader&& rhs) noexcept
 GxmVertexShader::~GxmVertexShader()
 {
 	AES_PROFILE_FUNCTION();
-	sceGxmShaderPatcherReleaseVertexProgram(gxmShaderPatcher, vertexShader);
+	if (vertexShader != nullptr)
+	{
+		sceGxmShaderPatcherReleaseVertexProgram(gxmShaderPatcher, vertexShader);
+		vertexShader = nullptr;
+	}
 }
 
 Result<void> GxmVertexShader::init(VertexShaderDescription const& desc)
@@ -218,7 +222,11 @@ GxmFragmentShader& GxmFragmentShader::operator=(GxmFragmentShader&& rhs) noexcep
 GxmFragmentShader::~GxmFragmentShader()
 {
 	AES_PROFILE_FUNCTION();
-	sceGxmShaderPatcherReleaseFragmentProgram(gxmShaderPatcher, fragmentShader);
+	if (fragmentShader != nullptr)
+	{
+		sceGxmShaderPatcherReleaseFragmentProgram(gxmShaderPatcher, fragmentShader);
+		fragmentShader = nullptr;
+	}
 }
 
 Result<void> GxmFragmentShader::init(FragmentShaderDescription const& desc)
@@ -230,13 +238,16 @@ Result<void> GxmFragmentShader::init(FragmentShaderDescription const& desc)
 	AES_ASSERT(gxpShader);
 	AES_ASSERT(sceGxmProgramCheck(gxpShader) == SCE_OK);
 	AES_ASSERT(sceGxmProgramGetType(gxpShader) == SCE_GXM_FRAGMENT_PROGRAM);
-
+	
+	AES_LOG("STEP 0");
+	
 	auto err = sceGxmShaderPatcherRegisterProgram(gxmShaderPatcher, gxpShader, &id);
 	if (err != SCE_OK)
 	{
 		AES_LOG_ERROR("failed to register fragment shader");
 		return { AESError::ShaderCreationFailed };
 	}
+	AES_LOG("STEP 1");
 	
 	SceGxmBlendInfo* pblendInfo = nullptr;
 	SceGxmBlendInfo blendInfo{};
@@ -251,10 +262,11 @@ Result<void> GxmFragmentShader::init(FragmentShaderDescription const& desc)
 		blendInfo.colorMask = rhiColorMaskToApi(desc.blendInfo->colorMask);
 		pblendInfo = &blendInfo;
 	}
+	AES_LOG("STEP 2");
 
 	err = sceGxmShaderPatcherCreateFragmentProgram(gxmShaderPatcher, id, SCE_GXM_OUTPUT_REGISTER_FORMAT_UCHAR4, 
 		rhiMultisampleModeToApi(desc.multisampleMode), pblendInfo, (SceGxmProgram const*)desc.gxpVertexProgram, &fragmentShader);
-
+	AES_LOG("STEP 3");
 	if (err != SCE_OK)
 	{
 		AES_LOG_ERROR("failed to create fragment shader");
