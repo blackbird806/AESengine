@@ -202,7 +202,7 @@ public:
 			device.drawIndexed(3);
 		device.endRenderPass();
 
-		device.swapBuffers(renderTargets[0], renderTargets[0]);
+		device.swapBuffers(renderTargets[0], renderTargets[1]);
 	}
 
 };

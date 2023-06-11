@@ -13,8 +13,8 @@ int main()
 	std::ofstream file("ux0:/log/aeslog.txt");
 	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(file));
 #else
-	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(std::cout));
 #endif
+	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(std::cout));
 
 	test_RHI();
 

@@ -253,6 +253,7 @@ Result<void> GxmFragmentShader::init(FragmentShaderDescription const& desc)
 	SceGxmBlendInfo blendInfo{};
 	if (desc.blendInfo)
 	{
+		// @TODO assert SCE_GXM_OUTPUT_REGISTER_FORMAT to be either UCHAR4 or HALF4
 		blendInfo.colorFunc = rhiBlendOpToApi(desc.blendInfo->colorOp);
 		blendInfo.alphaFunc = rhiBlendOpToApi(desc.blendInfo->alphaOp);
 		blendInfo.colorSrc  = rhiBlendFactorToApi(desc.blendInfo->colorSrc);
@@ -263,13 +264,15 @@ Result<void> GxmFragmentShader::init(FragmentShaderDescription const& desc)
 		pblendInfo = &blendInfo;
 	}
 	AES_LOG("STEP 2");
-
+	AES_LOG("sceGxmShaderPatcherCreateFragmentProgram args\ngxmShaderPatcher: {}\nid: {}\nmultisample: {}\nblendinfo: {}\ngxpProgram: {}\nfragmentShader: {}",
+		(void*)gxmShaderPatcher, (void*)id, rhiMultisampleModeToApi(desc.multisampleMode), (void*)pblendInfo, desc.gxpVertexProgram, 
+		(void*)&fragmentShader);
 	err = sceGxmShaderPatcherCreateFragmentProgram(gxmShaderPatcher, id, SCE_GXM_OUTPUT_REGISTER_FORMAT_UCHAR4, 
 		rhiMultisampleModeToApi(desc.multisampleMode), pblendInfo, (SceGxmProgram const*)desc.gxpVertexProgram, &fragmentShader);
 	AES_LOG("STEP 3");
 	if (err != SCE_OK)
 	{
-		AES_LOG_ERROR("failed to create fragment shader");
+		AES_LOG_ERROR("failed to create fragment shader err: {}", err);
 		return { AESError::ShaderCreationFailed };
 	}
 

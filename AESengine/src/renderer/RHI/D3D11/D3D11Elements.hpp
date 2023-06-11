@@ -2,7 +2,6 @@
 #define AES_D3D11ELEMENTS_HPP
 
 #include <d3d11.h>
-
 #include "renderer/RHI/RHIElements.hpp"
 
 namespace aes
@@ -18,6 +17,7 @@ namespace aes
 
 	D3D11_FILTER rhiTextureFilterToApi(TextureFilter filter);
 	D3D11_TEXTURE_ADDRESS_MODE rhiTextureAddressModeToApi(TextureAddressMode adressMode);
+	D3D11_CULL_MODE rhiCullModeToApi(CullMode cullMode);
 }
 
 #endif

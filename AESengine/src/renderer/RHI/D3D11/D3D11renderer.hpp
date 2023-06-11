@@ -29,7 +29,6 @@ namespace aes {
 		void bindVSUniformBuffer(RHIBuffer& buffer, uint slot);
 		void bindFSUniformBuffer(RHIBuffer& buffer, uint slot);
 
-
 		void setVertexSampler(RHISampler& sampler, uint index);
 		void setFragmentSampler(RHISampler& sampler, uint index);
 		void bindVertexTexture(RHITexture& tex, uint index);

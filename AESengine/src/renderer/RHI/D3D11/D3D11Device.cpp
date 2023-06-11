@@ -1,5 +1,9 @@
 #include "D3D11Device.hpp"
 #include <dxgi.h>
+#include "D3D11Elements.hpp"
+#include "core/aesException.hpp"
+#include "D3D11shader.hpp"
+#include "renderer/RHI/RHIBuffer.hpp"
 
 using namespace aes;
 
@@ -170,5 +174,60 @@ void D3D11Device::drawIndexed(uint indexCount, uint indexOffset)
 
 void D3D11Device::setCullMode(CullMode mode)
 {
+	AES_PROFILE_FUNCTION();
+	rasterStateDesc.CullMode = rhiCullModeToApi(mode);
+	setRasterizerState();
+}
 
+void D3D11Device::setDrawPrimitiveMode(DrawPrimitiveType mode)
+{
+	AES_PROFILE_FUNCTION();
+	deviceContext->IASetPrimitiveTopology(rhiPrimitiveTypeToApi(mode));
+}
+
+void D3D11Device::setRasterizerState()
+{
+	HRESULT const result = device->CreateRasterizerState(&rasterStateDesc, &rasterState);
+	if (FAILED(result))
+	{
+		throw RHIException("D3D11 CreateRasterizerState failed !");
+	}
+	deviceContext->RSSetState(rasterState);
+}
+
+
+void D3D11Device::setBlendState(D3D11BlendState& blendState)
+{
+	AES_PROFILE_FUNCTION();
+	deviceContext->OMSetBlendState(blendState.getHandle(), nullptr, 0xffffffff);
+}
+
+void D3D11Device::setFragmentShader(RHIFragmentShader& fs)
+{
+	AES_PROFILE_FUNCTION();
+	if (fs.blendState.getHandle() != nullptr)
+		setBlendState(fs.blendState);
+	deviceContext->PSSetShader(fs.getHandle(), nullptr, 0);
+}
+
+void D3D11Device::setVertexShader(RHIVertexShader& vs)
+{
+	AES_PROFILE_FUNCTION();
+	deviceContext->IASetInputLayout(vs.getInputLayout());
+	deviceContext->VSSetShader(vs.getHandle(), nullptr, 0);
+}
+
+Result<void> D3D11Device::setVertexBuffer(RHIBuffer& buffer, uint stride, uint offset)
+{
+	AES_PROFILE_FUNCTION();
+	ID3D11Buffer* handle = buffer.getHandle();
+	deviceContext->IASetVertexBuffers(0, 1, &handle, &stride, &offset);
+	return {};
+}
+
+Result<void> D3D11Device::setIndexBuffer(RHIBuffer& buffer, IndexTypeFormat typeFormat, uint offset)
+{
+	AES_PROFILE_FUNCTION();
+	deviceContext->IASetIndexBuffer(buffer.getHandle(), rhiTypeFormatToApi(typeFormat), offset);
+	return {};
 }

@@ -154,4 +154,14 @@ D3D11_TEXTURE_ADDRESS_MODE aes::rhiTextureAddressModeToApi(TextureAddressMode ad
 	AES_UNREACHABLE();
 }
 
+D3D11_CULL_MODE aes::rhiCullModeToApi(CullMode cullMode)
+{
+	// I'm really not sure if GXM match 1/1 D3D on this case
+	switch (cullMode)
+	{
+	case CullMode::Clockwise: return D3D11_CULL_FRONT;
+	case CullMode::CounterClockwise: return D3D11_CULL_BACK;
+	}
+	AES_UNREACHABLE();
+}
 

@@ -62,10 +62,13 @@ namespace aes
 		Result<void> bindVertexTexture(RHITexture& buffer, uint slot);
 
 	private:
+		void setBlendState(D3D11BlendState& blendState);
+
 		IDXGIFactory* factory = nullptr;
 		ID3D11Device* device = nullptr;
 		ID3D11DeviceContext* deviceContext = nullptr;
-		D3D11_RASTERIZER_DESC rasterState;
+		D3D11_RASTERIZER_DESC rasterStateDesc;
+		ID3D11RasterizerState* rasterState = nullptr;
 
 #ifdef AES_DEBUG
 		ID3D11Debug* debugInterface = nullptr;
