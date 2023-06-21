@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <string>
-#include <span>
+#include "core/arrayView.hpp"
 #include <optional>
 #include <variant>
 
@@ -20,7 +20,7 @@ namespace aes
 		Read = 0x1,
 		Write = 0x2
 	};
-	using CPUAccessFlags = Flags<CPUAccessFlagBits>;
+	using CPUAccessFlags = AES_FLAGS_T(CPUAccessFlagBits);
 
 	enum class MemoryUsage
 	{
@@ -36,7 +36,7 @@ namespace aes
 		IndexBuffer = 0x2,
 		UniformBuffer = 0x4,
 	};
-	using BindFlags = Flags<BindFlagBits>;
+	using BindFlags = AES_FLAGS_T(BindFlagBits);
 
 	enum class BlendOp
 	{
@@ -68,7 +68,7 @@ namespace aes
 		B = 0x8,
 		All = (A | R | G | B)
 	};
-	using ColorMaskFlags = Flags<ColorMaskBits>;
+	using ColorMaskFlags = AES_FLAGS_T(ColorMaskBits);
 
 	enum class DrawPrimitiveType
 	{
@@ -121,7 +121,7 @@ namespace aes
 		X4,
 	};
 
-	constexpr const char* getSemanticName(SemanticType e)
+	AES_CPP20CONSTEXPR const char* getSemanticName(SemanticType e)
 	{
 		switch (e)
 		{
@@ -174,7 +174,7 @@ namespace aes
 		R32G32B32A32_Float,
 	};
 
-	constexpr uint getFormatSize(RHIFormat format)
+	AES_CPP20CONSTEXPR uint getFormatSize(RHIFormat format)
 	{
 		switch(format)
 		{
@@ -205,7 +205,7 @@ namespace aes
 
 	struct VertexShaderDescription : ShaderDescription
 	{
-		std::span<VertexInputLayout> verticesLayout;
+		ArrayView<VertexInputLayout> verticesLayout;
 		uint32_t verticesStride;
 	};
 

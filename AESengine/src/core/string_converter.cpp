@@ -1,5 +1,5 @@
 #include "string_converter.hpp"
-
+#ifdef _WIN32
 #include "aes.hpp"
 #include "debug.hpp"
 
@@ -38,3 +38,4 @@ std::string aes::to_string(std::wstring_view in)
 	}
 	return out;
 }
+#endif

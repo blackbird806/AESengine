@@ -1,7 +1,7 @@
 #ifndef AES_ERROR_HPP
 #define AES_ERROR_HPP
 
-#include <variant>
+#include <type_traits>
 #include <utility>
 
 #include "aes.hpp"
@@ -39,48 +39,52 @@ namespace aes {
 		using ValueType = T;
 		using ErrorCodeType = UnderlyingError_t;
 
-		Result(T&& val) noexcept : value_(std::forward<T>(val))
+		Result(T&& val) noexcept : payload(std::forward<T>(val))
 		{
 
 		}
 
-		Result(T const& val) noexcept : value_(val)
+		Result(T const& val) noexcept : payload(val)
 		{
 
 		}
 
-		Result(AESError err) noexcept : value_(static_cast<ErrorCodeType>(err))
+		Result(AESError err) noexcept : payload(static_cast<ErrorCodeType>(err))
 		{
 
 		}
+
+		Result(Result const&) = delete;
+		
+		Result(Result&&) = delete;
 
 		operator bool() const noexcept
 		{
-			return std::holds_alternative<ValueType>(value_);
+			return isError;
 		}
 
 		ValueType const& value() const& noexcept
 		{
 			AES_ASSERT(this->operator bool());
-			return std::get<ValueType>(value_);
+			return payload.val;
 		}
 
 		ValueType& value() & noexcept
 		{
 			AES_ASSERT(this->operator bool());
-			return std::get<ValueType>(value_);
+			return payload.val;
 		}
 
 		ValueType const&& value() const&& noexcept
 		{
 			AES_ASSERT(this->operator bool());
-			return std::move(std::get<ValueType>(value_));
+			return std::move(payload.val);
 		}
 
 		ValueType&& value() && noexcept
 		{
 			AES_ASSERT(this->operator bool());
-			return std::move(std::get<ValueType>(value_));
+			return std::move(payload.val);
 		}
 
 		ValueType const* operator->() const noexcept
@@ -96,11 +100,27 @@ namespace aes {
 		ErrorCodeType error() const noexcept
 		{
 			AES_ASSERT(!this->operator bool());
-			return std::get<ErrorCodeType>(value_);
+			return payload.err;
+		}
+
+		~Result() noexcept
+		{
+			if constexpr (!std::is_trivially_destructible<ValueType>::value)
+			{
+				if (isError)
+				{
+					payload.val.~ValueType();
+				}
+			}
 		}
 
 	private:
-		std::variant<ErrorCodeType, ValueType> value_;
+		union
+		{
+			ErrorCodeType err;
+			ValueType val;
+		} payload;
+		bool isError;
 	};
 
 	template<>
@@ -115,24 +135,25 @@ namespace aes {
 
 		}
 
-		Result(AESError err) noexcept : value_(static_cast<ErrorCodeType>(err))
+		Result(AESError err) noexcept : err(static_cast<ErrorCodeType>(err)), isError(true)
 		{
 
 		}
 
 		operator bool() const noexcept
 		{
-			return std::holds_alternative<std::monostate>(value_);
+			return isError;
 		}
 
 		ErrorCodeType error() const noexcept
 		{
 			AES_ASSERT(!this->operator bool());
-			return std::get<ErrorCodeType>(value_);
+			return err;
 		}
 
 	private:
-		std::variant<std::monostate, ErrorCodeType> value_;
+		ErrorCodeType err;
+		bool isError = false;
 	};
 
 	inline const char* to_string(AESError err)
@@ -162,6 +183,7 @@ namespace aes {
 	}
 }
 
+#ifdef AES_CPP20
 template<>
 struct fmt::formatter<aes::AESError> 
 {
@@ -177,5 +199,5 @@ struct fmt::formatter<aes::AESError>
 		return fmt::format_to(ctx.out(), "{}", to_string(err));
 	};
 };
-
+#endif
 #endif

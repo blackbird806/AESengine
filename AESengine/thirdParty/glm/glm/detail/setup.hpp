@@ -651,7 +651,7 @@ namespace detail
 #if GLM_HAS_EXTENDED_INTEGER_TYPE
 #	include <cstdint>
 #endif
-
+#include <stdint.h>
 namespace glm{
 namespace detail
 {

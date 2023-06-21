@@ -40,12 +40,12 @@ namespace aes {
 		
 		RectBounds getBounds() const
 		{
-			return {
-				.topL = { min.x, max.y },
-				.topR = max,
-				.minL = min,
-				.minR = { max.x, min.y }
-			};
+			RectBounds bounds{};
+			bounds.topL = { min.x, max.y };
+			bounds.topR = max;
+			bounds.minL = min;
+			bounds.minR = { max.x, min.y };
+			return bounds;
 		}
 	};
 

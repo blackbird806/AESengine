@@ -5,6 +5,20 @@
 
 #define AES_UNUSED(x) ((void)(x))
 
+#ifdef __SNC__
+	#define AES_CPP11
+	#define AES_CPP20CONSTEXPR
+#else
+	#define AES_CPP20
+	#define AES_CPP20CONSTEXPR constexpr
+#endif
+
+#ifndef VITA_SDK
+	#if defined(__vita__) && !defined(__SNC__) 
+		#define VITA_SDK
+	#endif
+#endif
+
 #ifdef _MSC_VER	
 	#define AES_ASSUME(x) __assume(x)
 	#define AES_RESTRICT(x) __restrict x
@@ -14,16 +28,22 @@
 #elif defined (__GNUC__)
 	#define AES_RESTRICT(x) __restrict__ x
 	#define AES_ASSUME(x)
+#elif defined (__SNC__)
+	#define AES_RESTRICT(x) __restrict x
+	#define AES_ASSUME(x)
 #endif
 
 #ifdef AES_DEBUG
-	#ifdef _WIN32
+	#ifdef _MSC_VER
 		#define AES_DEBUG_BREAK() __debugbreak()
-	#elif defined(__vita__)
+	#elif defined(__vita__) && defined (__GNUC__)
 		#define AES_DEBUG_BREAK() std::abort()
+	#elif defined(__vita__) && defined (__SNC__)
+		#define AES_DEBUG_BREAK() __builtin_breakpoint(0)
 	#else
 		#define AES_DEBUG_BREAK() __builtin_trap()
 	#endif
+
 	#define AES_ASSERT(x) if (x) {} else { AES_LOG_ERROR("Assertion Failed : " #x); AES_DEBUG_BREAK(); }
 	#define AES_ASSERTF(x, msg, ...) if (x) {} else { AES_LOG_ERROR("Assertion Failed : " #x " " msg, __VA_ARGS__); AES_DEBUG_BREAK(); }
 #else
@@ -42,7 +62,7 @@
 		#define AES_UNREACHABLE() __builtin_unreachable()
 	#endif
 #else
-	#define AES_UNREACHABLE() AES_ASSERT(false);
+	#define AES_UNREACHABLE() AES_ASSERT(false)
 #endif
 
 using uint = unsigned int;

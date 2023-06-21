@@ -44,13 +44,14 @@ void Console::processCurrentLine()
 	auto const it = std::find(currentLine.begin(), currentLine.end(), ' ');
 	std::string cmdName(currentLine.begin(), it);
 	std::string params(it, currentLine.end());
+	auto const cmdIt = commandTable.find(cmdName);
 
-	if (commandTable.contains(cmdName))
+	if (cmdIt != commandTable.end())
 	{
-		outStream << commandTable[cmdName](std::move(params));
+		outStream << cmdIt->second(std::move(params));
 	}
 	else
 	{
-		outStream << fmt::format("error command \"{}\" not found !\n", cmdName);
+		//outStream << fmt::format("error command \"{}\" not found !\n", cmdName);
 	}
 }

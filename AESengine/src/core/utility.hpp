@@ -2,9 +2,10 @@
 #define AES_UTILITY_HPP
 
 #include <string>
-#include <string_view>
-#include <vector>
+#include <type_traits>
 #include "aes.hpp"
+#include "stringView.hpp"
+#include "array.hpp"
 #include "macro_helpers.hpp"
 
 #define AES_SCOPE(code) ::aes::Scope AES_CONCAT(aes_scope_internal_, __COUNTER__) ([&](){code;});
@@ -12,13 +13,13 @@
 
 namespace aes {
 	
-	std::string readFile(std::string_view file);
-	std::vector<uint8_t> readFileBin(std::string_view file);
+	std::string readFile(StringView file);
+	Array<uint8_t> readFileBin(StringView file);
 
-	std::vector<std::string> split(std::string_view a, char sep);
+	std::vector<std::string> split(StringView a, char sep);
 
 	// see Game engine architecture 6.2.1.3 (p431)
-	constexpr uintptr_t align(uintptr_t x, uint32_t a)
+	AES_CPP20CONSTEXPR uintptr_t align(uintptr_t x, uint32_t a)
 	{
 		uint32_t const mask = a - 1;
 		AES_ASSERT((a & mask) == 0);
@@ -60,6 +61,7 @@ namespace aes {
 		F func;
 	};
 
+#ifdef AES_CPP20
 	template <typename BitType>
 	class Flags
 	{
@@ -146,6 +148,10 @@ namespace aes {
 	private:
 		MaskType mask;
 	};
+	#define AES_FLAGS_T(T) Flags<T>
+#else
+	#define AES_FLAGS_T(T) uint32_t
+#endif
 }
 
 #endif // !UTILITY_HPP

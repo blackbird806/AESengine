@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|PSVita">
+      <Configuration>Debug</Configuration>
+      <Platform>PSVita</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|PSVita">
+      <Configuration>Release</Configuration>
+      <Platform>PSVita</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\core\aesException.cpp" />
+    <ClCompile Include="..\src\core\allocator.cpp" />
+    <ClCompile Include="..\src\core\console.cpp" />
+    <ClCompile Include="..\src\core\debug.cpp" />
+    <ClCompile Include="..\src\core\geometry.cpp" />
+    <ClCompile Include="..\src\core\input.cpp" />
+    <ClCompile Include="..\src\core\maths.cpp" />
+    <ClCompile Include="..\src\core\profiler.cpp" />
+    <ClCompile Include="..\src\core\string_converter.cpp" />
+    <ClCompile Include="..\src\core\utility.cpp" />
+    <ClCompile Include="..\src\core\window.cpp" />
+    <ClCompile Include="..\src\engine.cpp" />
+    <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\renderer\camera.cpp" />
+    <ClCompile Include="..\src\renderer\draw2d.cpp" />
+    <ClCompile Include="..\src\renderer\FontManager.cpp" />
+    <ClCompile Include="..\src\renderer\fontRenderer.cpp" />
+    <ClCompile Include="..\src\renderer\material.cpp" />
+    <ClCompile Include="..\src\renderer\model.cpp" />
+    <ClCompile Include="..\src\renderer\RHI\RHIBuffer.cpp" />
+    <ClCompile Include="..\src\renderer\RHI\RHIValidation.cpp" />
+    <ClCompile Include="..\src\renderer\RHI\SceGxm\gxmBuffer.cpp" />
+    <ClCompile Include="..\src\renderer\RHI\SceGxm\gxmDevice.cpp" />
+    <ClCompile Include="..\src\renderer\RHI\SceGxm\gxmElements.cpp" />
+    <ClCompile Include="..\src\renderer\RHI\SceGxm\gxmMemory.cpp" />
+    <ClCompile Include="..\src\renderer\RHI\SceGxm\gxmRenderer.cpp" />
+    <ClCompile Include="..\src\renderer\RHI\SceGxm\gxmRenderTarget.cpp" />
+    <ClCompile Include="..\src\renderer\RHI\SceGxm\gxmSampler.cpp" />
+    <ClCompile Include="..\src\renderer\RHI\SceGxm\gxmShader.cpp" />
+    <ClCompile Include="..\src\renderer\RHI\SceGxm\gxmTexture.cpp" />
+    <ClCompile Include="..\src\renderer\textureUtility.cpp" />
+    <ClCompile Include="..\src\spatial\BSPTree.cpp" />
+    <ClCompile Include="..\src\spatial\octree.cpp" />
+    <ClCompile Include="..\src\test\test_draw2d.cpp" />
+    <ClCompile Include="..\src\test\test_draw3d.cpp" />
+    <ClCompile Include="..\src\test\test_font.cpp" />
+    <ClCompile Include="..\src\test\test_imgui.cpp" />
+    <ClCompile Include="..\src\test\test_RHI.cpp" />
+    <ClCompile Include="..\src\UI\imgui.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\core\aes.hpp" />
+    <ClInclude Include="..\src\core\aesException.hpp" />
+    <ClInclude Include="..\src\core\allocator.hpp" />
+    <ClInclude Include="..\src\core\array.hpp" />
+    <ClInclude Include="..\src\core\arrayView.hpp" />
+    <ClInclude Include="..\src\core\color.hpp" />
+    <ClInclude Include="..\src\core\console.hpp" />
+    <ClInclude Include="..\src\core\debug.hpp" />
+    <ClInclude Include="..\src\core\debugMath.hpp" />
+    <ClInclude Include="..\src\core\error.hpp" />
+    <ClInclude Include="..\src\core\geometry.hpp" />
+    <ClInclude Include="..\src\core\input.hpp" />
+    <ClInclude Include="..\src\core\jobSystem.hpp" />
+    <ClInclude Include="..\src\core\macro_helpers.hpp" />
+    <ClInclude Include="..\src\core\maths.hpp" />
+    <ClInclude Include="..\src\core\os.hpp" />
+    <ClInclude Include="..\src\core\profiler.hpp" />
+    <ClInclude Include="..\src\core\reflection.hpp" />
+    <ClInclude Include="..\src\core\simd.hpp" />
+    <ClInclude Include="..\src\core\stringView.hpp" />
+    <ClInclude Include="..\src\core\string_converter.hpp" />
+    <ClInclude Include="..\src\core\uniquePtr.hpp" />
+    <ClInclude Include="..\src\core\utility.hpp" />
+    <ClInclude Include="..\src\core\window.hpp" />
+    <ClInclude Include="..\src\engine.hpp" />
+    <ClInclude Include="..\src\renderer\camera.hpp" />
+    <ClInclude Include="..\src\renderer\draw2d.hpp" />
+    <ClInclude Include="..\src\renderer\FontManager.hpp" />
+    <ClInclude Include="..\src\renderer\fontRenderer.hpp" />
+    <ClInclude Include="..\src\renderer\material.hpp" />
+    <ClInclude Include="..\src\renderer\model.hpp" />
+    <ClInclude Include="..\src\renderer\RHI\RHI.hpp" />
+    <ClInclude Include="..\src\renderer\RHI\RHIBuffer.hpp" />
+    <ClInclude Include="..\src\renderer\RHI\RHIDevice.hpp" />
+    <ClInclude Include="..\src\renderer\RHI\RHIElements.hpp" />
+    <ClInclude Include="..\src\renderer\RHI\RHIRenderContext.hpp" />
+    <ClInclude Include="..\src\renderer\RHI\RHIRenderTarget.hpp" />
+    <ClInclude Include="..\src\renderer\RHI\RHISampler.hpp" />
+    <ClInclude Include="..\src\renderer\RHI\RHIShader.hpp" />
+    <ClInclude Include="..\src\renderer\RHI\RHIShaderReflection.hpp" />
+    <ClInclude Include="..\src\renderer\RHI\RHITexture.hpp" />
+    <ClInclude Include="..\src\renderer\RHI\SceGxm\gxmBuffer.hpp" />
+    <ClInclude Include="..\src\renderer\RHI\SceGxm\gxmCompatibilty.h" />
+    <ClInclude Include="..\src\renderer\RHI\SceGxm\gxmDebug.hpp" />
+    <ClInclude Include="..\src\renderer\RHI\SceGxm\gxmDevice.hpp" />
+    <ClInclude Include="..\src\renderer\RHI\SceGxm\gxmElements.hpp" />
+    <ClInclude Include="..\src\renderer\RHI\SceGxm\gxmMemory.hpp" />
+    <ClInclude Include="..\src\renderer\RHI\SceGxm\gxmRenderer.hpp" />
+    <ClInclude Include="..\src\renderer\RHI\SceGxm\gxmRenderTarget.hpp" />
+    <ClInclude Include="..\src\renderer\RHI\SceGxm\gxmSampler.hpp" />
+    <ClInclude Include="..\src\renderer\RHI\SceGxm\gxmShader.hpp" />
+    <ClInclude Include="..\src\renderer\RHI\SceGxm\gxmTexture.hpp" />
+    <ClInclude Include="..\src\renderer\textureUtility.hpp" />
+    <ClInclude Include="..\src\renderer\vertex.hpp" />
+    <ClInclude Include="..\src\spatial\BSPTree.hpp" />
+    <ClInclude Include="..\src\spatial\octree.hpp" />
+    <ClInclude Include="..\src\test\tests.hpp" />
+    <ClInclude Include="..\src\UI\imgui.hpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{CD4EBECB-BFD9-467C-ADEA-F8B4A48977D0}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|PSVita'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|PSVita'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <PropertyGroup Condition="'$(DebuggerFlavor)'=='PSVitaDebugger'" Label="OverrideDebuggerDefaults">
+    <!--LocalDebuggerCommand>$(TargetPath)</LocalDebuggerCommand-->
+    <!--LocalDebuggerReboot>false</LocalDebuggerReboot-->
+    <!--LocalDebuggerCommandArguments></LocalDebuggerCommandArguments-->
+    <!--LocalDebuggerTarget></LocalDebuggerTarget-->
+    <!--LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory-->
+    <!--LocalMappingFile></LocalMappingFile-->
+    <!--LocalRunCommandLine></LocalRunCommandLine-->
+  </PropertyGroup>
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|PSVita'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|PSVita'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|PSVita'">
+    <VcpkgEnabled>false</VcpkgEnabled>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|PSVita'">
+    <VcpkgEnabled>false</VcpkgEnabled>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|PSVita'">
+    <ClCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);__vita__</PreprocessorDefinitions>
+      <OptimizationLevel>Level2</OptimizationLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(SolutionDir)../thirdParty/;$(SolutionDir)../thirdParty/glm/;$(SolutionDir)../thirdParty/fmt/include/;$(SolutionDir)../src/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CppLanguageStd>Cpp11</CppLanguageStd>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|PSVita'">
+    <ClCompile>
+      <PreprocessorDefinitions>_DEBUG;AES_DEBUG;%(PreprocessorDefinitions);__vita__</PreprocessorDefinitions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CppLanguageStd>Cpp11</CppLanguageStd>
+      <AdditionalIncludeDirectories>$(SolutionDir)../thirdParty/;$(SolutionDir)../thirdParty/glm/;$(SolutionDir)../thirdParty/fmt/include/;$(SolutionDir)../src/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <Import Condition="'$(ConfigurationType)' == 'Makefile' and Exists('$(VCTargetsPath)\Platforms\$(Platform)\SCE.Makefile.$(Platform).targets')" Project="$(VCTargetsPath)\Platforms\$(Platform)\SCE.Makefile.$(Platform).targets" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

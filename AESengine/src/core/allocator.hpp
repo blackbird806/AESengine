@@ -2,7 +2,6 @@
 #define AES_ALLOCATOR_HPP
 
 #include "core/aes.hpp"
-#include <memory_resource>
 
 namespace aes
 {
@@ -40,7 +39,7 @@ namespace aes
 	//};
 
 	// @Review memory_resource will be useless as we may not use std containers
-	class IAllocator : public std::pmr::memory_resource
+	class IAllocator
 	{
 	public:
 
@@ -52,11 +51,6 @@ namespace aes
 
 		[[nodiscard]] virtual void* allocate(size_t size, size_t align = 1) = 0;
 		virtual void deallocate(void* ptr) = 0;
-
-		void* do_allocate(size_t size, size_t align) override;
-		void do_deallocate(void* ptr, size_t size, size_t align) override;
-		bool do_is_equal(const memory_resource& rhs) const noexcept override;
-
 		virtual ~IAllocator() {}
 	};
 

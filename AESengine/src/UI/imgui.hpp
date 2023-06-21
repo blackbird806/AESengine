@@ -6,11 +6,11 @@
 #include "core/allocator.hpp"
 #include "core/array.hpp"
 #include "core/geometry.hpp"
+#include "core/stringView.hpp"
 
 /*
  * AES Object Oriented ImGui implementation, heavly inspired by Dear ImGui and microUI
  */
-
 namespace aes
 {
 	using ImGuiId = int;
@@ -44,10 +44,10 @@ namespace aes
 
 	struct ImguiDrawCmd
 	{
-		using Arg_t = std::variant<TextArg, RectArg>;
+		//using Arg_t = std::variant<TextArg, RectArg>;
 
 		ImguiDrawCmdType type;
-		Arg_t arg;
+		//Arg_t arg;
 	};
 
 	struct InputData
@@ -66,12 +66,12 @@ namespace aes
 		void updateInputData(InputData const& inputData);
 		void beginFrame();
 
-		void beginWindow(std::string_view winName);
+		void beginWindow(StringView winName);
 		void endWindow();
 
-		void label(std::string_view text);
-		bool button(std::string_view name);
-		bool sliderFloat(std::string_view name, float& f);
+		void label(StringView text);
+		bool button(StringView name);
+		bool sliderFloat(StringView name, float& f);
 
 	//private:
 

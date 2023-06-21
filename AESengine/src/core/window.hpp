@@ -15,8 +15,8 @@ namespace aes {
 			return fn != nullptr;
 		}
 
-		template<typename ...Args>
-		auto operator()(Args&&... args)
+		template<typename R, typename ...Args>
+		R operator()(Args&&... args)
 		{
 			AES_ASSERT(fn);
 			return fn(std::forward<Args>(args)..., userData);

@@ -37,7 +37,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20")
 set(VITA_MKSFOEX_FLAGS "${VITA_MKSFOEX_FLAGS} -d PARENTAL_LEVEL=1")
 
 add_definitions(-DAES_DEBUG )
-add_definitions(-DGLM_FORCE_CTOR_INIT)
+add_definitions(-DVITA_SDK )
+add_definitions(-DGLM_FORCE_CTOR_INIT )
 
 # Add any additional include paths here
 include_directories(
@@ -93,6 +94,8 @@ target_link_libraries(${PROJECT_NAME}
   SceGxm_stub
   SceNet_stub
   SceCtrl_stub 
+  SceRazorCapture_stub_weak
+  SceSysmodule_stub
 )
 
 ## Create Vita files

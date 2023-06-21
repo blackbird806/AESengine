@@ -195,6 +195,25 @@ void aes::initializeGraphicsAPI()
 
 	err = sceGxmShaderPatcherCreate(&patcherParams, &gxmShaderPatcher);
 	AES_ASSERT(err == SCE_OK);
+	
+#define ENABLE_RAZOR_HUD
+#define ENABLE_RAZOR_GPU_CAPTURE
+#ifdef ENABLE_RAZOR_HUD
+	// Initialize the Razor HUD system.
+	// This should be done before the call to sceGxmInitialize().
+	// err = sceSysmoduleLoadModule( SCE_SYSMODULE_RAZOR_HUD );
+	AES_ASSERT(err == SCE_OK);
+
+#endif
+
+#ifdef ENABLE_RAZOR_GPU_CAPTURE
+	// Initialize the Razor capture system.
+	// This should be done before the call to sceGxmInitialize().
+	// err = sceSysmoduleLoadModule( SCE_SYSMODULE_RAZOR_CAPTURE );
+	AES_ASSERT(err == SCE_OK);
+	// Trigger a capture after 100 frames.
+	// sceRazorGpuCaptureSetTrigger( 100, "app0:basic.sgx" );
+#endif
 }
 
 void aes::terminateGraphicsAPI()

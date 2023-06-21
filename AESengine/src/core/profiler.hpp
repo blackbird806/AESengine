@@ -34,6 +34,9 @@ namespace aes
 
 	struct ProfileData
 	{
+		ProfileData() = default;
+		ProfileData(ProfileData const&) = default;
+		ProfileData(const char* n, const char* p, ProfileTime_t time) : name(n), parentName(p), elapsedTime(time) {}
 		const char* name;
 		const char* parentName;
 		ProfileTime_t elapsedTime;

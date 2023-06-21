@@ -3,7 +3,10 @@
 
 #include "allocator.hpp"
 #include "error.hpp"
+#include "aes.hpp"
+#ifdef AES_CPP20
 #include <concepts>
+#endif
 
 namespace aes
 {
@@ -18,25 +21,29 @@ namespace aes
 
 		using Iterator_t = T*;
 
-		constexpr Array(IAllocator& allocator) noexcept
+		AES_CPP20CONSTEXPR Array(IAllocator& allocator) noexcept
 			: alloc(&allocator), buffer(nullptr), size_(0), capacity_(0)
 		{
 			
 		}
 
+#ifdef AES_CPP20
 		template<std::ranges::input_range Range>
-		constexpr Array(IAllocator& allocator, Range const& range) noexcept
+#else
+		template<typename Range>
+#endif
+		AES_CPP20CONSTEXPR Array(IAllocator& allocator, Range const& range) noexcept
 			: alloc(&allocator)
 		{
 			insert(begin(), range);
 		}
 
-		constexpr Array(Array const& rhs) noexcept
+		AES_CPP20CONSTEXPR Array(Array const& rhs) noexcept
 		{
 			*this = rhs;
 		}
 
-		constexpr Array(Array&& rhs) noexcept
+		AES_CPP20CONSTEXPR Array(Array&& rhs) noexcept
 		{
 			*this = std::move(rhs);
 		}
@@ -46,7 +53,7 @@ namespace aes
 			return alloc;
 		}
 
-		constexpr Result<void> copyFrom(Array const& rhs) noexcept
+		AES_CPP20CONSTEXPR Result<void> copyFrom(Array const& rhs) noexcept
 		{
 			clear();
 			alloc = rhs.alloc;
@@ -63,14 +70,14 @@ namespace aes
 			return {};
 		}
 
-		constexpr Array& operator=(Array const& rhs) noexcept
+		AES_CPP20CONSTEXPR Array& operator=(Array const& rhs) noexcept
 		{
 			auto const err = copyFrom(rhs);
 			AES_ASSERT(err);
 			return *this;
 		}
 
-		constexpr Array& operator=(Array&& rhs) noexcept
+		AES_CPP20CONSTEXPR Array& operator=(Array&& rhs) noexcept
 		{
 			clear();
 			alloc = rhs.alloc;
@@ -86,7 +93,7 @@ namespace aes
 			return *this;
 		}
 
-		constexpr Result<void> reserve(uint32_t n) noexcept
+		AES_CPP20CONSTEXPR Result<void> reserve(uint32_t n) noexcept
 		{
 			AES_ASSERT(n != 0);
 
@@ -105,7 +112,7 @@ namespace aes
 			return {};
 		}
 
-		constexpr Result<void> resize(uint32_t n) noexcept
+		AES_CPP20CONSTEXPR Result<void> resize(uint32_t n) noexcept
 		{
 			if (n == size_)
 				return {};
@@ -130,7 +137,7 @@ namespace aes
 			return {};
 		}
 
-		constexpr Result<void> push(T const& e) noexcept
+		AES_CPP20CONSTEXPR Result<void> push(T const& e) noexcept
 		{
 			if (size_ == capacity_)
 			{
@@ -142,7 +149,7 @@ namespace aes
 			return {};
 		}
 
-		constexpr Result<void> push(T&& e) noexcept
+		AES_CPP20CONSTEXPR Result<void> push(T&& e) noexcept
 		{
 			if (size_ == capacity_)
 			{
@@ -154,8 +161,12 @@ namespace aes
 			return {};
 		}
 
+#ifdef AES_CPP20
 		template<std::ranges::input_range Range>
-		constexpr Result<void> insert(Iterator_t pos, Range const& range) noexcept
+#else
+		template<typename Range>
+#endif
+		AES_CPP20CONSTEXPR Result<void> insert(Iterator_t pos, Range const& range) noexcept
 		{
 			uint32_t const rangeSize = std::ranges::size(range);
 			uint32_t const newSize = size_ + rangeSize;
@@ -201,51 +212,51 @@ namespace aes
 			return {};
 		}
 
-		constexpr Result<void> insert(Iterator_t pos, T&& val) noexcept
+		AES_CPP20CONSTEXPR Result<void> insert(Iterator_t pos, T&& val) noexcept
 		{
 			return insert(pos, { std::forward<T>(val) });
 		}
 
-		constexpr void pop() noexcept
+		AES_CPP20CONSTEXPR void pop() noexcept
 		{
 			AES_BOUNDS_CHECK(size_ > 0);
 			buffer[--size_].~T();
 		}
 
-		constexpr T const& operator[](uint32_t i) const noexcept
+		AES_CPP20CONSTEXPR T const& operator[](uint32_t i) const noexcept
 		{
 			AES_BOUNDS_CHECK(i < size_);
 			return buffer[i];
 		}
 
-		constexpr T& operator[](uint32_t i) noexcept
+		AES_CPP20CONSTEXPR T& operator[](uint32_t i) noexcept
 		{
 			AES_BOUNDS_CHECK(i < size_);
 			return buffer[i];
 		}
 
-		constexpr uint32_t size() const noexcept { return size_; }
-		constexpr uint32_t capacity() const noexcept { return capacity_; }
-		constexpr bool empty() const noexcept { return size_ == 0; }
+		AES_CPP20CONSTEXPR uint32_t size() const noexcept { return size_; }
+		AES_CPP20CONSTEXPR uint32_t capacity() const noexcept { return capacity_; }
+		AES_CPP20CONSTEXPR bool empty() const noexcept { return size_ == 0; }
 
-		constexpr Iterator_t begin() const noexcept { return buffer; }
-		constexpr Iterator_t end() const noexcept { return buffer ? buffer + size_ : nullptr; }
+		AES_CPP20CONSTEXPR Iterator_t begin() const noexcept { return buffer; }
+		AES_CPP20CONSTEXPR Iterator_t end() const noexcept { return buffer ? buffer + size_ : nullptr; }
 
-		constexpr T const& front() const noexcept { AES_BOUNDS_CHECK(size_ > 0); return buffer[0]; }
-		constexpr T const& back() const noexcept { AES_BOUNDS_CHECK(size_ > 0); return buffer[size_ - 1]; }
+		AES_CPP20CONSTEXPR T const& front() const noexcept { AES_BOUNDS_CHECK(size_ > 0); return buffer[0]; }
+		AES_CPP20CONSTEXPR T const& back() const noexcept { AES_BOUNDS_CHECK(size_ > 0); return buffer[size_ - 1]; }
 
-		constexpr T& front() noexcept { AES_BOUNDS_CHECK(size_ > 0); return buffer[0]; }
-		constexpr T& back() noexcept { AES_BOUNDS_CHECK(size_ > 0); return buffer[size_ - 1]; }
+		AES_CPP20CONSTEXPR T& front() noexcept { AES_BOUNDS_CHECK(size_ > 0); return buffer[0]; }
+		AES_CPP20CONSTEXPR T& back() noexcept { AES_BOUNDS_CHECK(size_ > 0); return buffer[size_ - 1]; }
 
-		constexpr T const* data() const noexcept { return buffer; }
-		constexpr T* data() noexcept { return buffer; }
+		AES_CPP20CONSTEXPR T const* data() const noexcept { return buffer; }
+		AES_CPP20CONSTEXPR T* data() noexcept { return buffer; }
 
 		/**
 		 * \brief free unused memory of capacity
 		 * after a successful call of shrink size() == capacity()
 		 * \return AESError::MemoryAllocationFailed or success
 		 */
-		constexpr Result<void> shrink() noexcept
+		AES_CPP20CONSTEXPR Result<void> shrink() noexcept
 		{
 			if (size_ == capacity_)
 				return {};
@@ -260,14 +271,14 @@ namespace aes
 			return {};
 		}
 			 
-		constexpr void clear() noexcept
+		AES_CPP20CONSTEXPR void clear() noexcept
 		{
 			for (uint32_t i = 0; i < size_; i++)
 				buffer[i].~T();
 			size_ = 0;
 		}
 
-		constexpr ~Array() noexcept
+		AES_CPP20CONSTEXPR ~Array() noexcept
 		{
 			if (buffer)
 			{
@@ -279,20 +290,20 @@ namespace aes
 
 		private:
 
-		constexpr void moveBuffer(T* const newBuffer)
+		AES_CPP20CONSTEXPR void moveBuffer(T* const newBuffer)
 		{
 			// @performance conditionaly use use memcpy here ?
 			for (uint32_t i = 0; i < size_; i++)
 				new (&newBuffer[i]) T(std::move(buffer[i]));
 		}
 
-		constexpr Result<void> grow() noexcept
+		AES_CPP20CONSTEXPR Result<void> grow() noexcept
 		{
 			uint32_t const newCapacity = increasedCapacity();
 			return reserve(newCapacity);
 		}
 
-		constexpr uint32_t increasedCapacity() const noexcept
+		AES_CPP20CONSTEXPR uint32_t increasedCapacity() const noexcept
 		{
 			// @Review @performance
 			// geometric growth with 8 base
