@@ -24,14 +24,13 @@ static void displayCallback(void const* callbackData)
 	auto constexpr vita_display_color_format = SCE_GXM_COLOR_FORMAT_U8U8U8U8_RGBA;
 
 	DisplayData const* displayData = (DisplayData const*)callbackData;
-	SceDisplayFrameBuf frameBuf {
-		.size = sizeof(SceDisplayFrameBuf),
-		.base = displayData->address,
-		.pitch = vita_display_stride_in_pixels,
-		.pixelformat = vita_display_pixel_format,
-		.width = vita_display_width,
-		.height = vita_display_height
-	};
+	SceDisplayFrameBuf frameBuf{};
+	frameBuf.size = sizeof(SceDisplayFrameBuf);
+	frameBuf.base = displayData->address;
+	frameBuf.pitch = vita_display_stride_in_pixels;
+	frameBuf.pixelformat = vita_display_pixel_format;
+	frameBuf.width = vita_display_width;
+	frameBuf.height = vita_display_height;
 
 	// TODO Thread safe assert / Logs
 	sceDisplaySetFrameBuf(&frameBuf, (SceDisplaySetBufSync) SCE_DISPLAY_UPDATETIMING_NEXTVSYNC);

@@ -67,6 +67,7 @@
     <ClInclude Include="..\src\core\jobSystem.hpp" />
     <ClInclude Include="..\src\core\macro_helpers.hpp" />
     <ClInclude Include="..\src\core\maths.hpp" />
+    <ClInclude Include="..\src\core\optional.hpp" />
     <ClInclude Include="..\src\core\os.hpp" />
     <ClInclude Include="..\src\core\profiler.hpp" />
     <ClInclude Include="..\src\core\reflection.hpp" />
@@ -75,6 +76,7 @@
     <ClInclude Include="..\src\core\string_converter.hpp" />
     <ClInclude Include="..\src\core\uniquePtr.hpp" />
     <ClInclude Include="..\src\core\utility.hpp" />
+    <ClInclude Include="..\src\core\variant.hpp" />
     <ClInclude Include="..\src\core\window.hpp" />
     <ClInclude Include="..\src\engine.hpp" />
     <ClInclude Include="..\src\renderer\camera.hpp" />

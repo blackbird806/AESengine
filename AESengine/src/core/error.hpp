@@ -58,7 +58,7 @@ namespace aes {
 		
 		Result(Result&&) = delete;
 
-		operator bool() const noexcept
+		[[nodiscard]] operator bool() const noexcept
 		{
 			return isError;
 		}
@@ -97,13 +97,13 @@ namespace aes {
 			return &value();
 		}
 
-		ErrorCodeType error() const noexcept
+		[[nodiscard]] ErrorCodeType error() const noexcept
 		{
 			AES_ASSERT(!this->operator bool());
 			return payload.err;
 		}
 
-		~Result() noexcept
+		~Result() noexcept(std::is_nothrow_destructible<T>::value)
 		{
 			if constexpr (!std::is_trivially_destructible<ValueType>::value)
 			{
@@ -124,7 +124,7 @@ namespace aes {
 	};
 
 	template<>
-	class Result<void>
+	class [[nodiscard]] Result<void>
 	{
 	public:
 		using ValueType = void;
@@ -140,12 +140,12 @@ namespace aes {
 
 		}
 
-		operator bool() const noexcept
+		[[nodiscard]] operator bool() const noexcept
 		{
 			return isError;
 		}
 
-		ErrorCodeType error() const noexcept
+		[[nodiscard]] ErrorCodeType error() const noexcept
 		{
 			AES_ASSERT(!this->operator bool());
 			return err;
@@ -156,7 +156,7 @@ namespace aes {
 		bool isError = false;
 	};
 
-	inline const char* to_string(AESError err)
+	[[nodiscard]] inline const char* to_string(AESError err)
 	{
 #define CASE(X) case AESError::X: return #X;
 		switch (err)

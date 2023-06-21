@@ -304,5 +304,11 @@
     <ClInclude Include="..\src\core\arrayView.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\core\optional.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\variant.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

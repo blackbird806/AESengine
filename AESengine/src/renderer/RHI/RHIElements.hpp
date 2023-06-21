@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <string>
 #include "core/arrayView.hpp"
-#include <optional>
+#include "core/optional.hpp"
 #include <variant>
 
 #include "core/aes.hpp"
@@ -212,7 +212,7 @@ namespace aes
 	struct FragmentShaderDescription : ShaderDescription
 	{
 		// because of gxm blend info is bound to the fragment shader
-		std::optional<BlendInfo> blendInfo;
+		Optional<BlendInfo> blendInfo;
 		MultisampleMode multisampleMode; // used by gxm for shaderpatcher 
 
 		// TODO: clean this
