@@ -1,9 +1,8 @@
 #ifndef AES_GXMELEMENTS_HPP
 #define AES_GXMELEMENTS_HPP
 
+#include "core/platformVita/vitagxm.h"
 #include "renderer/RHI/RHIElements.hpp"
-
-#include <psp2/gxm.h>
 
 namespace aes
 {

@@ -3,7 +3,7 @@
 
 #include "core/error.hpp"
 #include "renderer/RHI/RHIElements.hpp"
-#include <psp2/gxm.h>
+#include "core/platformVita/vitagxm.h"
 
 namespace aes
 {

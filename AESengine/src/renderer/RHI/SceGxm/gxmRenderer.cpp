@@ -112,17 +112,16 @@ struct DisplayData
 static void displayCallback(void const* callbackData)
 {
 	DisplayData const* displayData = (DisplayData const*)callbackData;
-	SceDisplayFrameBuf frameBuf {
-		.size = sizeof(SceDisplayFrameBuf),
-		.base = displayData->address,
-		.pitch = vita_display_stride_in_pixels,
-		.pixelformat = vita_display_pixel_format,
-		.width = vita_display_width,
-		.height = vita_display_height
-	};
+	SceDisplayFrameBuf frameBuf {};
+	frameBuf.size = sizeof(SceDisplayFrameBuf);
+	frameBuf.base = displayData->address;
+	frameBuf.pitch = vita_display_stride_in_pixels;
+	frameBuf.pixelformat = vita_display_pixel_format;
+	frameBuf.width = vita_display_width;
+	frameBuf.height = vita_display_height;
 
 	// TODO Thread safe assert / Logs
-	sceDisplaySetFrameBuf(&frameBuf, (SceDisplaySetBufSync) SCE_DISPLAY_UPDATETIMING_NEXTVSYNC);
+	sceDisplaySetFrameBuf(&frameBuf, SCE_DISPLAY_UPDATETIMING_NEXTVSYNC);
 	sceDisplayWaitVblankStart();
 }
 
@@ -137,13 +136,12 @@ void GxmRenderer::init(Window& windowHandle)
 	inst = this;
 
 	// init gxm
-	SceGxmInitializeParams initializeParams = {
-		.flags = 0,
-		.displayQueueMaxPendingCount = vita_display_max_pending_swaps,
-		.displayQueueCallback = displayCallback,
-		.displayQueueCallbackDataSize = sizeof(DisplayData),
-		.parameterBufferSize = SCE_GXM_DEFAULT_PARAMETER_BUFFER_SIZE
-	};
+	SceGxmInitializeParams initializeParams = {};
+	initializeParams.flags = 0;
+	initializeParams.displayQueueMaxPendingCount = vita_display_max_pending_swaps;
+	initializeParams.displayQueueCallback = displayCallback;
+	initializeParams.displayQueueCallbackDataSize = sizeof(DisplayData);
+	initializeParams.parameterBufferSize = SCE_GXM_DEFAULT_PARAMETER_BUFFER_SIZE;
 
 	auto err = sceGxmInitialize(&initializeParams);
 	AES_ASSERT(err == SCE_OK);

@@ -24,13 +24,31 @@ namespace aes
 	template<typename ...Args>
 	using LargestType = typename LargerTypeHelper<Args...>::Result;
 
-	struct Variant 
-
 	template<typename ...Args>
-	class Variant
+	struct Variant_TODO
 	{
 
 	};
+	
+	template<typename T>
+	struct Payload_W
+	{
+		T value;
+	};
+
+	template<typename ...Args>
+	struct Variant_Workaroud : Payload_W<Args>...
+	{
+		template<typename T>
+		T& get()
+		{
+			return Payload_W<T>::value;
+		}
+		
+	};
+
+	template<typename ...Args>
+	using Variant = Variant_Workaroud<Args...>;
 }
 
 #endif

@@ -10,7 +10,7 @@
 #include "../RHIShader.hpp"
 #include "../RHISampler.hpp"
 #include <glm/glm.hpp>
-#include <vitasdk.h>
+#include <display.h>
 #include "gxmCompatibilty.h"
 #include "gxmMemory.hpp"
 

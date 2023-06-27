@@ -2,10 +2,10 @@
 #define AES_DRAW2D_HPP
 
 #include <glm/glm.hpp>
-#include <string_view>
 
 #include "core/error.hpp"
 #include "core/array.hpp"
+#include "core/stringView.hpp"
 #include "RHI/RHIBuffer.hpp"
 #include "RHI/RHIShader.hpp"
 #include "RHI/RHITexture.hpp"
@@ -37,7 +37,7 @@ namespace aes
 		void drawFillRect(Rect const& rect);
 		void drawRect(Rect const& rect);
 		void drawImage(RHITexture& texture, Rect const& rect);
-		void drawText(FontRessource& font, std::string_view str, glm::vec2 pos);
+		void drawText(FontRessource& font, StringView str, glm::vec2 pos);
 
 		void executeDrawCommands();
 		

@@ -1,5 +1,4 @@
 #include "fontRenderer.hpp"
-#include <ranges>
 #include <stb/stb_rect_pack.h>
 #include <stb/stb_truetype.h>
 #define STB_IMAGE_WRITE_IMPLEMENTATION

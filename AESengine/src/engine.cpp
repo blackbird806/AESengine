@@ -15,7 +15,7 @@ Engine::Engine(InitInfo const& info) :
 #ifdef _WIN32
 	mainWindow(std::make_unique<Win_Window>(info.appName)),
 #else
-	mainWindow(std::make_unique<EmptyWindow>()),
+	mainWindow(new EmptyWindow()),
 #endif
 	appName(info.appName), keyJustPressed(globalAllocator)
 {
@@ -33,26 +33,26 @@ void Engine::init()
 {
 	AES_PROFILE_FUNCTION();
 	mainWindow->open();
-	mainWindow->setKeyCallback({ [](InputAction action, int key, void* userData) {
+	//mainWindow->setKeyCallback({ [](InputAction action, int key, void* userData) {
 
-		Engine& self = *static_cast<Engine*>(userData);
-		Key const k = windowsToAESKey(key);
-		
-		if (action == InputAction::Pressed)
-		{
-			self.onKeyPressed(k);
-			if (self.keyStates[k] == InputState::Up)
-				self.keyJustPressed.push(k);
+	//	Engine& self = *static_cast<Engine*>(userData);
+	//	Key const k = windowsToAESKey(key);
+	//	
+	//	if (action == InputAction::Pressed)
+	//	{
+	//		self.onKeyPressed(k);
+	//		if (self.keyStates[k] == InputState::Up)
+	//			self.keyJustPressed.push(k);
 
-			self.keyStates[k] = InputState::Down;
-		}
-		else
-		{
-			self.onKeyReleased(k);
-			self.keyStates[k] = InputState::Up;
-		}
+	//		self.keyStates[k] = InputState::Down;
+	//	}
+	//	else
+	//	{
+	//		self.onKeyReleased(k);
+	//		self.keyStates[k] = InputState::Up;
+	//	}
 
-		}, this });
+	//	}, this });
 
 	renderer.init(*mainWindow);
 	AES_LOG("engine initialized");
@@ -100,7 +100,7 @@ bool Engine::isKeyDown(Key k) noexcept
 
 bool Engine::isKeyPressed(Key k) noexcept
 {
-	return std::ranges::find(keyJustPressed, k) != keyJustPressed.end();
+	return std::find(keyJustPressed.begin(), keyJustPressed.end(), k) != keyJustPressed.end();
 }
 
 void Engine::getViewportMousePos(float& x, float& y) const noexcept

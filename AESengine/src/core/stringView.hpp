@@ -11,11 +11,12 @@ namespace aes
 	{
 	public:
 		
-		using Iterator_t = char*;
+		using Iterator_t = const char*;
 
 		AES_CPP20CONSTEXPR StringView() noexcept : data_(nullptr), size_(0) { }
+		AES_CPP20CONSTEXPR StringView(const char* str) noexcept : data_(str), size_(strlen(str)) { }
 		AES_CPP20CONSTEXPR StringView(StringView const& rhs) noexcept : data_(rhs.data_), size_(rhs.size_) { }
-		AES_CPP20CONSTEXPR StringView(char* str, size_t len) noexcept : data_(str), size_(len) { }
+		AES_CPP20CONSTEXPR StringView(const char* str, size_t len) noexcept : data_(str), size_(len) { }
 		AES_CPP20CONSTEXPR StringView(std::nullptr_t) = delete;
 
 		AES_CPP20CONSTEXPR StringView& operator=(StringView const& view) noexcept = default;
@@ -61,7 +62,7 @@ namespace aes
 
 		[[nodiscard]] AES_CPP20CONSTEXPR bool operator!=(StringView const& rhs) const noexcept
 		{
-			!(*this == rhs);
+			return !(*this == rhs);
 		}
 
 		[[nodiscard]] AES_CPP20CONSTEXPR Iterator_t begin() const noexcept
@@ -87,7 +88,7 @@ namespace aes
 		}
 
 	private:
-		char* data_;
+		const char* data_;
 		size_t size_;
 	};
 }

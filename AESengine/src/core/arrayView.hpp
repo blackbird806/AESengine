@@ -18,13 +18,13 @@ namespace aes
 
 		AES_CPP20CONSTEXPR ArrayView& operator=(ArrayView const& view) noexcept = default;
 
-		[[nodiscard]] AES_CPP20CONSTEXPR char const& operator[](size_t i) const noexcept
+		[[nodiscard]] AES_CPP20CONSTEXPR T& operator[](size_t i) const noexcept
 		{
 			AES_BOUNDS_CHECK(i < size_);
 			return data_[i];
 		}
 
-		[[nodiscard]] AES_CPP20CONSTEXPR char const* data() const noexcept
+		[[nodiscard]] AES_CPP20CONSTEXPR T* data() const noexcept
 		{
 			return data_;
 		}
@@ -62,13 +62,13 @@ namespace aes
 			return data_ + size_;
 		}
 
-		[[nodiscard]] AES_CPP20CONSTEXPR char front() const noexcept
+		[[nodiscard]] AES_CPP20CONSTEXPR T& front() const noexcept
 		{
 			AES_BOUNDS_CHECK(size_ > 0);
 			return *data_;
 		}
 
-		[[nodiscard]] AES_CPP20CONSTEXPR char back() const noexcept
+		[[nodiscard]] AES_CPP20CONSTEXPR T& back() const noexcept
 		{
 			AES_BOUNDS_CHECK(size_ > 0);
 			return data_[size_ - 1];

@@ -79,35 +79,36 @@ std::vector<UniformBufferReflectionInfo> GxmShader::getUniformBufferInfos() cons
 		}
 		else if (parameterCategory == SCE_GXM_PARAMETER_CATEGORY_UNIFORM)
 		{
-			std::string const bufferName = split(sceGxmProgramParameterGetName(param), '.')[0];
-			auto const it = std::find_if(uniformBuffersInfos.begin(), uniformBuffersInfos.end(), [&bufferName](auto const& a) { return a.name == bufferName; });
-			if (it != uniformBuffersInfos.end())
-			{
-				// update infos about the existing buffer
-				// TODO deduce the buffer size according his members and ubo alignement
-				// it->size += getProgramParameterSize(param); // unsupported for now
-			}
-			else
-			{
-				// New buffer read add it
-				uniformBuffersInfos.push_back({
-						.name = std::move(bufferName), 
-						.index = sceGxmProgramParameterGetContainerIndex(param),
-						.size = getProgramParameterSize(param) });
-			}
+			//std::string const bufferName = split(sceGxmProgramParameterGetName(param), '.')[0];
+			//auto const it = std::find_if(uniformBuffersInfos.begin(), uniformBuffersInfos.end(), [&bufferName](auto const& a) { return a.name == bufferName; });
+			//if (it != uniformBuffersInfos.end())
+			//{
+			//	// update infos about the existing buffer
+			//	// TODO deduce the buffer size according his members and ubo alignement
+			//	// it->size += getProgramParameterSize(param); // unsupported for now
+			//}
+			//else
+			//{
+			//	// New buffer read add it
+			//	uniformBuffersInfos.push_back({
+			//			.name = std::move(bufferName), 
+			//			.index = sceGxmProgramParameterGetContainerIndex(param),
+			//			.size = getProgramParameterSize(param) });
+			//}
 		}
 	}
 	return uniformBuffersInfos;
 }
 
-static auto getFormatComponents(RHIFormat format)
+struct FormatComponent
+{
+	SceGxmAttributeFormat attribFormat;
+	uint32_t numComponents;
+};
+
+static FormatComponent getFormatComponents(RHIFormat format)
 {
 	AES_PROFILE_FUNCTION();
-	struct FormatComponent
-	{
-		SceGxmAttributeFormat attribFormat;
-		uint32_t numComponents;
-	};
 
 	switch(format)
 	{
@@ -156,9 +157,10 @@ GxmVertexShader::~GxmVertexShader()
 Result<void> GxmVertexShader::init(VertexShaderDescription const& desc)
 {
 	AES_PROFILE_FUNCTION();
-	AES_ASSERTF(std::holds_alternative<uint8_t const*>(desc.source), "runtime compiled shaders aren't supported on vita platform ! {}", std::holds_alternative<uint8_t const*>(desc.source));
+	//AES_ASSERTF(std::holds_alternative<uint8_t const*>(desc.source), "runtime compiled shaders aren't supported on vita platform ! {}", std::holds_alternative<uint8_t const*>(desc.source));
 	
-	gxpShader = reinterpret_cast<SceGxmProgram const*>(std::get<uint8_t const*>(desc.source));
+	//gxpShader = reinterpret_cast<SceGxmProgram const*>(std::get<uint8_t const*>(desc.source));
+	gxpShader = reinterpret_cast<SceGxmProgram const*>(desc.source.Payload_W<aes::ShaderDescription::Binary>::value);
 	AES_ASSERT(gxpShader != nullptr);
 	AES_ASSERT(sceGxmProgramCheck(gxpShader) == SCE_OK);
 	AES_ASSERT(sceGxmProgramGetType(gxpShader) == SCE_GXM_VERTEX_PROGRAM);
@@ -171,8 +173,9 @@ Result<void> GxmVertexShader::init(VertexShaderDescription const& desc)
 	}
 
 	std::vector<SceGxmVertexAttribute> verticesAttributes(desc.verticesLayout.size());
-	for (int i = 0; auto const& layout : desc.verticesLayout)
+	for (int i = 0; i < desc.verticesLayout.size(); i++)
 	{
+		auto const& layout = desc.verticesLayout[i];
 		verticesAttributes[i].streamIndex = 0;
 		verticesAttributes[i].offset = layout.offset;
 		auto const formatComponents = getFormatComponents(layout.format);
@@ -232,9 +235,11 @@ GxmFragmentShader::~GxmFragmentShader()
 Result<void> GxmFragmentShader::init(FragmentShaderDescription const& desc)
 {
 	AES_PROFILE_FUNCTION();
-	AES_ASSERTF(std::holds_alternative<uint8_t const*>(desc.source), "runtime compiled shaders aren't supported on vita platform ! {}", std::holds_alternative<uint8_t const*>(desc.source));
+	//AES_ASSERTF(std::holds_alternative<uint8_t const*>(desc.source), "runtime compiled shaders aren't supported on vita platform ! {}", std::holds_alternative<uint8_t const*>(desc.source));
 	
-	gxpShader = reinterpret_cast<SceGxmProgram const*>(std::get<uint8_t const*>(desc.source));
+	//gxpShader = reinterpret_cast<SceGxmProgram const*>(std::get<uint8_t const*>(desc.source));
+	gxpShader = reinterpret_cast<SceGxmProgram const*>(desc.source.Payload_W<aes::ShaderDescription::Binary>::value);
+
 	AES_ASSERT(gxpShader);
 	AES_ASSERT(sceGxmProgramCheck(gxpShader) == SCE_OK);
 	AES_ASSERT(sceGxmProgramGetType(gxpShader) == SCE_GXM_FRAGMENT_PROGRAM);
@@ -254,13 +259,13 @@ Result<void> GxmFragmentShader::init(FragmentShaderDescription const& desc)
 	if (desc.blendInfo)
 	{
 		// @TODO assert SCE_GXM_OUTPUT_REGISTER_FORMAT to be either UCHAR4 or HALF4
-		blendInfo.colorFunc = rhiBlendOpToApi(desc.blendInfo->colorOp);
-		blendInfo.alphaFunc = rhiBlendOpToApi(desc.blendInfo->alphaOp);
-		blendInfo.colorSrc  = rhiBlendFactorToApi(desc.blendInfo->colorSrc);
-		blendInfo.colorDst  = rhiBlendFactorToApi(desc.blendInfo->colorDst);
-		blendInfo.alphaSrc  = rhiBlendFactorToApi(desc.blendInfo->alphaSrc);
-		blendInfo.alphaDst  = rhiBlendFactorToApi(desc.blendInfo->alphaDst);
-		blendInfo.colorMask = rhiColorMaskToApi(desc.blendInfo->colorMask);
+		blendInfo.colorFunc = rhiBlendOpToApi(desc.blendInfo.value().colorOp);
+		blendInfo.alphaFunc = rhiBlendOpToApi(desc.blendInfo.value().alphaOp);
+		blendInfo.colorSrc  = rhiBlendFactorToApi(desc.blendInfo.value().colorSrc);
+		blendInfo.colorDst  = rhiBlendFactorToApi(desc.blendInfo.value().colorDst);
+		blendInfo.alphaSrc  = rhiBlendFactorToApi(desc.blendInfo.value().alphaSrc);
+		blendInfo.alphaDst  = rhiBlendFactorToApi(desc.blendInfo.value().alphaDst);
+		blendInfo.colorMask = rhiColorMaskToApi(desc.blendInfo.value().colorMask);
 		pblendInfo = &blendInfo;
 	}
 	AES_LOG("STEP 2");

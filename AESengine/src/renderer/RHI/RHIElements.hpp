@@ -6,7 +6,7 @@
 #include <string>
 #include "core/arrayView.hpp"
 #include "core/optional.hpp"
-#include <variant>
+#include "core/variant.hpp"
 
 #include "core/aes.hpp"
 #include "core/utility.hpp"
@@ -200,7 +200,7 @@ namespace aes
 	struct ShaderDescription
 	{
 		using Binary = uint8_t const*;
-		std::variant<std::string, Binary> source;
+		Variant<std::string, Binary> source;
 	};
 
 	struct VertexShaderDescription : ShaderDescription

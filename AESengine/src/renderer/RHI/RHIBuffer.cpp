@@ -6,7 +6,8 @@ using namespace aes;
 
 Result<void> RHIBuffer::setData(void* data, size_t size)
 {
-	if (auto rdata = map())
+	auto const rdata = map();
+	if (rdata)
 	{
 		memcpy(rdata.value(), data, size);
 	}

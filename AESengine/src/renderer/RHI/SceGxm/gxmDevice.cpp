@@ -5,8 +5,11 @@
 #include "gxmElements.hpp"
 #include "gxmDebug.hpp"
 #include "gxmMemory.hpp"
+#include <display.h>
 
 using namespace aes;
+
+SceGxmShaderPatcher* gxmShaderPatcher = nullptr;
 
 struct DisplayData
 {
@@ -33,7 +36,7 @@ static void displayCallback(void const* callbackData)
 	frameBuf.height = vita_display_height;
 
 	// TODO Thread safe assert / Logs
-	sceDisplaySetFrameBuf(&frameBuf, (SceDisplaySetBufSync) SCE_DISPLAY_UPDATETIMING_NEXTVSYNC);
+	sceDisplaySetFrameBuf(&frameBuf, SCE_DISPLAY_UPDATETIMING_NEXTVSYNC);
 	sceDisplayWaitVblankStart();
 }
 

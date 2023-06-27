@@ -80,9 +80,6 @@
     <ClCompile Include="..\src\renderer\draw2d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\renderer\FontManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\renderer\fontRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -217,9 +214,6 @@
     <ClInclude Include="..\src\renderer\draw2d.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\renderer\FontManager.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\renderer\fontRenderer.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -308,6 +302,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\core\variant.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\core\platformVita\vitagxm.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

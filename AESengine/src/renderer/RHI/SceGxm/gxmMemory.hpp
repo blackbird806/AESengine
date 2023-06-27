@@ -1,8 +1,9 @@
 #ifndef AES_GXMMEMORY_HPP
 #define AES_GXMMEMORY_HPP
 
-#include <psp2/kernel/sysmem.h>  // for SceKernelMemBlockType
-#include <psp2/gxm.h>
+//#include <psp2/kernel/sysmem.h>  // for SceKernelMemBlockType
+#include <kernel.h>
+#include "core/platformVita/vitagxm.h"
 
 namespace aes
 {

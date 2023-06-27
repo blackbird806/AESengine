@@ -37,11 +37,11 @@ Result<void> Draw2d::init()
 		VertexShaderDescription vertexShaderDescription;
 #ifdef __vita__
 		auto const source_vs = readFileBin("app0:assets/shaders/vita/basic2d_vs.gxp");
-		vertexShaderDescription.source = source_vs.data();
+		//vertexShaderDescription.source = source_vs.data();
 #else
 		vertexShaderDescription.source = readFile("assets/shaders/HLSL/draw2d.vs");
 #endif
-		vertexShaderDescription.verticesLayout = vertexInputLayout;
+		//vertexShaderDescription.verticesLayout = vertexInputLayout;
 		vertexShaderDescription.verticesStride = sizeof(ColorVertex);
 
 		auto err = colorVertexShader.init(vertexShaderDescription);
@@ -51,7 +51,7 @@ Result<void> Draw2d::init()
 		FragmentShaderDescription fragmentShaderDescription;
 #ifdef __vita__
 		auto const source_fs = readFileBin("app0:assets/shaders/vita/basic2d_fs.gxp");
-		fragmentShaderDescription.source = source_fs.data();
+		//fragmentShaderDescription.source = source_fs.data();
 		fragmentShaderDescription.gxpVertexProgram = colorVertexShader.getGxpShader();
 #else
 		fragmentShaderDescription.source = readFile("assets/shaders/HLSL/draw2d.fs");
@@ -77,11 +77,11 @@ Result<void> Draw2d::init()
 		VertexShaderDescription vertexShaderDescription;
 #ifdef __vita__
 		auto const source_vs = readFileBin("app0:assets/shaders/vita/texture2d_vs.gxp");
-		vertexShaderDescription.source = source_vs.data();
+		//vertexShaderDescription.source = source_vs.data();
 #else
 		vertexShaderDescription.source = readFile("assets/shaders/HLSL/texture2d.vs");
 #endif
-		vertexShaderDescription.verticesLayout = vertexInputLayout;
+		//vertexShaderDescription.verticesLayout = vertexInputLayout;
 		vertexShaderDescription.verticesStride = sizeof(TextureVertex);
 
 		auto err = textureVertexShader.init(vertexShaderDescription);
@@ -100,7 +100,7 @@ Result<void> Draw2d::init()
 		FragmentShaderDescription fragmentShaderDescription;
 #ifdef __vita__
 		auto const source_fs = readFileBin("app0:assets/shaders/vita/texture2d_fs.gxp");
-		fragmentShaderDescription.source = source_fs.data();
+		//fragmentShaderDescription.source = source_fs.data();
 		fragmentShaderDescription.gxpVertexProgram = textureVertexShader.getGxpShader();
 #else
 		fragmentShaderDescription.source = readFile("assets/shaders/HLSL/texture2d.fs");
@@ -236,7 +236,7 @@ void Draw2d::drawImage(RHITexture& texture, Rect const& rect)
 }
 
 // check https://github.com/ocornut/imgui/blob/master/imgui_draw.cpp#L3542
-void Draw2d::drawText(FontRessource& font, std::string_view str, glm::vec2 pos)
+void Draw2d::drawText(FontRessource& font, StringView str, glm::vec2 pos)
 {
 	AES_PROFILE_FUNCTION();
 

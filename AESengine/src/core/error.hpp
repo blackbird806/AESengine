@@ -37,27 +37,36 @@ namespace aes {
 	{
 	public:
 		using ValueType = T;
-		using ErrorCodeType = UnderlyingError_t;
+		using ErrorCodeType = AESError;
 
-		Result(T&& val) noexcept : payload(std::forward<T>(val))
+
+		Result(Result&& rhs) noexcept
 		{
-
+			isError = rhs.isError;
+			if (isError)
+			{
+				payload.err = rhs.error();
+			}
+			else
+			{
+				payload.val = std::move(rhs.payload.val);
+			}
 		}
 
-		Result(T const& val) noexcept : payload(val)
+		Result(T&& val) noexcept 
 		{
-
+			isError = false;
+			payload.val = std::forward<T>(val);
 		}
 
-		Result(AESError err) noexcept : payload(static_cast<ErrorCodeType>(err))
+		Result(AESError err) noexcept 
 		{
-
+			isError = true;
+			payload.err = err;
 		}
 
 		Result(Result const&) = delete;
 		
-		Result(Result&&) = delete;
-
 		[[nodiscard]] operator bool() const noexcept
 		{
 			return isError;
@@ -105,7 +114,7 @@ namespace aes {
 
 		~Result() noexcept(std::is_nothrow_destructible<T>::value)
 		{
-			if constexpr (!std::is_trivially_destructible<ValueType>::value)
+			if AES_CPP20CONSTEXPR (!std::is_trivially_destructible<ValueType>::value)
 			{
 				if (isError)
 				{

@@ -9,12 +9,12 @@
 #include "renderer/RHI/RHIBuffer.hpp"
 #include "renderer/RHI/RHIRenderTarget.hpp"
 
-#include <psp2/gxm.h>
+#include "core/platformVita/vitagxm.h"
 #include "gxmCompatibilty.h"
 
 namespace aes
 {
-	inline SceGxmShaderPatcher* gxmShaderPatcher = nullptr;
+	extern SceGxmShaderPatcher* gxmShaderPatcher;
 
 	void initializeGraphicsAPI();
 	void terminateGraphicsAPI();

@@ -414,3 +414,4 @@ MigrationBackup/
 AESengine/prof.txt
 AESengine/AES_log.txt
 *.ttf
+AESengine/vs2015/PSVita_Debug

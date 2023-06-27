@@ -4,7 +4,7 @@
 #include "core/error.hpp"
 #include "renderer/RHI/RHIShaderReflection.hpp"
 #include "renderer/RHI/RHIElements.hpp"
-#include <vitasdk.h>
+#include "core/platformVita/vitagxm.h"
 #include <vector>
 
 namespace aes

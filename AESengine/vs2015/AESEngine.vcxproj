@@ -26,7 +26,6 @@
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\renderer\camera.cpp" />
     <ClCompile Include="..\src\renderer\draw2d.cpp" />
-    <ClCompile Include="..\src\renderer\FontManager.cpp" />
     <ClCompile Include="..\src\renderer\fontRenderer.cpp" />
     <ClCompile Include="..\src\renderer\material.cpp" />
     <ClCompile Include="..\src\renderer\model.cpp" />
@@ -69,6 +68,7 @@
     <ClInclude Include="..\src\core\maths.hpp" />
     <ClInclude Include="..\src\core\optional.hpp" />
     <ClInclude Include="..\src\core\os.hpp" />
+    <ClInclude Include="..\src\core\platformVita\vitagxm.h" />
     <ClInclude Include="..\src\core\profiler.hpp" />
     <ClInclude Include="..\src\core\reflection.hpp" />
     <ClInclude Include="..\src\core\simd.hpp" />
@@ -81,7 +81,6 @@
     <ClInclude Include="..\src\engine.hpp" />
     <ClInclude Include="..\src\renderer\camera.hpp" />
     <ClInclude Include="..\src\renderer\draw2d.hpp" />
-    <ClInclude Include="..\src\renderer\FontManager.hpp" />
     <ClInclude Include="..\src\renderer\fontRenderer.hpp" />
     <ClInclude Include="..\src\renderer\material.hpp" />
     <ClInclude Include="..\src\renderer\model.hpp" />
