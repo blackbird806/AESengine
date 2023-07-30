@@ -20,7 +20,7 @@ namespace aes
 		Read = 0x1,
 		Write = 0x2
 	};
-	using CPUAccessFlags = AES_FLAGS_T(CPUAccessFlagBits);
+	using CPUAccessFlags = AES_FLAG_T(CPUAccessFlagBits);
 
 	enum class MemoryUsage
 	{
@@ -36,7 +36,7 @@ namespace aes
 		IndexBuffer = 0x2,
 		UniformBuffer = 0x4,
 	};
-	using BindFlags = AES_FLAGS_T(BindFlagBits);
+	using BindFlags = AES_FLAG_T(BindFlagBits);
 
 	enum class BlendOp
 	{
@@ -59,6 +59,7 @@ namespace aes
 	};
 
 	// gxm rhiColorMaskToApi must be modified too in case of modification of this enum
+	
 	enum class ColorMaskBits : uint8_t
 	{
 		None = 0x0,
@@ -68,7 +69,7 @@ namespace aes
 		B = 0x8,
 		All = (A | R | G | B)
 	};
-	using ColorMaskFlags = AES_FLAGS_T(ColorMaskBits);
+	using ColorMaskFlags = AES_FLAG_T(ColorMaskBits);
 
 	enum class DrawPrimitiveType
 	{

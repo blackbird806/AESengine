@@ -1,4 +1,5 @@
 #include "fontRenderer.hpp"
+#include <algorithm>
 #include <stb/stb_rect_pack.h>
 #include <stb/stb_truetype.h>
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -13,14 +14,16 @@ FontRessource::FontRessource(IAllocator& alloc) noexcept : glyphs(alloc)
 
 }
 
-std::optional<Glyph> FontRessource::getGlyph(char c) const
+Optional<Glyph> FontRessource::getGlyph(char c) const
 {
-	auto const it = std::ranges::find_if(glyphs, [c](auto const& e)
+	AES_PROFILE_FUNCTION();
+
+	auto const it = std::find_if(glyphs.begin(), glyphs.end(), [c](Glyph const& e)
 		{
 			return c == e.c;
 		});
 	if (it != glyphs.end())
-		return *it;
+		return Optional<Glyph>(*it);
 	return {};
 }
 
@@ -64,15 +67,15 @@ Result<FontRessource> aes::createFontRessource(IAllocator& allocator, FontParams
 	for (int32_t i = 0; i < packChars.size(); i++)
 	{
 		auto const& pc = packChars[i];
-		fontRessource.glyphs[i] = Glyph{
-			.c = params.startUnicode + i,
-			.x = {pc.x0, pc.x1},
-			.y = {pc.y0, pc.y1},
-			.u = {(float)pc.x0 / width, (float)(pc.x1) / width},
-			.v = {(float)pc.y0 / height, (float)(pc.y1) / height},
-			.xoff = pc.xoff/width, .yoff = pc.yoff/height,
-			.xadvance = SF * pc.xadvance/width,
-		};
+		fontRessource.glyphs[i] = Glyph{};
+		fontRessource.glyphs[i].c = params.startUnicode + i;
+		fontRessource.glyphs[i].x = { pc.x0, pc.x1 };
+		fontRessource.glyphs[i].y = { pc.y0, pc.y1 };
+		fontRessource.glyphs[i].u = { (float)pc.x0 / width, (float)(pc.x1) / width };
+		fontRessource.glyphs[i].v = { (float)pc.y0 / height, (float)(pc.y1) / height };
+		fontRessource.glyphs[i].xoff = pc.xoff / width;
+		fontRessource.glyphs[i].yoff = pc.yoff / height;
+		fontRessource.glyphs[i].xadvance = SF * pc.xadvance / width;
 	}
 
 	// @Review

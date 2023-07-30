@@ -39,7 +39,6 @@ namespace aes {
 		using ValueType = T;
 		using ErrorCodeType = AESError;
 
-
 		Result(Result&& rhs) noexcept
 		{
 			isError = rhs.isError;
@@ -124,8 +123,11 @@ namespace aes {
 		}
 
 	private:
-		union
+		// same shit as optional
+		union U
 		{
+			U() {}
+			~U() {}
 			ErrorCodeType err;
 			ValueType val;
 		} payload;

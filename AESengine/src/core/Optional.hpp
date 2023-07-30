@@ -18,11 +18,19 @@ namespace aes
 			storage.hasValue = false;
 		}
 
+		//template <typename U = T, typename std::enable_if<std::is_constructible<T, U&&>::value>::type>
+		template <typename U = T>
+		AES_CPP20CONSTEXPR Optional(U&& value)
+		{
+			storage.hasValue = true;
+			storage.data.value = std::forward<U>(value);
+		}
+
 		AES_CPP20CONSTEXPR Optional(Optional const& rhs)
 		{
 			if (rhs.storage.hasValue)
 			{
-				storage.value = rhs.storage.value;
+				storage.data.value = rhs.storage.data.value;
 				storage.hasValue = true;
 			}
 		}
@@ -31,17 +39,17 @@ namespace aes
 		{
 			if (rhs.storage.hasValue)
 			{
-				storage.value = std::move(rhs.storage.value);
+				storage.data.value = std::move(rhs.storage.data.value);
 				storage.hasValue = true;
 			}
 		}
 
-		constexpr bool hasValue() const noexcept
+		[[nodiscard]] constexpr bool hasValue() const noexcept
 		{
 			return storage.hasValue;
 		}
 
-		constexpr operator bool() const noexcept
+		[[nodiscard]] constexpr operator bool() const noexcept
 		{
 			return hasValue();
 		}
@@ -50,7 +58,7 @@ namespace aes
 		{
 			if (rhs.storage.hasValue)
 			{
-				storage.value = rhs.storage.value;
+				storage.data.value = rhs.storage.data.value;
 				storage.hasValue = true;
 			}
 			else
@@ -58,7 +66,7 @@ namespace aes
 				if (storage.hasValue)
 				{
 					storage.hasValue = false;
-					storage.value.~T();
+					storage.data.value.~T();
 				}
 			}
 		}
@@ -67,7 +75,7 @@ namespace aes
 		{
 			if (rhs.storage.hasValue)
 			{
-				storage.value = std::move(rhs.storage.value);
+				storage.data.value = std::move(rhs.storage.data.value);
 				storage.hasValue = true;
 			}
 			else
@@ -75,7 +83,7 @@ namespace aes
 				if (storage.hasValue)
 				{
 					storage.hasValue = false;
-					storage.value.~T();
+					storage.data.value.~T();
 				}
 			}
 		}
@@ -83,25 +91,26 @@ namespace aes
 		template<typename U = T>
 		AES_CPP20CONSTEXPR Optional& operator=(U&& value)
 		{
-
+			AES_ASSERT(false);
+			return *this;
 		}
 
-		AES_CPP20CONSTEXPR T& value() & noexcept
+		[[nodiscard]] AES_CPP20CONSTEXPR T& value() & noexcept
 		{
 			AES_ASSERT(storage.hasValue);
-			return storage.value;
+			return storage.data.value;
 		}
 
-		AES_CPP20CONSTEXPR T& operator*() & noexcept
+		[[nodiscard]] AES_CPP20CONSTEXPR T& operator*() & noexcept
 		{
 			AES_ASSERT(storage.hasValue);
-			return storage.value;
+			return storage.data.value;
 		}
 
-		AES_CPP20CONSTEXPR T const& value() const& noexcept
+		[[nodiscard]] AES_CPP20CONSTEXPR T const& value() const& noexcept
 		{
 			AES_ASSERT(storage.hasValue);
-			return storage.value;
+			return storage.data.value;
 		}
 
 		//constexpr T&& value() && noexcept
@@ -148,14 +157,18 @@ namespace aes
 			AES_CPP20CONSTEXPR ~Storage()
 			{
 				if (hasValue)
-					value.~T();
+					data.value.~T();
 			}
 
-			union
+			// I'm not sure why but implicit default constructor are disabled if an union member have
+			// a non trivial special member function
+			// see: https://en.cppreference.com/w/cpp/language/union
+			union U
 			{
+				U() {}
 				char dummy;
 				T value;
-			};
+			} data;
 			bool hasValue;
 		};
 
@@ -164,16 +177,18 @@ namespace aes
 		{
 			AES_CPP20CONSTEXPR ~Storage() = default;
 
-			union
+			union U
 			{
+				U() {}
 				char dummy;
 				T value;
-			};
+			} data;
 			bool hasValue;
 		};
 
 		Storage<T> storage;
 	};
+
 }
 
 #endif

@@ -160,11 +160,15 @@ void Draw2d::setMatrix(glm::mat3 const& mat)
 
 void Draw2d::pushState()
 {
+	AES_PROFILE_FUNCTION();
+
 	statesStack.push(currentState);
 }
 
 void Draw2d::popState()
 {
+	AES_PROFILE_FUNCTION();
+
 	currentState = statesStack.back();
 	statesStack.pop();
 }
@@ -172,7 +176,8 @@ void Draw2d::popState()
 void Draw2d::drawLine(Line2D const& line)
 {
 	AES_PROFILE_FUNCTION();
-	commands.push(Command{ DrawCommandType::Line, currentState.color });
+
+	commands.push(Command{ DrawCommandType::Line, currentState });
 	
 	colorVertices.push({ line.p1, currentState.color });
 	colorVertices.push({ line.p2, currentState.color });
@@ -191,7 +196,7 @@ void Draw2d::drawPoint(glm::vec2 p, float size)
 void Draw2d::drawFillRect(Rect const& rect)
 {
 	AES_PROFILE_FUNCTION();
-	commands.push(Command{ DrawCommandType::FillRect, currentState.color });
+	commands.push(Command{ DrawCommandType::FillRect, currentState });
 
 	RectBounds const bounds = rect.getBounds();
 	colorVertices.push({ bounds.minL, currentState.color });
@@ -263,7 +268,7 @@ void Draw2d::drawText(FontRessource& font, StringView str, glm::vec2 pos)
 		}
 
 		commands.push(Command{ DrawCommandType::Image, currentState, &font.texture });
-		auto const glyph = *font.getGlyph(c);
+		auto const glyph = font.getGlyph(c).value();
 		glm::vec2 const gsize = { glyph.u[1] - glyph.u[0], glyph.v[1] - glyph.v[0] };
 
 		auto dp = p;

@@ -83,6 +83,10 @@ namespace aes
 
 		struct Command
 		{
+			Command(DrawCommandType type_, State state_, RHITexture* texture_ = nullptr) :
+				type(type_), state(state_), texture(texture_)
+			{}
+
 			DrawCommandType type;
 			State state;
 			RHITexture* texture = nullptr;

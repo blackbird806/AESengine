@@ -61,97 +61,110 @@ namespace aes {
 		F func;
 	};
 
-#ifdef AES_CPP20
+//#ifdef AES_CPP20
 	template <typename BitType>
 	class Flags
 	{
 	public:
-		using MaskType = std::underlying_type_t<BitType>;
+		//using MaskType = std::underlying_type_t<BitType>;
+		using MaskType = uint32_t;
 
 		// constructors
-		constexpr Flags() : mask(0) {}
+		AES_CPP20CONSTEXPR Flags() : mask(0) {}
 
-		constexpr Flags(BitType bit) : mask(static_cast<MaskType>(bit)) {}
+		AES_CPP20CONSTEXPR Flags(BitType bit) : mask(static_cast<MaskType>(bit)) {}
 
-		constexpr Flags(Flags<BitType> const& rhs) = default;
+		AES_CPP20CONSTEXPR Flags(Flags<BitType> const& rhs) = default;
 
-		constexpr explicit Flags(MaskType flags) : mask(flags) {}
+		AES_CPP20CONSTEXPR explicit Flags(MaskType flags) : mask(flags) {}
 
 		// relational operators
-		auto operator<=>(Flags<BitType> const&) const = default;
+		//auto operator<=>(Flags<BitType> const&) const = default;
 
 		// logical operator
-		constexpr bool operator!() const
+		AES_CPP20CONSTEXPR bool operator!() const
 		{
 			return !mask;
 		}
 
 		// bitwise operators
-		constexpr Flags<BitType> operator&(Flags<BitType> const& rhs) const
+		AES_CPP20CONSTEXPR Flags<BitType> operator&(Flags<BitType> const& rhs) const
 		{
 			return Flags<BitType>(mask & rhs.mask);
 		}
 
-		constexpr Flags<BitType> operator|(Flags<BitType> const& rhs) const
+		AES_CPP20CONSTEXPR Flags<BitType> operator|(Flags<BitType> const& rhs) const
 		{
 			return Flags<BitType>(mask | rhs.mask);
 		}
 
-		constexpr Flags<BitType> operator^(Flags<BitType> const& rhs) const
+		AES_CPP20CONSTEXPR Flags<BitType> operator^(Flags<BitType> const& rhs) const
 		{
 			return Flags<BitType>(mask ^ rhs.mask);
 		}
 
-		constexpr Flags<BitType> operator~() const
+		AES_CPP20CONSTEXPR Flags<BitType> operator~() const
 		{
 			return Flags<BitType>(mask ^ 0);
 		}
 
 		// assignment operators
-		constexpr Flags<BitType>& operator=(MaskType const& rhs)
+		AES_CPP20CONSTEXPR Flags<BitType>& operator=(MaskType const& rhs)
 		{
 			mask = rhs;
 			return *this;
 		}
 
-		constexpr Flags<BitType>& operator=(Flags<BitType> const& rhs) = default;
+		AES_CPP20CONSTEXPR Flags<BitType>& operator=(Flags<BitType> const& rhs) = default;
 
-		constexpr Flags<BitType>& operator|=(Flags<BitType> const& rhs) 
+		AES_CPP20CONSTEXPR Flags<BitType>& operator|=(Flags<BitType> const& rhs)
 		{
 			mask |= rhs.mask;
 			return *this;
 		}
 
-		constexpr Flags<BitType>& operator&=(Flags<BitType> const& rhs)
+		AES_CPP20CONSTEXPR Flags<BitType>& operator&=(Flags<BitType> const& rhs)
 		{
 			mask &= rhs.mask;
 			return *this;
 		}
 
-		constexpr Flags<BitType>& operator^=(Flags<BitType> const& rhs)
+		AES_CPP20CONSTEXPR Flags<BitType>& operator^=(Flags<BitType> const& rhs)
 		{
 			mask ^= rhs.mask;
 			return *this;
 		}
 
 		// cast operators
-		explicit constexpr operator bool() const
+		AES_CPP20CONSTEXPR explicit operator bool() const
 		{
 			return !!mask;
 		}
 
-		explicit constexpr operator MaskType() const 
+		template<typename T>
+		AES_CPP20CONSTEXPR explicit operator T() const
 		{
-			return mask;
+			static_assert(std::is_integral<T>::value);
+			static_assert(sizeof(T) <= sizeof(MaskType));
+			return static_cast<T>(mask);
 		}
+
+		//AES_CPP20CONSTEXPR explicit operator MaskType() const
+		//{
+		//	return mask;
+		//}
 
 	private:
 		MaskType mask;
 	};
-	#define AES_FLAGS_T(T) Flags<T>
-#else
-	#define AES_FLAGS_T(T) uint32_t
-#endif
+	#define AES_FLAG_T(T) Flags<T>
+	#define AES_DEFINE_IMPLICIT_FLAG_CAST(T)
+//#else
+
+	//#define AES_FLAG_T(T) std::underlying_type<T>::type
+	//#define AES_FLAG_CAST(T, F) static_cast<std::underlying_type<T>::type>(F);
+
+//#endif
 }
 
 #endif // !UTILITY_HPP

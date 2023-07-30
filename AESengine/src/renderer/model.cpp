@@ -2,12 +2,39 @@
 #include "core/debug.hpp"
 #include "core/utility.hpp"
 #include "RHI/RHIRenderContext.hpp"
+#include <array>
 
 using namespace aes;
 
-std::vector<Vertex> aes::getCubeVertices()
+constexpr uint32_t cubeIndices[] = {
+	//Top
+	2, 7, 6,
+	3, 7, 2,
+
+	////Bottom
+	0, 4, 5,
+	0, 5, 1,
+
+	////Left
+	0, 2, 6,
+	0, 6, 4,
+
+	////Right
+	1, 7, 3,
+	1, 5, 7,
+
+	//Front
+	2, 0, 1,
+	2, 1, 3,
+
+	////Back
+	4, 6, 7,
+	4, 7, 5
+};
+
+std::array<Vertex, 8> getCubeVertices()
 {
-	std::vector<Vertex> vertices(8);
+	std::array<Vertex, 8> vertices;
 
 	vertices[0].pos = { -1, -1,  1.0f };
 	vertices[0].color = { 1.0f, 0.0f, 0.0f, 1.0f };
@@ -36,9 +63,9 @@ std::vector<Vertex> aes::getCubeVertices()
 	return vertices;
 }
 
-std::vector<Vertex> aes::getCubeVertices(glm::vec4 const& color)
+std::array<Vertex,8> getCubeVertices(glm::vec4 const& color)
 {
-	std::vector<Vertex> vertices(8);
+	std::array<Vertex,8> vertices;
 
 	vertices[0].pos = { -1, -1,  1.0f };
 	vertices[0].color = color;
@@ -72,9 +99,11 @@ Result<Model> aes::createCube()
 	AES_PROFILE_FUNCTION();
 
 	Model cube;
-	auto const result = cube.init(getCubeVertices(), cubeIndices);
+	auto const vertices = getCubeVertices();
+	auto const result = cube.init(ArrayView<Vertex const>(vertices.data(), vertices.size()), 
+		ArrayView<uint32_t const>(cubeIndices, sizeof(cubeIndices)));
 	if (!result)
-		return { AESError{ result.error() } };
+		return  AESError(result.error());
 	return { std::move(cube) };
 }
 
@@ -83,13 +112,15 @@ Result<Model> aes::createCube(glm::vec4 const& col)
 	AES_PROFILE_FUNCTION();
 
 	Model cube;
-	auto const result = cube.init(getCubeVertices(col), cubeIndices);
+	auto const vertices = getCubeVertices(col);
+	auto const result = cube.init(ArrayView<Vertex const>(vertices.data(), vertices.size()),
+		ArrayView<uint32_t const>(cubeIndices, sizeof(cubeIndices)));
 	if (!result)
-		return { AESError{ result.error() } };
+		return  AESError(result.error());
 	return { std::move(cube) };
 }
 
-Result<void> Model::init(std::span<Vertex const> vertices, std::span<uint32_t const> indices)
+Result<void> Model::init(ArrayView<Vertex const> vertices, ArrayView<uint32_t const> indices)
 {
 	AES_PROFILE_FUNCTION();
 
@@ -100,7 +131,7 @@ Result<void> Model::init(std::span<Vertex const> vertices, std::span<uint32_t co
 	vertexBufferInfo.bindFlags = BindFlagBits::VertexBuffer;
 	vertexBufferInfo.usage = MemoryUsage::Immutable;
 	vertexBufferInfo.cpuAccessFlags = CPUAccessFlagBits::None;
-	vertexBufferInfo.sizeInBytes = vertices.size_bytes();
+	vertexBufferInfo.sizeInBytes = vertices.size() * sizeof(Vertex);
 	vertexBufferInfo.initialData = (void*)vertices.data();
 
 	auto err = vertexBuffer.init(vertexBufferInfo);
@@ -111,7 +142,7 @@ Result<void> Model::init(std::span<Vertex const> vertices, std::span<uint32_t co
 	indexBufferInfo.bindFlags = BindFlagBits::IndexBuffer;
 	indexBufferInfo.usage = MemoryUsage::Immutable;
 	indexBufferInfo.cpuAccessFlags = CPUAccessFlagBits::None;
-	indexBufferInfo.sizeInBytes = indices.size_bytes();
+	indexBufferInfo.sizeInBytes = indices.size() * sizeof(uint32_t);
 	indexBufferInfo.initialData = (void*)indices.data();
 
 	err = indexBuffer.init(indexBufferInfo);

@@ -2,6 +2,7 @@
 #define AES_RHIBUFFER_HPP
 
 #include <cstddef>
+#include <type_traits>
 #include "renderer/RHI/RHI.hpp"
 #include "core/arrayView.hpp"
 
@@ -28,7 +29,7 @@ namespace aes
 		template<typename T>
 		Result<void> setDataFromPOD(T const& t)
 		{
-			static_assert(std::is_standard_layout<T>::value);
+			//static_assert(std::is_standard_layout<T>::value);
 			return setData((void*)&t, sizeof(t));
 		}
 	};

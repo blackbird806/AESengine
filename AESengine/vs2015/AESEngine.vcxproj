@@ -27,7 +27,6 @@
     <ClCompile Include="..\src\renderer\camera.cpp" />
     <ClCompile Include="..\src\renderer\draw2d.cpp" />
     <ClCompile Include="..\src\renderer\fontRenderer.cpp" />
-    <ClCompile Include="..\src\renderer\material.cpp" />
     <ClCompile Include="..\src\renderer\model.cpp" />
     <ClCompile Include="..\src\renderer\RHI\RHIBuffer.cpp" />
     <ClCompile Include="..\src\renderer\RHI\RHIValidation.cpp" />
@@ -82,7 +81,6 @@
     <ClInclude Include="..\src\renderer\camera.hpp" />
     <ClInclude Include="..\src\renderer\draw2d.hpp" />
     <ClInclude Include="..\src\renderer\fontRenderer.hpp" />
-    <ClInclude Include="..\src\renderer\material.hpp" />
     <ClInclude Include="..\src\renderer\model.hpp" />
     <ClInclude Include="..\src\renderer\RHI\RHI.hpp" />
     <ClInclude Include="..\src\renderer\RHI\RHIBuffer.hpp" />

@@ -1,6 +1,6 @@
 #include "textureUtility.hpp"
 
-void aes::buildCheckboard(std::span<Color> data, uint width, uint height, Color c1, Color c2, float segmentSize)
+void aes::buildCheckboard(aes::ArrayView<Color> data, uint width, uint height, Color c1, Color c2, float segmentSize)
 {
 	AES_ASSERT(data.size() >= width * height);
 

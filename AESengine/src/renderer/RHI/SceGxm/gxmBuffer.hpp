@@ -12,7 +12,7 @@ namespace aes
 		
 	public:
 
-		GxmBuffer() {}
+		GxmBuffer() noexcept {}
 		GxmBuffer(GxmBuffer&&) noexcept;
 		GxmBuffer& operator=(GxmBuffer&& rhs) noexcept;
 		~GxmBuffer();

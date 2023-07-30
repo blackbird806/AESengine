@@ -8,6 +8,8 @@
 #include "renderer/RHI/RHIBuffer.hpp"
 #include "renderer/RHI/RHISampler.hpp"
 #include "core/array.hpp"
+#include "core/arrayView.hpp"
+#include "core/optional.hpp"
 
 // Font system RHI complient
 // We want simple and efficient bitmap based font rendering
@@ -28,7 +30,7 @@ namespace aes
 	{
 		FontRessource(IAllocator&) noexcept;
 
-		std::optional<Glyph> getGlyph(char c) const;
+		Optional<Glyph> getGlyph(char c) const;
 
 		RHITexture texture;
 		RHISampler sampler;
@@ -38,7 +40,7 @@ namespace aes
 
 	struct FontParams
 	{
-		std::span<uint8_t const> fontData;
+		ArrayView<uint8_t const> fontData;
 		float fontSize = 20;
 		int startUnicode = 32; // 32 => space
 		int numCharInRange = 127 - 32;

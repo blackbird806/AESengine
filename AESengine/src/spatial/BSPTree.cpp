@@ -1,5 +1,4 @@
 #include "BSPTree.hpp"
-#include <ranges>
 
 using namespace aes;
 
@@ -59,7 +58,7 @@ namespace
 			glm::normalize(glm::vec3{aabb.max.x - aabb.min.x, aabb.min.y, aabb.min.z}) };
 	}
 	
-	Plane pickSplittingPlane(std::span<BSPTree::Object> objects)
+	Plane pickSplittingPlane(ArrayView<BSPTree::Object> objects)
 	{
 		AES_PROFILE_FUNCTION();
 		// Blend factor for optimizing for balance or splits (should be tweaked)
@@ -173,7 +172,7 @@ void* BSPTree::Node::raycast(Ray const& r) const
 	return frontResult;
 }
 
-UniquePtr<BSPTree::BSPElement> BSPTree::build(IAllocator& allocator, std::span<Object> objects, uint depth)
+UniquePtr<BSPTree::BSPElement> BSPTree::build(IAllocator& allocator, ArrayView<Object> objects, uint depth)
 {
 	AES_PROFILE_FUNCTION();
 	if (objects.empty())

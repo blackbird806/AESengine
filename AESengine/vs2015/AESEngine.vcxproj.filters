@@ -83,9 +83,6 @@
     <ClCompile Include="..\src\renderer\fontRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\renderer\material.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\renderer\model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -215,9 +212,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\renderer\fontRenderer.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\renderer\material.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\renderer\model.hpp">
