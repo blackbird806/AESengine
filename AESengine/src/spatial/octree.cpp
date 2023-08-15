@@ -13,11 +13,11 @@ Octree::Node* Octree::build(glm::vec3 const& center, float halfSize, int stopDep
 	if (stopDepth < 0)
 		return nullptr;
 
-	auto [it, inserted] = nodes.insert(std::make_pair(locCode, Node{ center, halfSize, locCode, {}, false }));
-	AES_ASSERT(inserted);
+	auto pair = nodes.insert(std::make_pair(locCode, Node{ center, halfSize, locCode, {}, false }));
+	AES_ASSERT(pair.second);
 
 	if (stopDepth == 0)
-		it->second.isLeaf = true;
+		pair.first->second.isLeaf = true;
 
 	// Recursively construct the eight children of the subtree 
 	float const step = halfSize * 0.5f;
@@ -30,7 +30,7 @@ Octree::Node* Octree::build(glm::vec3 const& center, float halfSize, int stopDep
 		build(center + offset, step, stopDepth - 1, getChildCode(locCode, i));
 	}
 
-	return &it->second;
+	return &pair.first->second;
 }
 
 void Octree::clear()
@@ -84,7 +84,8 @@ uint Octree::getNodeTreeDepth(Octree::Node const& node)
 	_BitScanReverse(&msb, node.locCode);
 	return msb / 3;
 #else
-	for (uint32_t lc = node.locCode, depth=0; lc!=1; lc>>=3, depth++);
+	uint32_t depth = 0;
+	for (uint32_t lc = node.locCode; lc!=1; lc>>=3, depth++);
 	return depth;
 #endif
 }
@@ -98,10 +99,10 @@ void Octree::testAllCollisions(Node const& node, void(* callback)(void*)) const
 	// @Review ancestorStack size
 	Node const* ancestorStack[40];
 	uint depth = 0;
-	testAllCollisionsRec(node, callback, depth, ancestorStack);
+	testAllCollisionsRec(node, callback, depth, ArrayView<Node const*>(ancestorStack, 40));
 }
 
-void Octree::testAllCollisionsRec(Node const& node, void(* callback)(void*), uint& depth, std::span<Node const*> ancestorStack) const
+void Octree::testAllCollisionsRec(Node const& node, void(* callback)(void*), uint& depth, ArrayView<Node const*> ancestorStack) const
 {
 	AES_PROFILE_FUNCTION();
 

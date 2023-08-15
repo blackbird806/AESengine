@@ -1,5 +1,5 @@
-#ifndef BSPTREE_HPP
-#define BSPTREE_HPP
+#ifndef AES_BSPTREE_HPP
+#define AES_BSPTREE_HPP
 
 #include <vector>
 #include "core/aes.hpp"
@@ -7,6 +7,7 @@
 #include "core/arrayView.hpp"
 #include "core/uniquePtr.hpp"
 #include "core/array.hpp"
+#include "core/arrayView.hpp"
 #include "core/jobSystem.hpp"
 
 namespace aes

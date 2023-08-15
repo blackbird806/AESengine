@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include "core/allocator.hpp"
+#include "core/array.hpp"
 #include "core/color.hpp"
 #include "renderer/RHI/RHIDevice.hpp"
 #include "renderer/RHI/RHIRenderTarget.hpp"
@@ -41,7 +42,7 @@ public:
 		AES_LOG("device created successfully");
 
 		// create RTs
-		for (size_t i = 0; i < std::size(renderTargets); i++)
+		for (size_t i = 0; i < aes::size(renderTargets); i++)
 		{
 			RenderTargetDescription rtDesc = {};
 			rtDesc.width = 960;
@@ -54,7 +55,7 @@ public:
 		{
 			aes::VertexShaderDescription vertexShaderDescription;
 			auto const clearShaderData_vs = aes::readFileBin("app0:assets/shaders/vita/clear_vs.gxp");
-			vertexShaderDescription.source = clearShaderData_vs.data();
+			//vertexShaderDescription.source = clearShaderData_vs.data();
 			vertexShaderDescription.verticesStride = sizeof(glm::vec2);
 			aes::VertexInputLayout vertexInputLayout[1];
 			vertexInputLayout[0].parameterName = "aPosition";
@@ -62,7 +63,7 @@ public:
 			vertexInputLayout[0].offset = 0;
 			vertexInputLayout[0].format = aes::RHIFormat::R32G32_Float;
 
-			vertexShaderDescription.verticesLayout = vertexInputLayout;
+			//vertexShaderDescription.verticesLayout = vertexInputLayout;
 
 			if (!clearVertexShader.init(vertexShaderDescription))
 				AES_FATAL_ERROR("vertex shader creation failed");
@@ -72,7 +73,7 @@ public:
 		{
 			aes::FragmentShaderDescription fragmentShaderDescription{};
 			auto const clearShaderData_fs = aes::readFileBin("app0:assets/shaders/vita/clear_fs.gxp");
-			fragmentShaderDescription.source = clearShaderData_fs.data();
+			//fragmentShaderDescription.source = clearShaderData_fs.data();
 			fragmentShaderDescription.multisampleMode = MultisampleMode::None;
 			fragmentShaderDescription.gxpVertexProgram = clearVertexShader.getGxpShader();
 
@@ -115,7 +116,7 @@ public:
 		{
 			aes::VertexShaderDescription vertexShaderDescription;
 			auto const geoShaderData_vs = aes::readFileBin("app0:assets/shaders/vita/basic2d_vs.gxp");
-			vertexShaderDescription.source = geoShaderData_vs.data();
+			//vertexShaderDescription.source = geoShaderData_vs.data();
 			vertexShaderDescription.verticesStride = sizeof(glm::vec2);
 			aes::VertexInputLayout vertexInputLayout[2];
 			vertexInputLayout[0].parameterName = "aPosition";
@@ -128,7 +129,7 @@ public:
 			vertexInputLayout[1].offset = sizeof(glm::vec2);
 			vertexInputLayout[1].format = aes::RHIFormat::R32G32B32_Float;
 
-			vertexShaderDescription.verticesLayout = vertexInputLayout;
+			//vertexShaderDescription.verticesLayout = vertexInputLayout;
 
 			if (!geoVertexShader.init(vertexShaderDescription))
 				AES_FATAL_ERROR("vertex shader creation failed");
@@ -138,7 +139,7 @@ public:
 		{
 			aes::FragmentShaderDescription fragmentShaderDescription;
 			auto const geoShaderData_fs = aes::readFileBin("app0:assets/shaders/vita/basic2d_fs.gxp");
-			fragmentShaderDescription.source = geoShaderData_fs.data();
+			//fragmentShaderDescription.source = geoShaderData_fs.data();
 			fragmentShaderDescription.multisampleMode = MultisampleMode::None;
 			fragmentShaderDescription.gxpVertexProgram = geoVertexShader.getGxpShader();
 

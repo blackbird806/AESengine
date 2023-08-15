@@ -10,6 +10,18 @@
 
 namespace aes
 {
+	template <typename T>
+	constexpr std::size_t size(const T& c)
+	{
+		return c.size();
+	}
+
+	template <typename T, std::size_t N>
+	constexpr std::size_t size(const T(&array)[N]) noexcept
+	{
+		return N;
+	}
+
 	/*
 	 * Generic Array class similar to std vector
 	 * always store the allocator pointer
@@ -168,7 +180,7 @@ namespace aes
 #endif
 		AES_CPP20CONSTEXPR Result<void> insert(Iterator_t pos, Range const& range) noexcept
 		{
-			uint32_t const rangeSize = std::ranges::size(range);
+			uint32_t const rangeSize = aes::size(range);
 			uint32_t const newSize = size_ + rangeSize;
 			T* workBuffer = buffer;
 			if (newSize >= capacity_)
@@ -205,7 +217,7 @@ namespace aes
 			// move next elements
 			for (uint32_t li = ipos - rangeSize; li < size_; li++)
 			{
-				new (&workBuffer[ipos++]) T(std::move(buffer[li]));
+				new (&workBuffer[ipos++]) T(std::move<T>(buffer[li]));
 			}
 			buffer = workBuffer;
 			size_ = newSize;

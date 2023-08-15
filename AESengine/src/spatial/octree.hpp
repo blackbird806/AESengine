@@ -2,12 +2,12 @@
 #define AES_OCTREE_HPP
 
 #include <vector>
-#include <span>
 #include <unordered_map>
 #include <glm/glm.hpp>
 
 #include "core/aes.hpp"
 #include "core/geometry.hpp"
+#include "core/arrayView.hpp"
 
 namespace aes
 {
@@ -50,7 +50,7 @@ namespace aes
 
 		// call callback on userdata carried by the colliding nodes
 		void testAllCollisions(Node const& node, void(*callback)(void*)) const;
-		void testAllCollisionsRec(Node const& node, void(*callback)(void*), uint& depth, std::span<Node const*> ancestorStack) const;
+		void testAllCollisionsRec(Node const& node, void(*callback)(void*), uint& depth, ArrayView<Node const*> ancestorStack) const;
 
 		// return null if tree wasn't built
 		Node* root();
@@ -58,12 +58,12 @@ namespace aes
 
 		// range interface
 		
-		auto begin() const
+		std::unordered_map<LocCode_t, Node>::const_iterator begin() const
 		{
 			return nodes.begin();
 		}
 
-		auto end() const
+		std::unordered_map<LocCode_t, Node>::const_iterator end() const
 		{
 			return nodes.end();
 		}

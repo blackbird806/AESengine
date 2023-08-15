@@ -46,7 +46,7 @@ void aes::test_draw2d()
 {
 	AES_START_PROFILE_SESSION("test draw2d startup");
 	TestDraw2dApp app({
-		.appName = "aes draw2d test"
+		"aes draw2d test"
 		});
 	app.init();
 	auto startupSession = AES_STOP_PROFILE_SESSION();

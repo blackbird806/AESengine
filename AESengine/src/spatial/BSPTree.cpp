@@ -205,6 +205,6 @@ UniquePtr<BSPTree::BSPElement> BSPTree::build(IAllocator& allocator, ArrayView<O
 	}
 	
 	return makeUnique<Node>(allocator, splitPlane,
-		build(allocator, std::span(frontList.begin(), frontList.end()), depth + 1), 
-		build(allocator, std::span(backList.begin(), backList.end()), depth + 1));
+		build(allocator, ArrayView<Object>(frontList.data(), frontList.size()), depth + 1),
+		build(allocator, ArrayView<Object>(backList.data(), backList.size()), depth + 1));
 }

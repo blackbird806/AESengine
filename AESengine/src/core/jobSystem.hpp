@@ -8,10 +8,11 @@
 #include <thread>
 #include <atomic>
 #include <memory>
+#include <mutex>
 #include <functional>
+#ifdef AES_CPP20
 #include <ranges>
-
-
+#endif
 /*
  * A simple and dumb jobsystem originally implemented for a school exercice
  * will be redesigned in the engine
@@ -50,13 +51,13 @@ namespace aes
 			threads.resize(nbWorkers);
 			for (uint32_t i = 0; i < nbWorkers; i++)
 			{
-				threads[i] = std::jthread([this]()
+				threads[i] = std::thread([this]()
 				{
 					while (!stop.load(std::memory_order_relaxed))
 					{
 						std::shared_ptr<Job> job;
 						{
-							std::unique_lock l(sync);
+							std::unique_lock<std::mutex> l(sync);
 							if (!jobs.empty())
 							{
 								job = jobs.back();
@@ -87,9 +88,12 @@ namespace aes
 			{
 				if (sync.try_lock())
 				{
-					AES_SCOPE(sync.unlock());
 					if (jobs.empty())
+					{
+						sync.unlock();
 						return;
+					}
+					sync.unlock();
 				}
 			}
 		}
@@ -97,15 +101,18 @@ namespace aes
 		~JobSystem()
 		{
 			stop.store(true, std::memory_order_relaxed);
+			for (auto& t : threads)
+				t.join();
 		}
 
 	private:
 		std::atomic<bool> stop = false;
 		std::mutex sync;
 		Array<std::shared_ptr<Job>> jobs;
-		Array<std::jthread> threads;
+		Array<std::thread> threads;
 	};
 
+#ifdef AES_CPP20
 	template<typename F, std::ranges::random_access_range R>
 	void parallelForEach(JobSystem& js, R&& range, F const& f)
 	{
@@ -136,7 +143,7 @@ namespace aes
 		while (latch.load(std::memory_order_relaxed))
 		{ }
 	}
-
+#endif
 }
 
 #endif

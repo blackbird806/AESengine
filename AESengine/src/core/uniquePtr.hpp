@@ -1,7 +1,9 @@
 #ifndef AES_UNIQUE_PTR_HPP
 #define AES_UNIQUE_PTR_HPP
 
+#ifdef AES_CPP20
 #include <concepts>
+#endif
 #include "allocator.hpp"
 
 namespace aes
@@ -44,6 +46,7 @@ namespace aes
 		}
 	};
 
+#ifdef AES_CPP20
 	template<typename T, typename D = AllocatorDelete<T>>
 	class UniquePtr
 	{
@@ -165,24 +168,51 @@ namespace aes
 		T* ptr;
 		[[no_unique_address]] D deleter;
 	};
+#else
 
-	template<typename T>
-	using GUniquePtr = UniquePtr<T, GlobalAllocDelete<T>>;
+#include <memory>
 
-	template<typename T, typename... Args>
-	auto makeUnique(Args&&... args) noexcept
-	{
-		void* ptr = globalAllocator.allocate(sizeof(T), alignof(T));
-		return UniquePtr<T, GlobalAllocDelete<T>>(::new(ptr) T(std::move(args)...));
-	}
+template<typename D>
+struct UniquePtrBase : private D
+{
 
-	template<typename T, typename... Args>
-	auto makeUnique(IAllocator& alloc, Args&&... args) noexcept
-	{
-		void* ptr = alloc.allocate(sizeof(T), alignof(T));
-		AllocatorDelete<T> del(&alloc);
-		return UniquePtr<T, AllocatorDelete<T>>(::new(ptr) T(std::move(args)...), std::move(del));
-	}
+};
+
+
+#endif
+//	template<typename T>
+//	using GUniquePtr = UniquePtr<T, GlobalAllocDelete<T>>;
+//
+//	template<typename T, typename... Args>
+//	auto makeUnique(Args&&... args) noexcept
+//	{
+//		void* ptr = globalAllocator.allocate(sizeof(T), alignof(T));
+//		return UniquePtr<T, GlobalAllocDelete<T>>(::new(ptr) T(std::move(args)...));
+//	}
+//
+//	template<typename T, typename... Args>
+//	auto makeUnique(IAllocator& alloc, Args&&... args) noexcept
+//	{
+//		void* ptr = alloc.allocate(sizeof(T), alignof(T));
+//		AllocatorDelete<T> del(&alloc);
+//		return UniquePtr<T, AllocatorDelete<T>>(::new(ptr) T(std::move(args)...), std::move(del));
+//	}
 }
+
+template<typename T>
+using UniquePtr = std::unique_ptr<T>;
+
+template<typename T, typename... Args>
+std::unique_ptr<T> makeUnique(Args&&... args)
+{
+	return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
+
+template<typename T, typename... Args>
+std::unique_ptr<T> makeUnique(aes::IAllocator&, Args&&... args)
+{
+	return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
+
 
 #endif

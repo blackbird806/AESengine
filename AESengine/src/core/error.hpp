@@ -113,7 +113,7 @@ namespace aes {
 
 		~Result() noexcept(std::is_nothrow_destructible<T>::value)
 		{
-			if AES_CPP20CONSTEXPR (!std::is_trivially_destructible<ValueType>::value)
+			if AES_CPPIFCONSTEXPR(!std::is_trivially_destructible<ValueType>::value)
 			{
 				if (isError)
 				{

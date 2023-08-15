@@ -7,10 +7,12 @@
 
 #ifdef __SNC__
 	#define AES_CPP11
-	#define AES_CPP20CONSTEXPR
+	#define AES_CPP20CONSTEXPR inline
+	#define AES_CPPIFCONSTEXPR 
 #else
 	#define AES_CPP20
-	#define AES_CPP20CONSTEXPR constexpr
+#define AES_CPP20CONSTEXPR constexpr
+#define AES_CPPIFCONSTEXPR constexpr
 #endif
 
 #ifndef VITA_SDK
