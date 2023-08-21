@@ -12,6 +12,7 @@
 #include <cctype>
 #include <climits>
 #include <cmath>
+#include <cstdio>
 #include <cstdarg>
 #include <cstring>  // std::memmove
 #include <cwchar>
@@ -161,7 +162,7 @@ FMT_FUNC void report_error(format_func func, int error_code,
 
 // A wrapper around fwrite that throws on error.
 inline void fwrite_fully(const void* ptr, size_t size, size_t count,
-                         FILE* stream) {
+                         std::FILE* stream) {
   size_t written = std::fwrite(ptr, size, count, stream);
   if (written < count) FMT_THROW(system_error(errno, "cannot write to file"));
 }
@@ -1754,7 +1755,7 @@ inline bool divisible_by_power_of_2(uint64_t x, int exp) FMT_NOEXCEPT {
 #ifdef FMT_BUILTIN_CTZLL
   return FMT_BUILTIN_CTZLL(x) >= exp;
 #else
-  return exp < num_bits<uint64_t>()) && x == ((x >> exp) << exp);
+  return exp < num_bits<uint64_t>() && x == ((x >> exp) << exp);
 #endif
 }
 

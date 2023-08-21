@@ -1951,7 +1951,7 @@ template <typename Context> class basic_format_args {
 // It is a separate type rather than an alias to make symbols readable.
 struct format_args : basic_format_args<format_context> {
   template <typename... Args>
-  FMT_INLINE format_args(const Args&... args) : basic_format_args(args...) {}
+  FMT_INLINE format_args(const Args&... args) : basic_format_args<Args...>(args...) {}
 };
 struct wformat_args : basic_format_args<wformat_context> {
   using basic_format_args::basic_format_args;
