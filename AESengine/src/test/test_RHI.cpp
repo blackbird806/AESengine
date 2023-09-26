@@ -53,7 +53,7 @@ public:
 		// clear init
 		{
 			aes::VertexShaderDescription vertexShaderDescription;
-			auto const clearShaderData_vs = aes::readFileBin("app0:assets/shaders/vita/clear_vs.gxp");
+			static auto const clearShaderData_vs = aes::readFileBin("app0:assets/shaders/vita/clear_vs.gxp");
 			vertexShaderDescription.source = clearShaderData_vs.data();
 			vertexShaderDescription.verticesStride = sizeof(glm::vec2);
 			aes::VertexInputLayout vertexInputLayout[1];
@@ -71,7 +71,7 @@ public:
 		}
 		{
 			aes::FragmentShaderDescription fragmentShaderDescription{};
-			auto const clearShaderData_fs = aes::readFileBin("app0:assets/shaders/vita/clear_fs.gxp");
+			static auto const clearShaderData_fs = aes::readFileBin("app0:assets/shaders/vita/clear_fs.gxp");
 			fragmentShaderDescription.source = clearShaderData_fs.data();
 			fragmentShaderDescription.multisampleMode = MultisampleMode::None;
 			fragmentShaderDescription.gxpVertexProgram = clearVertexShader.getGxpShader();
@@ -114,7 +114,7 @@ public:
 		// geometry init
 		{
 			aes::VertexShaderDescription vertexShaderDescription;
-			auto const geoShaderData_vs = aes::readFileBin("app0:assets/shaders/vita/basic2d_vs.gxp");
+			static auto const geoShaderData_vs = aes::readFileBin("app0:assets/shaders/vita/basic2d_vs.gxp");
 			vertexShaderDescription.source = geoShaderData_vs.data();
 			vertexShaderDescription.verticesStride = sizeof(glm::vec2);
 			aes::VertexInputLayout vertexInputLayout[2];
@@ -137,7 +137,7 @@ public:
 		}
 		{
 			aes::FragmentShaderDescription fragmentShaderDescription;
-			auto const geoShaderData_fs = aes::readFileBin("app0:assets/shaders/vita/basic2d_fs.gxp");
+			static auto const geoShaderData_fs = aes::readFileBin("app0:assets/shaders/vita/basic2d_fs.gxp");
 			fragmentShaderDescription.source = geoShaderData_fs.data();
 			fragmentShaderDescription.multisampleMode = MultisampleMode::None;
 			fragmentShaderDescription.gxpVertexProgram = geoVertexShader.getGxpShader();
@@ -148,7 +148,6 @@ public:
 			AES_LOG("geometry fragment shader created");
 		}
 		{
-
 			vert tri[] = {
 				{{-0.25f, -0.25f}, {1.0f, 0.0f, 0.0f}},
 				{{0.5f, -0.25f}, {0.0f, 1.0f, 0.0f}},
@@ -163,6 +162,7 @@ public:
 			vertexBufferDesc.initialData = tri;
 
 			geoVertexBuffer.init(vertexBufferDesc);
+			AES_LOG("geoVertexBuffer created");
 		}
 		{
 			uint16_t indices[] = {0, 1, 2};
@@ -175,11 +175,16 @@ public:
 			indexBufferDesc.initialData = indices;
 
 			geoIndexBuffer.init(indexBufferDesc);
+			AES_LOG("indexBufferDesc created");
 		}
 	}
 
+	int frontBufferIndex = 0, backBufferIndex = 0;
+	float xx = -0.25f;
+
 	void draw()
 	{
+
 		// clear
 		device.setDrawPrimitiveMode(DrawPrimitiveType::TrianglesFill);
 		device.setCullMode(CullMode::None);
@@ -188,21 +193,32 @@ public:
 		device.setVertexShader(clearVertexShader);
 		device.setFragmentShader(clearFragmentShader);
 
-		device.beginRenderPass(renderTargets[0]);
+		device.beginRenderPass(renderTargets[backBufferIndex]);
 			device.drawIndexed(3);
 		device.endRenderPass();
 
+		vert tri[] = {
+				{{xx, -0.25f}, {1.0f, 0.0f, 0.0f}},
+				{{0.5f, -0.25f}, {0.0f, 1.0f, 0.0f}},
+				{{-0.25f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+			};
+
+		xx += 0.001f;
+		geoVertexBuffer.setData(tri, sizeof(tri));
 		// draw
 		device.setVertexBuffer(geoVertexBuffer, sizeof(vert));
 		device.setIndexBuffer(geoIndexBuffer, IndexTypeFormat::Uint16);
 		device.setVertexShader(geoVertexShader);
 		device.setFragmentShader(geoFragmentShader);
-
-		device.beginRenderPass(renderTargets[0]);
+		
+		device.beginRenderPass(renderTargets[backBufferIndex]);
 			device.drawIndexed(3);
 		device.endRenderPass();
 
-		device.swapBuffers(renderTargets[0], renderTargets[1]);
+		device.swapBuffers(renderTargets[frontBufferIndex], renderTargets[backBufferIndex]);
+
+		frontBufferIndex = backBufferIndex;
+		backBufferIndex = (backBufferIndex + 1) % std::size(renderTargets);
 	}
 
 };
@@ -212,8 +228,9 @@ void aes::test_RHI()
 	AES_START_PROFILE_SESSION("test RHI startup");
 	TestRHIApp app;
 	auto startupSession = AES_STOP_PROFILE_SESSION();
-
-	//while (1)
+	
+	AES_LOG("Draw start");
+	while (1)
 	{
 		app.draw();
 	}

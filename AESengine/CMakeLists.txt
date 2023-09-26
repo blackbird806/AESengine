@@ -92,7 +92,10 @@ target_link_libraries(${PROJECT_NAME}
   SceDisplay_stub
   SceGxm_stub
   SceNet_stub
-  SceCtrl_stub 
+  SceCtrl_stub
+  SceRazorCapture_stub 
+  SceRazorHud_stub 
+  SceSysmodule_stub 
 )
 
 ## Create Vita files

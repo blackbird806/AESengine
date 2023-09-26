@@ -1,7 +1,7 @@
 ﻿void main(
 	float2 aPosition,
 	// float2 aTexCoord,
-	float4 aColor,
+	float3 aColor,
 	// uniform float4x4 transform : BUFFER[0],
 	float4 out vPosition : POSITION,
 	// float2 out vTexCoord : TEXCOORD0,
@@ -10,5 +10,5 @@
 	// vPosition = mul(float4(aPosition, 0.0f, 1.0f), transform);
 	vPosition = float4(aPosition, 0.0f, 1.0f);
 	// vTexCoord = aTexCoord;
-	vColor = aColor;
+	vColor = float4(aColor, 1.0);
 }

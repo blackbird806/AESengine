@@ -6,8 +6,13 @@
 #include "gxmDebug.hpp"
 #include "gxmMemory.hpp"
 
-using namespace aes;
+#include <psp2/razor_capture.h> 
+#include <psp2/razor_hud.h> 
+#include <psp2/sysmodule.h> 
 
+using namespace aes;
+#define AES_ENABLE_RAZOR_HUD
+#define AES_ENABLE_RAZOR_GPU_CAPTURE
 struct DisplayData
 {
 	void* address;
@@ -135,6 +140,23 @@ void aes::initializeGraphicsAPI()
 	// @TODO clean this
 	auto constexpr vita_display_max_pending_swaps = 2;
 
+	#ifdef AES_ENABLE_RAZOR_HUD
+	// Initialize the Razor HUD system.
+	// This should be done before the call to sceGxmInitialize().
+	// auto erra = sceSysmoduleLoadModule( SCE_SYSMODULE_RAZOR_HUD );
+	// AES_ASSERT(erra == SCE_OK);
+	#endif
+	#ifdef AES_ENABLE_RAZOR_GPU_CAPTURE
+	// Initialize the Razor capture system.
+	// This should be done before the call to sceGxmInitialize().
+	auto erra = sceSysmoduleLoadModule( SCE_SYSMODULE_RAZOR_CAPTURE );
+	AES_ASSERT(erra == SCE_OK);
+
+	// Trigger a capture after 1 frames.
+	// sceRazorGpuCaptureSetTriggerNextFrame("ux0:/log/basic.sgx" );
+	// sceRazorGpuCaptureEnableSalvage("ux0:/log/crash.sgx");
+	#endif
+
 	// Set up parameters
 	SceGxmInitializeParams initializeParams;
 	memset(&initializeParams, 0, sizeof(SceGxmInitializeParams));
@@ -205,6 +227,20 @@ void aes::terminateGraphicsAPI()
 	graphicsFree(patcherBufferUid);
 
 	sceGxmTerminate();
+
+#ifdef AES_ENABLE_RAZOR_GPU_CAPTURE
+	// Terminate Razor capture.
+	// This should be done after the call to sceGxmTerminate().
+	sceSysmoduleUnloadModule( SCE_SYSMODULE_RAZOR_CAPTURE );
+#endif
+
+#ifdef AES_ENABLE_RAZOR_HUD
+	// Terminate Razor HUD.
+	// This should be done after the call to sceGxmTerminate().
+	// sceSysmoduleUnloadModule( SCE_SYSMODULE_RAZOR_HUD );
+#endif
+
+
 	AES_LOG("GXM terminated successfully");
 }
 
@@ -332,14 +368,14 @@ void GxmDevice::drawIndexed(uint indexCount, uint indexOffset)
 				rhiIndexFormatToApi(currentState.indexBufferInfo.typeFormat),
 				((uint16_t*)currentState.indexBufferInfo.buffer) + indexOffset,
 				(uint32_t)indexCount);
-		AES_ASSERT(err == SCE_OK);
+		AES_GXM_CHECK(err);
 	}
 	else {
 		auto err = sceGxmDraw(context, rhiPrimitiveTypeToApi(currentState.primitiveType),
 					rhiIndexFormatToApi(currentState.indexBufferInfo.typeFormat),
 					((uint32_t*)currentState.indexBufferInfo.buffer) + indexOffset,
 					(uint32_t)indexCount);
-		AES_ASSERT(err == SCE_OK);
+		AES_GXM_CHECK(err);
 	}
 }
 

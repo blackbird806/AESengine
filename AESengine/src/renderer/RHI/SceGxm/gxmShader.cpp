@@ -26,7 +26,6 @@ GxmShader& GxmShader::operator=(GxmShader&& rhs) noexcept
 GxmShader::~GxmShader()
 {
 	AES_PROFILE_FUNCTION();
-
 	sceGxmShaderPatcherUnregisterProgram(gxmShaderPatcher, id);
 }
 
@@ -148,6 +147,7 @@ GxmVertexShader::~GxmVertexShader()
 	AES_PROFILE_FUNCTION();
 	if (vertexShader != nullptr)
 	{
+		GxmShader::~GxmShader();
 		sceGxmShaderPatcherReleaseVertexProgram(gxmShaderPatcher, vertexShader);
 		vertexShader = nullptr;
 	}
@@ -224,6 +224,7 @@ GxmFragmentShader::~GxmFragmentShader()
 	AES_PROFILE_FUNCTION();
 	if (fragmentShader != nullptr)
 	{
+		GxmShader::~GxmShader();
 		sceGxmShaderPatcherReleaseFragmentProgram(gxmShaderPatcher, fragmentShader);
 		fragmentShader = nullptr;
 	}
@@ -239,15 +240,12 @@ Result<void> GxmFragmentShader::init(FragmentShaderDescription const& desc)
 	AES_ASSERT(sceGxmProgramCheck(gxpShader) == SCE_OK);
 	AES_ASSERT(sceGxmProgramGetType(gxpShader) == SCE_GXM_FRAGMENT_PROGRAM);
 	
-	AES_LOG("STEP 0");
-	
 	auto err = sceGxmShaderPatcherRegisterProgram(gxmShaderPatcher, gxpShader, &id);
 	if (err != SCE_OK)
 	{
 		AES_LOG_ERROR("failed to register fragment shader");
 		return { AESError::ShaderCreationFailed };
 	}
-	AES_LOG("STEP 1");
 	
 	SceGxmBlendInfo* pblendInfo = nullptr;
 	SceGxmBlendInfo blendInfo{};
@@ -263,13 +261,9 @@ Result<void> GxmFragmentShader::init(FragmentShaderDescription const& desc)
 		blendInfo.colorMask = rhiColorMaskToApi(desc.blendInfo->colorMask);
 		pblendInfo = &blendInfo;
 	}
-	AES_LOG("STEP 2");
-	AES_LOG("sceGxmShaderPatcherCreateFragmentProgram args\ngxmShaderPatcher: {}\nid: {}\nmultisample: {}\nblendinfo: {}\ngxpProgram: {}\nfragmentShader: {}",
-		(void*)gxmShaderPatcher, (void*)id, rhiMultisampleModeToApi(desc.multisampleMode), (void*)pblendInfo, desc.gxpVertexProgram, 
-		(void*)&fragmentShader);
+
 	err = sceGxmShaderPatcherCreateFragmentProgram(gxmShaderPatcher, id, SCE_GXM_OUTPUT_REGISTER_FORMAT_UCHAR4, 
-		rhiMultisampleModeToApi(desc.multisampleMode), pblendInfo, (SceGxmProgram const*)desc.gxpVertexProgram, &fragmentShader);
-	AES_LOG("STEP 3");
+		rhiMultisampleModeToApi(desc.multisampleMode), pblendInfo, (SceGxmProgram const*)NULL/*REVIEW why this glitch*/, &fragmentShader);
 	if (err != SCE_OK)
 	{
 		AES_LOG_ERROR("failed to create fragment shader err: {}", err);

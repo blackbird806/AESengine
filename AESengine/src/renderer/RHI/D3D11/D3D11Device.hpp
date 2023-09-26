@@ -9,11 +9,11 @@ struct IDXGIFactory;
 
 namespace aes
 {
-	class RHITexture;
-	class RHIBuffer;
-	class RHIRenderTarget;
-	class RHIVertexShader;
-	class RHIFragmentShader;
+	//class RHITexture;
+	//class RHIBuffer;
+	//class RHIRenderTarget;
+	//class RHIVertexShader;
+	//class RHIFragmentShader;
 
 	void initializeGraphicsAPI();
 	void terminateGraphicsAPI();
