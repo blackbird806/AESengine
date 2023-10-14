@@ -25,7 +25,6 @@ namespace aes
 	{
 	public:
 
-		Draw2d(IAllocator&);
 		Result<void> init();
 		
 		void setColor(Color color);

@@ -13,7 +13,7 @@ public:
 
 	aes::Draw2d draw2d;
 
-	TestDraw2dApp(InitInfo const& info) : Engine(info), draw2d(aes::globalAllocator)
+	TestDraw2dApp(InitInfo const& info) : Engine(info)
 	{
 		AES_LOG("[TEST] DRAW2D");
 	}

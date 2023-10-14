@@ -4,6 +4,7 @@
 #include "core/allocator.hpp"
 #include "core/color.hpp"
 #include "renderer/RHI/RHIDevice.hpp"
+#include "renderer/RHI/RHIBuffer.hpp"
 #include "renderer/RHI/RHIRenderTarget.hpp"
 #include "renderer/RHI/RHIShader.hpp"
 

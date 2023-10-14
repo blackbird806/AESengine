@@ -1,6 +1,6 @@
 #include "debug.hpp"
 #include "aes.hpp"
-
+#include "context.hpp"
 #include <fmt/format.h>
 
 #ifdef __vita__
@@ -11,8 +11,7 @@ using namespace aes;
 
 Logger& Logger::instance()
 {
-	static Logger instance_;
-	return instance_;
+	return context.logger;
 }
 
 void Logger::addSink(std::unique_ptr<Sink> sink)

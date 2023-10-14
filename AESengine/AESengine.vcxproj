@@ -42,6 +42,7 @@
     <ClCompile Include="src\core\aesException.cpp" />
     <ClCompile Include="src\core\allocator.cpp" />
     <ClCompile Include="src\core\console.cpp" />
+    <ClCompile Include="src\core\context.cpp" />
     <ClCompile Include="src\core\debug.cpp" />
     <ClCompile Include="src\core\geometry.cpp" />
     <ClCompile Include="src\core\input.cpp" />
@@ -93,6 +94,7 @@
     <ClInclude Include="src\core\array.hpp" />
     <ClInclude Include="src\core\color.hpp" />
     <ClInclude Include="src\core\console.hpp" />
+    <ClInclude Include="src\core\context.hpp" />
     <ClInclude Include="src\core\debug.hpp" />
     <ClInclude Include="src\core\debugMath.hpp" />
     <ClInclude Include="src\core\error.hpp" />

@@ -3,17 +3,14 @@
 
 #include "core/error.hpp"
 #include "renderer/RHI/RHIElements.hpp"
+#include "renderer/RHI//RHIBuffer.hpp"
+#include "renderer/RHI//RHITexture.hpp"
 #include <d3d11.h>
 
 struct IDXGIFactory;
 
 namespace aes
 {
-	//class RHITexture;
-	//class RHIBuffer;
-	//class RHIRenderTarget;
-	//class RHIVertexShader;
-	//class RHIFragmentShader;
 
 	void initializeGraphicsAPI();
 	void terminateGraphicsAPI();

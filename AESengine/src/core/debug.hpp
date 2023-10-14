@@ -41,6 +41,7 @@ namespace aes {
 	{
 	public:
 
+		// [[deprecated("Use context logger instead")]] 
 		static Logger& instance();
 		
 		void addSink(std::unique_ptr<Sink> sink);

@@ -1,9 +1,7 @@
 #include "RHIElements.hpp"
 
-
 void aes::validateVertexShaderDescription(VertexShaderDescription const& desc)
 {
-	AES_ASSERT(desc.verticesStride > 0);
 	AES_ASSERT(!desc.verticesLayout.empty());
 
 	for (auto it1 = desc.verticesLayout.begin(); it1 != desc.verticesLayout.end(); ++it1)
@@ -19,11 +17,8 @@ void aes::validateVertexShaderDescription(VertexShaderDescription const& desc)
 void aes::validateTextureDescription(TextureDescription const& desc)
 {
 	// @Review check if power of 2 ?
-	AES_ASSERT(desc.width > 0);
-	AES_ASSERT(desc.height > 0);
 }
 
 void aes::validateBufferDescription(BufferDescription const& desc)
 {
-	AES_ASSERT(desc.sizeInBytes > 0);
 }

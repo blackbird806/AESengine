@@ -8,15 +8,6 @@
 
 using namespace aes;
 
-Draw2d::Draw2d(IAllocator& alloc) :
-	statesStack(alloc),
-	commands(alloc), colorVertices(alloc),
-	colorIndices(alloc), textureVertices(alloc),
-	textureIndices(alloc)
-{
-
-}
-
 Result<void> Draw2d::init()
 {
 	AES_PROFILE_FUNCTION();

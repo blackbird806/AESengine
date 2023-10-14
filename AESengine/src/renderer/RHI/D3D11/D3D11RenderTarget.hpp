@@ -1,0 +1,31 @@
+#ifndef AES_D3D11RENDERTARGET_HPP
+#define AES_D3D11RENDERTARGET_HPP
+
+#include "core/aes.hpp"
+#include "core/error.hpp"
+#include "renderer/RHI/RHIElements.hpp"
+
+namespace aes
+{
+	class D3D11RenderTarget
+	{
+	public:
+
+		D3D11RenderTarget() = default;
+		D3D11RenderTarget(D3D11RenderTarget&&) noexcept;
+		~D3D11RenderTarget();
+		D3D11RenderTarget& operator=(D3D11RenderTarget&&) noexcept;
+
+		Result<void> init(RenderTargetDescription const&);
+		void destroy();
+
+	private:
+
+		ID3D11Texture2D* renderTargetTextureMap;
+		ID3D11RenderTargetView* renderTargetViewMap;
+	};
+
+	using RHIRenderTarget = D3D11RenderTarget;
+}
+
+#endif

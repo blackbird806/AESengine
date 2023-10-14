@@ -3,6 +3,7 @@
 
 #include "allocator.hpp"
 #include "error.hpp"
+#include "context.hpp"
 #include <concepts>
 
 namespace aes
@@ -17,6 +18,12 @@ namespace aes
 		public:
 
 		using Iterator_t = T*;
+
+		constexpr Array() noexcept
+			: alloc(context.allocator), buffer(nullptr), size_(0), capacity_(0)
+		{
+
+		}
 
 		constexpr Array(IAllocator& allocator) noexcept
 			: alloc(&allocator), buffer(nullptr), size_(0), capacity_(0)

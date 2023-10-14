@@ -165,6 +165,9 @@
     <ClCompile Include="src\core\aesException.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\core\context.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\window.hpp">
@@ -333,6 +336,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\core\aesException.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\context.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

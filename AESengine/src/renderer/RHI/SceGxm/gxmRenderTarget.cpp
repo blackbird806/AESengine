@@ -39,7 +39,6 @@ Result<void> GxmRenderTarget::init(RenderTargetDescription const& info)
 		return { AESError::RenderTargetCreationFailed };
 	}
 
-
 	if (sceGxmColorSurfaceInit(&colorSurface, 
 			// I'm still unsure if it's a great idea to confound color format and texture format
 			// it seems that vitaGL does this as well (https://github.com/Rinnegatamante/vitaGL/blob/master/source/framebuffers.c#L36)

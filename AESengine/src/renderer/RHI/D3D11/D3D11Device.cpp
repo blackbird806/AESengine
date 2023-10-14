@@ -4,6 +4,7 @@
 #include "core/aesException.hpp"
 #include "D3D11shader.hpp"
 #include "renderer/RHI/RHIBuffer.hpp"
+#include "D3D11globals.hpp"
 
 using namespace aes;
 
@@ -18,6 +19,9 @@ void aes::terminateGraphicsAPI()
 Result<void> D3D11Device::init()
 {
 	AES_PROFILE_FUNCTION();
+
+	AES_ASSERT(gD3D11Device == nullptr);
+	AES_ASSERT(gD3D11DeviceContext == nullptr);
 
 	// Create a DirectX graphics interface factory.
 	HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
@@ -110,6 +114,9 @@ Result<void> D3D11Device::init()
 		AES_FATAL_ERROR("failed to query debug interface");
 	}
 #endif
+
+	gD3D11Device = device;
+	gD3D11DeviceContext = deviceContext;
 	return {};
 }
 

@@ -60,6 +60,7 @@ namespace aes
 		virtual ~IAllocator() {}
 	};
 
+	// implementation of IAllocator that is equivalent of just calling malloc
 	class Mallocator final : public IAllocator
 	{
 	public:
@@ -86,8 +87,6 @@ namespace aes
 	};
 
 	extern Mallocator mallocator;
-	extern IAllocator& globalAllocator;
-	extern IAllocator* contextAllocator;
 }
 
 #endif
