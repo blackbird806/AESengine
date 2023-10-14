@@ -35,51 +35,6 @@ D3D11Buffer::~D3D11Buffer()
 	destroy();
 }
 
-Result<void> D3D11Buffer::init(BufferDescription const& desc)
-{
-	validateBufferDescription(desc);
-	//AES_ASSERT(desc.sizeInBytes % 16 == 0); // D3D11 buffers size must be a multiple of 16
-
-	size = desc.sizeInBytes;
-	
-	D3D11_BUFFER_DESC bufferDesc;
-	bufferDesc.Usage = rhiMemoryUsageToApi(desc.usage);
-	bufferDesc.ByteWidth = size;
-	bufferDesc.BindFlags = rhiBufferBindFlagsToApi(desc.bindFlags);
-	bufferDesc.CPUAccessFlags = rhiCPUAccessFlagsToApi(desc.cpuAccessFlags);
-	bufferDesc.MiscFlags = 0;
-	bufferDesc.StructureByteStride = 0;
-	ID3D11Device* device = gD3D11Device;
-	
-	HRESULT result;
-	if (desc.initialData)
-	{
-		D3D11_SUBRESOURCE_DATA vertexData;
-		vertexData.pSysMem = desc.initialData;
-		vertexData.SysMemPitch = 0;
-		vertexData.SysMemSlicePitch = 0;
-		result = device->CreateBuffer(&bufferDesc, &vertexData, &apiBuffer);
-	}
-	else
-	{
-		result = device->CreateBuffer(&bufferDesc, nullptr, &apiBuffer);
-	}
-	
-	if (FAILED(result))
-	{
-		AES_LOG_ERROR("Failed to create GPU buffer");
-		return { AESError::GPUBufferCreationFailed };
-	}
-	
-	return {};
-}
-
-Result<void> D3D11Buffer::copyTo(D3D11Buffer& dest)
-{
-	gD3D11DeviceContext->CopyResource(dest.getHandle(), apiBuffer);
-	return {};
-}
-
 ID3D11Buffer* D3D11Buffer::getHandle() noexcept
 {
 	return apiBuffer;

@@ -3,8 +3,11 @@
 
 #include "core/error.hpp"
 #include "renderer/RHI/RHIElements.hpp"
-#include "renderer/RHI//RHIBuffer.hpp"
-#include "renderer/RHI//RHITexture.hpp"
+#include "renderer/RHI/RHIBuffer.hpp"
+#include "renderer/RHI/RHITexture.hpp"
+#include "renderer/RHI/RHIRenderTarget.hpp"
+#include "renderer/RHI/RHIShader.hpp"
+#include "renderer/RHI/RHISampler.hpp"
 #include <d3d11.h>
 
 struct IDXGIFactory;
@@ -27,6 +30,18 @@ namespace aes
 
 		Result<void> init();
 		void destroy();
+
+		// resource creation
+		Result<RHIRenderTarget> createRenderTarget(RenderTargetDescription const& desc);
+		Result<RHIBuffer> createBuffer(BufferDescription const& desc);
+		Result<void> copyBuffer(RHIBuffer const& from, RHIBuffer& to);
+		Result<RHITexture> createTexture(TextureDescription const& desc);
+		Result<RHIVertexShader> createVertexShader(VertexShaderDescription const& desc);
+		Result<RHIFragmentShader> createFragmentShader(FragmentShaderDescription const& desc);
+		Result<RHISampler> createSampler(SamplerDescription const& desc);
+
+		// d3d11 specifics
+		Result<D3D11BlendState> createBlendState(BlendInfo const& desc);
 
 		// not sure about this name
 		void swapBuffers(RHIRenderTarget const& oldBuffer, RHIRenderTarget const& newBuffer);

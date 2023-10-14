@@ -9,10 +9,10 @@ namespace aes
 {
 	class D3D11Sampler
 	{
+		friend class D3D11Device;
 	public:
 		D3D11Sampler() = default;
 		D3D11Sampler(D3D11Sampler&&) noexcept;
-		Result<void> init(SamplerDescription const& desc);
 
 		D3D11Sampler& operator=(D3D11Sampler&&) noexcept;
 		void destroy() noexcept;

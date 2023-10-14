@@ -16,7 +16,6 @@ namespace aes
 	class RHIBuffer : public RHIBufferBase
 	{
 	public:
-		
 		Result<void> setData(void* data, size_t size);
 
 		template<typename T>

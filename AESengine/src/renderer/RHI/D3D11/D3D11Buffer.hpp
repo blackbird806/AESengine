@@ -11,15 +11,13 @@ namespace aes
 	class D3D11Buffer
 	{
 	public:
-		
-		D3D11Buffer() {}
+		friend class D3D11Device;
+
+		D3D11Buffer() = default;
 		D3D11Buffer(D3D11Buffer&&) noexcept;
 		D3D11Buffer& operator=(D3D11Buffer&& rhs) noexcept;
 		void destroy() noexcept;
 		~D3D11Buffer();
-		
-		Result<void> init(BufferDescription const& desc);
-		Result<void> copyTo(D3D11Buffer& dest);
 		
 		ID3D11Buffer* getHandle() noexcept;
 		Result<void*> map();
@@ -30,7 +28,7 @@ namespace aes
 		
 	protected:
 
-		ID3D11Buffer* apiBuffer;
+		ID3D11Buffer* apiBuffer = nullptr;
 		size_t size = 0;
 	};
 	

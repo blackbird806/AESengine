@@ -37,7 +37,7 @@ namespace aes {
 	{
 	public:
 		using ValueType = T;
-		using ErrorCodeType = UnderlyingError_t;
+		using ErrorCodeType = AESError;
 
 		Result(T&& val) noexcept : value_(std::forward<T>(val))
 		{

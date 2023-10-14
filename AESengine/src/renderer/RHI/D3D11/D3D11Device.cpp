@@ -1,10 +1,11 @@
 #include "D3D11Device.hpp"
-#include <dxgi.h>
 #include "D3D11Elements.hpp"
 #include "core/aesException.hpp"
 #include "D3D11shader.hpp"
 #include "renderer/RHI/RHIBuffer.hpp"
-#include "D3D11globals.hpp"
+#include "core/array.hpp"
+#include <dxgi.h>
+#include <d3dcompiler.h>
 
 using namespace aes;
 
@@ -19,9 +20,6 @@ void aes::terminateGraphicsAPI()
 Result<void> D3D11Device::init()
 {
 	AES_PROFILE_FUNCTION();
-
-	AES_ASSERT(gD3D11Device == nullptr);
-	AES_ASSERT(gD3D11DeviceContext == nullptr);
 
 	// Create a DirectX graphics interface factory.
 	HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
@@ -114,9 +112,6 @@ Result<void> D3D11Device::init()
 		AES_FATAL_ERROR("failed to query debug interface");
 	}
 #endif
-
-	gD3D11Device = device;
-	gD3D11DeviceContext = deviceContext;
 	return {};
 }
 
@@ -140,6 +135,321 @@ void D3D11Device::destroy()
 	debugInterface->Release();
 	debugInterface = nullptr;
 #endif
+}
+
+Result<RHIRenderTarget> aes::D3D11Device::createRenderTarget(RenderTargetDescription const& desc)
+{
+	AES_PROFILE_FUNCTION();
+
+	RHIRenderTarget rt;
+
+	D3D11_TEXTURE2D_DESC textureDesc;
+
+	///////////////////////// Map's Texture
+	// Initialize the  texture description.
+	ZeroMemory(&textureDesc, sizeof(textureDesc));
+
+	// Setup the texture description.
+	textureDesc.Width = desc.width;
+	textureDesc.Height = desc.height;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = rhiFormatToApi(desc.format);
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.MiscFlags = 0;
+
+	/////////////////////// Map's Render Target
+	// Setup the description of the render target view.
+	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+	renderTargetViewDesc.Format = textureDesc.Format;
+	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	renderTargetViewDesc.Texture2D.MipSlice = 0;
+
+	// Create the texture
+	auto result = device->CreateTexture2D(&textureDesc, NULL, &rt.renderTargetTexture);
+	if (FAILED(result))
+	{
+		AES_FATAL_ERROR("device->CreateTexture2D failed");
+	}
+
+	result = device->CreateRenderTargetView(rt.renderTargetTexture, &renderTargetViewDesc, &rt.renderTargetView);
+	if (FAILED(result))
+	{
+		AES_FATAL_ERROR("device->CreateRenderTargetView failed");
+	}
+
+	return {rt};
+}
+
+Result<RHIBuffer> D3D11Device::createBuffer(BufferDescription const& desc)
+{
+	AES_PROFILE_FUNCTION();
+
+	validateBufferDescription(desc);
+	//AES_ASSERT(desc.sizeInBytes % 16 == 0); // D3D11 buffers size must be a multiple of 16
+	RHIBuffer buffer;
+
+	buffer.size = desc.sizeInBytes;
+
+	D3D11_BUFFER_DESC bufferDesc;
+	bufferDesc.Usage = rhiMemoryUsageToApi(desc.usage);
+	bufferDesc.ByteWidth = buffer.size;
+	bufferDesc.BindFlags = rhiBufferBindFlagsToApi(desc.bindFlags);
+	bufferDesc.CPUAccessFlags = rhiCPUAccessFlagsToApi(desc.cpuAccessFlags);
+	bufferDesc.MiscFlags = 0;
+	bufferDesc.StructureByteStride = 0;
+
+	HRESULT result;
+	if (desc.initialData)
+	{
+		D3D11_SUBRESOURCE_DATA vertexData;
+		vertexData.pSysMem = desc.initialData;
+		vertexData.SysMemPitch = 0;
+		vertexData.SysMemSlicePitch = 0;
+		result = device->CreateBuffer(&bufferDesc, &vertexData, &buffer.apiBuffer);
+	}
+	else
+	{
+		result = device->CreateBuffer(&bufferDesc, nullptr, &buffer.apiBuffer);
+	}
+
+	if (FAILED(result))
+	{
+		AES_LOG_ERROR("Failed to create GPU buffer");
+		return { AESError::GPUBufferCreationFailed };
+	}
+
+	return { buffer };
+}
+
+Result<void> aes::D3D11Device::copyBuffer(RHIBuffer const& from, RHIBuffer& to)
+{
+	AES_PROFILE_FUNCTION();
+
+	deviceContext->CopyResource(to.apiBuffer, from.apiBuffer);
+	return {};
+}
+
+Result<RHITexture> aes::D3D11Device::createTexture(TextureDescription const& info)
+{
+	AES_PROFILE_FUNCTION();
+
+	validateTextureDescription(info);
+	
+	RHITexture tex;
+
+	D3D11_TEXTURE2D_DESC textureDesc = {};
+	textureDesc.Height = info.height;
+	textureDesc.Width = info.width;
+	textureDesc.MipLevels = 1; // info.mipsLevel;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = rhiFormatToApi(info.format);
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.SampleDesc.Quality = 0;
+	textureDesc.Usage = rhiMemoryUsageToApi(info.usage);
+	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;  // @Review
+	textureDesc.CPUAccessFlags = rhiCPUAccessFlagsToApi(info.cpuAccess);
+	//textureDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
+
+	HRESULT err;
+	if (info.initialData)
+	{
+		D3D11_SUBRESOURCE_DATA subresource;
+		subresource.pSysMem = info.initialData;
+		subresource.SysMemPitch = getFormatSize(info.format) * info.width;
+		err = device->CreateTexture2D(&textureDesc, &subresource, &tex.texture);
+	}
+	else
+	{
+		err = device->CreateTexture2D(&textureDesc, nullptr, &tex.texture);
+	}
+
+	if (FAILED(err))
+	{
+		AES_LOG_ERROR("D3D11 CreateTexture2D failed, err: {}", err);
+		return { AESError::GPUTextureCreationFailed };
+	}
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	// Setup the shader resource view description.
+	srvDesc.Format = textureDesc.Format;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = -1; // @Review
+
+	// Create the shader resource view for the texture.
+	err = device->CreateShaderResourceView(tex.texture, &srvDesc, &tex.textureView);
+	if (FAILED(err))
+	{
+		AES_LOG_ERROR("D3D11 CreateShaderResourceView failed !");
+		return { AESError::GPUTextureCreationFailed };
+	}
+	//D3D11Renderer::instance().getDeviceContext()->GenerateMips(textureView);
+
+	return {tex};
+}
+
+Result<RHIVertexShader> aes::D3D11Device::createVertexShader(VertexShaderDescription const& desc)
+{
+	AES_PROFILE_FUNCTION();
+
+	RHIVertexShader vert;
+
+	ID3DBlob* errorMessage = nullptr;
+	ID3DBlob* vertexShaderBuffer = nullptr;
+
+	if (!std::holds_alternative<std::string>(desc.source))
+	{
+		AES_NOT_IMPLEMENTED();
+	}
+	auto const& source = std::get<std::string>(desc.source);
+	auto result = D3DCompile(source.data(), sizeof(char) * source.size(), "vertexShader", nullptr, nullptr, "main", "vs_5_0", 0, 0, &vertexShaderBuffer, &errorMessage);
+	if (FAILED(result))
+	{
+		AES_LOG_ERROR("failed to compile vertex shader : {}", (char*)errorMessage->GetBufferPointer());
+		return { AESError::ShaderCompilationFailed };
+	}
+
+	// Create the vertex shader from the buffer.
+	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), nullptr, &vert.vertexShader);
+	if (FAILED(result))
+	{
+		AES_LOG_ERROR("failed to create vertex shader");
+		return { AESError::ShaderCreationFailed };
+	}
+
+	D3DReflect(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&vert.reflector);
+	// Now setup the layout of the data that goes into the shader.
+	// This setup needs to match the VertexType stucture in the shader.
+	Array<D3D11_INPUT_ELEMENT_DESC> polygonLayout;
+	polygonLayout.resize(desc.verticesLayout.size());
+	for (int i = 0; auto const& layout : desc.verticesLayout)
+	{
+		polygonLayout[i].SemanticName = getSemanticName(layout.semantic);
+		polygonLayout[i].SemanticIndex = 0;
+		polygonLayout[i].Format = rhiFormatToApi(layout.format);
+		polygonLayout[i].InputSlot = 0;
+		polygonLayout[i].AlignedByteOffset = layout.offset;
+		polygonLayout[i].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+		polygonLayout[i].InstanceDataStepRate = 0;
+		i++;
+	}
+
+	// Create the vertex input layout.
+	result = device->CreateInputLayout(polygonLayout.data(), std::size(polygonLayout), vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &vert.layout);
+	if (FAILED(result))
+	{
+		AES_LOG_ERROR("failed to create InputLayout");
+		return { AESError::ShaderCreationFailed };
+	}
+
+	vertexShaderBuffer->Release();
+
+	return {vert};
+}
+
+Result<RHIFragmentShader> D3D11Device::createFragmentShader(FragmentShaderDescription const& desc)
+{
+	AES_PROFILE_FUNCTION();
+
+	RHIFragmentShader frag;
+
+	ID3DBlob* errorMessage = nullptr;
+	ID3DBlob* pixelShaderBuffer = nullptr;
+
+	if (!std::holds_alternative<std::string>(desc.source))
+	{
+		AES_NOT_IMPLEMENTED();
+	}
+
+	auto const& source = std::get<std::string>(desc.source);
+	HRESULT result = D3DCompile(source.data(), sizeof(char) * source.size(), "pixelShader", nullptr, nullptr, "main", "ps_5_0", 0, 0, &pixelShaderBuffer, &errorMessage);
+	if (FAILED(result))
+	{
+		AES_LOG_ERROR("failed to compile pixed shader : {}", (char*)errorMessage->GetBufferPointer());
+		return { AESError::ShaderCompilationFailed };
+	}
+
+	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), nullptr, &frag.pixelShader);
+	if (FAILED(result))
+	{
+		AES_LOG_ERROR("failed to create pixel shader");
+		return { AESError::ShaderCreationFailed };
+	}
+
+	result = D3DReflect(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&frag.reflector);
+	pixelShaderBuffer->Release();
+	if (FAILED(result))
+	{
+		AES_LOG_ERROR("D3DReflect error failed to reflect shader");
+	}
+
+	if (desc.blendInfo)
+	{
+		auto resultBlend = createBlendState(*desc.blendInfo);
+		if (!resultBlend)
+			return { resultBlend.error() };
+
+		frag.blendState = std::move(resultBlend.value());
+	}
+
+	return {frag};
+}
+
+Result<RHISampler> aes::D3D11Device::createSampler(SamplerDescription const& desc)
+{
+	AES_PROFILE_FUNCTION();
+	RHISampler sampler;
+
+	D3D11_SAMPLER_DESC samplerDesc;
+	samplerDesc.Filter = rhiTextureFilterToApi(desc.filter);
+	samplerDesc.AddressU = rhiTextureAddressModeToApi(desc.addressU);
+	samplerDesc.AddressV = rhiTextureAddressModeToApi(desc.addressV);
+	samplerDesc.AddressW = rhiTextureAddressModeToApi(desc.addressU); // @Review
+	samplerDesc.MipLODBias = desc.lodBias; // @Review 
+	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.BorderColor[0] = 0;
+	samplerDesc.BorderColor[1] = 0;
+	samplerDesc.BorderColor[2] = 0;
+	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.MinLOD = desc.lodMin; // @Review 
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	auto result = device->CreateSamplerState(&samplerDesc, &sampler.samplerState);
+	if (FAILED(result))
+		return { AESError::SamplerCreationFailed };
+
+	return {sampler};
+}
+
+Result<D3D11BlendState> D3D11Device::createBlendState(BlendInfo const& info)
+{
+	AES_PROFILE_FUNCTION();
+	D3D11BlendState blend;
+
+	D3D11_BLEND_DESC blendDesc = {};
+	blendDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendDesc.RenderTarget[0].SrcBlend = rhiBlendFactorToApi(info.colorSrc);
+	blendDesc.RenderTarget[0].DestBlend = rhiBlendFactorToApi(info.colorDst);
+	blendDesc.RenderTarget[0].BlendOp = rhiBlendOpToApi(info.colorOp);
+	blendDesc.RenderTarget[0].SrcBlendAlpha = rhiBlendFactorToApi(info.alphaSrc);
+	blendDesc.RenderTarget[0].DestBlendAlpha = rhiBlendFactorToApi(info.alphaDst);
+	blendDesc.RenderTarget[0].BlendOpAlpha = rhiBlendOpToApi(info.alphaOp);
+	// TODO
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = 0x0f;
+
+	auto err = device->CreateBlendState(&blendDesc, &blend.blendState);
+	if (FAILED(err))
+	{
+		AES_LOG_ERROR("failed to create D3D11 Blendstate");
+		return { AESError::BlendStateCreationFailed };
+	}
+
+	return {blend};
 }
 
 D3D11Device::D3D11Device(D3D11Device&& rhs) noexcept

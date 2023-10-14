@@ -49,7 +49,7 @@ public:
 			rtDesc.height = 544;
 			rtDesc.format = RHIFormat::R8G8B8A8_Uint;
 			rtDesc.multisampleMode = MultisampleMode::None;
-			renderTargets[i].init(rtDesc);
+			renderTargets[i] = device.createRenderTarget(rtDesc).value();
 		}
 		// clear init
 		{
@@ -96,7 +96,7 @@ public:
 			vertexBufferDesc.usage = MemoryUsage::Immutable;
 			vertexBufferDesc.initialData = tri;
 
-			clearVertexBuffer.init(vertexBufferDesc);
+			clearVertexBuffer = device.createBuffer(vertexBufferDesc).value();
 			AES_LOG("clear vertex buffer created");
 		}
 		{
@@ -109,7 +109,7 @@ public:
 			indexBufferDesc.usage = MemoryUsage::Immutable;
 			indexBufferDesc.initialData = indices;
 
-			clearIndexBuffer.init(indexBufferDesc);
+			clearIndexBuffer = device.createBuffer(indexBufferDesc).value();
 			AES_LOG("clear index buffer created");
 		}
 		// geometry init
@@ -162,7 +162,7 @@ public:
 			vertexBufferDesc.usage = MemoryUsage::Immutable;
 			vertexBufferDesc.initialData = tri;
 
-			geoVertexBuffer.init(vertexBufferDesc);
+			geoVertexBuffer = device.createBuffer(vertexBufferDesc).value();
 			AES_LOG("geoVertexBuffer created");
 		}
 		{
@@ -175,7 +175,7 @@ public:
 			indexBufferDesc.usage = MemoryUsage::Immutable;
 			indexBufferDesc.initialData = indices;
 
-			geoIndexBuffer.init(indexBufferDesc);
+			geoIndexBuffer = device.createBuffer(indexBufferDesc).value();
 			AES_LOG("indexBufferDesc created");
 		}
 	}

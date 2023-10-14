@@ -9,6 +9,7 @@ namespace aes
 {
 	class D3D11RenderTarget
 	{
+		friend class D3D11Device;
 	public:
 
 		D3D11RenderTarget() = default;
@@ -16,13 +17,12 @@ namespace aes
 		~D3D11RenderTarget();
 		D3D11RenderTarget& operator=(D3D11RenderTarget&&) noexcept;
 
-		Result<void> init(RenderTargetDescription const&);
 		void destroy();
 
 	private:
 
-		ID3D11Texture2D* renderTargetTextureMap;
-		ID3D11RenderTargetView* renderTargetViewMap;
+		ID3D11Texture2D* renderTargetTexture = nullptr;
+		ID3D11RenderTargetView* renderTargetView = nullptr;
 	};
 
 	using RHIRenderTarget = D3D11RenderTarget;

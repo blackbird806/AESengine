@@ -19,7 +19,7 @@ namespace aes {
 		D3D11Shader() = default;
 		D3D11Shader(D3D11Shader&& rhs) noexcept;
 		D3D11Shader& operator=(D3D11Shader&& rhs) noexcept;
-		std::vector<UniformBufferReflectionInfo> getUniformBufferInfos() const;
+		//std::vector<UniformBufferReflectionInfo> getUniformBufferInfos() const;
 		virtual ~D3D11Shader();
 	protected:
 		ID3D11ShaderReflection* reflector;
@@ -27,9 +27,9 @@ namespace aes {
 	
 	class D3D11VertexShader : public D3D11Shader
 	{
+		friend class D3D11Device;
 	public:
 		D3D11VertexShader() = default;
-		Result<void> init(VertexShaderDescription const& desc);
 		D3D11VertexShader(D3D11VertexShader&& rhs) noexcept;
 		D3D11VertexShader(D3D11VertexShader const& rhs) = delete;
 		D3D11VertexShader& operator=(D3D11VertexShader&&) noexcept;
@@ -47,10 +47,10 @@ namespace aes {
 
 	class D3D11FragmentShader : public D3D11Shader
 	{
+		friend class D3D11Device;
 	public:
 		
 		D3D11FragmentShader() = default;
-		Result<void> init(FragmentShaderDescription const& desc);
 		D3D11FragmentShader(D3D11FragmentShader&& rhs) noexcept;
 		D3D11FragmentShader(D3D11FragmentShader const& rhs) = delete;
 		D3D11FragmentShader& operator=(D3D11FragmentShader&& rhs) noexcept;

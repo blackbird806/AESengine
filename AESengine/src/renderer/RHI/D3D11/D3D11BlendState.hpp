@@ -13,9 +13,10 @@ namespace aes
 	class D3D11BlendState
 	{
 	public:
+		friend class D3D11Device;
+
 		D3D11BlendState() = default;
 		D3D11BlendState(D3D11BlendState&&) noexcept;
-		Result<void> init(BlendInfo const& info);
 		
 		D3D11BlendState& operator=(D3D11BlendState&&) noexcept;
 		~D3D11BlendState();
