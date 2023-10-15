@@ -67,8 +67,10 @@
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11Elements.cpp" />
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11Model.cpp" />
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11renderer.cpp" />
+    <ClCompile Include="src\renderer\RHI\D3D11\D3D11RenderTarget.cpp" />
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11Sampler.cpp" />
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11Shader.cpp" />
+    <ClCompile Include="src\renderer\RHI\D3D11\D3D11Swapchain.cpp" />
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11Texture.cpp" />
     <ClCompile Include="src\renderer\RHI\RHIBuffer.cpp" />
     <ClCompile Include="src\renderer\RHI\RHIValidation.cpp" />
@@ -124,10 +126,13 @@
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11Buffer.hpp" />
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11Device.hpp" />
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11Elements.hpp" />
+    <ClInclude Include="src\renderer\RHI\D3D11\D3D11globals.hpp" />
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11Model.hpp" />
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11renderer.hpp" />
+    <ClInclude Include="src\renderer\RHI\D3D11\D3D11RenderTarget.hpp" />
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11Sampler.hpp" />
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11Shader.hpp" />
+    <ClInclude Include="src\renderer\RHI\D3D11\D3D11Swapchain.hpp" />
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11Texture.hpp" />
     <ClInclude Include="src\renderer\RHI\RHI.hpp" />
     <ClInclude Include="src\renderer\RHI\RHIBuffer.hpp" />
@@ -138,6 +143,7 @@
     <ClInclude Include="src\renderer\RHI\RHISampler.hpp" />
     <ClInclude Include="src\renderer\RHI\RHIShader.hpp" />
     <ClInclude Include="src\renderer\RHI\RHIShaderReflection.hpp" />
+    <ClInclude Include="src\renderer\RHI\RHISwapchain.hpp" />
     <ClInclude Include="src\renderer\RHI\RHITexture.hpp" />
     <ClInclude Include="src\renderer\textureUtility.hpp" />
     <ClInclude Include="src\renderer\vertex.hpp" />

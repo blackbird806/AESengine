@@ -17,7 +17,7 @@ Engine::Engine(InitInfo const& info) :
 #else
 	mainWindow(std::make_unique<EmptyWindow>()),
 #endif
-	appName(info.appName), keyJustPressed(globalAllocator)
+	appName(info.appName)
 {
 
 }

@@ -7,6 +7,7 @@
 #include "renderer/RHI/RHITexture.hpp"
 #include "renderer/RHI/RHIBuffer.hpp"
 #include "renderer/RHI/RHISampler.hpp"
+#include "renderer/RHI/RHIDevice.hpp"
 #include "core/array.hpp"
 
 // Font system RHI complient
@@ -26,8 +27,6 @@ namespace aes
 
 	struct FontRessource
 	{
-		FontRessource(IAllocator&) noexcept;
-
 		std::optional<Glyph> getGlyph(char c) const;
 
 		RHITexture texture;
@@ -38,6 +37,7 @@ namespace aes
 
 	struct FontParams
 	{
+		RHIDevice* device;
 		std::span<uint8_t const> fontData;
 		float fontSize = 20;
 		int startUnicode = 32; // 32 => space
@@ -46,7 +46,7 @@ namespace aes
 		uint oversampling = 2;
 	};
 
-	Result<FontRessource> createFontRessource(IAllocator& allocator, FontParams const& params);
+	Result<FontRessource> createFontRessource(FontParams const& params);
 }
 
 #endif

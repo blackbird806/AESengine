@@ -137,7 +137,97 @@ void D3D11Device::destroy()
 #endif
 }
 
-Result<RHIRenderTarget> aes::D3D11Device::createRenderTarget(RenderTargetDescription const& desc)
+Result<RHISwapchain> D3D11Device::createSwapchain(SwapchainDescription const& desc)
+{
+	AES_PROFILE_FUNCTION();
+
+	RHISwapchain sc;
+	DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
+
+	// Set to a single back buffer.
+	swapChainDesc.BufferCount = desc.count;
+
+	// Set the width and height of the back buffer.
+	swapChainDesc.BufferDesc.Width = desc.width;
+	swapChainDesc.BufferDesc.Height = desc.height;
+
+	// Set regular 32-bit surface for the back buffer.
+	swapChainDesc.BufferDesc.Format = rhiFormatToApi(desc.format);
+
+	// Set the refresh rate of the back buffer.
+	//if (vsyncEnabled)
+	//{
+	//	AES_NOT_IMPLEMENTED();
+	//	//swapChainDesc.BufferDesc.RefreshRate.Numerator = numerator;
+	//	//swapChainDesc.BufferDesc.RefreshRate.Denominator = denominator;
+	//}
+	//else
+	{
+		swapChainDesc.BufferDesc.RefreshRate.Numerator = 0;
+		swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
+	}
+
+	// Set the usage of the back buffer.
+	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+
+	// Set the handle for the window to render to.
+	swapChainDesc.OutputWindow = static_cast<HWND>(desc.window);
+
+	// Turn multisampling off.
+	swapChainDesc.SampleDesc.Count = 1;
+	swapChainDesc.SampleDesc.Quality = 0;
+
+	// Set to full screen or windowed mode.
+	swapChainDesc.Windowed = true;
+
+	// Set the scan line ordering and scaling to unspecified.
+	swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+	swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+
+	// Discard the back buffer contents after presenting.
+	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+
+	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH; // allow full-screen switching
+
+	AES_ASSERT(factory);
+	HRESULT result = factory->CreateSwapChain(device, &swapChainDesc, &sc.swapchain);
+	if (FAILED(result))
+	{
+		AES_FATAL_ERROR("D3D11CreateDeviceAndSwapChain failed");
+	}
+
+	sc.rts.resize(desc.count);
+	sc.rtviews.resize(desc.count);
+	for (int i = 0; i < desc.count; i++)
+	{
+		result = sc.swapchain->GetBuffer(i, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID*>(&sc.rts[i]));
+		if (FAILED(result))
+		{
+			AES_FATAL_ERROR("swapChain->GetBuffer failed");
+		}
+
+		result = device->CreateRenderTargetView(sc.rts[i], nullptr, &sc.rtviews[i]);
+		if (FAILED(result))
+		{
+			AES_FATAL_ERROR("device->CreateRenderTargetView failed");
+		}
+	}
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
+	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	depthStencilViewDesc.Texture2D.MipSlice = 0;
+
+	result = device->CreateDepthStencilView(sc.depthStencilBuffer, &depthStencilViewDesc, &sc.depthStencilView);
+	if (FAILED(result))
+	{
+		AES_FATAL_ERROR("device->CreateDepthStencilView failed");
+	}
+
+	return { std::move(sc) };
+}
+
+Result<RHIRenderTarget> D3D11Device::createRenderTarget(RenderTargetDescription const& desc)
 {
 	AES_PROFILE_FUNCTION();
 
@@ -181,7 +271,7 @@ Result<RHIRenderTarget> aes::D3D11Device::createRenderTarget(RenderTargetDescrip
 		AES_FATAL_ERROR("device->CreateRenderTargetView failed");
 	}
 
-	return {rt};
+	return {std::move(rt)};
 }
 
 Result<RHIBuffer> D3D11Device::createBuffer(BufferDescription const& desc)
@@ -222,7 +312,7 @@ Result<RHIBuffer> D3D11Device::createBuffer(BufferDescription const& desc)
 		return { AESError::GPUBufferCreationFailed };
 	}
 
-	return { buffer };
+	return { std::move(buffer) };
 }
 
 Result<void> aes::D3D11Device::copyBuffer(RHIBuffer const& from, RHIBuffer& to)
@@ -289,7 +379,7 @@ Result<RHITexture> aes::D3D11Device::createTexture(TextureDescription const& inf
 	}
 	//D3D11Renderer::instance().getDeviceContext()->GenerateMips(textureView);
 
-	return {tex};
+	return {std::move(tex)};
 }
 
 Result<RHIVertexShader> aes::D3D11Device::createVertexShader(VertexShaderDescription const& desc)
@@ -348,7 +438,7 @@ Result<RHIVertexShader> aes::D3D11Device::createVertexShader(VertexShaderDescrip
 
 	vertexShaderBuffer->Release();
 
-	return {vert};
+	return {std::move(vert)};
 }
 
 Result<RHIFragmentShader> D3D11Device::createFragmentShader(FragmentShaderDescription const& desc)
@@ -396,7 +486,7 @@ Result<RHIFragmentShader> D3D11Device::createFragmentShader(FragmentShaderDescri
 		frag.blendState = std::move(resultBlend.value());
 	}
 
-	return {frag};
+	return {std::move(frag)};
 }
 
 Result<RHISampler> aes::D3D11Device::createSampler(SamplerDescription const& desc)
@@ -423,7 +513,24 @@ Result<RHISampler> aes::D3D11Device::createSampler(SamplerDescription const& des
 	if (FAILED(result))
 		return { AESError::SamplerCreationFailed };
 
-	return {sampler};
+	return {std::move(sampler)};
+}
+
+Result<void*> aes::D3D11Device::mapBuffer(RHIBuffer const& buffer)
+{
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	auto const result = deviceContext->Map(buffer.apiBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(result))
+	{
+		return { AESError::GPUBufferMappingFailed };
+	}
+	return { mappedResource.pData };
+}
+
+Result<void> aes::D3D11Device::unmapBuffer(RHIBuffer const& buffer)
+{
+	deviceContext->Unmap(buffer.apiBuffer, 0);
+	return {};
 }
 
 Result<D3D11BlendState> D3D11Device::createBlendState(BlendInfo const& info)
@@ -449,7 +556,12 @@ Result<D3D11BlendState> D3D11Device::createBlendState(BlendInfo const& info)
 		return { AESError::BlendStateCreationFailed };
 	}
 
-	return {blend};
+	return {std::move(blend)};
+}
+
+void D3D11Device::swapBuffers(RHISwapchain const& sc)
+{
+	sc.swapchain->Present(0, 0);
 }
 
 D3D11Device::D3D11Device(D3D11Device&& rhs) noexcept
@@ -462,6 +574,7 @@ D3D11Device::~D3D11Device()
 	if (device != nullptr)
 	{
 		destroy();
+		device = nullptr;
 	}
 }
 
@@ -489,6 +602,20 @@ void D3D11Device::drawIndexed(uint indexCount, uint indexOffset)
 	deviceContext->DrawIndexed(indexCount, indexOffset, 0);
 }
 
+void D3D11Device::beginRenderPass(RHIRenderTarget& rt)
+{
+	//deviceContext->OMSetRenderTargets(1, &rt.renderTargetView, );
+}
+
+void D3D11Device::beginRenderPass(RHISwapchain& sc, uint index)
+{
+	deviceContext->OMSetRenderTargets(1, &sc.rtviews[index], sc.depthStencilView);
+}
+
+void D3D11Device::endRenderPass()
+{
+}
+
 void D3D11Device::setCullMode(CullMode mode)
 {
 	AES_PROFILE_FUNCTION();
@@ -504,6 +631,7 @@ void D3D11Device::setDrawPrimitiveMode(DrawPrimitiveType mode)
 
 void D3D11Device::setRasterizerState()
 {
+	AES_PROFILE_FUNCTION();
 	HRESULT const result = device->CreateRasterizerState(&rasterStateDesc, &rasterState);
 	if (FAILED(result))
 	{

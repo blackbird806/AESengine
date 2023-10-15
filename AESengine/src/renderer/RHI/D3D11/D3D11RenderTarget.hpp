@@ -5,6 +5,9 @@
 #include "core/error.hpp"
 #include "renderer/RHI/RHIElements.hpp"
 
+class ID3D11Texture2D;
+class ID3D11RenderTargetView;
+
 namespace aes
 {
 	class D3D11RenderTarget

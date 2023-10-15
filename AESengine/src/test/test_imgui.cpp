@@ -17,13 +17,13 @@ using namespace aes;
 class TestImguiApp : public Engine
 {
 public:
-
+	RHIDevice device;
 	RHITexture checkboard;
 	FontRessource defaultFont;
 	Draw2d draw2d;
 	ImguiContext imgui;
 
-	TestImguiApp(InitInfo const& info) : Engine(info), defaultFont(aes::globalAllocator), draw2d(aes::globalAllocator), imgui(aes::globalAllocator)
+	TestImguiApp(InitInfo const& info) : Engine(info)
 	{
 		AES_LOG("[TEST] IMGUI");
 	}
@@ -33,10 +33,11 @@ public:
 		{
 			auto const fontData = readFileBin("assets/fonts/ProggyClean.ttf");
 			FontParams params{};
+			params.device = &device;
 			params.fontData = fontData;
 			params.fontSize = 32;
 			params.oversampling = 2;
-			auto fontResult = createFontRessource(aes::globalAllocator, params);
+			auto fontResult = createFontRessource(params);
 
 			if (!fontResult)
 				AES_FATAL_ERROR("font creation failed");

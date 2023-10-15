@@ -236,6 +236,15 @@ namespace aes
 		MultisampleMode multisampleMode;
 	};
 
+	struct SwapchainDescription
+	{
+		uint count;
+		uint width, height;
+		RHIFormat format;
+		MultisampleMode multisampleMode;
+		void* window;
+	};
+
 	struct RasterizerState
 	{
 		CullMode cullMode;

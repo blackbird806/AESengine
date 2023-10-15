@@ -9,11 +9,6 @@
 
 using namespace aes;
 
-FontRessource::FontRessource(IAllocator& alloc) noexcept : glyphs(alloc)
-{
-
-}
-
 std::optional<Glyph> FontRessource::getGlyph(char c) const
 {
 	auto const it = std::ranges::find_if(glyphs, [c](auto const& e)
@@ -25,9 +20,10 @@ std::optional<Glyph> FontRessource::getGlyph(char c) const
 	return {};
 }
 
-Result<FontRessource> aes::createFontRessource(IAllocator& allocator, FontParams const& params)
+Result<FontRessource> aes::createFontRessource(FontParams const& params)
 {
 	AES_PROFILE_FUNCTION();
+	AES_ASSERT(params.device);
 
 	stbtt_fontinfo info;
 	if (stbtt_InitFont(&info, params.fontData.data(), 0) == 0)
@@ -35,7 +31,7 @@ Result<FontRessource> aes::createFontRessource(IAllocator& allocator, FontParams
 		AES_LOG_ERROR("failed to init default font");
 		return { AESError::FontInitFailed };
 	}
-	FontRessource fontRessource(allocator);
+	FontRessource fontRessource;
 
 	int const width = static_cast<int>(params.textureWidth);
 	int const height = static_cast<int>(params.textureHeight);
@@ -45,9 +41,9 @@ Result<FontRessource> aes::createFontRessource(IAllocator& allocator, FontParams
 	fontRessource.yAdvance = (float)(ascent - descent + lineGap) / (float)width;
 
 	stbtt_pack_context packContext;
-	Array<unsigned char> bitmap(allocator);
+	Array<unsigned char> bitmap;
 	bitmap.resize(width * height);
-	Array<stbtt_packedchar> packChars(allocator);
+	Array<stbtt_packedchar> packChars;
 	packChars.resize(params.numCharInRange);
 
 	float const SF = stbtt_ScaleForPixelHeight(&info, params.fontSize);
@@ -77,7 +73,7 @@ Result<FontRessource> aes::createFontRessource(IAllocator& allocator, FontParams
 	}
 
 	// @Review
-	Array<Color> pixels(allocator);
+	Array<Color> pixels;
 	pixels.resize(width * height);
 
 	for (int i = 0; i < pixels.size(); i++)
@@ -95,7 +91,7 @@ Result<FontRessource> aes::createFontRessource(IAllocator& allocator, FontParams
 		desc.initialData = pixels.data();
 		desc.usage = MemoryUsage::Default;
 		desc.mipsLevel = 4;
-		fontRessource.texture.init(desc);
+		fontRessource.texture = params.device->createTexture(desc).value();
 	}
 	return { std::move(fontRessource) };
 }

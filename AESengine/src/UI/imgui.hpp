@@ -61,8 +61,6 @@ namespace aes
 	{
 	public:
 		
-		explicit ImguiContext(IAllocator& allocator);
-
 		void updateInputData(InputData const& inputData);
 		void beginFrame();
 

@@ -21,7 +21,7 @@ public:
 	FontRessource defaultFont;
 	Draw2d draw2d;
 
-	TestFontApp(InitInfo const& info) : Engine(info), defaultFont(aes::globalAllocator), draw2d(aes::globalAllocator)
+	TestFontApp(InitInfo const& info) : Engine(info)
 	{
 		AES_LOG("[TEST] FONTS");
 	}
@@ -34,7 +34,7 @@ public:
 			params.fontData = fontData;
 			params.fontSize = 25;
 			params.oversampling = 2;
-			auto fontResult = createFontRessource(aes::globalAllocator, params);
+			auto fontResult = createFontRessource(params);
 
 			if (!fontResult)
 				AES_FATAL_ERROR("font creation failed");

@@ -3,11 +3,16 @@
 #include <glm/glm.hpp>
 #include "core/allocator.hpp"
 #include "core/color.hpp"
+#include "core/UniquePtr.hpp"
 #include "renderer/RHI/RHIDevice.hpp"
 #include "renderer/RHI/RHIBuffer.hpp"
 #include "renderer/RHI/RHIRenderTarget.hpp"
 #include "renderer/RHI/RHIShader.hpp"
-
+#ifdef _WIN32
+#include "core/platformWindows/win_window.hpp"
+#else
+#include "core/window.hpp"
+#endif
 using namespace aes;
 
 struct vert
@@ -18,8 +23,9 @@ struct vert
 
 class TestRHIApp
 {
+	UniquePtr<Window> window;
 	RHIDevice device;
-	RHIRenderTarget renderTargets[2];
+	RHISwapchain swapchain;
 	RHIFragmentShader clearFragmentShader;
 	RHIVertexShader clearVertexShader;
 
@@ -34,6 +40,12 @@ public:
 	{
 		AES_LOG("[TEST] RHI");
 
+#ifdef _WIN32
+		window = makeUnique<Win_Window>("aes engine");
+#else
+		window = makeUnique<EmptyWindow>();
+#endif
+
 		initializeGraphicsAPI();
 		AES_LOG("graphics api initialized");
 
@@ -41,15 +53,15 @@ public:
 		device.init();
 		AES_LOG("device created successfully");
 
-		// create RTs
-		for (size_t i = 0; i < std::size(renderTargets); i++)
 		{
-			RenderTargetDescription rtDesc = {};
-			rtDesc.width = 960;
-			rtDesc.height = 544;
-			rtDesc.format = RHIFormat::R8G8B8A8_Uint;
-			rtDesc.multisampleMode = MultisampleMode::None;
-			renderTargets[i] = device.createRenderTarget(rtDesc).value();
+			SwapchainDescription swDesc = {};
+			swDesc.count = 2;
+			swDesc.width = 960;
+			swDesc.height = 544;
+			swDesc.multisampleMode = MultisampleMode::None;
+			swDesc.window = window->getHandle();
+			swDesc.format = RHIFormat::R8G8B8A8_Uint;
+			swapchain = device.createSwapchain(swDesc).value();
 		}
 		// clear init
 		{
@@ -64,9 +76,7 @@ public:
 			vertexInputLayout[0].format = aes::RHIFormat::R32G32_Float;
 
 			vertexShaderDescription.verticesLayout = vertexInputLayout;
-
-			if (!clearVertexShader.init(vertexShaderDescription))
-				AES_FATAL_ERROR("vertex shader creation failed");
+			clearVertexShader = device.createVertexShader(vertexShaderDescription).value();
 
 			AES_LOG("clear vertex shader created");
 		}
@@ -75,10 +85,9 @@ public:
 			static auto const clearShaderData_fs = aes::readFileBin("app0:assets/shaders/vita/clear_fs.gxp");
 			fragmentShaderDescription.source = clearShaderData_fs.data();
 			fragmentShaderDescription.multisampleMode = MultisampleMode::None;
-			fragmentShaderDescription.gxpVertexProgram = clearVertexShader.getGxpShader();
+			//fragmentShaderDescription.gxpVertexProgram = clearVertexShader.getGxpShader();
 
-			if (!clearFragmentShader.init(fragmentShaderDescription))
-				AES_FATAL_ERROR("fragment shader creation failed");
+			clearFragmentShader = device.createFragmentShader(fragmentShaderDescription).value();
 
 			AES_LOG("clear fragment shader created");
 		}
@@ -131,8 +140,7 @@ public:
 
 			vertexShaderDescription.verticesLayout = vertexInputLayout;
 
-			if (!geoVertexShader.init(vertexShaderDescription))
-				AES_FATAL_ERROR("vertex shader creation failed");
+			geoVertexShader = device.createVertexShader(vertexShaderDescription).value();
 
 			AES_LOG("geometry vertex shader created");
 		}
@@ -141,10 +149,9 @@ public:
 			static auto const geoShaderData_fs = aes::readFileBin("app0:assets/shaders/vita/basic2d_fs.gxp");
 			fragmentShaderDescription.source = geoShaderData_fs.data();
 			fragmentShaderDescription.multisampleMode = MultisampleMode::None;
-			fragmentShaderDescription.gxpVertexProgram = geoVertexShader.getGxpShader();
+			//fragmentShaderDescription.gxpVertexProgram = geoVertexShader.getGxpShader();
 
-			if (!geoFragmentShader.init(fragmentShaderDescription))
-				AES_FATAL_ERROR("fragment shader creation failed");
+			geoFragmentShader = device.createFragmentShader(fragmentShaderDescription).value();
 
 			AES_LOG("geometry fragment shader created");
 		}
@@ -194,7 +201,7 @@ public:
 		device.setVertexShader(clearVertexShader);
 		device.setFragmentShader(clearFragmentShader);
 
-		device.beginRenderPass(renderTargets[backBufferIndex]);
+		device.beginRenderPass(swapchain, backBufferIndex);
 			device.drawIndexed(3);
 		device.endRenderPass();
 
@@ -205,21 +212,29 @@ public:
 			};
 
 		xx += 0.001f;
-		geoVertexBuffer.setData(tri, sizeof(tri));
+		if (auto map = device.mapBuffer(geoVertexBuffer))
+		{
+			memcpy(map.value(), &tri, sizeof(tri));
+			device.unmapBuffer(geoVertexBuffer);
+		}
+		else
+		{
+			AES_FATAL_ERROR("Failed to map geoVertexBuffer !");
+		}
 		// draw
 		device.setVertexBuffer(geoVertexBuffer, sizeof(vert));
 		device.setIndexBuffer(geoIndexBuffer, IndexTypeFormat::Uint16);
 		device.setVertexShader(geoVertexShader);
 		device.setFragmentShader(geoFragmentShader);
 		
-		device.beginRenderPass(renderTargets[backBufferIndex]);
+		device.beginRenderPass(swapchain, backBufferIndex);
 			device.drawIndexed(3);
 		device.endRenderPass();
 
-		device.swapBuffers(renderTargets[frontBufferIndex], renderTargets[backBufferIndex]);
+		device.swapBuffers(swapchain);
 
 		frontBufferIndex = backBufferIndex;
-		backBufferIndex = (backBufferIndex + 1) % std::size(renderTargets);
+		backBufferIndex = (backBufferIndex + 1) % swapchain.getTexturesCount();
 	}
 
 };

@@ -35,9 +35,9 @@ Result<void> Draw2d::init()
 		vertexShaderDescription.verticesLayout = vertexInputLayout;
 		vertexShaderDescription.verticesStride = sizeof(ColorVertex);
 
-		auto err = colorVertexShader.init(vertexShaderDescription);
-		if (!err)
-			return err;
+		//auto err = colorVertexShader.init(vertexShaderDescription);
+		//if (!err)
+		//	return err;
 
 		FragmentShaderDescription fragmentShaderDescription;
 #ifdef __vita__
@@ -47,9 +47,9 @@ Result<void> Draw2d::init()
 #else
 		fragmentShaderDescription.source = readFile("assets/shaders/HLSL/draw2d.fs");
 #endif
-		err = colorFragmentShader.init(fragmentShaderDescription);
-		if (!err)
-			return err;
+		//err = colorFragmentShader.init(fragmentShaderDescription);
+		//if (!err)
+		//	return err;
 	}
 
 	// init texture shaders
@@ -75,9 +75,9 @@ Result<void> Draw2d::init()
 		vertexShaderDescription.verticesLayout = vertexInputLayout;
 		vertexShaderDescription.verticesStride = sizeof(TextureVertex);
 
-		auto err = textureVertexShader.init(vertexShaderDescription);
-		if (!err)
-			return err;
+		//auto err = textureVertexShader.init(vertexShaderDescription);
+		//if (!err)
+		//	return err;
 
 		BlendInfo blendInfo{};
 		blendInfo.colorMask = ColorMaskBits::All;
@@ -97,9 +97,9 @@ Result<void> Draw2d::init()
 		fragmentShaderDescription.source = readFile("assets/shaders/HLSL/texture2d.fs");
 		fragmentShaderDescription.blendInfo = blendInfo;
 #endif
-		err = textureFragmentShader.init(fragmentShaderDescription);
-		if (!err)
-			return err;
+		//err = textureFragmentShader.init(fragmentShaderDescription);
+		//if (!err)
+		//	return err;
 	}
 
 	// init default sampler
@@ -110,7 +110,7 @@ Result<void> Draw2d::init()
 		samplerDesc.filter = TextureFilter::Linear;
 		samplerDesc.lodMin = 0.0f;
 		samplerDesc.lodBias = 0;
-		sampler.init(samplerDesc);
+		//sampler.init(samplerDesc);
 	}
 
 	// init uniform buffer
@@ -122,9 +122,9 @@ Result<void> Draw2d::init()
 		bufferDesc.sizeInBytes = sizeof(UniformBuffer);
 		UniformBuffer defaultContent{};
 		bufferDesc.initialData = &defaultContent;
-		auto err = uniformBuffer.init(bufferDesc);
-		if (!err)
-			return err;
+		//auto err = uniformBuffer.init(bufferDesc);
+		//if (!err)
+		//	return err;
 	}
 
 	ensureColorVertexBufferCapacity(200 * sizeof(ColorVertex));
@@ -287,15 +287,15 @@ void Draw2d::executeDrawCommands()
 
 	colorOffset = 0;
 	textureOffset = 0;
-	ensureColorVertexBufferCapacity(colorVertices.size() * sizeof(ColorVertex));
-	ensureColorIndexBufferCapacity(colorIndices.size() * sizeof(Index_t));
-	colorVertexBuffer.setData(colorVertices.data(), colorVertices.size() * sizeof(ColorVertex));
-	colorIndexBuffer.setData(colorIndices.data(), colorIndices.size() * sizeof(Index_t));
+	//ensureColorVertexBufferCapacity(colorVertices.size() * sizeof(ColorVertex));
+	//ensureColorIndexBufferCapacity(colorIndices.size() * sizeof(Index_t));
+	//colorVertexBuffer.setData(colorVertices.data(), colorVertices.size() * sizeof(ColorVertex));
+	//colorIndexBuffer.setData(colorIndices.data(), colorIndices.size() * sizeof(Index_t));
 
-	ensureTextureVertexBufferCapacity(textureVertices.size() * sizeof(TextureVertex));
-	ensureTextureIndexBufferCapacity(textureIndices.size() * sizeof(Index_t));
-	textureVertexBuffer.setData(textureVertices.data(), textureVertices.size() * sizeof(TextureVertex));
-	textureIndexBuffer.setData(textureIndices.data(), textureIndices.size() * sizeof(Index_t));
+	//ensureTextureVertexBufferCapacity(textureVertices.size() * sizeof(TextureVertex));
+	//ensureTextureIndexBufferCapacity(textureIndices.size() * sizeof(Index_t));
+	//textureVertexBuffer.setData(textureVertices.data(), textureVertices.size() * sizeof(TextureVertex));
+	//textureIndexBuffer.setData(textureIndices.data(), textureIndices.size() * sizeof(Index_t));
 
 	auto& context = RHIRenderContext::instance();
 
@@ -306,7 +306,7 @@ void Draw2d::executeDrawCommands()
 	context.bindVSUniformBuffer(uniformBuffer, 0);
 	for (auto const& cmd : commands)
 	{
-		uniformBuffer.setDataFromPOD(glm::mat4(cmd.state.transformationMatrix));
+		//uniformBuffer.setDataFromPOD(glm::mat4(cmd.state.transformationMatrix));
 
 		// @Review only draw triangles ?
 		if (cmd.type == DrawCommandType::Line)
@@ -365,7 +365,8 @@ Result<void> Draw2d::ensureColorVertexBufferCapacity(size_t sizeInBytes)
 	vertexBufferDesc.cpuAccessFlags = CPUAccessFlagBits::Write;
 	vertexBufferDesc.sizeInBytes = sizeInBytes;
 
-	return ensureRHIBufferCapacity(colorVertexBuffer, vertexBufferDesc);
+	//return ensureRHIBufferCapacity(colorVertexBuffer, vertexBufferDesc);
+	return {};
 }
 
 Result<void> Draw2d::ensureColorIndexBufferCapacity(size_t sizeInBytes)
@@ -379,7 +380,8 @@ Result<void> Draw2d::ensureColorIndexBufferCapacity(size_t sizeInBytes)
 	indexBufferDesc.cpuAccessFlags = CPUAccessFlagBits::Write;
 	indexBufferDesc.sizeInBytes = sizeInBytes;
 
-	return ensureRHIBufferCapacity(colorIndexBuffer, indexBufferDesc);
+	//return ensureRHIBufferCapacity(colorIndexBuffer, indexBufferDesc);
+	return {};
 }
 
 Result<void> Draw2d::ensureTextureVertexBufferCapacity(size_t sizeInBytes)
@@ -393,7 +395,8 @@ Result<void> Draw2d::ensureTextureVertexBufferCapacity(size_t sizeInBytes)
 	vertexBufferDesc.cpuAccessFlags = CPUAccessFlagBits::Write;
 	vertexBufferDesc.sizeInBytes = sizeInBytes;
 
-	return ensureRHIBufferCapacity(textureVertexBuffer, vertexBufferDesc);
+	//return ensureRHIBufferCapacity(textureVertexBuffer, vertexBufferDesc);
+	return {};
 }
 
 Result<void> Draw2d::ensureTextureIndexBufferCapacity(size_t sizeInBytes)
@@ -407,7 +410,8 @@ Result<void> Draw2d::ensureTextureIndexBufferCapacity(size_t sizeInBytes)
 	indexBufferDesc.cpuAccessFlags = CPUAccessFlagBits::Write;
 	indexBufferDesc.sizeInBytes = sizeInBytes;
 
-	return ensureRHIBufferCapacity(textureIndexBuffer, indexBufferDesc);
-}	
+	//return ensureRHIBufferCapacity(textureIndexBuffer, indexBufferDesc);
+	return {};
+}
 
 

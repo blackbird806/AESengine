@@ -8,6 +8,7 @@
 #include "renderer/RHI/RHIRenderTarget.hpp"
 #include "renderer/RHI/RHIShader.hpp"
 #include "renderer/RHI/RHISampler.hpp"
+#include "renderer/RHI/RHISwapchain.hpp"
 #include <d3d11.h>
 
 struct IDXGIFactory;
@@ -32,6 +33,7 @@ namespace aes
 		void destroy();
 
 		// resource creation
+		Result<RHISwapchain> createSwapchain(SwapchainDescription const& desc);
 		Result<RHIRenderTarget> createRenderTarget(RenderTargetDescription const& desc);
 		Result<RHIBuffer> createBuffer(BufferDescription const& desc);
 		Result<void> copyBuffer(RHIBuffer const& from, RHIBuffer& to);
@@ -40,17 +42,22 @@ namespace aes
 		Result<RHIFragmentShader> createFragmentShader(FragmentShaderDescription const& desc);
 		Result<RHISampler> createSampler(SamplerDescription const& desc);
 
+		// cmds
+		Result<void*> mapBuffer(RHIBuffer const& buffer);
+		Result<void> unmapBuffer(RHIBuffer const& buffer);
+
 		// d3d11 specifics
 		Result<D3D11BlendState> createBlendState(BlendInfo const& desc);
 
 		// not sure about this name
-		void swapBuffers(RHIRenderTarget const& oldBuffer, RHIRenderTarget const& newBuffer);
+		void swapBuffers(RHISwapchain const& sc);
 
 		// draw calls
 
 		void drawIndexed(uint indexCount, uint indexOffset = 0);
 
 		void beginRenderPass(RHIRenderTarget& rt);
+		void beginRenderPass(RHISwapchain& rt, uint index);
 		void endRenderPass();
 
 		// state modification

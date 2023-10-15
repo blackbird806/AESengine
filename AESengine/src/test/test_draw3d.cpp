@@ -28,8 +28,8 @@ public:
 		aes::FragmentShaderDescription fragmentShaderDescription;
 		fragmentShaderDescription.source = readFile("assets/shaders/HLSL/draw3d.fs");
 
-		if (!fragmentShader.init(fragmentShaderDescription))
-			AES_FATAL_ERROR("fragment shader creation failed");
+		//if (!fragmentShader.init(fragmentShaderDescription))
+		//	AES_FATAL_ERROR("fragment shader creation failed");
 
 		AES_LOG("fragment shader created");
 
@@ -51,13 +51,13 @@ public:
 
 		vertexShaderDescription.verticesLayout = vertexInputLayout;
 
-		if (!vertexShader.init(vertexShaderDescription))
-			AES_FATAL_ERROR("vertex shader creation failed");
+		//if (!vertexShader.init(vertexShaderDescription))
+		//	AES_FATAL_ERROR("vertex shader creation failed");
 
-		AES_LOG("vertex shader created");
+		//AES_LOG("vertex shader created");
 
-		if (!defaultMtrl.init(&vertexShader, &fragmentShader))
-			AES_FATAL_ERROR("material creation failed");
+		//if (!defaultMtrl.init(&vertexShader, &fragmentShader))
+		//	AES_FATAL_ERROR("material creation failed");
 
 		AES_LOG("material created");
 	}

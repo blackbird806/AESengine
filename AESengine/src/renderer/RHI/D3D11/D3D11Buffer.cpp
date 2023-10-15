@@ -40,23 +40,6 @@ ID3D11Buffer* D3D11Buffer::getHandle() noexcept
 	return apiBuffer;
 }
 
-Result<void*> D3D11Buffer::map()
-{
-
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	auto const result = gD3D11DeviceContext->Map(apiBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(result))
-	{
-		return { AESError::GPUBufferMappingFailed };
-	}
-	return { mappedResource.pData };
-}
-
-Result<void> D3D11Buffer::unmap()
-{
-	gD3D11DeviceContext->Unmap(apiBuffer, 0);
-	return {};
-}
 
 size_t D3D11Buffer::getSize() const
 {

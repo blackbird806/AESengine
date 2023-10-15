@@ -3,6 +3,7 @@
 
 #include <concepts>
 #include "allocator.hpp"
+#include "context.hpp"
 
 namespace aes
 {
@@ -20,7 +21,7 @@ namespace aes
 		void operator()(T* ptr) noexcept
 		{
 			ptr->~T();
-			globalAllocator.deallocate(ptr);
+			context.allocator->deallocate(ptr);
 		}
 	};
 
@@ -172,7 +173,7 @@ namespace aes
 	template<typename T, typename... Args>
 	auto makeUnique(Args&&... args) noexcept
 	{
-		void* ptr = globalAllocator.allocate(sizeof(T), alignof(T));
+		void* ptr = context.allocator->allocate(sizeof(T), alignof(T));
 		return UniquePtr<T, GlobalAllocDelete<T>>(::new(ptr) T(std::move(args)...));
 	}
 

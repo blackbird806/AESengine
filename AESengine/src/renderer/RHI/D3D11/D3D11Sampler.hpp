@@ -12,6 +12,7 @@ namespace aes
 		friend class D3D11Device;
 	public:
 		D3D11Sampler() = default;
+		D3D11Sampler(D3D11Sampler const&) = delete;
 		D3D11Sampler(D3D11Sampler&&) noexcept;
 
 		D3D11Sampler& operator=(D3D11Sampler&&) noexcept;

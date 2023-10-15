@@ -2,11 +2,6 @@
 
 using namespace aes;
 
-ImguiContext::ImguiContext(IAllocator& allocator) : windows(allocator), drawCmds(allocator)
-{
-
-}
-
 void ImguiContext::updateInputData(InputData const& in)
 {
 	inputData = in;

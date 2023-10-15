@@ -10,19 +10,19 @@ aes::Result<void> aes::Material::init(RHIVertexShader* vs, RHIFragmentShader* fs
 	vertexShader = vs;
 	fragmentShader = fs;
 	
-	auto const vsbufferInfos = vertexShader->getUniformBufferInfos();
-	AES_LOG("buffer infos size {}", vsbufferInfos.size());
-	for (auto const& bufferInfo : vsbufferInfos)
-	{
-		vsUniformBufferSlots[bufferInfo.name] = bufferInfo.index;
-		AES_LOG("uniform buffer reflect {} - index: {} - size: {}", bufferInfo.name, bufferInfo.index, bufferInfo.size);
-	}
+	//auto const vsbufferInfos = vertexShader->getUniformBufferInfos();
+	//AES_LOG("buffer infos size {}", vsbufferInfos.size());
+	//for (auto const& bufferInfo : vsbufferInfos)
+	//{
+	//	vsUniformBufferSlots[bufferInfo.name] = bufferInfo.index;
+	//	AES_LOG("uniform buffer reflect {} - index: {} - size: {}", bufferInfo.name, bufferInfo.index, bufferInfo.size);
+	//}
 
-	auto const fsbufferInfos = fragmentShader->getUniformBufferInfos();
-	for (auto const& bufferInfo : fsbufferInfos)
-	{
-		fsUniformBufferSlots[bufferInfo.name] = bufferInfo.index;
-	}
+	//auto const fsbufferInfos = fragmentShader->getUniformBufferInfos();
+	//for (auto const& bufferInfo : fsbufferInfos)
+	//{
+	//	fsUniformBufferSlots[bufferInfo.name] = bufferInfo.index;
+	//}
 	
 	return {};
 }
