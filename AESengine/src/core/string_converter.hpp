@@ -1,5 +1,5 @@
-#ifndef STRING_CONVERTER_HPP
-#define STRING_CONVERTER_HPP
+#ifndef AES_STRING_CONVERTER_HPP
+#define AES_STRING_CONVERTER_HPP
 
 #include <string_view>
 

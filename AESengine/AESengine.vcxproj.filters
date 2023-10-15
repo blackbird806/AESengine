@@ -69,16 +69,10 @@
     <ClCompile Include="src\core\utility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\Renderer2D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderer\RHI\D3D11\D3D11Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11Buffer.cpp">
@@ -100,9 +94,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\renderer\model.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderer\material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\core\profiler.cpp">
@@ -230,9 +221,6 @@
     <ClInclude Include="src\core\utility.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\Renderer2D.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\core\color.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -246,9 +234,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11renderer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\RHI\D3D11\D3D11Model.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\RHI\RHIBuffer.hpp">
@@ -285,9 +270,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\model.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\material.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\RHI\RHIShaderReflection.hpp">
@@ -350,13 +332,13 @@
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11RenderTarget.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\RHI\D3D11\D3D11globals.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\renderer\RHI\RHISwapchain.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11Swapchain.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\string.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

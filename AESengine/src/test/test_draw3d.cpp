@@ -3,7 +3,6 @@
 #include "core/allocator.hpp"
 #include "engine.hpp"
 #include "core/color.hpp"
-#include "renderer/material.hpp"
 #include "renderer/vertex.hpp"
 
 using namespace aes;
@@ -14,7 +13,6 @@ class TestDraw3dApp : public Engine
 	aes::RHIVertexShader vertexShader;
 	aes::RHIBuffer viewBuffer;
 	aes::RHIBuffer identityModelBuffer;
-	aes::Material defaultMtrl;
 
 public:
 

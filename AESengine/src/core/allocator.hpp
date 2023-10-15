@@ -2,21 +2,20 @@
 #define AES_ALLOCATOR_HPP
 
 #include "core/aes.hpp"
-#include <memory_resource>
 
 namespace aes
 {
-	inline unsigned long long operator "" _kb(unsigned long long p)
+	constexpr unsigned long long operator "" _kb(unsigned long long p)
 	{
 		return p * 1024;
 	}
 
-	inline unsigned long long operator "" _mb(unsigned long long p)
+	constexpr unsigned long long operator "" _mb(unsigned long long p)
 	{
 		return p * 1024_kb;
 	}
 
-	inline unsigned long long operator "" _gb(unsigned long long p)
+	constexpr unsigned long long operator "" _gb(unsigned long long p)
 	{
 		return p * 1024_mb;
 	}
@@ -39,23 +38,17 @@ namespace aes
 	//	size_t nbAllocations = 0;
 	//};
 
-	// @Review memory_resource will be useless as we may not use std containers
-	class IAllocator : public std::pmr::memory_resource
+	class IAllocator
 	{
 	public:
-
 		template<typename T>
-		[[nodiscard]] void* allocate(size_t size)
+		[[nodiscard]] void* allocate(size_t count)
 		{
-			return allocate(size * sizeof(T), alignof(T));
+			return allocate(count * sizeof(T), alignof(T));
 		}
 
 		[[nodiscard]] virtual void* allocate(size_t size, size_t align = 1) = 0;
 		virtual void deallocate(void* ptr) = 0;
-
-		void* do_allocate(size_t size, size_t align) override;
-		void do_deallocate(void* ptr, size_t size, size_t align) override;
-		bool do_is_equal(const memory_resource& rhs) const noexcept override;
 
 		virtual ~IAllocator() {}
 	};

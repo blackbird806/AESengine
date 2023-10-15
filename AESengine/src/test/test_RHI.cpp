@@ -3,7 +3,8 @@
 #include <glm/glm.hpp>
 #include "core/allocator.hpp"
 #include "core/color.hpp"
-#include "core/UniquePtr.hpp"
+#include "core/uniquePtr.hpp"
+#include "core/string.hpp"
 #include "renderer/RHI/RHIDevice.hpp"
 #include "renderer/RHI/RHIBuffer.hpp"
 #include "renderer/RHI/RHIRenderTarget.hpp"
@@ -66,6 +67,7 @@ public:
 			swapchain = device.createSwapchain(swDesc).value();
 		}
 		// clear init
+#ifdef __vita__
 		{
 			aes::VertexShaderDescription vertexShaderDescription;
 			static auto const clearShaderData_vs = aes::readFileBin("app0:assets/shaders/vita/clear_vs.gxp");
@@ -93,6 +95,8 @@ public:
 
 			AES_LOG("clear fragment shader created");
 		}
+#endif
+
 		{
 			glm::vec2 tri[] = {
 				{-1.0f, -1.0f},
@@ -126,8 +130,12 @@ public:
 		// geometry init
 		{
 			aes::VertexShaderDescription vertexShaderDescription;
+#ifdef __vita__
 			static auto const geoShaderData_vs = aes::readFileBin("app0:assets/shaders/vita/basic2d_vs.gxp");
 			vertexShaderDescription.source = geoShaderData_vs.data();
+#else
+			vertexShaderDescription.source = aes::readFile("assets/shaders/HLSL/draw2d.vs");
+#endif
 			vertexShaderDescription.verticesStride = sizeof(glm::vec2);
 			aes::VertexInputLayout vertexInputLayout[2];
 			vertexInputLayout[0].parameterName = "aPosition";
@@ -148,10 +156,15 @@ public:
 		}
 		{
 			aes::FragmentShaderDescription fragmentShaderDescription;
+#ifdef __vita__
+			// shader binary source must be keep into memory
 			static auto const geoShaderData_fs = aes::readFileBin("app0:assets/shaders/vita/basic2d_fs.gxp");
 			fragmentShaderDescription.source = geoShaderData_fs.data();
+			fragmentShaderDescription.gxpVertexProgram = geoVertexShader.getGxpShader();
+#else
+			fragmentShaderDescription.source = aes::readFile("assets/shaders/HLSL/draw2d.fs");
+#endif
 			fragmentShaderDescription.multisampleMode = MultisampleMode::None;
-			//fragmentShaderDescription.gxpVertexProgram = geoVertexShader.getGxpShader();
 
 			geoFragmentShader = device.createFragmentShader(fragmentShaderDescription).value();
 
@@ -194,7 +207,7 @@ public:
 
 	void draw()
 	{
-
+#ifdef __vita__
 		// clear
 		device.setDrawPrimitiveMode(DrawPrimitiveType::TrianglesFill);
 		device.setCullMode(CullMode::None);
@@ -206,7 +219,7 @@ public:
 		device.beginRenderPass(swapchain);
 			device.drawIndexed(3);
 		device.endRenderPass();
-
+#endif
 		vert tri[] = {
 				{{xx, -0.25f}, {1.0f, 0.0f, 0.0f}},
 				{{0.5f, -0.25f}, {0.0f, 1.0f, 0.0f}},

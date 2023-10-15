@@ -6,6 +6,7 @@
 #include "allocator.hpp"
 #include "utility.hpp"
 #include <thread>
+#include <mutex>
 #include <atomic>
 #include <memory>
 #include <functional>

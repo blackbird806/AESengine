@@ -57,6 +57,7 @@ static size_t getProgramParameterSize(SceGxmProgramParameter const* param)
 }
 
 // Review
+#if 0
 std::vector<UniformBufferReflectionInfo> GxmShader::getUniformBufferInfos() const
 {
 	AES_PROFILE_FUNCTION();
@@ -98,6 +99,7 @@ std::vector<UniformBufferReflectionInfo> GxmShader::getUniformBufferInfos() cons
 	}
 	return uniformBuffersInfos;
 }
+#endif 
 
 static auto getFormatComponents(RHIFormat format)
 {

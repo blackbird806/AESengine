@@ -101,21 +101,6 @@ void operator delete[](void* ptr, std::align_val_t al) noexcept
 
 #endif
 
-void* aes::IAllocator::do_allocate(size_t size, size_t align)
-{
-	return allocate(size, align);
-}
-
-void aes::IAllocator::do_deallocate(void* ptr, size_t size, size_t align)
-{
-	deallocate(ptr);
-}
-
-bool aes::IAllocator::do_is_equal(const memory_resource& rhs) const noexcept
-{
-	return *this == rhs;
-}
-
 void* aes::Mallocator::allocate(size_t size, size_t align)
 {
 	return alignedAlloc(size, align);

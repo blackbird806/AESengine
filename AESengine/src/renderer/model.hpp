@@ -6,7 +6,6 @@
 #include <glm/glm.hpp>
 
 #include "RHI/RHIBuffer.hpp"
-#include "material.hpp"
 #include "vertex.hpp"
 
 /*

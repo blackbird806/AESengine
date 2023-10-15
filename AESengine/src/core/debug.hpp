@@ -20,7 +20,7 @@
 #define AES_LOG(msg, ...) ::aes::Logger::instance().log(fmt::format("info : " msg "\n", __VA_ARGS__))
 #define AES_LOG_RAW(msg, ...) ::aes::Logger::instance().log(fmt::format(msg "\n", __VA_ARGS__))
 #define AES_WARN(msg, ...) ::aes::Logger::instance().log(fmt::format("warn : " msg "\n", __VA_ARGS__))
-#define AES_LOG_ERROR(msg, ...) ::aes::Logger::instance().log(fmt::format(" error : " __FUNCTION__ " : " AES_STRINGIFY(__LINE__) ": " msg "\n", __VA_ARGS__))
+#define AES_LOG_ERROR(msg, ...) ::aes::Logger::instance().log(fmt::format("error : " __FUNCTION__ " : " AES_STRINGIFY(__LINE__) ": " msg "\n", __VA_ARGS__))
 #endif
 
 #define AES_CHECKR(r) if (!r) { AES_LOG_ERROR("{}", r.error()); return r; };

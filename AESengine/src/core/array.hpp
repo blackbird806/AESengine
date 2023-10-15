@@ -162,7 +162,7 @@ namespace aes
 		}
 
 		template<std::ranges::input_range Range>
-		constexpr Result<void> insert(Iterator_t pos, Range const& range) noexcept
+		constexpr Result<void> insert(Iterator_t pos, Range&& range) noexcept
 		{
 			uint32_t const rangeSize = std::ranges::size(range);
 			uint32_t const newSize = size_ + rangeSize;
@@ -257,10 +257,10 @@ namespace aes
 			if (size_ == capacity_)
 				return {};
 
-			T* const newBuffer = alloc->allocate(size_ * sizeof(T), alignof(T));
+			T* const newBuffer = (T*)alloc->allocate(size_ * sizeof(T), alignof(T));
 			if (!newBuffer)
 				return { AESError::MemoryAllocationFailed };
-			//moveBuffer(newBuffer);
+			moveBuffer(newBuffer);
 			alloc->deallocate(buffer);
 			buffer = newBuffer;
 			capacity_ = size_;

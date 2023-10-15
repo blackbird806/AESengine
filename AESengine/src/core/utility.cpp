@@ -3,16 +3,24 @@
 #include <sstream>
 #include <fstream>
 
-std::string aes::readFile(std::string_view file)
+aes::String aes::readFile(std::string_view file)
 {
-	std::ifstream const in(file.data());
-	std::ostringstream sstr;
-	sstr << in.rdbuf();
-	return sstr.str();
+	AES_PROFILE_FUNCTION();
+
+	std::ifstream t(file.data());
+	t.seekg(0, std::ios::end);
+	size_t const size = t.tellg();
+	String buffer;
+	buffer.resize(size);
+	t.seekg(0);
+	t.read(&buffer[0], size);
+	return buffer;
 }
 
 std::vector<uint8_t> aes::readFileBin(std::string_view file)
 {
+	AES_PROFILE_FUNCTION();
+
 	std::ifstream input(file.data(), std::ios::binary);
 	return std::vector<uint8_t>(std::istreambuf_iterator<char>(input), {});
 }

@@ -405,11 +405,11 @@ Result<RHIVertexShader> aes::D3D11Device::createVertexShader(VertexShaderDescrip
 	ID3DBlob* errorMessage = nullptr;
 	ID3DBlob* vertexShaderBuffer = nullptr;
 
-	if (!std::holds_alternative<std::string>(desc.source))
+	if (!std::holds_alternative<aes::String>(desc.source))
 	{
 		AES_NOT_IMPLEMENTED();
 	}
-	auto const& source = std::get<std::string>(desc.source);
+	auto const& source = std::get<aes::String>(desc.source);
 	auto result = D3DCompile(source.data(), sizeof(char) * source.size(), "vertexShader", nullptr, nullptr, "main", "vs_5_0", 0, 0, &vertexShaderBuffer, &errorMessage);
 	if (FAILED(result))
 	{
@@ -464,12 +464,12 @@ Result<RHIFragmentShader> D3D11Device::createFragmentShader(FragmentShaderDescri
 	ID3DBlob* errorMessage = nullptr;
 	ID3DBlob* pixelShaderBuffer = nullptr;
 
-	if (!std::holds_alternative<std::string>(desc.source))
+	if (!std::holds_alternative<aes::String>(desc.source))
 	{
 		AES_NOT_IMPLEMENTED();
 	}
 
-	auto const& source = std::get<std::string>(desc.source);
+	auto const& source = std::get<aes::String>(desc.source);
 	HRESULT result = D3DCompile(source.data(), sizeof(char) * source.size(), "pixelShader", nullptr, nullptr, "main", "ps_5_0", 0, 0, &pixelShaderBuffer, &errorMessage);
 	if (FAILED(result))
 	{

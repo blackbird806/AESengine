@@ -1,5 +1,4 @@
 #include "D3D11RenderTarget.hpp"
-#include "D3D11globals.hpp"
 #include "renderer/RHI/D3D11/D3D11Elements.hpp"
 #include <d3d11.h>
 #include <dxgi.h>

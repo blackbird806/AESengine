@@ -3,12 +3,12 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <string>
 #include <span>
 #include <optional>
 #include <variant>
 
 #include "core/aes.hpp"
+#include "core/string.hpp"
 #include "core/utility.hpp"
 
 namespace aes
@@ -203,7 +203,7 @@ namespace aes
 	struct ShaderDescription
 	{
 		using Binary = uint8_t const*;
-		std::variant<std::string, Binary> source;
+		std::variant<String, Binary> source;
 	};
 
 	struct VertexShaderDescription : ShaderDescription

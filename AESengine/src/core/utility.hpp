@@ -1,10 +1,10 @@
 #ifndef AES_UTILITY_HPP
 #define AES_UTILITY_HPP
 
-#include <string>
 #include <string_view>
 #include <vector>
 #include "aes.hpp"
+#include "string.hpp"
 #include "macro_helpers.hpp"
 
 #define AES_SCOPE(code) ::aes::Scope AES_CONCAT(aes_scope_internal_, __COUNTER__) ([&](){code;});
@@ -12,7 +12,7 @@
 
 namespace aes {
 	
-	std::string readFile(std::string_view file);
+	String readFile(std::string_view file);
 	std::vector<uint8_t> readFileBin(std::string_view file);
 
 	std::vector<std::string> split(std::string_view a, char sep);
@@ -46,12 +46,12 @@ namespace aes {
 	template<typename F>
 	struct Scope
 	{
-		Scope(F&& fn) : func(std::forward<F>(fn))
+		constexpr Scope(F&& fn) : func(std::forward<F>(fn))
 		{
 			
 		}
 
-		~Scope()
+		constexpr ~Scope()
 		{
 			func();
 		}
@@ -76,7 +76,7 @@ namespace aes {
 		constexpr explicit Flags(MaskType flags) : mask(flags) {}
 
 		// relational operators
-		auto operator<=>(Flags<BitType> const&) const = default;
+		constexpr auto operator<=>(Flags<BitType> const&) const = default;
 
 		// logical operator
 		constexpr bool operator!() const
