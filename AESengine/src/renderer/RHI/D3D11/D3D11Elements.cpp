@@ -33,6 +33,8 @@ DXGI_FORMAT aes::rhiFormatToApi(RHIFormat format)
 			return DXGI_FORMAT_R32G32B32A32_FLOAT;
 		case RHIFormat::R8G8B8A8_Uint:
 			return DXGI_FORMAT_R8G8B8A8_UNORM;
+		case RHIFormat::D24_S8_Uint:
+			return DXGI_FORMAT_D24_UNORM_S8_UINT;
 			// TODO
 		//case RHIFormat::R8G8B8A8_Uint:
 		//		return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;

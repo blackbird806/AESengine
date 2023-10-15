@@ -2,7 +2,6 @@
 #define AES_D3D11SWAPCHAIN_HPP
 
 #include "D3D11RenderTarget.hpp"
-#include "core/array.hpp"
 
 class IDXGISwapChain;
 class ID3D11Texture2D;
@@ -20,15 +19,13 @@ namespace aes
 		D3D11Swapchain(D3D11Swapchain&&) noexcept;
 		D3D11Swapchain& operator=(D3D11Swapchain&&) noexcept;
 
-		uint getTexturesCount() const noexcept;
-
 		void destroy() noexcept;
 		~D3D11Swapchain();
 
 	private:
 		IDXGISwapChain* swapchain = nullptr;
-		Array<ID3D11Texture2D*> rts;
-		Array<ID3D11RenderTargetView*> rtviews;
+		ID3D11Texture2D* rt;
+		ID3D11RenderTargetView* rtview;
 		ID3D11Texture2D* depthStencilBuffer = nullptr;
 		ID3D11DepthStencilView* depthStencilView = nullptr;
 	};

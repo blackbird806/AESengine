@@ -57,7 +57,7 @@ namespace aes
 		void drawIndexed(uint indexCount, uint indexOffset = 0);
 
 		void beginRenderPass(RHIRenderTarget& rt);
-		void beginRenderPass(RHISwapchain& rt, uint index);
+		void beginRenderPass(RHISwapchain& rt);
 		void endRenderPass();
 
 		// state modification

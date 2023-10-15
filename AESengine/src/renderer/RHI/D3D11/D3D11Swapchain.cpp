@@ -12,14 +12,23 @@ D3D11Swapchain::D3D11Swapchain(D3D11Swapchain&& rhs) noexcept
 D3D11Swapchain& D3D11Swapchain::operator=(D3D11Swapchain&& rhs) noexcept
 {
 	destroy();
+
 	swapchain = rhs.swapchain;
 	rhs.swapchain = nullptr;
-	return *this;
-}
 
-uint aes::D3D11Swapchain::getTexturesCount() const noexcept
-{
-	return rts.size();
+	depthStencilBuffer = rhs.depthStencilBuffer;
+	rhs.depthStencilBuffer = nullptr;
+
+	depthStencilView = rhs.depthStencilView;
+	rhs.depthStencilView = nullptr;
+
+	rt = rhs.rt;
+	rhs.rt = nullptr;
+
+	rtview = rhs.rtview;
+	rhs.rtview = nullptr;
+
+	return *this;
 }
 
 void D3D11Swapchain::destroy() noexcept
@@ -28,6 +37,18 @@ void D3D11Swapchain::destroy() noexcept
 	{
 		swapchain->Release();
 		swapchain = nullptr;
+
+		depthStencilBuffer->Release();
+		depthStencilBuffer = nullptr;
+
+		depthStencilView->Release();
+		depthStencilView = nullptr;
+
+		rt->Release();
+		rt = nullptr;
+
+		rtview->Release();
+		rtview = nullptr;
 	}
 }
 

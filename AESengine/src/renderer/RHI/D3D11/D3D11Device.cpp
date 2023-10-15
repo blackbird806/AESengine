@@ -196,25 +196,39 @@ Result<RHISwapchain> D3D11Device::createSwapchain(SwapchainDescription const& de
 		AES_FATAL_ERROR("D3D11CreateDeviceAndSwapChain failed");
 	}
 
-	sc.rts.resize(desc.count);
-	sc.rtviews.resize(desc.count);
-	for (int i = 0; i < desc.count; i++)
+	result = sc.swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID*>(&sc.rt));
+	if (FAILED(result))
 	{
-		result = sc.swapchain->GetBuffer(i, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID*>(&sc.rts[i]));
-		if (FAILED(result))
-		{
-			AES_FATAL_ERROR("swapChain->GetBuffer failed");
-		}
+		AES_FATAL_ERROR("swapChain->GetBuffer failed");
+	}
 
-		result = device->CreateRenderTargetView(sc.rts[i], nullptr, &sc.rtviews[i]);
-		if (FAILED(result))
-		{
-			AES_FATAL_ERROR("device->CreateRenderTargetView failed");
-		}
+	result = device->CreateRenderTargetView(sc.rt, nullptr, &sc.rtview);
+	if (FAILED(result))
+	{
+		AES_FATAL_ERROR("device->CreateRenderTargetView failed");
+	}
+
+	D3D11_TEXTURE2D_DESC depthBufferDesc = {};
+	depthBufferDesc.Width = desc.width;
+	depthBufferDesc.Height = desc.height;
+	depthBufferDesc.MipLevels = 1;
+	depthBufferDesc.ArraySize = 1;
+	depthBufferDesc.Format = rhiFormatToApi(desc.depthFormat);
+	depthBufferDesc.SampleDesc.Count = 1;
+	depthBufferDesc.SampleDesc.Quality = 0;
+	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthBufferDesc.CPUAccessFlags = 0;
+	depthBufferDesc.MiscFlags = 0;
+
+	result = device->CreateTexture2D(&depthBufferDesc, nullptr, &sc.depthStencilBuffer);
+	if (FAILED(result))
+	{
+		AES_FATAL_ERROR("device depthStencilBuffer failed");
 	}
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
-	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilViewDesc.Format = rhiFormatToApi(desc.depthFormat);
 	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 
@@ -607,9 +621,9 @@ void D3D11Device::beginRenderPass(RHIRenderTarget& rt)
 	//deviceContext->OMSetRenderTargets(1, &rt.renderTargetView, );
 }
 
-void D3D11Device::beginRenderPass(RHISwapchain& sc, uint index)
+void D3D11Device::beginRenderPass(RHISwapchain& sc)
 {
-	deviceContext->OMSetRenderTargets(1, &sc.rtviews[index], sc.depthStencilView);
+	deviceContext->OMSetRenderTargets(1, &sc.rtview, sc.depthStencilView);
 }
 
 void D3D11Device::endRenderPass()

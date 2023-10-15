@@ -172,6 +172,8 @@ namespace aes
 
 		R16G16B16A16_Float,
 		R32G32B32A32_Float,
+
+		D24_S8_Uint,
 	};
 
 	constexpr uint getFormatSize(RHIFormat format)
@@ -184,6 +186,7 @@ namespace aes
 		case RHIFormat::R32G32B32_Float: return 12;
 		case RHIFormat::R16G16B16A16_Float: return 8;
 		case RHIFormat::R32G32B32A32_Float: return 16;
+		case RHIFormat::D24_S8_Uint: return 4;
 		}
 		AES_UNREACHABLE();
 	}
@@ -241,6 +244,7 @@ namespace aes
 		uint count;
 		uint width, height;
 		RHIFormat format;
+		RHIFormat depthFormat;
 		MultisampleMode multisampleMode;
 		void* window;
 	};

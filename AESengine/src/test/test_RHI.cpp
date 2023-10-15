@@ -13,6 +13,7 @@
 #else
 #include "core/window.hpp"
 #endif
+
 using namespace aes;
 
 struct vert
@@ -61,6 +62,7 @@ public:
 			swDesc.multisampleMode = MultisampleMode::None;
 			swDesc.window = window->getHandle();
 			swDesc.format = RHIFormat::R8G8B8A8_Uint;
+			swDesc.depthFormat = RHIFormat::D24_S8_Uint;
 			swapchain = device.createSwapchain(swDesc).value();
 		}
 		// clear init
@@ -201,7 +203,7 @@ public:
 		device.setVertexShader(clearVertexShader);
 		device.setFragmentShader(clearFragmentShader);
 
-		device.beginRenderPass(swapchain, backBufferIndex);
+		device.beginRenderPass(swapchain);
 			device.drawIndexed(3);
 		device.endRenderPass();
 
@@ -227,14 +229,14 @@ public:
 		device.setVertexShader(geoVertexShader);
 		device.setFragmentShader(geoFragmentShader);
 		
-		device.beginRenderPass(swapchain, backBufferIndex);
+		device.beginRenderPass(swapchain);
 			device.drawIndexed(3);
 		device.endRenderPass();
 
 		device.swapBuffers(swapchain);
 
 		frontBufferIndex = backBufferIndex;
-		backBufferIndex = (backBufferIndex + 1) % swapchain.getTexturesCount();
+		backBufferIndex = (backBufferIndex + 1) % 2;
 	}
 
 };
