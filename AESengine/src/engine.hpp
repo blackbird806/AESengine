@@ -5,10 +5,9 @@
 #include "core/debug.hpp"
 #include "core/window.hpp"
 #include "core/array.hpp"
+#include "core/uniquePtr.hpp"
 #include "renderer/RHI/RHIRenderContext.hpp"
 #include "renderer/camera.hpp"
-#include <unordered_map>
-#include <memory>
 
 namespace aes {
 
@@ -58,7 +57,7 @@ namespace aes {
 		void getScreenMousePos(int& x, int& y) const noexcept;
 
 		Camera mainCamera;
-		std::unique_ptr<Window> mainWindow;
+		UniquePtr<Window> mainWindow;
 
 	private:
 
@@ -75,7 +74,7 @@ namespace aes {
 		const char* appName;
 		RHIRenderContext renderer;
 
-		std::unordered_map<Key, InputState> keyStates;
+		Array<InputState> keyStates;
 		Array<Key> keyJustPressed;
 	};
 }

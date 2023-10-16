@@ -8,7 +8,7 @@ namespace aes
 {
 	enum class Key
 	{
-		W,
+		W = 0,
 		A,
 		S, 
 		D, 
@@ -38,6 +38,7 @@ namespace aes
 		Num9,
 		
 		None,
+		Max,
 	};
 
 	enum class InputAction {

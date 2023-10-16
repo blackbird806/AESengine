@@ -13,9 +13,9 @@ using namespace aes;
 
 Engine::Engine(InitInfo const& info) :
 #ifdef _WIN32
-	mainWindow(std::make_unique<Win_Window>(info.appName)),
+	mainWindow(makeUnique<Win_Window>(info.appName)),
 #else
-	mainWindow(std::make_unique<EmptyWindow>()),
+	mainWindow(makeUnique<EmptyWindow>()),
 #endif
 	appName(info.appName)
 {
@@ -33,23 +33,25 @@ void Engine::init()
 {
 	AES_PROFILE_FUNCTION();
 	mainWindow->open();
+	keyStates.resize((int)Key::Max);
 	mainWindow->setKeyCallback({ [](InputAction action, int key, void* userData) {
 
 		Engine& self = *static_cast<Engine*>(userData);
 		Key const k = windowsToAESKey(key);
 		
+		int const keyIndex = (int)k;
 		if (action == InputAction::Pressed)
 		{
 			self.onKeyPressed(k);
-			if (self.keyStates[k] == InputState::Up)
+			if (self.keyStates[keyIndex] == InputState::Up)
 				self.keyJustPressed.push(k);
 
-			self.keyStates[k] = InputState::Down;
+			self.keyStates[keyIndex] = InputState::Down;
 		}
 		else
 		{
 			self.onKeyReleased(k);
-			self.keyStates[k] = InputState::Up;
+			self.keyStates[keyIndex] = InputState::Up;
 		}
 
 		}, this });
@@ -90,12 +92,12 @@ void Engine::run()
 
 InputState Engine::getKeyState(Key k) noexcept
 {
-	return keyStates[k];
+	return keyStates[(int)k];
 }
 
 bool Engine::isKeyDown(Key k) noexcept
 {
-	return keyStates[k] == InputState::Down;
+	return keyStates[(int)k] == InputState::Down;
 }
 
 bool Engine::isKeyPressed(Key k) noexcept

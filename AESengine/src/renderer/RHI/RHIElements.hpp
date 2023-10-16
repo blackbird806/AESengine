@@ -13,7 +13,6 @@
 
 namespace aes
 {
-	// @TODO merge CPUAccessFlags and MemoryUsage
 	enum class CPUAccessFlagBits : uint8_t
 	{
 		None = 0x0,

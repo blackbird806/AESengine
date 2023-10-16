@@ -4,11 +4,13 @@
 #include "context.hpp"
 #include "array.hpp"
 #include <cstring>
+#include <compare>
 
 namespace aes
 {
 	class String
 	{
+
 	public:
 		using Char_t = char;
 		using Iterator_t = Char_t*;
@@ -17,12 +19,16 @@ namespace aes
 
 		/*constexpr*/ String(const char* cstr) noexcept
 		{
+			AES_ASSERT(cstr);
+
 			buffer.resize(strlen(cstr) + 1);
 			strcpy(buffer.data(), cstr);
 		}
 
 		/*constexpr*/ String(const char* cstr, size_t count) noexcept
 		{
+			AES_ASSERT(cstr);
+
 			buffer.resize(count);
 			strncpy(buffer.data(), cstr, count);
 		}
@@ -59,9 +65,9 @@ namespace aes
 			return buffer[i];
 		}
 
-		constexpr auto operator<=>(String const& rhs) const noexcept
+		constexpr std::strong_ordering operator<=>(String const& rhs) const noexcept
 		{
-
+			return strcmp(data(), rhs.data()) <=> 0;
 		}
 
 		constexpr Char_t& front() noexcept
@@ -106,7 +112,7 @@ namespace aes
 
 		constexpr size_t capacity() const noexcept
 		{
-			return buffer.capacity();
+			return buffer.empty() ? 0 : buffer.capacity() - 1;
 		}
 
 		constexpr bool empty() const noexcept
@@ -140,12 +146,30 @@ namespace aes
 			buffer.insert(pos, std::forward(range));
 		}
 
-		//constexpr void append(String const&) noexcept;
-		//constexpr void append(const Char_t* s) noexcept;
-		//constexpr void append(const Char_t* s, size_t count) noexcept;
+		constexpr void append(String const& rhs) noexcept
+		{
+			resize(buffer.capacity() + rhs.buffer.size());
+			memcpy(&buffer[size()], rhs.buffer.data(), rhs.buffer.size());
+		}
 
-		template<typename R>
-		constexpr void append_range(R&& rg) noexcept;
+		constexpr void append(const Char_t* rhs) noexcept
+		{
+			AES_ASSERT(rhs);
+			size_t const rhslen = strlen(rhs) + 1;
+			if (rhslen == 1) // string is empty
+				return;
+
+			resize(buffer.capacity() + rhslen);
+			memcpy(&buffer[size()], rhs, rhslen);
+		}
+
+		constexpr void append(const Char_t* rhs, size_t count) noexcept
+		{
+			AES_ASSERT(rhs);
+			
+			resize(buffer.capacity() + count);
+			memcpy(&buffer[size()], rhs, count);
+		}
 
 		constexpr Iterator_t begin() noexcept
 		{
