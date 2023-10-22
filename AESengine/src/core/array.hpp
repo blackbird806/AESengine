@@ -257,6 +257,13 @@ namespace aes
 			if (size_ == capacity_)
 				return {};
 
+			if (size_ == 0)
+			{
+				alloc->deallocate(buffer);
+				buffer = nullptr;
+				return {};
+			}
+
 			T* const newBuffer = (T*)alloc->allocate(size_ * sizeof(T), alignof(T));
 			if (!newBuffer)
 				return { AESError::MemoryAllocationFailed };

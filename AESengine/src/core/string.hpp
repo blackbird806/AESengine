@@ -8,6 +8,10 @@
 
 namespace aes
 {
+	// General usage string class
+	// TODO try some optimisations details 
+	// TODO constexpr functions that relies on cstring funcs
+
 	class String
 	{
 
@@ -17,7 +21,7 @@ namespace aes
 
 		constexpr String() noexcept = default;
 
-		/*constexpr*/ String(const char* cstr) noexcept
+		/*constexpr*/ String(const Char_t* cstr) noexcept
 		{
 			AES_ASSERT(cstr);
 
@@ -25,7 +29,7 @@ namespace aes
 			strcpy(buffer.data(), cstr);
 		}
 
-		/*constexpr*/ String(const char* cstr, size_t count) noexcept
+		/*constexpr*/ String(const Char_t* cstr, size_t count) noexcept
 		{
 			AES_ASSERT(cstr);
 
@@ -63,11 +67,6 @@ namespace aes
 		constexpr Char_t& operator[](size_t i) noexcept
 		{
 			return buffer[i];
-		}
-
-		constexpr std::strong_ordering operator<=>(String const& rhs) const noexcept
-		{
-			return strcmp(data(), rhs.data()) <=> 0;
 		}
 
 		constexpr Char_t& front() noexcept
@@ -112,7 +111,7 @@ namespace aes
 
 		constexpr size_t capacity() const noexcept
 		{
-			return buffer.empty() ? 0 : buffer.capacity() - 1;
+			return buffer.capacity() == 0 ? 0 : buffer.capacity() - 1;
 		}
 
 		constexpr bool empty() const noexcept
@@ -146,24 +145,24 @@ namespace aes
 			buffer.insert(pos, std::forward(range));
 		}
 
-		constexpr void append(String const& rhs) noexcept
+		/*constexpr*/ void append(String const& rhs) noexcept
 		{
 			resize(buffer.capacity() + rhs.buffer.size());
 			memcpy(&buffer[size()], rhs.buffer.data(), rhs.buffer.size());
 		}
 
-		constexpr void append(const Char_t* rhs) noexcept
+		/*constexpr*/ void append(const Char_t* rhs) noexcept
 		{
 			AES_ASSERT(rhs);
 			size_t const rhslen = strlen(rhs) + 1;
 			if (rhslen == 1) // string is empty
 				return;
-
+			size_t const oldSize = size();
 			resize(buffer.capacity() + rhslen);
-			memcpy(&buffer[size()], rhs, rhslen);
+			memcpy(&buffer[oldSize], rhs, rhslen);
 		}
 
-		constexpr void append(const Char_t* rhs, size_t count) noexcept
+		/*constexpr*/ void append(const Char_t* rhs, size_t count) noexcept
 		{
 			AES_ASSERT(rhs);
 			
@@ -184,6 +183,26 @@ namespace aes
 	private:
 		Array<Char_t> buffer;
 	};
+
+	inline/*constexpr*/ std::strong_ordering operator<=>(String const& lhs, String const& rhs) noexcept
+	{
+		return strcmp(lhs.data(), rhs.data()) <=> 0;
+	}
+
+	inline/*constexpr*/ std::strong_ordering operator<=>(String const& lhs, String::Char_t const* rhs) noexcept
+	{
+		return strcmp(lhs.data(), rhs) <=> 0;
+	}
+
+	inline bool operator==(String const& lhs, String const& rhs) noexcept
+	{
+		return (lhs <=> rhs) == std::strong_ordering::equal;
+	}
+
+	inline bool operator==(String const& lhs, String::Char_t const* rhs) noexcept
+	{
+		return (lhs <=> rhs) == std::strong_ordering::equal;
+	}
 }
 
 #endif

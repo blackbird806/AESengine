@@ -3,6 +3,10 @@
 
 namespace aes
 {
+	//void test_array();
+	void test_string();
+	//void test_uniquePtr();
+
 	void test_RHI();
 	void test_fonts();
 	void test_imgui();
