@@ -20,29 +20,11 @@ namespace aes
 		return p * 1024_mb;
 	}
 
-	//class MemoryProfiler
-	//{
-	//	
-	//public:
-	//	static MemoryProfiler& instance()
-	//	{
-	//		static MemoryProfiler prof;
-	//		return prof;
-	//	}
-
-	//	void profileAlloc(void* ptr, size_t size) {};
-	//	void profileDealloc(void* ptr){};
-	//	
-	//private:
-	//	size_t memoryAllocated = 0;
-	//	size_t nbAllocations = 0;
-	//};
-
 	class IAllocator
 	{
 	public:
 		template<typename T>
-		[[nodiscard]] void* allocate(size_t count)
+		[[nodiscard]] void* allocate(size_t count = 1)
 		{
 			return allocate(count * sizeof(T), alignof(T));
 		}
@@ -59,6 +41,17 @@ namespace aes
 	public:
 		[[nodiscard]] void* allocate(size_t size, size_t align) override;
 		void deallocate(void* ptr) override;
+	};
+
+	class AllocatorProfiler final : public IAllocator
+	{
+	public:
+		AllocatorProfiler(IAllocator& base);
+		[[nodiscard]] void* allocate(size_t size, size_t align) override;
+		void deallocate(void* ptr) override;
+
+	private:
+		IAllocator* baseAllocator;
 	};
 
 	class StackAllocator final : public IAllocator

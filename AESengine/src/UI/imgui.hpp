@@ -6,6 +6,7 @@
 #include "core/allocator.hpp"
 #include "core/array.hpp"
 #include "core/geometry.hpp"
+#include <variant>
 
 /*
  * AES Object Oriented ImGui implementation, heavly inspired by Dear ImGui and microUI

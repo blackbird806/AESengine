@@ -16,9 +16,7 @@ int main()
 #else
 #endif
 	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(std::cout));
-
-	//test_RHI();
-	test_string();
+	test_RHI();
 
 	return 0;
 }

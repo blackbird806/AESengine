@@ -2,8 +2,9 @@
 #define AES_ARRAY_HPP
 
 #include "allocator.hpp"
-#include "error.hpp"
 #include "context.hpp"
+#include "debug.hpp"
+#include <utility>
 #include <concepts>
 
 namespace aes
@@ -48,32 +49,27 @@ namespace aes
 			*this = std::move(rhs);
 		}
 
-		IAllocator* getAllocator() const noexcept
+		constexpr IAllocator* getAllocator() const noexcept
 		{
 			return alloc;
 		}
 
-		constexpr Result<void> copyFrom(Array const& rhs) noexcept
+		constexpr void copyFrom(Array const& rhs) noexcept
 		{
 			clear();
 			alloc = rhs.alloc;
 			buffer = static_cast<T*>(alloc->allocate<T>(rhs.size_));
-			if (!buffer)
-				return { AESError::MemoryAllocationFailed };
 			size_ = rhs.size_;
 			capacity_ = size_;
 
 			// @performance conditionaly use memcpy here ?
 			for (uint32_t i = 0; i < size_; i++)
 				new (&buffer[i]) T(rhs.buffer[i]);
-
-			return {};
 		}
 
 		constexpr Array& operator=(Array const& rhs) noexcept
 		{
-			auto const err = copyFrom(rhs);
-			AES_ASSERT(err);
+			copyFrom(rhs);
 			return *this;
 		}
 
@@ -93,37 +89,32 @@ namespace aes
 			return *this;
 		}
 
-		constexpr Result<void> reserve(uint32_t n) noexcept
+		constexpr void reserve(uint32_t n) noexcept
 		{
 			AES_ASSERT(n != 0);
 
 			if (n <= capacity_)
-				return {};
+				return;
 
-			T* const newBuffer = static_cast<T*>(alloc->allocate(n * sizeof(T), alignof(T)));
-			if (!newBuffer)
-				return { AESError::MemoryAllocationFailed };
+			T* const newBuffer = static_cast<T*>(alloc->allocate<T>(n));
 
 			// @Review @Performance allocator reallocate may improve performances here
 			moveBuffer(newBuffer);
 			alloc->deallocate(buffer);
 			buffer = newBuffer;
 			capacity_ = n;
-			return {};
 		}
 
-		constexpr Result<void> resize(uint32_t n) noexcept
+		constexpr void resize(uint32_t n) noexcept
 		{
 			if (n == size_)
-				return {};
+				return;
 
 			if (n > size_)
 			{
 				if (n > capacity_)
 				{
-					auto const err = reserve(n);
-					if (!err)
-						return err;
+					reserve(n);
 				}
 				for (uint32_t i = size_; i < n; i++)
 					new (&buffer[i]) T;
@@ -134,35 +125,28 @@ namespace aes
 					buffer[i].~T();
 			}
 			size_ = n;
-			return {};
 		}
 
-		constexpr Result<void> push(T const& e) noexcept
+		constexpr void push(T const& e) noexcept
 		{
 			if (size_ == capacity_)
 			{
-				auto const err = grow();
-				if (!err)
-					return err;
+				grow();
 			}
 			new (&buffer[size_++]) T(e);
-			return {};
 		}
 
-		constexpr Result<void> push(T&& e) noexcept
+		constexpr void push(T&& e) noexcept
 		{
 			if (size_ == capacity_)
 			{
-				auto const err = grow();
-				if (!err)
-					return err;
+				grow();
 			}
 			new (&buffer[size_++]) T(std::move(e));
-			return {};
 		}
 
 		template<std::ranges::input_range Range>
-		constexpr Result<void> insert(Iterator_t pos, Range&& range) noexcept
+		constexpr void insert(Iterator_t pos, Range&& range) noexcept
 		{
 			uint32_t const rangeSize = std::ranges::size(range);
 			uint32_t const newSize = size_ + rangeSize;
@@ -175,9 +159,7 @@ namespace aes
 				while (newCapacity < newSize)
 					newCapacity *= 2;
 
-				T* const newBuffer = static_cast<T*>(alloc->allocate(newCapacity * sizeof(T), alignof(T)));
-				if (!newBuffer)
-					return { AESError::MemoryAllocationFailed };
+				T* const newBuffer = static_cast<T*>(alloc->allocate<T>(newCapacity));
 				capacity_ = newCapacity;
 
 				// move previous elements in new buffer
@@ -205,12 +187,11 @@ namespace aes
 			}
 			buffer = workBuffer;
 			size_ = newSize;
-			return {};
 		}
 
-		constexpr Result<void> insert(Iterator_t pos, T&& val) noexcept
+		constexpr void insert(Iterator_t pos, T&& val) noexcept
 		{
-			return insert(pos, { std::forward<T>(val) });
+			insert(pos, { std::forward<T>(val) });
 		}
 
 		constexpr void pop() noexcept
@@ -250,28 +231,24 @@ namespace aes
 		/**
 		 * \brief free unused memory of capacity
 		 * after a successful call of shrink size() == capacity()
-		 * \return AESError::MemoryAllocationFailed or success
 		 */
-		constexpr Result<void> shrink() noexcept
+		constexpr void shrink() noexcept
 		{
 			if (size_ == capacity_)
-				return {};
+				return;
 
 			if (size_ == 0)
 			{
 				alloc->deallocate(buffer);
 				buffer = nullptr;
-				return {};
+				return;
 			}
 
-			T* const newBuffer = (T*)alloc->allocate(size_ * sizeof(T), alignof(T));
-			if (!newBuffer)
-				return { AESError::MemoryAllocationFailed };
+			T* const newBuffer = (T*)alloc->allocate<T>(size_);
 			moveBuffer(newBuffer);
 			alloc->deallocate(buffer);
 			buffer = newBuffer;
 			capacity_ = size_;
-			return {};
 		}
 			 
 		constexpr void clear() noexcept
@@ -300,10 +277,10 @@ namespace aes
 				new (&newBuffer[i]) T(std::move(buffer[i]));
 		}
 
-		constexpr Result<void> grow() noexcept
+		constexpr void grow() noexcept
 		{
 			uint32_t const newCapacity = increasedCapacity();
-			return reserve(newCapacity);
+			reserve(newCapacity);
 		}
 
 		constexpr uint32_t increasedCapacity() const noexcept

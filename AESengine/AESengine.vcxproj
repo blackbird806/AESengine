@@ -45,6 +45,7 @@
     <ClCompile Include="src\core\context.cpp" />
     <ClCompile Include="src\core\debug.cpp" />
     <ClCompile Include="src\core\geometry.cpp" />
+    <ClCompile Include="src\core\hashmap.hpp" />
     <ClCompile Include="src\core\input.cpp" />
     <ClCompile Include="src\core\maths.cpp" />
     <ClCompile Include="src\core\platformWindows\win_window.cpp" />
@@ -99,6 +100,7 @@
     <ClInclude Include="src\core\debugMath.hpp" />
     <ClInclude Include="src\core\error.hpp" />
     <ClInclude Include="src\core\geometry.hpp" />
+    <ClInclude Include="src\core\hash.hpp" />
     <ClInclude Include="src\core\input.hpp" />
     <ClInclude Include="src\core\jobSystem.hpp" />
     <ClInclude Include="src\core\macro_helpers.hpp" />
@@ -112,6 +114,9 @@
     <ClInclude Include="src\core\string_converter.hpp" />
     <ClInclude Include="src\core\uniquePtr.hpp" />
     <ClInclude Include="src\core\utility.hpp" />
+    <ClInclude Include="src\core\vec2.hpp" />
+    <ClInclude Include="src\core\vec3.hpp" />
+    <ClInclude Include="src\core\vec4.hpp" />
     <ClInclude Include="src\core\window.hpp" />
     <ClInclude Include="src\engine.hpp" />
     <ClInclude Include="src\renderer\camera.hpp" />
@@ -321,6 +326,9 @@
       <SupportJustMyCode>true</SupportJustMyCode>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalOptions>/w34996 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalModuleDependencies>
+      </AdditionalModuleDependencies>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -342,6 +350,9 @@
       <SupportJustMyCode>true</SupportJustMyCode>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalOptions>/w34996 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalModuleDependencies>
+      </AdditionalModuleDependencies>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -363,6 +374,9 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalOptions>/w34996 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalModuleDependencies>
+      </AdditionalModuleDependencies>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -386,6 +400,9 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalOptions>/w34996 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalModuleDependencies>
+      </AdditionalModuleDependencies>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -409,6 +426,9 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalOptions>/w34996 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalModuleDependencies>
+      </AdditionalModuleDependencies>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -432,6 +452,9 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalOptions>/w34996 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalModuleDependencies>
+      </AdditionalModuleDependencies>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -457,6 +480,9 @@
       <StringPooling>true</StringPooling>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <AdditionalOptions>/w34996 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalModuleDependencies>
+      </AdditionalModuleDependencies>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -480,6 +506,9 @@
       <StringPooling>true</StringPooling>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <AdditionalOptions>/w34996 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalModuleDependencies>
+      </AdditionalModuleDependencies>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -505,6 +534,9 @@
       <StringPooling>true</StringPooling>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <AdditionalOptions>/w34996 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalModuleDependencies>
+      </AdditionalModuleDependencies>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

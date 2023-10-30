@@ -2,7 +2,6 @@
 #define AES_PROFILER_HPP
 
 #include <unordered_map>
-#include <string>
 #include <chrono>
 
 #include "macro_helpers.hpp"
@@ -42,7 +41,7 @@ namespace aes
 
 	struct ProfileSession
 	{
-		std::string name;
+		const char* name;
 		ProfileTime_t elapsedSessionTime;
 		std::unordered_map<const char*, ProfileData> profileDatas;
 	};
@@ -57,7 +56,7 @@ namespace aes
 			return inst;
 		}
 
-		void startSession(std::string const& name);
+		void startSession(const char* name);
 		ProfileSession stopSession();
 		
 		void updateProfileData(ProfileData const& data);

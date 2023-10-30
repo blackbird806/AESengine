@@ -208,7 +208,7 @@ namespace aes
 	struct VertexShaderDescription : ShaderDescription
 	{
 		std::span<VertexInputLayout> verticesLayout;
-		uint32_t verticesStride;
+		uint32_t verticesStride = 0;
 	};
 
 	struct FragmentShaderDescription : ShaderDescription
@@ -218,7 +218,7 @@ namespace aes
 		MultisampleMode multisampleMode; // used by gxm for shaderpatcher 
 
 		// TODO: clean this
-		void const* gxpVertexProgram; 
+		void const* gxpVertexProgram = nullptr; 
 	};
 
 	struct TextureDescription

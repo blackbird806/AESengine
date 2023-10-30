@@ -7,7 +7,7 @@ using namespace aes;
 
 aes::ProfileScope* aes::ProfileScope::last = nullptr;
 
-void Instrumentor::startSession(std::string const& name)
+void Instrumentor::startSession(const char* name)
 {
 	currentSession = ProfileSession{ name };
 	sessionStartPoint = std::chrono::high_resolution_clock::now();

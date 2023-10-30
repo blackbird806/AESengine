@@ -17,6 +17,8 @@
 
 #endif
 
+using namespace aes;
+
 aes::Mallocator aes::mallocator{};
 
 // https://stackoverflow.com/questions/53922209/how-to-invoke-aligned-new-delete-properly
@@ -101,27 +103,27 @@ void operator delete[](void* ptr, std::align_val_t al) noexcept
 
 #endif
 
-void* aes::Mallocator::allocate(size_t size, size_t align)
+void* Mallocator::allocate(size_t size, size_t align)
 {
 	return alignedAlloc(size, align);
 }
 
-void aes::Mallocator::deallocate(void* ptr)
+void Mallocator::deallocate(void* ptr)
 {
 	alignedFree(ptr);
 }
 
-aes::StackAllocator::StackAllocator(IAllocator& base, size_t size) : baseAllocator(&base),
+StackAllocator::StackAllocator(IAllocator& base, size_t size) : baseAllocator(&base),
 	start(static_cast<uint8_t*>(base.allocate(size))), totalSize(size), offset(0)
 {
 }
 
-aes::StackAllocator::~StackAllocator()
+StackAllocator::~StackAllocator()
 {
 	baseAllocator->deallocate(start);
 }
 
-void* aes::StackAllocator::allocate(size_t size, size_t alignement)
+void* StackAllocator::allocate(size_t size, size_t alignement)
 {
 	AES_ASSERT(isPowerOf2(alignement));
 	auto const alignedOffset = aes::align(offset, alignement);
@@ -134,14 +136,27 @@ void* aes::StackAllocator::allocate(size_t size, size_t alignement)
 	return reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(start) + alignedOffset);
 }
 
-void aes::StackAllocator::deallocateFromMarker(size_t marker)
+void StackAllocator::deallocateFromMarker(size_t marker)
 {
 	AES_ASSERT(marker < offset);
 	offset = marker;
 }
 
-size_t aes::StackAllocator::getMarker() const
+size_t StackAllocator::getMarker() const
 {
 	return offset;
 }
 
+AllocatorProfiler::AllocatorProfiler(IAllocator& base) : baseAllocator(&base)
+{
+}
+
+void* AllocatorProfiler::allocate(size_t size, size_t align)
+{
+	return baseAllocator->allocate(size, align);
+}
+
+void AllocatorProfiler::deallocate(void* ptr)
+{
+	baseAllocator->deallocate(ptr);
+}

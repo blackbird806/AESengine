@@ -22,7 +22,7 @@ namespace aes {
 		//std::vector<UniformBufferReflectionInfo> getUniformBufferInfos() const;
 		virtual ~D3D11Shader();
 	protected:
-		ID3D11ShaderReflection* reflector;
+		ID3D11ShaderReflection* reflector = nullptr;
 	};
 	
 	class D3D11VertexShader : public D3D11Shader
@@ -41,8 +41,8 @@ namespace aes {
 		
 	private:
 	
-		ID3D11VertexShader* vertexShader;
-		ID3D11InputLayout* layout;
+		ID3D11VertexShader* vertexShader = nullptr;
+		ID3D11InputLayout* layout = nullptr;
 	};
 
 	class D3D11FragmentShader : public D3D11Shader
@@ -62,7 +62,7 @@ namespace aes {
 		D3D11BlendState blendState;
 
 	private:
-		ID3D11PixelShader* pixelShader;
+		ID3D11PixelShader* pixelShader = nullptr;
 	};
 
 	using RHIVertexShader = D3D11VertexShader;

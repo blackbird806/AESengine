@@ -86,7 +86,7 @@ namespace aes
 		IDXGIFactory* factory = nullptr;
 		ID3D11Device* device = nullptr;
 		ID3D11DeviceContext* deviceContext = nullptr;
-		D3D11_RASTERIZER_DESC rasterStateDesc;
+		D3D11_RASTERIZER_DESC rasterStateDesc = {};
 		ID3D11RasterizerState* rasterState = nullptr;
 
 #ifdef AES_DEBUG

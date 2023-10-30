@@ -1,8 +1,9 @@
 #include "tests.hpp"
 
-#include <glm/glm.hpp>
 #include "core/allocator.hpp"
 #include "core/color.hpp"
+#include "core/vec2.hpp"
+#include "core/vec3.hpp"
 #include "core/uniquePtr.hpp"
 #include "core/string.hpp"
 #include "renderer/RHI/RHIDevice.hpp"
@@ -14,13 +15,14 @@
 #else
 #include "core/window.hpp"
 #endif
+#include "core/hashmap.hpp"
 
 using namespace aes;
 
 struct vert
 {
-	glm::vec2 pos;
-	glm::vec3 col;
+	aes::vec2 pos;
+	aes::vec3 col;
 };
 
 class TestRHIApp
@@ -42,12 +44,15 @@ public:
 	{
 		AES_LOG("[TEST] RHI");
 
+		HashMap<String, int> map(16);
+		map.add(String("hello"), 15);
+		map["hello"] = 16;
+
 #ifdef _WIN32
 		window = makeUnique<Win_Window>("aes engine");
 #else
 		window = makeUnique<EmptyWindow>();
 #endif
-
 		initializeGraphicsAPI();
 		AES_LOG("graphics api initialized");
 
@@ -98,14 +103,14 @@ public:
 #endif
 
 		{
-			glm::vec2 tri[] = {
+			aes::vec2 tri[] = {
 				{-1.0f, -1.0f},
 				{3.0f, -1.0f},
 				{-1.0f, 3.0f},
 			};
 
 			aes::BufferDescription vertexBufferDesc = {};
-			vertexBufferDesc.sizeInBytes = sizeof(glm::vec2) * 3;
+			vertexBufferDesc.sizeInBytes = sizeof(aes::vec2) * 3;
 			vertexBufferDesc.bindFlags = aes::BindFlagBits::VertexBuffer;
 			vertexBufferDesc.cpuAccessFlags = CPUAccessFlagBits::None;
 			vertexBufferDesc.usage = MemoryUsage::Immutable;
@@ -136,7 +141,7 @@ public:
 #else
 			vertexShaderDescription.source = aes::readFile("assets/shaders/HLSL/draw2d.vs");
 #endif
-			vertexShaderDescription.verticesStride = sizeof(glm::vec2);
+			vertexShaderDescription.verticesStride = sizeof(aes::vec2);
 			aes::VertexInputLayout vertexInputLayout[2];
 			vertexInputLayout[0].parameterName = "aPosition";
 			vertexInputLayout[0].semantic = aes::SemanticType::Position;
@@ -145,7 +150,7 @@ public:
 
 			vertexInputLayout[1].parameterName = "aColor";
 			vertexInputLayout[1].semantic = aes::SemanticType::Color;
-			vertexInputLayout[1].offset = sizeof(glm::vec2);
+			vertexInputLayout[1].offset = sizeof(aes::vec2);
 			vertexInputLayout[1].format = aes::RHIFormat::R32G32B32_Float;
 
 			vertexShaderDescription.verticesLayout = vertexInputLayout;

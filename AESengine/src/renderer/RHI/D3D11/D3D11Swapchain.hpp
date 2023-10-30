@@ -24,8 +24,8 @@ namespace aes
 
 	private:
 		IDXGISwapChain* swapchain = nullptr;
-		ID3D11Texture2D* rt;
-		ID3D11RenderTargetView* rtview;
+		ID3D11Texture2D* rt = nullptr;
+		ID3D11RenderTargetView* rtview = nullptr;
 		ID3D11Texture2D* depthStencilBuffer = nullptr;
 		ID3D11DepthStencilView* depthStencilView = nullptr;
 	};
