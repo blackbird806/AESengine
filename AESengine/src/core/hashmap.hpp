@@ -23,7 +23,7 @@ namespace aes
 		{
 			struct Node* n;
 
-			T& operator*() noexcept
+			T& operator*() const noexcept
 			{
 				AES_ASSERT(n);
 				return n->data;
@@ -34,6 +34,8 @@ namespace aes
 				AES_ASSERT(n);
 				n = n->next;
 			}
+
+			bool operator==(Iterator const&) const noexcept = default;
 		};
 
 		constexpr SList() noexcept : allocator(context.allocator), first(nullptr)
@@ -134,7 +136,7 @@ namespace aes
 
 		Node* createNode(T&& e)
 		{
-			Node* n = allocator->allocate<Node>();
+			Node* n = new(allocator->allocate<Node>()) Node;
 			n->data = std::forward<T>(e);
 			n->next = nullptr;
 			return n;
@@ -182,7 +184,7 @@ namespace aes
 
 		constexpr void add(K&& key, V&& value)
 		{
-			auto pair = Pair{ std::forward(key), std::forward(value) };
+			auto pair = Pair<K, V>{ std::forward<K>(key), std::forward<V>(value) };
 			auto const hash = Hash_t{}(pair.first);
 			uint32_t const index = hash % buckets.size();
 			buckets[index].add(std::move(pair));
@@ -222,7 +224,7 @@ namespace aes
 				});
 
 			if (it != buckets[index].end())
-				return *it;
+				return (*it).second;
 			
 			AES_FATAL_ERROR("Key not present in map");
 		}

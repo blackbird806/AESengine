@@ -128,12 +128,13 @@ namespace aes
 
 		constexpr void reserve(size_t cap) noexcept
 		{
-			buffer.reserve(cap);
+			buffer.reserve(cap + 1);
 		}
 
 		constexpr void resize(size_t sz) noexcept
 		{
-			buffer.resize(sz);
+			buffer.resize(sz + 1);
+			buffer[buffer.size() - 1] = 0;
 		}
 
 		constexpr void clear() noexcept

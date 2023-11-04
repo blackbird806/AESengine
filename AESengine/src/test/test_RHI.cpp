@@ -23,6 +23,7 @@ struct vert
 {
 	aes::vec2 pos;
 	aes::vec3 col;
+	float a = 1.0f;
 };
 
 class TestRHIApp
@@ -37,6 +38,7 @@ class TestRHIApp
 	RHIVertexShader geoVertexShader;
 	RHIBuffer clearVertexBuffer, clearIndexBuffer;
 	RHIBuffer geoVertexBuffer, geoIndexBuffer;
+	RHIBuffer uniformBuffer;
 
 public:
 
@@ -46,6 +48,8 @@ public:
 
 		HashMap<String, int> map(16);
 		map.add(String("hello"), 15);
+		map.add(String("world"), 15);
+		map.add(String("pistav"), 15);
 		map["hello"] = 16;
 
 #ifdef _WIN32
@@ -151,7 +155,7 @@ public:
 			vertexInputLayout[1].parameterName = "aColor";
 			vertexInputLayout[1].semantic = aes::SemanticType::Color;
 			vertexInputLayout[1].offset = sizeof(aes::vec2);
-			vertexInputLayout[1].format = aes::RHIFormat::R32G32B32_Float;
+			vertexInputLayout[1].format = aes::RHIFormat::R32G32B32A32_Float;
 
 			vertexShaderDescription.verticesLayout = vertexInputLayout;
 
@@ -185,8 +189,8 @@ public:
 			aes::BufferDescription vertexBufferDesc = {};
 			vertexBufferDesc.sizeInBytes = sizeof(vert) * 3;
 			vertexBufferDesc.bindFlags = aes::BindFlagBits::VertexBuffer;
-			vertexBufferDesc.cpuAccessFlags = CPUAccessFlagBits::None;
-			vertexBufferDesc.usage = MemoryUsage::Immutable;
+			vertexBufferDesc.cpuAccessFlags = CPUAccessFlagBits::Write;
+			vertexBufferDesc.usage = MemoryUsage::Dynamic;
 			vertexBufferDesc.initialData = tri;
 
 			geoVertexBuffer = device.createBuffer(vertexBufferDesc).value();
@@ -205,6 +209,26 @@ public:
 			geoIndexBuffer = device.createBuffer(indexBufferDesc).value();
 			AES_LOG("indexBufferDesc created");
 		}
+		{
+			float matrix[16];
+			memset(matrix, 0, sizeof(matrix));
+			matrix[0] = 1;
+			matrix[5] = 1;
+			matrix[9] = 1;
+			matrix[15] = 1;
+
+			aes::BufferDescription uniformBufferDesc = {};
+			uniformBufferDesc.sizeInBytes = sizeof(matrix);
+			uniformBufferDesc.bindFlags = aes::BindFlagBits::UniformBuffer;
+			uniformBufferDesc.cpuAccessFlags = CPUAccessFlagBits::None;
+			uniformBufferDesc.usage = MemoryUsage::Immutable;
+			uniformBufferDesc.initialData = matrix;
+
+			uniformBuffer = device.createBuffer(uniformBufferDesc).value();
+			AES_LOG("uniform buffer created");
+			device.bindVertexUniformBuffer(uniformBuffer, 0);
+		}
+
 	}
 
 	int frontBufferIndex = 0, backBufferIndex = 0;

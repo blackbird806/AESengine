@@ -64,7 +64,6 @@ namespace aes
 	private:
 		ProfileSession currentSession;
 		std::chrono::time_point<std::chrono::high_resolution_clock> sessionStartPoint;
-
 	};
 
 	class ProfileScope

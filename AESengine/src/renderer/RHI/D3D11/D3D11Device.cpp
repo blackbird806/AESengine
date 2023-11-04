@@ -690,3 +690,10 @@ Result<void> D3D11Device::setIndexBuffer(RHIBuffer& buffer, IndexTypeFormat type
 	deviceContext->IASetIndexBuffer(buffer.getHandle(), rhiTypeFormatToApi(typeFormat), offset);
 	return {};
 }
+
+Result<void> D3D11Device::bindVertexUniformBuffer(RHIBuffer& buffer, uint slot)
+{
+	AES_PROFILE_FUNCTION();
+	deviceContext->VSSetConstantBuffers(slot, 1, &buffer.apiBuffer);
+	return{};
+}

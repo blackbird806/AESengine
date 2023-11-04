@@ -7,14 +7,13 @@ aes::String aes::readFile(std::string_view file)
 {
 	AES_PROFILE_FUNCTION();
 
-	std::ifstream t(file.data());
+	std::ifstream t(file.data(), std::ios::binary | std::ios::ate);
 	AES_ASSERT(t.is_open());
-	t.seekg(0, std::ios::end);
 	int const size = t.tellg();
 	String buffer;
 	buffer.resize(size);
 	t.seekg(0);
-	t.read(&buffer[0], size);
+	t.read(buffer.data(), size);
 
 	return buffer;
 }
