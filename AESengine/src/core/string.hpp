@@ -4,14 +4,13 @@
 #include <cstring>
 #include <compare>
 
-#include "context.hpp"
 #include "array.hpp"
 #include "hash.hpp"
 
 namespace aes
 {
 	// General usage string class
-	// TODO try some optimisations details 
+	// TODO try some optimisations details
 	// TODO constexpr functions that relies on cstring funcs
 
 	class String
@@ -25,15 +24,15 @@ namespace aes
 
 		/*constexpr*/ String(const Char_t* cstr) noexcept
 		{
-			AES_ASSERT(cstr);
+			AES_ASSERT_NOLOG(cstr);
 
 			buffer.resize(strlen(cstr) + 1);
 			strcpy(buffer.data(), cstr);
 		}
 
-		/*constexpr*/ String(const Char_t* cstr, size_t count) noexcept
+		/*constexpr*/ String(const Char_t* cstr, uint32_t count) noexcept
 		{
-			AES_ASSERT(cstr);
+			AES_ASSERT_NOLOG(cstr);
 
 			buffer.resize(count);
 			strncpy(buffer.data(), cstr, count);
@@ -61,12 +60,12 @@ namespace aes
 			return *this;
 		}
 
-		constexpr Char_t const& operator[](size_t i) const noexcept
+		constexpr Char_t const& operator[](uint32_t i) const noexcept
 		{
 			return buffer[i];
 		}
 
-		constexpr Char_t& operator[](size_t i) noexcept
+		constexpr Char_t& operator[](uint32_t i) noexcept
 		{
 			return buffer[i];
 		}
@@ -106,12 +105,12 @@ namespace aes
 			return buffer.data();
 		}
 
-		constexpr size_t size() const noexcept
+		constexpr uint32_t size() const noexcept
 		{
 			return buffer.empty() ? 0 : buffer.size() - 1;
 		}
 
-		constexpr size_t capacity() const noexcept
+		constexpr uint32_t capacity() const noexcept
 		{
 			return buffer.capacity() == 0 ? 0 : buffer.capacity() - 1;
 		}
@@ -126,12 +125,12 @@ namespace aes
 			buffer.shrink();
 		}
 
-		constexpr void reserve(size_t cap) noexcept
+		constexpr void reserve(uint32_t cap) noexcept
 		{
 			buffer.reserve(cap + 1);
 		}
 
-		constexpr void resize(size_t sz) noexcept
+		constexpr void resize(uint32_t sz) noexcept
 		{
 			buffer.resize(sz + 1);
 			buffer[buffer.size() - 1] = 0;
@@ -156,7 +155,7 @@ namespace aes
 
 		/*constexpr*/ void append(const Char_t* rhs) noexcept
 		{
-			AES_ASSERT(rhs);
+			AES_ASSERT_NOLOG(rhs);
 			size_t const rhslen = strlen(rhs) + 1;
 			if (rhslen == 1) // string is empty
 				return;
@@ -165,9 +164,9 @@ namespace aes
 			memcpy(&buffer[oldSize], rhs, rhslen);
 		}
 
-		/*constexpr*/ void append(const Char_t* rhs, size_t count) noexcept
+		/*constexpr*/ void append(const Char_t* rhs, uint32_t count) noexcept
 		{
-			AES_ASSERT(rhs);
+			AES_ASSERT_NOLOG(rhs);
 			
 			resize(buffer.capacity() + count);
 			memcpy(&buffer[size()], rhs, count);

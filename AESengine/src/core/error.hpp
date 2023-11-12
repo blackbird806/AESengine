@@ -162,20 +162,20 @@ namespace aes {
 	}
 }
 
-template<>
-struct fmt::formatter<aes::AESError> 
-{
-	template<typename ParseContext>
-	constexpr auto parse(ParseContext& ctx)
-	{
-		return ctx.begin();
-	}
-
-	template<typename FormatContext>
-	auto format(aes::AESError const& err, FormatContext& ctx)
-	{
-		return fmt::format_to(ctx.out(), "{}", to_string(err));
-	};
-};
+//template<>
+//struct fmt::formatter<aes::AESError> 
+//{
+//	template<typename ParseContext>
+//	constexpr auto parse(ParseContext& ctx)
+//	{
+//		return ctx.begin();
+//	}
+//
+//	template<typename FormatContext>
+//	auto format(aes::AESError const& err, FormatContext& ctx)
+//	{
+//		return fmt::format_to(ctx.out(), "{}", to_string(err));
+//	};
+//};
 
 #endif

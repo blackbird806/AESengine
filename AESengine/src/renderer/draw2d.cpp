@@ -108,7 +108,7 @@ Result<void> Draw2d::init()
 		samplerDesc.addressU = TextureAddressMode::Repeat;
 		samplerDesc.addressV = TextureAddressMode::Repeat;
 		samplerDesc.filter = TextureFilter::Linear;
-		samplerDesc.lodMin = 0.0f;
+		samplerDesc.lodMin = 0;
 		samplerDesc.lodBias = 0;
 		//sampler.init(samplerDesc);
 	}

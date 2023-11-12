@@ -1,7 +1,7 @@
 #include "debug.hpp"
 #include "aes.hpp"
 #include "context.hpp"
-#include <fmt/format.h>
+#include "format.hpp"
 
 #ifdef __vita__
 #include "psvDebugScreen/debugScreen.h"
@@ -9,53 +9,58 @@
 
 using namespace aes;
 
-Logger& Logger::instance()
+Logger::Logger() noexcept : sinkCount(0)
+{
+	std::fill(std::begin(sinks), std::end(sinks), nullptr);
+}
+
+Logger& Logger::instance() noexcept
 {
 	return context.logger;
 }
 
-void Logger::addSink(std::unique_ptr<Sink> sink)
+void Logger::addSink(Sink* sink) noexcept
 {
 	AES_ASSERT(sink);
-	sinks.push_back(std::move(sink));
+	sinks[sinkCount++] = sink;
 }
 
-void Logger::log(std::string&& message)
+void Logger::log(const char* message) noexcept
 {
-	for (auto& sink : sinks)
+	for (int i = 0; i < sinkCount; i++)
 	{
-		sink->dispatch_log(message.c_str());
-		sink->flush();
+		sinks[i]->dispatch_log(message);
+		sinks[i]->flush();
 	}
 }
 
-StreamSink::StreamSink(std::ostream& stream_) : stream(stream_)
+StreamSink::StreamSink(std::ostream& stream_) noexcept : stream(stream_)
 {
 	
 }
 
-void StreamSink::dispatch_log(const char* message)
+void StreamSink::dispatch_log(const char* message) noexcept
 {
 	stream << message;
 }
 
-void StreamSink::flush()
+void StreamSink::flush() noexcept
 {
 	stream.flush();
 }
 
 #ifdef __vita__
-PsvDebugScreenSink::PsvDebugScreenSink()
+PsvDebugScreenSink::PsvDebugScreenSink() noexcept
 {
 	psvDebugScreenInit();
 }
 
-void PsvDebugScreenSink::dispatch_log(const char* message)
+void PsvDebugScreenSink::dispatch_log(const char* message) noexcept
 {
 	psvDebugScreenPuts(message);
 }
 
-void PsvDebugScreenSink::flush()
+void PsvDebugScreenSink::flush() noexcept
 {
 	
 }

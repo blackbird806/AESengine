@@ -1,4 +1,5 @@
 #include "tests.hpp"
+#include "core/aes.hpp"
 #include "core/string.hpp"
 
 using namespace aes;

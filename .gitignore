@@ -414,3 +414,4 @@ MigrationBackup/
 AESengine/prof.txt
 AESengine/AES_log.txt
 *.ttf
+*.scor

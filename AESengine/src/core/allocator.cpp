@@ -1,9 +1,12 @@
-#include "allocator.hpp"
-#include "profiler.hpp"
-#include "core/utility.hpp"
 #include <new>
 #include <memory>
 #include <cstdlib>
+
+#include "aes.hpp"
+#include "allocator.hpp"
+#include "profiler.hpp"
+#include "utility.hpp"
+#include "context.hpp"
 
 #ifdef AES_ENABLE_PROFILING
 
@@ -136,6 +139,11 @@ void* StackAllocator::allocate(size_t size, size_t alignement)
 	return reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(start) + alignedOffset);
 }
 
+void aes::StackAllocator::deallocate(void* ptr)
+{
+	AES_UNUSED(ptr);
+}
+
 void StackAllocator::deallocateFromMarker(size_t marker)
 {
 	AES_ASSERT(marker < offset);
@@ -159,4 +167,9 @@ void* AllocatorProfiler::allocate(size_t size, size_t align)
 void AllocatorProfiler::deallocate(void* ptr)
 {
 	baseAllocator->deallocate(ptr);
+}
+
+IAllocator* aes::getContextAllocator() noexcept
+{
+    return context.allocator;
 }

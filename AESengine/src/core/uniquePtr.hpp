@@ -174,7 +174,7 @@ namespace aes
 	auto makeUnique(Args&&... args) noexcept
 	{
 		void* ptr = context.allocator->allocate(sizeof(T), alignof(T));
-		return UniquePtr<T, GlobalAllocDelete<T>>(::new(ptr) T(std::move(args)...));
+		return UniquePtr<T, GlobalAllocDelete<T>>(::new(ptr) T(std::forward<Args>(args)...));
 	}
 
 	template<typename T, typename... Args>
@@ -182,7 +182,7 @@ namespace aes
 	{
 		void* ptr = alloc.allocate(sizeof(T), alignof(T));
 		AllocatorDelete<T> del(&alloc);
-		return UniquePtr<T, AllocatorDelete<T>>(::new(ptr) T(std::move(args)...), std::move(del));
+		return UniquePtr<T, AllocatorDelete<T>>(::new(ptr) T(std::forward<Args>(args)...), std::move(del));
 	}
 }
 

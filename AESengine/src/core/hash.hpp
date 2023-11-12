@@ -1,7 +1,7 @@
 #ifndef AES_HASH_HPP
 #define AES_HASH_HPP
 
-#include "aes.hpp"
+#include <cstdint>
 
 namespace aes
 {

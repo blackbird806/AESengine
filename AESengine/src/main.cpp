@@ -2,20 +2,23 @@
 #include <fstream>
 #include "core/aes.hpp"
 #include "core/debug.hpp"
+#include "core/uniquePtr.hpp"
 #include "test/tests.hpp"
 
 using namespace aes;
 
 int main()
 {
+	auto streamSink = aes::makeUnique<aes::StreamSink>(std::cout);
+	aes::Logger::instance().addSink(streamSink.get());
 #ifdef __vita__
-	aes::Logger::instance().addSink(std::make_unique<aes::PsvDebugScreenSink>());
+	auto debugScreenSink = aes::makeUnique<aes::PsvDebugScreenSink>(file);
+	aes::Logger::instance().addSink(debugScreenSink.get());
 	std::ofstream file("ux0:/log/aeslog.txt");
-	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(file));
-	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(std::cout));
+	auto fileSink = aes::makeUnique<aes::StreamSink>(file);
+	aes::Logger::instance().addSink(fileSink.get());
 #else
 #endif
-	aes::Logger::instance().addSink(std::make_unique<aes::StreamSink>(std::cout));
 	test_RHI();
 
 	return 0;

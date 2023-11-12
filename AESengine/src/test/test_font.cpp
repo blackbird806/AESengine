@@ -63,7 +63,7 @@ public:
 			scale = 1.0;
 
 		draw2d.setMatrix(glm::scale(glm::mat3(1.0f), { scale, scale * aspect }));
-		draw2d.drawText(defaultFont, fmt::format("5+5=10-hello_world\nscale {}", scale), {xstart, 0.0});
+		//draw2d.drawText(defaultFont, fmt::format("5+5=10-hello_world\nscale {}", scale), {xstart, 0.0});
 
 		draw2d.drawImage(defaultFont.texture, { {-0.5, -0.5}, {0.5, 0.5}});
 	}

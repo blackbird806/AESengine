@@ -1,7 +1,6 @@
 #ifndef AES_ALLOCATOR_HPP
 #define AES_ALLOCATOR_HPP
-
-#include "core/aes.hpp"
+#include <cstdint>
 
 namespace aes
 {
@@ -61,7 +60,7 @@ namespace aes
 		StackAllocator(IAllocator& base, size_t size);
 		~StackAllocator() override;
 		[[nodiscard]] void* allocate(size_t size, size_t align) override;
-		void deallocate(void* ptr) override { AES_UNUSED(ptr); }
+		void deallocate(void* ptr) override;
 
 		void deallocateFromMarker(size_t marker);
 		size_t getMarker() const;
@@ -73,6 +72,9 @@ namespace aes
 	};
 
 	extern Mallocator mallocator;
+	
+	// used to avoid cicular dependencies in some core headers
+	[[nodiscard]] IAllocator* getContextAllocator() noexcept;
 }
 
 #endif

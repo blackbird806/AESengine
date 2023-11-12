@@ -6,7 +6,7 @@
 #include "renderer/RHI/RHIElements.hpp"
 #include "core/error.hpp"
 
-class ID3D11Buffer;
+struct ID3D11Buffer;
 namespace aes
 {
 	class D3D11Buffer

@@ -1,26 +1,24 @@
 #ifndef AES_DEBUG_HPP
 #define AES_DEBUG_HPP
 
-#include <vector>
 #include <iosfwd>
-#include <memory>
-#include <fmt/format.h>
 #include "macro_helpers.hpp"
+#include "format.hpp"
 
 // loging system should be completly revised
 // we may want to get rif of macros and use std::source_location
 // also we want filters, warning level and more ....
 // maybe take inspiration from spd log ?
 #ifdef __vita__
-#define AES_LOG(msg, ...) ::aes::Logger::instance().log(fmt::format("info : " msg "\n" __VA_OPT__(,) __VA_ARGS__))
-#define AES_LOG_RAW(msg, ...) ::aes::Logger::instance().log(fmt::format(msg "\n" __VA_OPT__(,) __VA_ARGS__))
-#define AES_WARN(msg, ...) ::aes::Logger::instance().log(fmt::format("warn : " msg "\n" __VA_OPT__(,) __VA_ARGS__))
-#define AES_LOG_ERROR(msg, ...) ::aes::Logger::instance().log(fmt::format("error {} {} line {} : {}\n", __FUNCTION__, __FILE__, __LINE__, fmt::format(msg __VA_OPT__(,) __VA_ARGS__)))
+#define AES_LOG(msg, ...) ::aes::Logger::instance().log(aes::format("info : " msg "\n" __VA_OPT__(,) __VA_ARGS__).c_str())
+#define AES_LOG_RAW(msg, ...) ::aes::Logger::instance().log(aes::format(msg "\n" __VA_OPT__(,) __VA_ARGS__).c_str())
+#define AES_WARN(msg, ...) ::aes::Logger::instance().log(aes::format("warn : " msg "\n" __VA_OPT__(,) __VA_ARGS__).c_str())
+#define AES_LOG_ERROR(msg, ...) ::aes::Logger::instance().log(aes::format("error {} {} line {} : {}\n", __FUNCTION__, __FILE__, __LINE__, fmt::format(msg __VA_OPT__(,) __VA_ARGS__).c_str()))
 #else
-#define AES_LOG(msg, ...) ::aes::Logger::instance().log(fmt::format("info : " msg "\n", __VA_ARGS__))
-#define AES_LOG_RAW(msg, ...) ::aes::Logger::instance().log(fmt::format(msg "\n", __VA_ARGS__))
-#define AES_WARN(msg, ...) ::aes::Logger::instance().log(fmt::format("warn : " msg "\n", __VA_ARGS__))
-#define AES_LOG_ERROR(msg, ...) ::aes::Logger::instance().log(fmt::format("error : " __FUNCTION__ " : " AES_STRINGIFY(__LINE__) ": " msg "\n", __VA_ARGS__))
+#define AES_LOG(msg, ...) ::aes::Logger::instance().log(aes::format("info : " msg "\n", __VA_ARGS__).c_str())
+#define AES_LOG_RAW(msg, ...) ::aes::Logger::instance().log(aes::format(msg "\n", __VA_ARGS__).c_str())
+#define AES_WARN(msg, ...) ::aes::Logger::instance().log(aes::format("warn : " msg "\n", __VA_ARGS__).c_str())
+#define AES_LOG_ERROR(msg, ...) ::aes::Logger::instance().log(aes::format("error : " __FUNCTION__ " : " AES_STRINGIFY(__LINE__) ": " msg "\n", __VA_ARGS__).c_str())
 #endif
 
 #define AES_CHECKR(r) if (!r) { AES_LOG_ERROR("{}", r.error()); return r; };
@@ -32,44 +30,46 @@ namespace aes {
 	class Sink
 	{
 	public:
-		virtual void dispatch_log(const char* message) = 0;
-		virtual void flush() = 0;
+		virtual void dispatch_log(const char* message) noexcept = 0;
+		virtual void flush() noexcept = 0;
 		virtual ~Sink() {};
 	};
 
 	class Logger
 	{
 	public:
+		Logger() noexcept;
 
 		// [[deprecated("Use context logger instead")]] 
-		static Logger& instance();
-		
-		void addSink(std::unique_ptr<Sink> sink);
-		void log(std::string&& message);
+		[[nodiscard]] static Logger& instance() noexcept;
+
+		void addSink(Sink* sink) noexcept;
+		void log(const char* message) noexcept;
 
 	private:
 
-		std::vector<std::unique_ptr<Sink>> sinks;
+		Sink* sinks[8];
+		int sinkCount;
 	};
 
 	class StreamSink final : public Sink
 	{
 	public:
-		explicit StreamSink(std::ostream& stream);
+		explicit StreamSink(::std::ostream& stream) noexcept;
 
-		void dispatch_log(const char* message) override;
-		void flush() override;
+		void dispatch_log(const char* message) noexcept override;
+		void flush() noexcept override;
 	private:
-		std::ostream& stream;
+		::std::ostream& stream;
 	};
 
 #ifdef __vita__
 	class PsvDebugScreenSink final : public Sink
 	{
 	public:
-		PsvDebugScreenSink();
-		void dispatch_log(const char* message) override;
-		void flush() override;
+		PsvDebugScreenSink() noexcept;
+		void dispatch_log(const char* message) noexcept override;
+		void flush() noexcept override;
 	};
 #endif
 	

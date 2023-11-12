@@ -58,11 +58,11 @@ Result<FontRessource> aes::createFontRessource(FontParams const& params)
 	float const baseline = SF * (float) -fontBoundBoxY0;
 
 	fontRessource.glyphs.resize(packChars.size());
-	for (int32_t i = 0; i < packChars.size(); i++)
+	for (uint32_t i = 0; i < packChars.size(); i++)
 	{
 		auto const& pc = packChars[i];
 		fontRessource.glyphs[i] = Glyph{
-			.c = params.startUnicode + i,
+			.c = params.startUnicode + (int32_t)i,
 			.x = {pc.x0, pc.x1},
 			.y = {pc.y0, pc.y1},
 			.u = {(float)pc.x0 / width, (float)(pc.x1) / width},
@@ -76,7 +76,7 @@ Result<FontRessource> aes::createFontRessource(FontParams const& params)
 	Array<Color> pixels;
 	pixels.resize(width * height);
 
-	for (int i = 0; i < pixels.size(); i++)
+	for (uint32_t i = 0; i < pixels.size(); i++)
 	{
 		uint8_t const alpha = bitmap[i];
 		pixels[i] = Color(alpha, alpha, alpha, alpha);

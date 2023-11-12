@@ -5,8 +5,8 @@
 #include "core/error.hpp"
 #include "renderer/RHI/RHIElements.hpp"
 
-class ID3D11Texture2D;
-class ID3D11RenderTargetView;
+struct ID3D11Texture2D;
+struct ID3D11RenderTargetView;
 
 namespace aes
 {

@@ -3,10 +3,10 @@
 
 #include "D3D11RenderTarget.hpp"
 
-class IDXGISwapChain;
-class ID3D11Texture2D;
-class ID3D11RenderTargetView;
-class ID3D11DepthStencilView;
+struct IDXGISwapChain;
+struct ID3D11Texture2D;
+struct ID3D11RenderTargetView;
+struct ID3D11DepthStencilView;
 
 namespace aes
 {
