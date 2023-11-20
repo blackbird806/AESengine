@@ -3,6 +3,8 @@
 
 #include <string>
 #include <windowsx.h>
+#define NEAR 
+#include <dwmapi.h>
 
 #include "core/maths.hpp"
 
@@ -16,6 +18,40 @@ LRESULT Win_Window::windowProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPa
 	Win_Window* self = (Win_Window*)GetPropW(hwnd, WINDOW_HANDLE_PROP_NAME);
 	switch (msg)
 	{
+		case WM_CREATE:
+		{
+			//RECT size_rect;
+			//GetWindowRect(hwnd, &size_rect);
+
+			//// Inform the application of the frame change to force redrawing with the new
+			//// client area that is extended into the title bar
+			//SetWindowPos(
+			//	hwnd, NULL,
+			//	size_rect.left, size_rect.top,
+			//	size_rect.right - size_rect.left, size_rect.bottom - size_rect.top,
+			//	SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE
+			//);
+			break;
+		}
+		case WM_ACTIVATE:
+		{
+			break;
+		}
+		case WM_NCCALCSIZE: {
+			//UINT dpi = GetDpiForWindow(hwnd);
+
+			//int frame_x = GetSystemMetricsForDpi(SM_CXFRAME, dpi);
+			//int frame_y = GetSystemMetricsForDpi(SM_CYFRAME, dpi);
+			//int padding = GetSystemMetricsForDpi(SM_CXPADDEDBORDER, dpi);
+
+			//NCCALCSIZE_PARAMS* params = (NCCALCSIZE_PARAMS*)lParam;
+			//RECT* requested_client_rect = params->rgrc;
+
+			//requested_client_rect->right -= frame_x + padding;
+			//requested_client_rect->left += frame_x + padding;
+			//requested_client_rect->bottom -= frame_y + padding;
+			break;
+		}
 		// workaround TODO
 		case WM_LBUTTONDOWN:
 		{
@@ -85,6 +121,8 @@ LRESULT Win_Window::windowProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPa
 		case WM_SIZE:
 		//	self->width = LOWORD(lParam);
 		//	self->height = HIWORD(lParam);
+			if (!self)
+				break;
 			RECT rect;
 			if (GetClientRect(hwnd, &rect))
 			{

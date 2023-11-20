@@ -1,12 +1,9 @@
 #ifndef AES_PROFILER_HPP
 #define AES_PROFILER_HPP
 
-#include <unordered_map>
-#include <chrono>
-
 #include "macro_helpers.hpp"
 
-#ifdef AES_ENABLE_PROFILING
+#ifdef AES_ENABLE_PROFILINGs
 
 #define AES_PROFILE_FUNCTION() ::aes::ProfileScope AES_CONCAT(aes_internal_profile_func_, __COUNTER__)(__FUNCTION__);
 #define AES_PROFILE_SCOPE(name) ::aes::ProfileScope AES_CONCAT(aes_internal_profile_func_, __COUNTER__)(name); 
@@ -24,8 +21,8 @@
 
 #endif
 
-#define AES_START_PROFILE_SESSION(name) ::aes::Instrumentor::instance().startSession(name);
-#define AES_STOP_PROFILE_SESSION() ::aes::Instrumentor::instance().stopSession();
+#define AES_START_PROFILE_SESSION(name) ::aes::startInstrumentorSession(name)
+#define AES_STOP_PROFILE_SESSION() ::aes::endInstrumentorSession()
 
 namespace aes
 {
@@ -41,31 +38,26 @@ namespace aes
 
 	struct ProfileSession
 	{
-		const char* name;
-		ProfileTime_t elapsedSessionTime;
-		std::unordered_map<const char*, ProfileData> profileDatas;
-	};
-	
-	class Instrumentor
-	{
-	public:
-
-		static Instrumentor& instance()
+		ProfileSession() noexcept : name(nullptr), elapsedSessionTime(0.0)//, profileDatas(64)
 		{
-			static Instrumentor inst;
-			return inst;
+
 		}
 
-		void startSession(const char* name);
-		ProfileSession stopSession();
-		
-		void updateProfileData(ProfileData const& data);
+		ProfileSession(const char* name, ProfileTime_t elapsed) noexcept : name(name), elapsedSessionTime(elapsed)//, profileDatas(64)
+		{
 
-	private:
-		ProfileSession currentSession;
-		std::chrono::time_point<std::chrono::high_resolution_clock> sessionStartPoint;
+		}
+
+
+		const char* name;
+		ProfileTime_t elapsedSessionTime;
+		//HashMap<const char*, ProfileData> profileDatas;
 	};
 
+	void startInstrumentorSession(const char* name) noexcept;
+
+	ProfileSession endInstrumentorSession() noexcept;
+	
 	class ProfileScope
 	{
 	public:
@@ -79,7 +71,7 @@ namespace aes
 		/*thread_local ?*/ static ProfileScope* last;
 		const char* name;
 		ProfileScope* parent;
-		std::chrono::time_point<std::chrono::high_resolution_clock> start;
+		ProfileTime_t start;
 	};
 
 }

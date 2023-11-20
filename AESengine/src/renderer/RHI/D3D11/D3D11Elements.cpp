@@ -163,6 +163,7 @@ D3D11_CULL_MODE aes::rhiCullModeToApi(CullMode cullMode)
 	{
 	case CullMode::Clockwise: return D3D11_CULL_FRONT;
 	case CullMode::CounterClockwise: return D3D11_CULL_BACK;
+	case CullMode::None: return D3D11_CULL_NONE;
 	}
 	AES_UNREACHABLE();
 }

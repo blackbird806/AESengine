@@ -15,15 +15,6 @@ namespace aes
 		return old_value;
 	}
 
-	template<typename T>
-	struct GlobalAllocDelete
-	{
-		void operator()(T* ptr) noexcept
-		{
-			ptr->~T();
-			context.allocator->deallocate(ptr);
-		}
-	};
 
 	template<typename T>
 	struct AllocatorDelete
@@ -167,22 +158,18 @@ namespace aes
 		[[no_unique_address]] D deleter;
 	};
 
-	template<typename T>
-	using GUniquePtr = UniquePtr<T, GlobalAllocDelete<T>>;
-
-	template<typename T, typename... Args>
-	auto makeUnique(Args&&... args) noexcept
-	{
-		void* ptr = context.allocator->allocate(sizeof(T), alignof(T));
-		return UniquePtr<T, GlobalAllocDelete<T>>(::new(ptr) T(std::forward<Args>(args)...));
-	}
-
 	template<typename T, typename... Args>
 	auto makeUnique(IAllocator& alloc, Args&&... args) noexcept
 	{
 		void* ptr = alloc.allocate(sizeof(T), alignof(T));
 		AllocatorDelete<T> del(&alloc);
 		return UniquePtr<T, AllocatorDelete<T>>(::new(ptr) T(std::forward<Args>(args)...), std::move(del));
+	}
+
+	template<typename T, typename... Args>
+	auto makeUnique(Args&&... args) noexcept
+	{
+		return makeUnique<T, Args...>(*context.allocator, std::forward<Args>(args)...);
 	}
 }
 

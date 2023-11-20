@@ -155,11 +155,11 @@ namespace aes {
 		AES_UNREACHABLE();
 	}
 
-	inline std::ostream& operator<<(std::ostream& stream, AESError err)
-	{
-		stream << to_string(err);
-		return stream;
-	}
+	//inline std::ostream& operator<<(std::ostream& stream, AESError err)
+	//{
+	//	stream << to_string(err);
+	//	return stream;
+	//}
 }
 
 //template<>

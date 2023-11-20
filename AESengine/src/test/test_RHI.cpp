@@ -62,6 +62,9 @@ public:
 
 		// create device
 		device.init();
+		device.setCullMode(CullMode::None);
+		device.setDrawPrimitiveMode(DrawPrimitiveType::TrianglesFill);
+
 		AES_LOG("device created successfully");
 
 		{
@@ -181,9 +184,9 @@ public:
 		}
 		{
 			vert tri[] = {
-				{{-0.25f, -0.25f}, {1.0f, 0.0f, 0.0f}},
-				{{0.5f, -0.25f}, {0.0f, 1.0f, 0.0f}},
-				{{-0.25f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+				{{-0.25f, -0.25f}, {1.0f, 0.0f, 0.0f}, 1.0f},
+				{{0.5f, -0.25f}, {0.0f, 1.0f, 0.0f}, 1.0f},
+				{{-0.25f, 0.5f}, {0.0f, 0.0f, 1.0f}, 1.0f},
 			};
 
 			aes::BufferDescription vertexBufferDesc = {};
@@ -250,9 +253,9 @@ public:
 		device.endRenderPass();
 #endif
 		vert tri[] = {
-				{{xx, -0.25f}, {1.0f, 0.0f, 0.0f}},
-				{{0.5f, -0.25f}, {0.0f, 1.0f, 0.0f}},
-				{{-0.25f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+				{{xx, -0.25f}, {1.0f, 0.0f, 0.0f}, 1.0f},
+				{{0.5f, -0.25f}, {0.0f, 1.0f, 0.0f}, 1.0f},
+				{{-0.25f, 0.5f}, {0.0f, 0.0f, 1.0f}, 1.0f},
 			};
 
 		xx += 0.001f;
@@ -281,6 +284,16 @@ public:
 		backBufferIndex = (backBufferIndex + 1) % 2;
 	}
 
+	void loop()
+	{
+		window->open();
+		while (!window->shouldClose())
+		{
+			window->pollEvents();
+			draw();
+		}
+	}
+
 };
 
 void aes::test_RHI()
@@ -288,13 +301,8 @@ void aes::test_RHI()
 	AES_START_PROFILE_SESSION("test RHI startup");
 	TestRHIApp app;
 	auto startupSession = AES_STOP_PROFILE_SESSION();
-	
 	AES_LOG("Draw start");
-	while (1)
-	{
-		app.draw();
-	}
-
+	app.loop();
 	AES_START_PROFILE_SESSION("test RHI running");
 	auto runningSession = AES_STOP_PROFILE_SESSION();
 }

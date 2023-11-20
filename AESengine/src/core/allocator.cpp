@@ -1,5 +1,3 @@
-#include <new>
-#include <memory>
 #include <cstdlib>
 
 #include "aes.hpp"
@@ -27,7 +25,7 @@ aes::Mallocator aes::mallocator{};
 // https://stackoverflow.com/questions/53922209/how-to-invoke-aligned-new-delete-properly
 static void* alignedAlloc(size_t size, size_t al) noexcept
 {
-	AES_ASSERT(size % al == 0);
+	AES_ASSERT_NOLOG(size % al == 0);
 #if _MSC_VER
 	// msvc doesn't support c11 aligned_alloc
 	return _aligned_malloc(size, al);
@@ -46,65 +44,6 @@ static void alignedFree(void* ptr) noexcept
 	free(ptr);
 #endif
 }
-
-
-// @TODO
-#if 0 
-
-void* operator new(size_t size) noexcept
-{
-	void* ptr = malloc(size);
-	AES_PROFILE_MEMORY_ALLOC(ptr, size);
-	return ptr;
-}
-
-void* operator new[](size_t size) noexcept
-{
-	auto* ptr = malloc(size);
-	AES_PROFILE_MEMORY_ALLOC(ptr, size);
-	return ptr;
-}
-
-void* operator new(size_t size, std::align_val_t al)
-{
-	auto* ptr = alignedAlloc(size, al);
-	AES_PROFILE_MEMORY_ALLOC(ptr, size);
-	return ptr;
-}
-
-void* operator new[](size_t size, std::align_val_t al)
-{
-	auto* ptr = alignedAlloc(size, al);
-	AES_PROFILE_MEMORY_ALLOC(ptr, size);
-	return ptr;
-}
-
-void operator delete(void* ptr) noexcept
-{
-	AES_PROFILE_MEMORY_DEALLOC(ptr);
-	free(ptr);
-}
-
-void operator delete[](void* ptr) noexcept
-{
-	AES_PROFILE_MEMORY_DEALLOC(ptr);
-	free(ptr);
-}
-
-void operator delete(void* ptr, std::align_val_t al) noexcept
-{
-	AES_PROFILE_MEMORY_DEALLOC(ptr);
-	alignedFree(ptr);
-}
-
-void operator delete[](void* ptr, std::align_val_t al) noexcept
-{
-	AES_PROFILE_MEMORY_DEALLOC(ptr);
-	alignedFree(ptr);
-}
-
-
-#endif
 
 void* Mallocator::allocate(size_t size, size_t align)
 {
@@ -128,7 +67,7 @@ StackAllocator::~StackAllocator()
 
 void* StackAllocator::allocate(size_t size, size_t alignement)
 {
-	AES_ASSERT(isPowerOf2(alignement));
+	AES_ASSERT_NOLOG(isPowerOf2(alignement));
 	auto const alignedOffset = aes::align(offset, alignement);
 	
 	if (alignedOffset + size > totalSize)
@@ -146,7 +85,7 @@ void aes::StackAllocator::deallocate(void* ptr)
 
 void StackAllocator::deallocateFromMarker(size_t marker)
 {
-	AES_ASSERT(marker < offset);
+	AES_ASSERT_NOLOG(marker < offset);
 	offset = marker;
 }
 

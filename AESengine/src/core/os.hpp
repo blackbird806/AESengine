@@ -18,6 +18,8 @@
 	#undef far
 	#undef near
 	#undef RGB
+	#undef NEAR
+	#undef FAR
 
 #elif defined(__vita__)
 

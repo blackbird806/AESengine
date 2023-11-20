@@ -2,6 +2,7 @@
 #include "aes.hpp"
 #include "context.hpp"
 #include "format.hpp"
+#include <iostream>
 
 #ifdef __vita__
 #include "psvDebugScreen/debugScreen.h"

@@ -207,7 +207,7 @@ namespace aes
 
 			if (it != buckets[index].end())
 			{
-				value = &(*it);
+				value = &(*it).second;
 				return true;
 			}
 

@@ -112,6 +112,8 @@ Result<void> D3D11Device::init()
 		AES_FATAL_ERROR("failed to query debug interface");
 	}
 #endif
+
+
 	return {};
 }
 
@@ -144,14 +146,11 @@ Result<RHISwapchain> D3D11Device::createSwapchain(SwapchainDescription const& de
 	RHISwapchain sc;
 	DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
 
-	// Set to a single back buffer.
 	swapChainDesc.BufferCount = desc.count;
 
-	// Set the width and height of the back buffer.
 	swapChainDesc.BufferDesc.Width = desc.width;
 	swapChainDesc.BufferDesc.Height = desc.height;
 
-	// Set regular 32-bit surface for the back buffer.
 	swapChainDesc.BufferDesc.Format = rhiFormatToApi(desc.format);
 
 	// Set the refresh rate of the back buffer.
@@ -167,24 +166,19 @@ Result<RHISwapchain> D3D11Device::createSwapchain(SwapchainDescription const& de
 		swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
 	}
 
-	// Set the usage of the back buffer.
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 
-	// Set the handle for the window to render to.
 	swapChainDesc.OutputWindow = static_cast<HWND>(desc.window);
 
 	// Turn multisampling off.
 	swapChainDesc.SampleDesc.Count = 1;
 	swapChainDesc.SampleDesc.Quality = 0;
 
-	// Set to full screen or windowed mode.
 	swapChainDesc.Windowed = true;
 
-	// Set the scan line ordering and scaling to unspecified.
 	swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 
-	// Discard the back buffer contents after presenting.
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
 	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH; // allow full-screen switching
@@ -227,6 +221,35 @@ Result<RHISwapchain> D3D11Device::createSwapchain(SwapchainDescription const& de
 		AES_FATAL_ERROR("device depthStencilBuffer failed");
 	}
 
+	// Initialize the description of the stencil state.
+	D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
+	depthStencilDesc.DepthEnable = true;
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	depthStencilDesc.StencilEnable = true;
+	depthStencilDesc.StencilReadMask = 0xFF;
+	depthStencilDesc.StencilWriteMask = 0xFF;
+
+	// Stencil operations if pixel is front-facing.
+	depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	// Stencil operations if pixel is back-facing.
+	depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	ID3D11DepthStencilState* depthStencilState;
+	result = device->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
+	if (FAILED(result))
+	{
+		AES_FATAL_ERROR("device->CreateDepthStencilState failed");
+	}
+
+	deviceContext->OMSetDepthStencilState(depthStencilState, 1);
+
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
 	depthStencilViewDesc.Format = rhiFormatToApi(desc.depthFormat);
 	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
@@ -237,6 +260,17 @@ Result<RHISwapchain> D3D11Device::createSwapchain(SwapchainDescription const& de
 	{
 		AES_FATAL_ERROR("device->CreateDepthStencilView failed");
 	}
+
+	// where should I put this ?
+	D3D11_VIEWPORT viewport;
+	viewport.Width = static_cast<float>(desc.width);
+	viewport.Height = static_cast<float>(desc.height);
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+	viewport.TopLeftX = 0.0f;
+	viewport.TopLeftY = 0.0f;
+
+	deviceContext->RSSetViewports(1, &viewport);
 
 	return { std::move(sc) };
 }
@@ -646,10 +680,19 @@ void D3D11Device::setDrawPrimitiveMode(DrawPrimitiveType mode)
 void D3D11Device::setRasterizerState()
 {
 	AES_PROFILE_FUNCTION();
+	rasterStateDesc.AntialiasedLineEnable = false;
+	rasterStateDesc.DepthBias = 0;
+	rasterStateDesc.DepthBiasClamp = 0.0f;
+	rasterStateDesc.DepthClipEnable = true;
+	rasterStateDesc.FillMode = D3D11_FILL_SOLID;
+	rasterStateDesc.FrontCounterClockwise = false;
+	rasterStateDesc.MultisampleEnable = false;
+	rasterStateDesc.ScissorEnable = false;
+	rasterStateDesc.SlopeScaledDepthBias = 0.0f;
 	HRESULT const result = device->CreateRasterizerState(&rasterStateDesc, &rasterState);
 	if (FAILED(result))
 	{
-		throw RHIException("D3D11 CreateRasterizerState failed !");
+		AES_FATAL_ERROR("Failed to create RasterizerState !");
 	}
 	deviceContext->RSSetState(rasterState);
 }
