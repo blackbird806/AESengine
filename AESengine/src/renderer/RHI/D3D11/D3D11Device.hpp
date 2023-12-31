@@ -48,6 +48,8 @@ namespace aes
 
 		// d3d11 specifics
 		Result<D3D11BlendState> createBlendState(BlendInfo const& desc);
+		void clearRenderTarget(RHIRenderTarget& rt);
+		void clearSwapchain(RHISwapchain& swp);
 
 		// not sure about this name
 		void swapBuffers(RHISwapchain const& sc);

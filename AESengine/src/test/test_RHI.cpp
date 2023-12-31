@@ -184,9 +184,9 @@ public:
 		}
 		{
 			vert tri[] = {
-				{{-0.25f, -0.25f}, {1.0f, 0.0f, 0.0f}, 1.0f},
+				{{0.25f, 0.25f}, {1.0f, 0.0f, 0.0f}, 1.0f},
 				{{0.5f, -0.25f}, {0.0f, 1.0f, 0.0f}, 1.0f},
-				{{-0.25f, 0.5f}, {0.0f, 0.0f, 1.0f}, 1.0f},
+				{{0.25f, 0.5f}, {0.0f, 0.0f, 1.0f}, 1.0f},
 			};
 
 			aes::BufferDescription vertexBufferDesc = {};
@@ -217,7 +217,7 @@ public:
 			memset(matrix, 0, sizeof(matrix));
 			matrix[0] = 1;
 			matrix[5] = 1;
-			matrix[9] = 1;
+			matrix[10] = 1;
 			matrix[15] = 1;
 
 			aes::BufferDescription uniformBufferDesc = {};
@@ -268,6 +268,10 @@ public:
 		{
 			AES_FATAL_ERROR("Failed to map geoVertexBuffer !");
 		}
+		
+		// clear
+		device.clearSwapchain(swapchain);
+
 		// draw
 		device.setVertexBuffer(geoVertexBuffer, sizeof(vert));
 		device.setIndexBuffer(geoIndexBuffer, IndexTypeFormat::Uint16);

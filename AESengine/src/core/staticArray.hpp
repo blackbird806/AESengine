@@ -182,7 +182,7 @@ namespace aes
 		}
 
 	private:
-		T buffer[capacity];
+		T buffer[capacity_];
 		uint32_t size_;
 	};
 }

@@ -6,6 +6,7 @@
 
 namespace aes
 {
+	// TODO make it c++23 correct (implement my own fmt ?)
 	template<typename ...Args>
 	String format(String const& fmt, Args&&... args)
 	{

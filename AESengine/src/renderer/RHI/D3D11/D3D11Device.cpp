@@ -607,8 +607,35 @@ Result<D3D11BlendState> D3D11Device::createBlendState(BlendInfo const& info)
 	return {std::move(blend)};
 }
 
+void D3D11Device::clearRenderTarget(RHIRenderTarget& rt)
+{
+	AES_PROFILE_FUNCTION();
+
+	float color[4];
+	color[0] = 0.0f;
+	color[1] = 0.0f;
+	color[2] = 0.0f;
+	color[3] = 1.0f;
+
+	deviceContext->ClearRenderTargetView(rt.renderTargetView, color);
+}
+
+void D3D11Device::clearSwapchain(RHISwapchain& swp)
+{
+	float color[4];
+
+	color[0] = 0.0f;
+	color[1] = 0.0f;
+	color[2] = 0.0f;
+	color[3] = 1.0f;
+
+	deviceContext->ClearRenderTargetView(swp.rtview, color);
+	deviceContext->ClearDepthStencilView(swp.depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+}
+
 void D3D11Device::swapBuffers(RHISwapchain const& sc)
 {
+	AES_PROFILE_FUNCTION();
 	sc.swapchain->Present(0, 0);
 }
 

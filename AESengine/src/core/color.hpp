@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-#include <glm/vec4.hpp>
+#include "vec4.hpp"
 
 namespace aes
 {
@@ -27,9 +27,9 @@ namespace aes
 		uint32_t argb() const { return ((uint32_t)a << 24) | ((uint32_t)b << 16) | ((uint32_t)g << 8) | (uint32_t)r; }
 		uint32_t rgba() const { return ((uint32_t)r << 24) | ((uint32_t)g << 16) | ((uint32_t)b << 8) | (uint32_t)a; }
 
-		glm::vec4 toVec4() const
+		vec4 toVec4() const
 		{
-			return glm::vec4(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+			return vec4(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
 		}
 		
 		uint8_t r;
