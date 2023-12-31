@@ -3,8 +3,6 @@ AESengine/build
 coreDumps/
 # tmp
 sce_sys/
-kc_TrueTypeAssembler/
-stb/
 tiny/
 
 # ignore bin and vita build files 
