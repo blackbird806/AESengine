@@ -90,8 +90,6 @@ namespace aes
 
 		constexpr void reserve(uint32_t n) noexcept
 		{
-			AES_ASSERT_NOLOG(n != 0);
-
 			if (n <= capacity_)
 				return;
 
@@ -123,6 +121,12 @@ namespace aes
 				for (uint32_t i = n; i < size_; i++)
 					buffer[i].~T();
 			}
+			size_ = n;
+		}
+
+		constexpr void resizeNoInit(uint32_t n) noexcept
+		{
+			reserve(n);
 			size_ = n;
 		}
 
@@ -163,7 +167,7 @@ namespace aes
 
 				// move previous elements in new buffer
 				uint32_t i = 0;
-				for (Iterator_t it = begin(); it != pos || it != nullptr; ++it)
+				for (Iterator_t it = begin(); it != pos && it != nullptr; ++it)
 				{
 					new (&newBuffer[i]) T(std::move(buffer[i]));
 					i++;

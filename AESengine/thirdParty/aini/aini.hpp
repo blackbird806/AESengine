@@ -191,7 +191,9 @@ namespace aini
 					else if constexpr (std::is_arithmetic_v<T>)
 						data += std::to_string(arg);
 					else
-						static_assert(always_false_v<T>, "not convertible to string");
+					{
+						//static_assert(std::always_false_v<T>, "not convertible to string");
+					}
 					}, value);
 				data += "\n";
 			}

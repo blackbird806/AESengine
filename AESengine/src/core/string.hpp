@@ -130,6 +130,11 @@ namespace aes
 			buffer.reserve(cap + 1);
 		}
 
+		constexpr void resizeNoInit(uint32_t cap) noexcept
+		{
+			buffer.resizeNoInit(cap + 1);
+		}
+
 		constexpr void resize(uint32_t sz) noexcept
 		{
 			buffer.resize(sz + 1);
@@ -144,7 +149,7 @@ namespace aes
 		template<std::ranges::input_range Range>
 		constexpr void insert(Iterator_t pos, Range&& range) noexcept
 		{
-			buffer.insert(pos, std::forward(range));
+			buffer.insert(pos, std::forward<Range>(range));
 		}
 
 		/*constexpr*/ void append(String const& rhs) noexcept

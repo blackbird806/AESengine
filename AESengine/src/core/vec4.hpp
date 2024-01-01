@@ -110,17 +110,17 @@ namespace aes
 			return x * x + y * y + z * z + w * w;
 		}
 
-		constexpr float length() const noexcept
+		/*constexpr*/ float length() const noexcept
 		{
 			return sqrt(sqrLength());
 		}
 
-		constexpr void normalize() noexcept
+		/*constexpr*/ void normalize() noexcept
 		{
 			*this = *this / length();
 		}
 
-		constexpr vec4 getNormalized() const noexcept
+		/*constexpr*/ vec4 getNormalized() const noexcept
 		{
 			vec4 v(*this);
 			v.normalize();
