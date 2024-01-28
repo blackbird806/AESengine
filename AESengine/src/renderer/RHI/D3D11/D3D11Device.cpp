@@ -53,7 +53,8 @@ Result<void> D3D11Device::init()
 	}
 
 	// Create a list to hold all the possible display modes for this monitor/video card combination.
-	std::vector<DXGI_MODE_DESC> displayModeList(numModes);
+	Array<DXGI_MODE_DESC> displayModeList;
+	displayModeList.resize(numModes);
 
 	// Now fill the display mode list structures.
 	result = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, displayModeList.data());

@@ -119,8 +119,9 @@ LRESULT Win_Window::windowProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPa
 				break;
 			}
 		case WM_SIZE:
-		//	self->width = LOWORD(lParam);
-		//	self->height = HIWORD(lParam);
+		{
+			//	self->width = LOWORD(lParam);
+			//	self->height = HIWORD(lParam);
 			if (!self)
 				break;
 			RECT rect;
@@ -134,9 +135,12 @@ LRESULT Win_Window::windowProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPa
 				self->width = 0;
 				self->height = 0;
 			}
+			AES_LOG("Window resize : {} x {}", self->width, self->height);
+
 			// do not call callback onMinimize
-			if (self->resizeCallback && self->width > 0 && self->height > 0) 
+			if (self->resizeCallback && self->width > 0 && self->height > 0)
 				self->resizeCallback(self->width, self->height);
+		}
 			break;
 		case WM_DESTROY: {
 			self->shouldClose_ = true;
@@ -199,6 +203,7 @@ Win_Window::Win_Window(const char* name)
 		width = 0;
 		height = 0;
 	}
+	AES_LOG("Window size : {} x {}", width, height);
 }
 
 Win_Window::~Win_Window()

@@ -153,8 +153,9 @@ namespace aes
 		{
 			uint32_t const rangeSize = std::ranges::size(range);
 			uint32_t const newSize = size_ + rangeSize;
+
 			T* workBuffer = buffer;
-			if (newSize >= capacity_)
+			if (newSize > capacity_)
 			{
 				uint32_t newCapacity = increasedCapacity();
 
@@ -175,7 +176,13 @@ namespace aes
 				workBuffer = newBuffer;
 			}
 
-			uint32_t ipos = end() - pos;
+			uint32_t ipos = pos - begin();
+			
+			// move next elements
+			for (uint32_t i = newSize - 1; i > ipos + rangeSize - 1; i--)
+			{
+				new (&workBuffer[i]) T(std::move(buffer[i - rangeSize]));
+			}
 
 			// insert range after pos
 			for (auto&& e : range)
@@ -183,11 +190,11 @@ namespace aes
 				new (&workBuffer[ipos++]) T(std::forward<T>(e));
 			}
 
-			// move next elements
-			for (uint32_t li = ipos - rangeSize; li < size_; li++)
+			if (newSize > capacity_)
 			{
-				new (&workBuffer[ipos++]) T(std::move(buffer[li]));
+				alloc->deallocate(buffer);
 			}
+
 			buffer = workBuffer;
 			size_ = newSize;
 		}
@@ -275,7 +282,7 @@ namespace aes
 
 		constexpr void moveBuffer(T* const newBuffer)
 		{
-			// @performance conditionaly use use memcpy here ?
+			// @performance conditionaly use use memcpy (or memmove if reallocate is used) here ?
 			for (uint32_t i = 0; i < size_; i++)
 				new (&newBuffer[i]) T(std::move(buffer[i]));
 		}

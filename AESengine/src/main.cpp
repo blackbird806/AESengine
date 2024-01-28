@@ -19,8 +19,8 @@ int main()
 	aes::Logger::instance().addSink(fileSink.get());
 #else
 #endif
-	AES_LOG("hello {} test {} oui", "world", 12);
-	test_RHI();
+	AES_LOG("hello {} AAA {} BBB", "world", 12);
+	//test_RHI();
 
 	return 0;
 }

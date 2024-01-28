@@ -150,6 +150,7 @@ namespace aes
 		constexpr void insert(Iterator_t pos, Range&& range) noexcept
 		{
 			buffer.insert(pos, std::forward<Range>(range));
+			buffer.push('\0');
 		}
 
 		/*constexpr*/ void append(String const& rhs) noexcept
@@ -184,7 +185,7 @@ namespace aes
 
 		constexpr Iterator_t end() noexcept
 		{
-			return buffer.end();
+			return buffer.end() - 1;
 		}
 
 	private:

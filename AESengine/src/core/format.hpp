@@ -9,13 +9,11 @@
 
 namespace aes
 {
-	constexpr char* reverse(char* buffer, int i, int j) noexcept
+	constexpr void reverse(char* buffer, int i, int j) noexcept
 	{
 		while (i < j) {
 			std::swap(buffer[i++], buffer[j--]);
 		}
-
-		return buffer;
 	}
 
 	// max number of characters necessary to display numbers
@@ -23,11 +21,11 @@ namespace aes
 	constexpr int max_int64_chars = 21;
 
 	// based on https://www.techiedelight.com/fr/implement-itoa-function-in-c/
-	constexpr char* itoa(int value, char* buffer, int base = 10) noexcept
+	constexpr void itoa(int value, char* buffer, int base = 10) noexcept
 	{
 		// invalid entry
 		if (base < 2 || base > 32)
-			return buffer;
+			return;
 		
 		int n = aes::abs(value);
 
@@ -56,38 +54,36 @@ namespace aes
 
 		buffer[i] = '\0';
 
-		return reverse(buffer, 0, i - 1);
+		reverse(buffer, 0, i - 1);
 	}
 
 	// assume that dst have enough space for src
-	constexpr void strccat_internal(char* __restrict dst, const char* __restrict src) noexcept
+	constexpr void strccat_fmtinternal(char* __restrict dst, const char* __restrict src) noexcept
 	{
 		while (*dst++ = *src++) {}
 	}
 
 	template <typename T>
-	constexpr char* toStringBuff(T v, char* buff)
+	constexpr void stringifyToBuff(T v, char* buff)
 	{
-		return nullptr;
 	}
 
 	template <>
-	constexpr char* toStringBuff(int v, char* buff)
+	constexpr void stringifyToBuff(int v, char* buff)
 	{
-		return itoa(v, buff);
+		itoa(v, buff);
 	}
 
 	template <>
-	constexpr char* toStringBuff(char* v, char* buff)
+	constexpr void stringifyToBuff(bool v, char* buff)
 	{
-		strccat_internal(buff, v);
-		return nullptr;
+		strccat_fmtinternal(buff, v ? "true" : "false");
 	}
 
-	constexpr uint32_t charsNeededForInt32(int32_t i)
+	template <>
+	constexpr void stringifyToBuff(const char* v, char* buff)
 	{
-		const uint32_t neg = static_cast<uint32_t>(i < 0);
-		return numDigits(i) + neg;
+		strccat_fmtinternal(buff, v);
 	}
 
 	template <typename T>
@@ -99,7 +95,31 @@ namespace aes
 	template <>
 	constexpr uint32_t charsNeededForT(int32_t v)
 	{
-		return charsNeededForInt32(v);
+		return numDigits(v);
+	}
+
+	template <>
+	constexpr uint32_t charsNeededForT(uint32_t v)
+	{
+		return numDigits(v);
+	}
+
+	template <>
+	constexpr uint32_t charsNeededForT(int64_t v)
+	{
+		return numDigits(v);
+	}
+
+	template <>
+	constexpr uint32_t charsNeededForT(uint64_t v)
+	{
+		return numDigits(v);
+	}
+
+	template <>
+	constexpr uint32_t charsNeededForT(bool v)
+	{
+		return v ? 4 /*true*/ : 5 /*false*/;
 	}
 
 	constexpr size_t strlen(const char* str) noexcept
@@ -111,7 +131,7 @@ namespace aes
 	}
 
 	template <>
-	constexpr uint32_t charsNeededForT(char* v)
+	constexpr uint32_t charsNeededForT(const char* v)
 	{
 		return strlen(v);
 	}
@@ -136,17 +156,19 @@ namespace aes
 		FormatedArgs formatedArgs;
 		formatedArgs.args.reserve(sizeof...(args));
 
+		// format each arg in parameter pack
 		([&] ()
 			{
 				String str;
-				str.resizeNoInit(str.size() + charsNeededForT(args)); // reserve enough size for int
-				toStringBuff(args, str.data());
+				str.resizeNoInit(charsNeededForT(args)); // reserve enough size for the type
+				stringifyToBuff(args, str.data());
 				formatedArgs.args.push(std::move(str));
 			} (), ...);
 
 		String str(fmt.data(), fmt.size());
+
 		// {} are still counted here though
-		str.reserve(str.size() + formatedArgs.computeSize());
+		//str.reserve(str.size() + formatedArgs.computeSize());
 		auto it = str.begin();
 		for (int i = 0; i < formatedArgs.args.size() && it != str.end(); i++)
 		{
@@ -154,9 +176,8 @@ namespace aes
 			str.insert(it, formatedArgs.args[i]);
 		}
 
-		return fmt.data();
+		return str;
 	}
-
 }
 
 #endif
