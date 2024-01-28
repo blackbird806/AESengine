@@ -155,8 +155,9 @@ namespace aes
 
 		/*constexpr*/ void append(String const& rhs) noexcept
 		{
-			resize(buffer.capacity() + rhs.buffer.size());
-			memcpy(&buffer[size()], rhs.buffer.data(), rhs.buffer.size());
+			size_t const oldSize = size();
+			resize(buffer.size() + rhs.buffer.size() - 2);
+			memcpy(&buffer[oldSize], rhs.buffer.data(), rhs.buffer.size()-1);
 		}
 
 		/*constexpr*/ void append(const Char_t* rhs) noexcept
@@ -166,8 +167,17 @@ namespace aes
 			if (rhslen == 1) // string is empty
 				return;
 			size_t const oldSize = size();
-			resize(buffer.capacity() + rhslen);
+			resize(buffer.size() + rhslen);
 			memcpy(&buffer[oldSize], rhs, rhslen);
+		}
+
+		constexpr void append(Char_t c) noexcept
+		{
+			if (empty())
+				buffer.push(c);
+			else
+				buffer[size()] = c;
+			buffer.push('\0');
 		}
 
 		/*constexpr*/ void append(const Char_t* rhs, uint32_t count) noexcept

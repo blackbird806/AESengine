@@ -165,15 +165,31 @@ namespace aes
 				formatedArgs.args.push(std::move(str));
 			} (), ...);
 
-		String str(fmt.data(), fmt.size());
-
-		// {} are still counted here though
-		//str.reserve(str.size() + formatedArgs.computeSize());
-		auto it = str.begin();
-		for (int i = 0; i < formatedArgs.args.size() && it != str.end(); i++)
+		String str;
+		bool isInfmt = false;
+		int nformatedArg = 0;
+		for (int i = 0; i < fmt.size(); i++)
 		{
-			it = std::find(str.begin(), str.end(), '{');
-			str.insert(it, formatedArgs.args[i]);
+			if (fmt[i] == '{')
+			{
+				isInfmt = true;
+				continue;
+			}
+
+			if (isInfmt)
+			{
+				if (fmt[i] == '}')
+					isInfmt = false;
+				// TODO parse fmt
+
+				// TODO true error handling
+				AES_ASSERT_NOLOG(nformatedArg < formatedArgs.args.size());
+				str.append(formatedArgs.args[nformatedArg++]);
+			}
+			else
+			{
+				str.append(fmt[i]);
+			}
 		}
 
 		return str;
