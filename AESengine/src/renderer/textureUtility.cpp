@@ -1,4 +1,5 @@
 #include "textureUtility.hpp"
+#include <cmath>
 
 void aes::buildCheckboard(std::span<Color> data, uint width, uint height, Color c1, Color c2, float segmentSize)
 {

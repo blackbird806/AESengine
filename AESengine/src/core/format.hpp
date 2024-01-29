@@ -1,11 +1,11 @@
 #ifndef AES_FORMAT_HPP
 #define AES_FORMAT_HPP
 
-#include <format>
 #include <string_view>
-#include <tuple>
+#include <concepts>
 #include "string.hpp"
 #include "core/maths.hpp"
+#include "core/coreMacros.hpp"
 
 namespace aes
 {
@@ -21,18 +21,22 @@ namespace aes
 	constexpr int max_int64_chars = 21;
 
 	// based on https://www.techiedelight.com/fr/implement-itoa-function-in-c/
-	constexpr void itoa(int value, char* buffer, int base = 10) noexcept
+	template<typename T>
+	constexpr void itoa(auto value, char* buffer, int base = 10) noexcept;
+
+	template<std::signed_integral T>
+	constexpr void itoa(T value, char* buffer, int base = 10) noexcept
 	{
 		// invalid entry
 		if (base < 2 || base > 32)
 			return;
 		
-		int n = aes::abs(value);
+		auto n = aes::abs(value);
 
 		int i = 0;
 		while (n)
 		{
-			int r = n % base;
+			auto r = n % base;
 
 			if (r >= 10) {
 				buffer[i++] = 65 + (r - 10);
@@ -57,8 +61,41 @@ namespace aes
 		reverse(buffer, 0, i - 1);
 	}
 
+	template<std::unsigned_integral T>
+	constexpr void itoa(T value, char* buffer, int base = 10) noexcept
+	{
+		// invalid entry
+		if (base < 2 || base > 32)
+			return;
+
+		auto n = value;
+
+		int i = 0;
+		while (n)
+		{
+			auto r = n % base;
+
+			if (r >= 10) {
+				buffer[i++] = 65 + (r - 10);
+			}
+			else {
+				buffer[i++] = 48 + r;
+			}
+
+			n = n / base;
+		}
+
+		if (i == 0) {
+			buffer[i++] = '0';
+		}
+
+		buffer[i] = '\0';
+
+		reverse(buffer, 0, i - 1);
+	}
+
 	// assume that dst have enough space for src
-	constexpr void strccat_fmtinternal(char* __restrict dst, const char* __restrict src) noexcept
+	constexpr void strcpy_fmtinternal(char* AES_RESTRICT(dst), const char* AES_RESTRICT(src)) noexcept
 	{
 		while (*dst++ = *src++) {}
 	}
@@ -66,10 +103,18 @@ namespace aes
 	template <typename T>
 	constexpr void stringifyToBuff(T v, char* buff)
 	{
+		// TODO we shouldn't define this one to trigger link time error when using non supported format
+		// rn format is still wip so we keep this to allow compilation
 	}
 
 	template <>
-	constexpr void stringifyToBuff(int v, char* buff)
+	constexpr void stringifyToBuff(int32_t v, char* buff)
+	{
+		itoa(v, buff);
+	}
+
+	template <>
+	constexpr void stringifyToBuff(uint32_t v, char* buff)
 	{
 		itoa(v, buff);
 	}
@@ -77,13 +122,13 @@ namespace aes
 	template <>
 	constexpr void stringifyToBuff(bool v, char* buff)
 	{
-		strccat_fmtinternal(buff, v ? "true" : "false");
+		strcpy_fmtinternal(buff, v ? "true" : "false");
 	}
 
 	template <>
 	constexpr void stringifyToBuff(const char* v, char* buff)
 	{
-		strccat_fmtinternal(buff, v);
+		strcpy_fmtinternal(buff, v);
 	}
 
 	template <typename T>

@@ -20,7 +20,8 @@ int main()
 #else
 #endif
 	AES_LOG("hello {} AAA {} BBB", "world", 12);
-	//test_RHI();
+	AES_LOG("this is a test {}", true);
+	test_RHI();
 
 	return 0;
 }

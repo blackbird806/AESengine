@@ -108,16 +108,16 @@ Result<void> FontManager::init()
 	float scale = stbtt_ScaleForMappingEmToPixels(&info, 64.0f);
 	int scaledAscent = ascent * scale + 0.5;
 	
-	std::transform(backedChars.begin(), backedChars.end(), std::back_inserter(defaultFont.backedChars),
-	[&](auto const& pc)
-	{
-		return GlyphOld{
-			.u = glm::vec2{pc.x0, pc.y0},
-			.v = glm::vec2{pc.x1, pc.y1},
-			.xoff = pc.xoff, .yoff = pc.yoff,
-			.xadvance = pc.xadvance,
-		};
-	});
+	//std::transform(backedChars.begin(), backedChars.end(), std::back_inserter(defaultFont.backedChars),
+	//[&](auto const& pc)
+	//{
+	//	return GlyphOld{
+	//		.u = glm::vec2{pc.x0, pc.y0},
+	//		.v = glm::vec2{pc.x1, pc.y1},
+	//		.xoff = pc.xoff, .yoff = pc.yoff,
+	//		.xadvance = pc.xadvance,
+	//	};
+	//});
 	//stbtt_pack_context pack_context{};
 	//stbtt_PackBegin(&pack_context, bitmap8.data(), width, height, 0, 1, nullptr); // stride 0 means tightly packed, leave 1 pixel padding around pixels
 
