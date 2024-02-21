@@ -1,0 +1,27 @@
+struct CameraBuffer_t {
+	mat4 viewMatrix;
+	mat4 projectionMatrix;
+} 
+
+@cg("Buffer[0]")
+CameraBuffer_t CameraBuffer;
+
+ struct ModelBuffer_t {
+	mat4 worldMatrix;
+}
+
+@cg("BUFFER[1]")
+uniform ModelBuffer_t ModelBuffer;
+
+void main(vec3 aPosition, vec4 aColor,
+	@(POSITION)
+	out vec4 position,
+	@(COLOR)
+	out vec4 color)
+{
+	position = mul(vec4(aPosition, 1.0f), ModelBuffer.worldMatrix);
+	position = mul(position, CameraBuffer.viewMatrix);
+	position = mul(position, CameraBuffer.projectionMatrix);
+
+	color = aColor;
+}

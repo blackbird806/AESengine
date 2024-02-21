@@ -128,6 +128,8 @@ namespace aes
 	template <>
 	constexpr void stringifyToBuff(const char* v, char* buff)
 	{
+		if (v == nullptr)
+			return;
 		strcpy_fmtinternal(buff, v);
 	}
 
@@ -169,6 +171,9 @@ namespace aes
 
 	constexpr size_t strlen(const char* str) noexcept
 	{
+		if (str == nullptr)
+			return 0;
+
 		size_t len = 0;
 		while (str[len])
 			len++;

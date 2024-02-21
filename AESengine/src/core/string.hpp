@@ -138,7 +138,7 @@ namespace aes
 		constexpr void resize(uint32_t sz) noexcept
 		{
 			buffer.resize(sz + 1);
-			buffer[buffer.size() - 1] = 0;
+			buffer.back() = '\0';
 		}
 
 		constexpr void clear() noexcept
@@ -155,20 +155,31 @@ namespace aes
 
 		/*constexpr*/ void append(String const& rhs) noexcept
 		{
+			if (rhs.empty())
+				return;
 			size_t const oldSize = size();
-			resize(buffer.size() + rhs.buffer.size() - 2);
-			memcpy(&buffer[oldSize], rhs.buffer.data(), rhs.buffer.size()-1);
+			resize(size() + rhs.size());
+			memcpy(&buffer[oldSize], rhs.buffer.data(), rhs.buffer.size());
 		}
 
 		/*constexpr*/ void append(const Char_t* rhs) noexcept
 		{
 			AES_ASSERT_NOLOG(rhs);
-			size_t const rhslen = strlen(rhs) + 1;
-			if (rhslen == 1) // string is empty
+			size_t const rhslen = strlen(rhs);
+			if (rhslen == 0) // string is empty
 				return;
+
 			size_t const oldSize = size();
-			resize(buffer.size() + rhslen);
-			memcpy(&buffer[oldSize], rhs, rhslen);
+			resize(size() + rhslen);
+
+			if (oldSize == 0)
+			{
+				memcpy(buffer.data(), rhs, rhslen);
+			}
+			else
+			{
+				memcpy(&buffer[oldSize], rhs, rhslen);
+			}
 		}
 
 		constexpr void append(Char_t c) noexcept
@@ -221,6 +232,8 @@ namespace aes
 	{
 		return (lhs <=> rhs) == std::strong_ordering::equal;
 	}
+
+
 
 	template<>
 	struct Hash<String>

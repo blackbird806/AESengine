@@ -15,7 +15,6 @@ namespace aes
 		return old_value;
 	}
 
-
 	template<typename T>
 	struct AllocatorDelete
 	{
@@ -33,6 +32,15 @@ namespace aes
 		{
 			ptr->~T();
 			alloc->deallocate(ptr);
+		}
+	};
+
+	template<typename T>
+	struct DestroyOnly
+	{
+		void operator()(T* ptr) noexcept
+		{
+			ptr->~T();
 		}
 	};
 

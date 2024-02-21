@@ -374,6 +374,9 @@
     <ClInclude Include="src\core\coreMacros.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\renderer\phenixslang.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="core.natvis" />

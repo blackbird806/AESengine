@@ -129,6 +129,7 @@
     <ClInclude Include="src\renderer\FontManager.hpp" />
     <ClInclude Include="src\renderer\fontRenderer.hpp" />
     <ClInclude Include="src\renderer\model.hpp" />
+    <ClInclude Include="src\renderer\phenixslang.hpp" />
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11BlendState.hpp" />
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11Buffer.hpp" />
     <ClInclude Include="src\renderer\RHI\D3D11\D3D11Device.hpp" />
