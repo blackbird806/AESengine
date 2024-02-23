@@ -44,6 +44,7 @@
     <ClCompile Include="src\core\console.cpp" />
     <ClCompile Include="src\core\context.cpp" />
     <ClCompile Include="src\core\debug.cpp" />
+    <ClCompile Include="src\core\dragon4.cpp" />
     <ClCompile Include="src\core\geometry.cpp" />
     <ClCompile Include="src\core\hashmap.hpp" />
     <ClCompile Include="src\core\input.cpp" />
@@ -100,6 +101,7 @@
     <ClInclude Include="src\core\coreMacros.hpp" />
     <ClInclude Include="src\core\debug.hpp" />
     <ClInclude Include="src\core\debugMath.hpp" />
+    <ClInclude Include="src\core\dragon4.hpp" />
     <ClInclude Include="src\core\error.hpp" />
     <ClInclude Include="src\core\format.hpp" />
     <ClInclude Include="src\core\geometry.hpp" />

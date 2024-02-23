@@ -171,6 +171,9 @@
     <ClCompile Include="src\core\hashmap.hpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\core\dragon4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\window.hpp">
@@ -375,6 +378,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\phenixslang.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\dragon4.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

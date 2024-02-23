@@ -193,7 +193,7 @@ namespace aes
 
 		constexpr void remove(K const& key)
 		{
-
+			AES_NOT_IMPLEMENTED();
 		}
 
 		bool tryFind(K const& key, V* value) const

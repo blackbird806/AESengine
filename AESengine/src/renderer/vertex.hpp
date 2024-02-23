@@ -1,7 +1,9 @@
-#ifndef VERTEX_HPP
-#define VERTEX_HPP
+#ifndef AES_VERTEX_HPP
+#define AES_VERTEX_HPP
 
 #include <glm/glm.hpp>
+#include "core/vec3.hpp"
+#include "core/vec4.hpp"
 
 namespace aes {
 
@@ -18,8 +20,8 @@ namespace aes {
 
 	struct Vertex
 	{
-		glm::vec3 pos;
-		glm::vec4 color;
+		vec3 pos;
+		vec4 color;
 	};
 }
 
