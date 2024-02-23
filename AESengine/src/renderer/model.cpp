@@ -36,7 +36,7 @@ std::vector<Vertex> aes::getCubeVertices()
 	return vertices;
 }
 
-std::vector<Vertex> aes::getCubeVertices(glm::vec4 const& color)
+std::vector<Vertex> aes::getCubeVertices(vec4 const& color)
 {
 	std::vector<Vertex> vertices(8);
 
@@ -78,7 +78,7 @@ Result<Model> aes::createCube()
 	return { std::move(cube) };
 }
 
-Result<Model> aes::createCube(glm::vec4 const& col)
+Result<Model> aes::createCube(vec4 const& col)
 {
 	AES_PROFILE_FUNCTION();
 

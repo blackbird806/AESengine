@@ -50,6 +50,7 @@ namespace aes
 		void deallocate(void* ptr) override;
 
 	private:
+		int allocationCount = 0;
 		IAllocator* baseAllocator;
 	};
 
@@ -72,6 +73,7 @@ namespace aes
 	};
 
 	extern Mallocator mallocator;
+	extern AllocatorProfiler profilerAlloc;
 	
 	// used to avoid cicular dependencies in some core headers
 	[[nodiscard]] IAllocator* getContextAllocator() noexcept;

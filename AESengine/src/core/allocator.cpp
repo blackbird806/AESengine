@@ -5,6 +5,7 @@
 #include "profiler.hpp"
 #include "utility.hpp"
 #include "context.hpp"
+#include <cstdio>
 
 #ifdef AES_ENABLE_PROFILING
 
@@ -21,6 +22,7 @@
 using namespace aes;
 
 aes::Mallocator aes::mallocator{};
+aes::AllocatorProfiler aes::profilerAlloc{aes::mallocator};
 
 // https://stackoverflow.com/questions/53922209/how-to-invoke-aligned-new-delete-properly
 static void* alignedAlloc(size_t size, size_t al) noexcept
@@ -100,12 +102,24 @@ AllocatorProfiler::AllocatorProfiler(IAllocator& base) : baseAllocator(&base)
 
 void* AllocatorProfiler::allocate(size_t size, size_t align)
 {
-	return baseAllocator->allocate(size, align);
+	void* ptr = baseAllocator->allocate(size, align);
+	if (ptr != nullptr)
+	{
+		//printf("allocating %p size: %zu alignement: %zu\n", ptr, size, align);
+		allocationCount++;
+	}
+	return ptr;
 }
 
 void AllocatorProfiler::deallocate(void* ptr)
 {
+	//printf("free: %p\n", ptr);
 	baseAllocator->deallocate(ptr);
+	if (ptr != nullptr)
+	{
+		allocationCount--;
+		AES_ASSERT_NOLOG(allocationCount >= 0);
+	}
 }
 
 IAllocator* aes::getContextAllocator() noexcept

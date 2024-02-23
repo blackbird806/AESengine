@@ -22,9 +22,6 @@
     <Filter Include="ThirdParty\stb">
       <UniqueIdentifier>{edc2130c-9a41-4e11-bb66-58818b3ad3ea}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ThirdParty\aini">
-      <UniqueIdentifier>{aa6863d0-bc21-4de6-9ec1-f7ace0f1dd84}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="thirdParty\fmt\src\format.cc">
@@ -55,9 +52,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\core\input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\console.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="thirdParty\stb\stb_truetype.cpp">
@@ -101,9 +95,6 @@
     </ClCompile>
     <ClCompile Include="src\renderer\RHI\D3D11\D3D11BlendState.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="thirdParty\aini\aini.cpp">
-      <Filter>ThirdParty\aini</Filter>
     </ClCompile>
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
@@ -219,9 +210,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\core\error.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\console.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\FontManager.hpp">

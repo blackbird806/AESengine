@@ -39,7 +39,7 @@ namespace aes
 		4, 7, 5
 	};
 
-	inline glm::vec3 cubeVerticesPos[] = {
+	inline vec3 cubeVerticesPos[] = {
 		{ -1, -1,  1.0f },
 		{ 1, -1,  1.0f },
 		{ -1,  1,  1.0f },
@@ -51,7 +51,7 @@ namespace aes
 	};
 
 	std::vector<Vertex> getCubeVertices();
-	std::vector<Vertex> getCubeVertices(glm::vec4 const&);
+	std::vector<Vertex> getCubeVertices(vec4 const&);
 	
 	class Model
 	{
@@ -76,7 +76,7 @@ namespace aes
 	};
 
 	Result<Model> createCube();
-	Result<Model> createCube(glm::vec4 const&);
+	Result<Model> createCube(vec4 const&);
 }
 
 #endif
