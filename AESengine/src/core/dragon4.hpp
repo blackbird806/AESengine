@@ -4,7 +4,7 @@
 
 namespace aes
 {
-	// implemntation from:
+	// implementation from:
 	// https://www.ryanjuckett.com/printing-floating-point-numbers-part-2-dragon4/
 	namespace d4
 	{
@@ -18,7 +18,7 @@ namespace aes
 		
 			int32_t compare(BigInt const& rhs) const;
 
-			auto operator<=>(BigInt const& rhs) const;
+			int32_t operator<=>(BigInt const& rhs) const;
 
 			// Basic type accessors
 			void SetU64(uint64_t val);
@@ -31,7 +31,12 @@ namespace aes
 
 			void pow10(uint32_t exponent);
 
+			BigInt mulPow10(uint32_t exponent);
+
+			void pow2(uint32_t exponent);
+
 			void setZero();
+			bool isZero() const;
 
 			uint32_t size;
 			uint32_t blocks[bigIntMaxBlocks];
@@ -45,7 +50,16 @@ namespace aes
 
 		BigInt mulBy2(BigInt const& in);
 
-		void dragon4(float v, const char* buff);
+		//******************************************************************************
+		// Different modes for terminating digit output
+		//******************************************************************************
+		enum CutoffMode
+		{
+			CutoffMode_Unique,			// as many digits as necessary to print a uniquely identifiable number
+			CutoffMode_TotalLength,		// up to cutoffNumber significant digits
+			CutoffMode_FractionLength,	// up to cutoffNumber significant digits past the decimal point
+		};
+
 	}
 
 }
