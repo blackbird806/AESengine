@@ -38,7 +38,7 @@ static BigInt g_PowerOf10_Big[] =
 // Get the log base 2 of a 32-bit unsigned integer.
 // http://graphics.stanford.edu/~seander/bithacks.html#IntegerLogLookup
 //******************************************************************************
-uint32_t LogBase2(uint32_t val)
+static uint32_t LogBase2(uint32_t val)
 {
 	static const uint8_t logTable[256] =
 	{
@@ -60,9 +60,7 @@ uint32_t LogBase2(uint32_t val)
 		7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7
 	};
 
-	uint32_t temp;
-
-	temp = val >> 24;
+	uint32_t temp = val >> 24;
 	if (temp)
 		return 24 + logTable[temp];
 
@@ -75,6 +73,15 @@ uint32_t LogBase2(uint32_t val)
 		return 8 + logTable[temp];
 
 	return logTable[val];
+}
+
+static uint32_t LogBase2(uint64_t val)
+{
+	uint64_t temp = val >> 32;
+	if (temp)
+		return 32 + LogBase2((uint32_t)temp);
+
+	return LogBase2((uint32_t)val);
 }
 
 BigInt& BigInt::operator=(BigInt const& rhs)
@@ -694,7 +701,7 @@ static void BigInt_ShiftLeft(BigInt* pResult, uint32_t shift)
 //    Burger and Dybvig
 //    http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.72.4656&rep=rep1&type=pdf
 //******************************************************************************
-uint32_t aes::d4::dragon4
+static uint32_t dragon4
 (
 	const uint64_t			mantissa,			// value significand
 	const int32_t			exponent,			// value exponent in base 2
@@ -1091,4 +1098,11 @@ uint32_t aes::d4::dragon4
 	uint32_t outputLen = (uint32_t)(pCurDigit - pOubooluffer);
 	AES_ASSERT(outputLen <= bufferSize);
 	return outputLen;
+}
+
+uint32_t aes::d4::printFloat32(char* pOutBuffer, uint32_t bufferSize, float value, PrintFloatFormat format, int32_t precision)
+{
+
+
+	return 0;
 }

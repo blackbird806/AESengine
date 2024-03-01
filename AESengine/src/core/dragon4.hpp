@@ -60,6 +60,44 @@ namespace aes
 			CutoffMode_FractionLength,	// up to cutoffNumber significant digits past the decimal point
 		};
 
+		enum PrintFloatFormat
+		{
+			PrintFloatFormat_Positional,	// [-]ddddd.dddd
+			PrintFloatFormat_Scientific,	// [-]d.dddde[sign]ddd
+		};
+
+
+		//******************************************************************************
+		// Print a 32-bit floating-point number as a decimal string.
+		// The output string is always NUL terminated and the string length (not
+		// including the NUL) is returned.
+		//******************************************************************************
+		uint32_t printFloat32
+		(
+			char* pOutBuffer,		// buffer to output into
+			uint32_t			bufferSize,		// size of pOutBuffer
+			float				value,			// value to print
+			PrintFloatFormat	format,			// format to print with
+			int32_t				precision		// If negative, the minimum number of digits to represent a
+			// unique 32-bit floating point value is output. Otherwise,
+			// this is the number of digits to print past the decimal point.
+		);
+
+		//******************************************************************************
+		// Print a 64-bit floating-point number as a decimal string.
+		// The output string is always NUL terminated and the string length (not
+		// including the NUL) is returned.
+		//******************************************************************************
+		uint32_t printFloat64
+		(
+			char* pOutBuffer,		// buffer to output into
+			uint32_t			bufferSize,		// size of pOutBuffer
+			double				value,			// value to print
+			PrintFloatFormat	format,			// format to print with
+			int32_t				precision		// If negative, the minimum number of digits to represent a
+			// unique 64-bit floating point value is output. Otherwise,
+			// this is the number of digits to print past the decimal point.
+		);
 	}
 
 }
