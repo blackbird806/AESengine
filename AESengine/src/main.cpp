@@ -27,29 +27,29 @@ int main()
 	//AES_LOG("this is a test {}", true);
 
 	//test_RHI();
-	//Array<phenix::FunDef> fnDefs;
-	//Array<phenix::UniformBufferDecl> bufferDecl;
-	//Array<phenix::VarDecl> members;
-	//members.push({ phenix::Type::Vec4, String("position") });
-	//members.push({ phenix::Type::Vec4, String("color") });
-	//bufferDecl.push(phenix::UniformBufferDecl{
-	//	String("VS_OUTPUT"),
-	//	members
-	//	});
-	//Array<phenix::VarDecl> mainArgs;
-	//Array<phenix::Attribute> mainAttrs;
-	//Array<phenix::ASTNode*> stmts;
-	//phenix::LiteralNode lit;
-	//lit.type = phenix::ASTNodeType::Literal;
-	//lit.ltype = phenix::Type::Vec4;
-	//lit.v4 = vec4(0.0, 1.0, 0.0, 1.0);
-	//phenix::ReturnStatement ret;
-	//ret.type = phenix::ASTNodeType::ReturnStatement;
-	//ret.node = &lit;
-	//stmts.push(&ret);
-	//fnDefs.push({ String("main"), phenix::Type::Vec4, mainArgs, mainAttrs, phenix::Body{stmts} });
-	//String generated = phenix::compileToHLSL(fnDefs, bufferDecl);
-	//AES_LOG("code generated\n{}", generated.c_str());
+	Array<phenix::FunDef> fnDefs;
+	Array<phenix::UniformBufferDecl> bufferDecl;
+	Array<phenix::VarDecl> members;
+	members.push({ phenix::Type::Vec4, String("position") });
+	members.push({ phenix::Type::Vec4, String("color") });
+	bufferDecl.push(phenix::UniformBufferDecl{
+		String("VS_OUTPUT"),
+		members
+		});
+	Array<phenix::VarDecl> mainArgs;
+	Array<phenix::Attribute> mainAttrs;
+	Array<phenix::ASTNode*> stmts;
+	phenix::LiteralNode lit;
+	lit.type = phenix::ASTNodeType::Literal;
+	lit.ltype = phenix::Type::Vec4;
+	lit.v4 = vec4(2.1, 1.0, 0.5634654, 545.32132);
+	phenix::ReturnStatement ret;
+	ret.type = phenix::ASTNodeType::ReturnStatement;
+	ret.node = &lit;
+	stmts.push(&ret);
+	fnDefs.push({ String("main"), phenix::Type::Vec4, mainArgs, mainAttrs, phenix::Body{stmts} });
+	String generated = phenix::compileToHLSL(fnDefs, bufferDecl);
+	AES_LOG("code generated\n{}", generated.c_str());
 
 
 
