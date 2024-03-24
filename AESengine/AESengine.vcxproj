@@ -323,7 +323,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;TRACY_ENABLE;GLM_FORCE_LEFT_HANDED;GLM_FORCE_DEPTH_ZERO_TO_ONE;GLM_FORCE_CTOR_INIT;AES_DEBUG;AES_ENABLE_PROFILING</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)thirdParty/fmt/include;$(ProjectDir)thirdParty/glm;$(ProjectDir)thirdParty/;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -349,7 +349,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;TRACY_ENABLE;GLM_FORCE_LEFT_HANDED;GLM_FORCE_DEPTH_ZERO_TO_ONE;GLM_FORCE_CTOR_INIT;AES_DEBUG;AES_ENABLE_PROFILING</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include;$(SolutionDir)thirdParty/kc_TrueTypeAssembler/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)thirdParty/fmt/include;$(ProjectDir)thirdParty/glm;$(ProjectDir)thirdParty/;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include;$(SolutionDir)thirdParty/kc_TrueTypeAssembler/</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -377,7 +377,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;TRACY_ENABLE;GLM_FORCE_CTOR_INIT;AES_ENABLE_PROFILING</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)thirdParty/fmt/include;$(ProjectDir)thirdParty/glm;$(ProjectDir)thirdParty/;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -405,7 +405,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;TRACY_ENABLE;GLM_FORCE_CTOR_INIT;AES_ENABLE_PROFILING</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)thirdParty/fmt/include;$(ProjectDir)thirdParty/glm;$(ProjectDir)thirdParty/;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -433,7 +433,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;TRACY_ENABLE;GLM_FORCE_CTOR_INIT;AES_ENABLE_PROFILING</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include;$(SolutionDir)thirdParty/kc_TrueTypeAssembler/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)thirdParty/fmt/include;$(ProjectDir)thirdParty/glm;$(ProjectDir)thirdParty/;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include;$(SolutionDir)thirdParty/kc_TrueTypeAssembler/</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -461,7 +461,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;TRACY_ENABLE;GLM_FORCE_CTOR_INIT;AES_ENABLE_PROFILING</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include;$(SolutionDir)thirdParty/kc_TrueTypeAssembler/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)thirdParty/fmt/include;$(ProjectDir)thirdParty/glm;$(ProjectDir)thirdParty/;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include;$(SolutionDir)thirdParty/kc_TrueTypeAssembler/</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -487,7 +487,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;GLM_FORCE_LEFT_HANDED;GLM_FORCE_DEPTH_ZERO_TO_ONE;GLM_FORCE_CTOR_INIT;AES_DEBUG;AES_ENABLE_PROFILING</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)thirdParty/fmt/include;$(ProjectDir)thirdParty/glm;$(ProjectDir)thirdParty/;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -517,7 +517,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;TRACY_ENABLE;GLM_FORCE_CTOR_INIT;AES_ENABLE_PROFILING</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)thirdParty/fmt/include;$(ProjectDir)thirdParty/glm;$(ProjectDir)thirdParty/;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -547,7 +547,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;GLM_FORCE_CTOR_INIT;AES_ENABLE_PROFILING;AES_ENABLE_SIMD;GLM_FORCE_AVX2</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)thirdParty/fmt/include;$(SolutionDir)thirdParty/glm;$(SolutionDir)thirdParty/;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)thirdParty/fmt/include;$(ProjectDir)thirdParty/glm;$(ProjectDir)thirdParty/;$(SolutionDir)thirdParty/eigen-3.3.8;$(SolutionDir)thirdParty/tracy;%(AdditionalIncludeDirectories);$(SolutionDir)thirdParty/glad/include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <ExceptionHandling>Sync</ExceptionHandling>

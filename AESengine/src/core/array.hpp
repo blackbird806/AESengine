@@ -1,6 +1,7 @@
 #ifndef AES_ARRAY_HPP
 #define AES_ARRAY_HPP
 
+#include "coreMacros.hpp"
 #include "assert.hpp"
 #include "allocator.hpp"
 #include <utility>

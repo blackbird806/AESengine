@@ -10,7 +10,6 @@
 
 using namespace aes;
 
-
 int main()
 {
 	auto streamSink = aes::makeUnique<aes::StreamSink>(std::cout);

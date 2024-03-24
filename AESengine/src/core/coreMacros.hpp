@@ -12,6 +12,9 @@
 #elif defined (__GNUC__)
 #define AES_RESTRICT(x) __restrict__ x
 #define AES_ASSUME(x)
+#else
+#define AES_ASSUME(x)
+#define AES_RESTRICT(x) x
 #endif
 
 #ifdef AES_RELEASE
