@@ -3,6 +3,7 @@
 
 #include "core/aes.hpp"
 #include "core/array.hpp"
+#include "core/uniquePtr.hpp"
 #include "core/string.hpp"
 #include "core/vec2.hpp"
 #include "core/vec3.hpp"
@@ -13,17 +14,22 @@ namespace aes::phenix
 {
 	enum class ASTNodeType
 	{
+		Undefined,
 		BinOp,
 		UnOp,
 		Literal,
 		Variable,
 		FnCall,
-		ReturnStatement
+		ReturnStatement,
+		CompoundStatement
 	};
 
 	struct ASTNode
 	{
-		ASTNodeType type;
+		ASTNodeType type = ASTNodeType::Undefined;
+		virtual ~ASTNode()
+		{
+		}
 	};
 
 	struct VariableNode : ASTNode
@@ -68,7 +74,9 @@ namespace aes::phenix
 	{
 		Void,
 		Float,
+		Double,
 		Int,
+		UInt,
 		Vec2,
 		Vec3,
 		Vec4,
@@ -77,11 +85,13 @@ namespace aes::phenix
 
 	struct LiteralNode : ASTNode
 	{
-		LiteralNode() {};
-		Type ltype;
+		LiteralNode() { f = 0.0f; };
+		Type ltype = Type::Float;
 		union {
 			float f;
-			int i;
+			double d;
+			int32_t i;
+			uint32_t u;
 			vec2 v2;
 			vec3 v3;
 			vec4 v4;
@@ -108,13 +118,13 @@ namespace aes::phenix
 		Array<Attribute> attributes;
 	};
 
-	struct UniformBufferDecl
+	struct StructDecl
 	{
 		String name;
 		Array<VarDecl> members;
 	};
 
-	struct Body
+	struct CompoundStatementNode : ASTNode
 	{
 		Array<ASTNode*> statements;
 	};
@@ -125,7 +135,7 @@ namespace aes::phenix
 		Type retType;
 		Array<VarDecl> args;
 		Array<Attribute> attributes;
-		Body body;
+		CompoundStatementNode body;
 	};
 
 	String evalASTNode(ASTNode* node);
@@ -142,8 +152,14 @@ namespace aes::phenix
 		case Type::Int:
 			return format("{}", lit->i);
 
+		case Type::UInt:
+			return format("{}", lit->u);
+
 		case Type::Float:
 			return format("{}f", lit->f);
+
+		case Type::Double:
+			return format("{}", lit->d);
 
 		case Type::Vec2:
 			return format("float2({}f, {}f)", lit->v2.x, lit->v2.y);
@@ -155,6 +171,17 @@ namespace aes::phenix
 			return format("float4({}f, {}f, {}f, {}f)", lit->v4.x, lit->v4.y, lit->v4.z, lit->v4.w);
 		}
 		AES_UNREACHABLE();
+	}
+
+	String evalASTNode(CompoundStatementNode* stmt)
+	{
+		String out("{\n");
+		for (ASTNode* node : stmt->statements)
+		{
+			evalASTNode(node);
+		}
+		out.append("}\n");
+		return out;
 	}
 
 	String evalASTNode(ReturnStatement* stmt)
@@ -174,6 +201,8 @@ namespace aes::phenix
 			return evalASTNode((VariableNode*)node);
 		case ASTNodeType::ReturnStatement:
 			return evalASTNode((ReturnStatement*)node);
+		case ASTNodeType::CompoundStatement:
+			return evalASTNode((CompoundStatementNode*)node);
 		}
 		AES_UNREACHABLE();
 	}
@@ -186,19 +215,25 @@ namespace aes::phenix
 			return "void";
 		case Type::Int:
 			return "int";
+		case Type::UInt:
+			return "uint";
 		case Type::Float:
 			return "float";
+		case Type::Double:
+			return "double";
 		case Type::Vec2:
 			return "float2";
 		case Type::Vec3:
 			return "float3";
 		case Type::Vec4:
 			return "float4";
+		default:
+			return "undefined";
 		}
 		AES_UNREACHABLE();
 	}
 
-	String compileToHLSL(Array<FunDef> const& fnDefs, Array<UniformBufferDecl> const& uniformBuffers)
+	String compileToHLSL(Array<FunDef> const& fnDefs, Array<StructDecl> const& uniformBuffers)
 	{
 		String out;
 		for (auto const& buff : uniformBuffers)

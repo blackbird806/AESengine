@@ -143,13 +143,13 @@ namespace aes
 	template <>
 	AES_FMT_CONSTEXPR void stringifyToBuff(float v, char* buff)
 	{
-		d4::PrintFloat32(buff, 64, v, d4::tPrintFloatFormat::PrintFloatFormat_Positional, 3);
+		d4::PrintFloat32(buff, 64, v, d4::tPrintFloatFormat::PrintFloatFormat_Positional, -1);
 	}
 
 	template <>
 	AES_FMT_CONSTEXPR void stringifyToBuff(double v, char* buff)
 	{
-		d4::PrintFloat64(buff, 64, v, d4::tPrintFloatFormat::PrintFloatFormat_Positional, 3);
+		d4::PrintFloat64(buff, 64, v, d4::tPrintFloatFormat::PrintFloatFormat_Positional, -1);
 	}
 
 	template <>

@@ -23,16 +23,14 @@ int main()
 	aes::Logger::instance().addSink(fileSink.get());
 #else
 #endif
-	//AES_LOG("hello {} AAA {} BBB", "world", 12);
-	//AES_LOG("this is a test {}", true);
 
 	//test_RHI();
 	Array<phenix::FunDef> fnDefs;
-	Array<phenix::UniformBufferDecl> bufferDecl;
+	Array<phenix::StructDecl> bufferDecl;
 	Array<phenix::VarDecl> members;
 	members.push({ phenix::Type::Vec4, String("position") });
 	members.push({ phenix::Type::Vec4, String("color") });
-	bufferDecl.push(phenix::UniformBufferDecl{
+	bufferDecl.push(phenix::StructDecl{
 		String("VS_OUTPUT"),
 		members
 		});
@@ -47,11 +45,12 @@ int main()
 	ret.type = phenix::ASTNodeType::ReturnStatement;
 	ret.node = &lit;
 	stmts.push(&ret);
-	fnDefs.push({ String("main"), phenix::Type::Vec4, mainArgs, mainAttrs, phenix::Body{stmts} });
+	phenix::CompoundStatementNode body;
+	body.type = phenix::ASTNodeType::CompoundStatement;
+	body.statements = stmts;
+	fnDefs.push({ String("main"), phenix::Type::Vec4, mainArgs, mainAttrs, body });
 	String generated = phenix::compileToHLSL(fnDefs, bufferDecl);
 	AES_LOG("code generated\n{}", generated.c_str());
-
-
-
+	
 	return 0;
 }
