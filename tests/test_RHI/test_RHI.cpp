@@ -1,5 +1,3 @@
-#include "tests.hpp"
-
 #include "core/allocator.hpp"
 #include "core/color.hpp"
 #include "core/vec2.hpp"
@@ -300,7 +298,7 @@ public:
 
 };
 
-void aes::test_RHI()
+int main()
 {
 	AES_START_PROFILE_SESSION("test RHI startup");
 	TestRHIApp app;
@@ -309,4 +307,5 @@ void aes::test_RHI()
 	app.loop();
 	AES_START_PROFILE_SESSION("test RHI running");
 	auto runningSession = AES_STOP_PROFILE_SESSION();
+	return 0;
 }

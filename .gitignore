@@ -1,5 +1,5 @@
 # cmake generated files
-AESengine/build
+wobEngine/build
 coreDumps/
 # tmp
 sce_sys/
@@ -409,10 +409,10 @@ MigrationBackup/
 .ionide/
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio,c++
-AESengine/prof.txt
-AESengine/AES_log.txt
+wobEngine/prof.txt
 *.ttf
 *.scor
 *.t0000
 *.gbl
 *.incl
+vsxmake2022

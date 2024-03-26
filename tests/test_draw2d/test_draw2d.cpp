@@ -1,9 +1,8 @@
-#include "tests.hpp"
-
 #include "core/allocator.hpp"
 #include "engine.hpp"
 #include "renderer/draw2d.hpp"
 #include "core/color.hpp"
+#include "core/vec2.hpp"
 
 using namespace aes;
 
@@ -42,7 +41,7 @@ public:
 	}
 };
 
-void aes::test_draw2d()
+int main()
 {
 	AES_START_PROFILE_SESSION("test draw2d startup");
 	TestDraw2dApp app({
@@ -54,4 +53,5 @@ void aes::test_draw2d()
 	AES_START_PROFILE_SESSION("test draw2d running");
 	app.run();
 	auto runningSession = AES_STOP_PROFILE_SESSION();
+	return 0;
 }

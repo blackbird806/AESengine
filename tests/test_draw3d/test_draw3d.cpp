@@ -1,8 +1,7 @@
-#include "tests.hpp"
-
 #include "core/allocator.hpp"
 #include "engine.hpp"
 #include "core/color.hpp"
+#include "core/vec3.hpp"
 #include "renderer/vertex.hpp"
 
 using namespace aes;
@@ -44,7 +43,7 @@ public:
 
 		vertexInputLayout[1].parameterName = "aColor";
 		vertexInputLayout[1].semantic = aes::SemanticType::Color;
-		vertexInputLayout[1].offset = sizeof(glm::vec3);
+		vertexInputLayout[1].offset = sizeof(aes::vec3);
 		vertexInputLayout[1].format = aes::RHIFormat::R32G32B32A32_Float;
 
 		vertexShaderDescription.verticesLayout = vertexInputLayout;
@@ -70,7 +69,7 @@ public:
 	}
 };
 
-void aes::test_draw3d()
+int main()
 {
 	AES_START_PROFILE_SESSION("test draw3d startup");
 	TestDraw3dApp app({
@@ -82,4 +81,6 @@ void aes::test_draw3d()
 	AES_START_PROFILE_SESSION("test draw3d running");
 	app.run();
 	auto runningSession = AES_STOP_PROFILE_SESSION();
+
+	return 0;
 }

@@ -1,10 +1,9 @@
-#include "tests.hpp"
 #include "core/aes.hpp"
 #include "core/string.hpp"
 
 using namespace aes;
 
-void aes::test_string()
+int main()
 {
 	{
 		String str;
@@ -41,4 +40,6 @@ void aes::test_string()
 		AES_ASSERT(strB.capacity() > 0);
 		strB.shrink();
 	}
+
+	return 0;
 }

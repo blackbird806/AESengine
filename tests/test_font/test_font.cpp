@@ -1,8 +1,3 @@
-#include <iostream>
-#include <glm/gtx/matrix_transform_2d.hpp>
-
-#include "tests.hpp"
-
 #include "core/allocator.hpp"
 #include "engine.hpp"
 #include "renderer/fontRenderer.hpp"
@@ -62,7 +57,7 @@ public:
 		if (isKeyPressed(Key::Space))
 			scale = 1.0;
 
-		draw2d.setMatrix(glm::scale(glm::mat3(1.0f), { scale, scale * aspect }));
+		//draw2d.setMatrix(glm::scale(glm::mat3(1.0f), { scale, scale * aspect }));
 		//draw2d.drawText(defaultFont, fmt::format("5+5=10-hello_world\nscale {}", scale), {xstart, 0.0});
 
 		draw2d.drawImage(defaultFont.texture, { {-0.5, -0.5}, {0.5, 0.5}});
@@ -74,7 +69,7 @@ public:
 	}
 };
 
-void aes::test_fonts()
+int main()
 {
 	AES_START_PROFILE_SESSION("test font startup");
 	TestFontApp app({
@@ -86,4 +81,5 @@ void aes::test_fonts()
 	AES_START_PROFILE_SESSION("test font running");
 	app.run();
 	auto runningSession = AES_STOP_PROFILE_SESSION();
+	return 0;
 }

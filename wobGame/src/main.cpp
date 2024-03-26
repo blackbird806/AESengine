@@ -3,7 +3,6 @@
 #include "core/aes.hpp"
 #include "core/debug.hpp"
 #include "core/uniquePtr.hpp"
-#include "test/tests.hpp"
 #include "core/dragon4.hpp"
 
 #include "renderer/phenixslang.hpp"

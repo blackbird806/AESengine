@@ -1,9 +1,5 @@
-#include <iostream>
-#include <glm/gtx/matrix_transform_2d.hpp>
-
-#include "tests.hpp"
-
 #include "core/allocator.hpp"
+#include "core/vec2.hpp"
 #include "engine.hpp"
 #include "renderer/fontRenderer.hpp"
 #include "renderer/draw2d.hpp"
@@ -61,7 +57,7 @@ public:
 		InputData indata;
 		indata.cursorPressed = isKeyPressed(Key::LClick);
 		indata.cursorDown = isKeyDown(Key::LClick);
-		indata.cursorPos = glm::vec2(((float)mx / wx - 0.5) * 2, ((float)my / wy - 0.5) * 2);
+		indata.cursorPos = aes::vec2(((float)mx / wx - 0.5) * 2, ((float)my / wy - 0.5) * 2);
 		imgui.updateInputData(indata);
 
 		imgui.beginFrame();
@@ -115,7 +111,7 @@ public:
 	}
 };
 
-void aes::test_imgui()
+int main()
 {
 	AES_START_PROFILE_SESSION("test imgui startup");
 	TestImguiApp app({
@@ -127,4 +123,6 @@ void aes::test_imgui()
 	AES_START_PROFILE_SESSION("test imgui running");
 	app.run();
 	auto runningSession = AES_STOP_PROFILE_SESSION();
+
+	return 0;
 }

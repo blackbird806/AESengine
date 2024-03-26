@@ -6,7 +6,6 @@ set_defaultmode("debug")
 set_allowedplats("windows", "vita")
 
 -- TODO rename engine
-local engine_path = "AESengine"
 
 
 set_languages("c99", "cxxlatest")
@@ -28,26 +27,26 @@ if is_os("windows") then
 	end
 end
 
+add_includedirs("wobEngine/src")
+add_includedirs("wobEngine/thirdParty")
+
 target("wobEngine")
 	set_kind("static")
-	add_includedirs(engine_path .. "/src", {public = true})
-	add_includedirs(engine_path .. "/thirdParty", {public = true})
-	add_includedirs(engine_path .. "/thirdParty/fmt/include", {public = true})
-	add_includedirs(engine_path .. "/thirdParty/glm", {public = true})
-	add_files(engine_path .. "/src/**.cpp|renderer/RHI/D3D11/*.cpp|renderer/RHI/SceGxm/*.cpp")
-	add_headerfiles(engine_path .. "/src/**.hpp|renderer/RHI/D3D11/*.hpp|renderer/RHI/SceGxm/*.hpp")
+	add_includedirs("wobEngine/thirdParty/fmt/include")
+	add_includedirs("wobEngine/thirdParty/glm")
+	add_files("wobEngine/src/**.cpp|renderer/RHI/D3D11/*.cpp|renderer/RHI/SceGxm/*.cpp")
+	add_headerfiles("wobEngine/src/**.hpp|renderer/RHI/D3D11/*.hpp|renderer/RHI/SceGxm/*.hpp")
 	if is_os("windows") then
-		add_files(engine_path .. "/src/renderer/RHI/D3D11/*.cpp")
-		add_headerfiles(engine_path .. "/src/renderer/RHI/D3D11/*.hpp")
+		add_files("wobEngine/src/renderer/RHI/D3D11/*.cpp")
+		add_headerfiles("wobEngine/src/renderer/RHI/D3D11/*.hpp")
 		add_defines("UNICODE", "_UNICODE", "AES_GRAPHIC_API_D3D11")
 		add_links("d3d11", "dxgi", "d3dcompiler", "dxguid", "Dwmapi")
-
 	elseif is_os("vita") then
-		add_files(engine_path .. "/src/renderer/RHI/SceGxm/*.cpp")
-		add_headerfiles(engine_path .. "/src/renderer/RHI/SceGxm/*.hpp")
+		add_files("wobEngine/src/renderer/RHI/SceGxm/*.cpp")
+		add_headerfiles("wobEngine/src/renderer/RHI/SceGxm/*.hpp")
 		add_defines("AES_GRAPHIC_API_GXM")
 	end
 
 
-includes("test/xmake.lua")
+includes("tests/xmake.lua")
 includes("wobGame/xmake.lua")
