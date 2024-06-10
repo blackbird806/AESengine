@@ -5,18 +5,22 @@ set_allowedmodes("debug", "release")
 set_defaultmode("debug")
 set_allowedplats("windows", "vita")
 
--- TODO rename engine
-
-
 set_languages("c99", "cxxlatest")
+add_rules("plugin.vsxmake.autoupdate")
+add_rules("mode.debug", "mode.release")
 
 -- glm to remove
+
 add_defines("GLM_FORCE_LEFT_HANDED","GLM_FORCE_DEPTH_ZERO_TO_ONE","GLM_FORCE_CTOR_INIT")
 
 if is_mode("debug") then
 	add_defines("_DEBUG", "AES_DEBUG")
+	set_symbols("debug")
+	set_optimize("none")
+	set_warnings("all")
 elseif is_mode("release") then
 	add_defines("NDEBUG", "AES_RELEASE")
+--	set_optimize("faster")
 end
 
 if is_os("windows") then
@@ -32,8 +36,10 @@ add_includedirs("wobEngine/thirdParty")
 
 target("wobEngine")
 	set_kind("static")
+	-- will be removed
 	add_includedirs("wobEngine/thirdParty/fmt/include")
 	add_includedirs("wobEngine/thirdParty/glm")
+	--
 	add_files("wobEngine/src/**.cpp|renderer/RHI/D3D11/*.cpp|renderer/RHI/SceGxm/*.cpp")
 	add_headerfiles("wobEngine/src/**.hpp|renderer/RHI/D3D11/*.hpp|renderer/RHI/SceGxm/*.hpp")
 	if is_os("windows") then
@@ -46,7 +52,6 @@ target("wobEngine")
 		add_headerfiles("wobEngine/src/renderer/RHI/SceGxm/*.hpp")
 		add_defines("AES_GRAPHIC_API_GXM")
 	end
-
 
 includes("tests/xmake.lua")
 includes("wobGame/xmake.lua")

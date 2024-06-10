@@ -119,3 +119,4 @@ void Engine::getScreenMousePos(int& x, int& y) const noexcept
 {
 	mainWindow->getMousePosition(x, y);
 }
+

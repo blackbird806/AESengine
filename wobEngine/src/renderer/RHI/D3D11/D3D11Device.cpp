@@ -125,7 +125,9 @@ void D3D11Device::destroy()
 	AES_ASSERT(deviceContext != nullptr);
 	AES_ASSERT(factory != nullptr);
 	AES_ASSERT(device != nullptr);
+#ifdef AES_DEBUG
 	AES_ASSERT(debugInterface != nullptr);
+#endif
 
 	deviceContext->Release();
 	factory->Release();

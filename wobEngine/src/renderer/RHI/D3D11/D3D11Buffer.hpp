@@ -30,7 +30,6 @@ namespace aes
 		ID3D11Buffer* apiBuffer = nullptr;
 		size_t size = 0;
 	};
-	
 	using RHIBufferBase = D3D11Buffer;
 }
 
