@@ -15,6 +15,9 @@
 #endif
 #include "core/hashmap.hpp"
 
+#include "renderer/RHI/Scoped.hpp"
+#include "renderer/RHI/RefCounted.hpp"
+
 using namespace aes;
 
 struct vert
@@ -23,6 +26,13 @@ struct vert
 	aes::vec3 col;
 	float a = 1.0f;
 };
+
+// base RHI classes shall be trivially copyable and non RAII complient
+// the Scoped and RefCounted warpers add RAII compliance Scoped is non copyable and only movable, calls destroy on the end of the object lifetime
+// RefCounted is copyable, destroy is called when no more RefCountedWrapper exist
+// this modification is done because we often want to control the order and when RHI object are destroyed and also for complex lifetime RefCount is handy, so the wrapper architecture is more flexible and less dirty
+// this way we can easly manage lifetimes of the same objects differently depending of the use case
+// we may want a third wrapper which would be observer, for now raw objects can be used for this
 
 class TestRHIApp
 {
@@ -36,14 +46,13 @@ class TestRHIApp
 	RHIVertexShader geoVertexShader;
 	RHIBuffer clearVertexBuffer, clearIndexBuffer;
 	RHIBuffer geoVertexBuffer, geoIndexBuffer;
-	RHIBuffer uniformBuffer;
+	Scoped<RHIBuffer> uniformBuffer;
 
 public:
 
 	TestRHIApp()
 	{
 		AES_LOG("[TEST] RHI");
-
 		HashMap<String, int> map(16);
 		map.add(String("hello"), 15);
 		map.add(String("world"), 15);

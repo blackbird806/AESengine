@@ -1,7 +1,7 @@
 #ifndef AES_ALLOCATOR_HPP
 #define AES_ALLOCATOR_HPP
 #include <cstdint>
-
+#include <utility>
 namespace aes
 {
 	constexpr unsigned long long operator "" _kb(unsigned long long p)
@@ -26,6 +26,19 @@ namespace aes
 		[[nodiscard]] void* allocate(size_t count = 1)
 		{
 			return allocate(count * sizeof(T), alignof(T));
+		}
+
+		template<typename T, typename ...Args>
+		[[nodiscard]] T create(Args&&... args)
+		{
+			return new (allocate<T>()) T(std::forward<Args>(args)...);
+		}
+
+		template<typename T>
+		void destroy(T* ptr)
+		{
+			ptr->~T();
+			deallocate(ptr);
 		}
 
 		[[nodiscard]] virtual void* allocate(size_t size, size_t align = 1) = 0;
