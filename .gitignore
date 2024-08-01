@@ -416,3 +416,4 @@ wobEngine/prof.txt
 *.gbl
 *.incl
 vsxmake2022
+build/.gens
