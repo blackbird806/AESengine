@@ -4,7 +4,6 @@
 #include <vector>
 #include <span>
 #include <unordered_map>
-#include <glm/glm.hpp>
 
 #include "core/aes.hpp"
 #include "core/geometry.hpp"
@@ -30,7 +29,7 @@ namespace aes
 
 		struct Node
 		{
-			glm::vec3 center;
+			vec3 center;
 			float halfSize;
 			LocCode_t locCode;
 			// vector is faster than list except for insertion
@@ -42,7 +41,7 @@ namespace aes
 		};
 
 		// root locCode is one to mark end of locCode sequence https://geidav.wordpress.com/2014/08/18/advanced-octrees-2-node-representations/
-		Node* build(glm::vec3 const& center, float halfSize, int stopDepth, LocCode_t locCode = 1);
+		Node* build(vec3 const& center, float halfSize, int stopDepth, LocCode_t locCode = 1);
 		void clear();
 		void insertObject(Node& tree, Object const& obj);
 

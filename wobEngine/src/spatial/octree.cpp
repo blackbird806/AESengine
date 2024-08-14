@@ -6,7 +6,7 @@
 using namespace aes;
 
 // see: Christer_Ericson-Real-Time_Collision_Detection: part 7.3, page 311
-Octree::Node* Octree::build(glm::vec3 const& center, float halfSize, int stopDepth, LocCode_t locCode)
+Octree::Node* Octree::build(vec3 const& center, float halfSize, int stopDepth, LocCode_t locCode)
 {
 	AES_PROFILE_FUNCTION();
 	
@@ -23,7 +23,7 @@ Octree::Node* Octree::build(glm::vec3 const& center, float halfSize, int stopDep
 	float const step = halfSize * 0.5f;
 	for (int i = 0; i < 8; i++)
 	{
-		glm::vec3 offset;
+		vec3 offset;
 		offset.x = ((i & 1) ? step : -step);
 		offset.y = ((i & 2) ? step : -step);
 		offset.z = ((i & 4) ? step : -step);
@@ -51,7 +51,7 @@ void Octree::insertObject(Node& tree, Object const& obj)
 	for (int i = 0; i < 3; i++) {
 		float const delta = obj.bounds.center()[i] - tree.center[i];
 		// @Review use bounding box here instead ?
-		if (delta * delta <= glm::length2(obj.bounds.max - obj.bounds.min))
+		if (delta * delta <= (obj.bounds.max - obj.bounds.min).sqrLength())
 		{
 			straddle = true;
 			break;

@@ -46,9 +46,6 @@ namespace aes
 
 		using Index_t = uint16_t;
 		
-		Result<void> ensureColorVertexBufferCapacity(size_t sizeInBytes);
-		Result<void> ensureColorIndexBufferCapacity(size_t sizeInBytes);
-
 		Result<void> ensureTextureVertexBufferCapacity(size_t sizeInBytes);
 		Result<void> ensureTextureIndexBufferCapacity(size_t sizeInBytes);
 
@@ -61,7 +58,7 @@ namespace aes
 
 		struct UniformBuffer
 		{
-			mat4 transformMtr = ;
+			mat4 transformMtr = mat4::identity();
 		};
 
 		enum class DrawCommandType
@@ -74,7 +71,7 @@ namespace aes
 		struct State
 		{
 			Color color = Color::Blue;
-			glm::mat3 transformationMatrix = glm::mat3(1.0f);
+			mat3 transformationMatrix = mat3::identity();
 		};
 
 		struct Command
@@ -88,13 +85,6 @@ namespace aes
 		Array<State> statesStack;
 
 		Array<Command> commands;
-
-		Array<ColorVertex> colorVertices;
-		Array<Index_t> colorIndices;
-		Index_t colorOffset = 0;
-		
-		RHIVertexShader colorVertexShader;
-		RHIFragmentShader colorFragmentShader;
 
 		Array<TextureVertex> textureVertices;
 		Array<Index_t> textureIndices;

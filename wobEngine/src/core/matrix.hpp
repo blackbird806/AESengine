@@ -46,6 +46,12 @@ namespace aes
 
 	struct mat3x3
 	{
+		static mat3x3 identity() noexcept
+		{
+			AES_NOT_IMPLEMENTED();
+			return mat3x3{};
+		}
+
 		float const& operator[](unsigned i) const
 		{
 			return data[i];

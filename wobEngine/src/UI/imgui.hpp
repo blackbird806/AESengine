@@ -19,7 +19,7 @@ namespace aes
 
 	struct ImguiWindow
 	{
-		std::string name;
+		String name;
 		ImGuiId id;
 	};
 
@@ -33,8 +33,8 @@ namespace aes
 
 	struct TextArg
 	{
-		glm::vec2 pos;
-		std::string str;
+		vec2 pos;
+		String str;
 	};
 
 	struct RectArg
@@ -53,7 +53,7 @@ namespace aes
 
 	struct InputData
 	{
-		glm::vec2 cursorPos;
+		vec2 cursorPos;
 		bool cursorDown;
 		bool cursorPressed;
 	};
@@ -65,12 +65,12 @@ namespace aes
 		void updateInputData(InputData const& inputData);
 		void beginFrame();
 
-		void beginWindow(std::string_view winName);
+		void beginWindow(const char* winName);
 		void endWindow();
 
-		void label(std::string_view text);
-		bool button(std::string_view name);
-		bool sliderFloat(std::string_view name, float& f);
+		void label(const char* text);
+		bool button(const char* name);
+		bool sliderFloat(const char* name, float& f);
 
 	//private:
 

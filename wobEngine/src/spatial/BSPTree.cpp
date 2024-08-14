@@ -22,7 +22,7 @@ namespace
 		auto const vertices = obj.bounds.getVertices();
 		for (int i = 0; i < vertices.size(); i++) 
 		{
-			glm::vec3 const p = vertices[i];
+			vec3 const p = vertices[i];
 			switch (classifyPointToPlane(plane, p))
 			{
 			case PointPlanePlacement::Front:
@@ -55,8 +55,8 @@ namespace
 	{
 		AES_PROFILE_FUNCTION();
 
-		return Plane{ glm::length(aabb.center()),
-			glm::normalize(glm::vec3{aabb.max.x - aabb.min.x, aabb.min.y, aabb.min.z}) };
+		return Plane{ aabb.center().length(),
+			vec3{aabb.max.x - aabb.min.x, aabb.min.y, aabb.min.z}.getNormalized()};
 	}
 	
 	Plane pickSplittingPlane(std::span<BSPTree::Object> objects)
