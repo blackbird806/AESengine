@@ -8,7 +8,10 @@ aes::String aes::readFile(std::string_view file)
 	AES_PROFILE_FUNCTION();
 
 	std::ifstream t(file.data(), std::ios::binary | std::ios::ate);
-	AES_ASSERT(t.is_open());
+	if (!t.is_open())
+	{
+		AES_FATAL_ERROR();
+	}
 	int const size = t.tellg();
 	String buffer;
 	buffer.resize(size);

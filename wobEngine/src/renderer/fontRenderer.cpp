@@ -63,8 +63,8 @@ Result<FontRessource> aes::createFontRessource(FontParams const& params)
 		auto const& pc = packChars[i];
 		fontRessource.glyphs[i] = Glyph{
 			.c = params.startUnicode + (int32_t)i,
-			.x = {pc.x0, pc.x1},
-			.y = {pc.y0, pc.y1},
+			.x = {(float)pc.x0, (float)pc.x1},
+			.y = {(float)pc.y0, (float)pc.y1},
 			.u = {(float)pc.x0 / width, (float)(pc.x1) / width},
 			.v = {(float)pc.y0 / height, (float)(pc.y1) / height},
 			.xoff = pc.xoff/width, .yoff = pc.yoff/height,

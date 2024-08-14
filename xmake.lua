@@ -40,6 +40,8 @@ target("wobEngine")
 	add_includedirs("wobEngine/thirdParty/fmt/include")
 	add_includedirs("wobEngine/thirdParty/glm")
 	--
+	add_files("wobEngine/thirdParty/**.cpp|wobEngine/thirdParty/**.c")
+	add_headerfiles("wobEngine/thirdParty/**.hpp|wobEngine/thirdParty/**.h")
 	add_files("wobEngine/src/**.cpp|renderer/RHI/D3D11/*.cpp|renderer/RHI/SceGxm/*.cpp")
 	add_headerfiles("wobEngine/src/**.hpp|renderer/RHI/D3D11/*.hpp|renderer/RHI/SceGxm/*.hpp")
 	if is_os("windows") then

@@ -25,6 +25,7 @@ namespace aes
 			payload->counter--;
 			if (payload->counter == 0)
 			{
+				payload->element.destroy(); // explicit call to destroy in case if destructors do not release resources in the future
 				payload->allocator.destroy(payload);
 				payload = nullptr;
 			}

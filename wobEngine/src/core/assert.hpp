@@ -27,4 +27,6 @@
 
 #define AES_NOT_IMPLEMENTED() AES_DEBUG_BREAK()
 
+#define AES_FATAL_ERROR() std::abort()
+
 #endif

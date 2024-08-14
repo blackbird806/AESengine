@@ -23,8 +23,8 @@ using namespace aes;
 struct vert
 {
 	aes::vec2 pos;
-	aes::vec3 col;
-	float a = 1.0f;
+	aes::vec4 col;
+	aes::vec2 uv;
 };
 
 // base RHI classes shall be trivially copyable and non RAII complient
@@ -32,7 +32,9 @@ struct vert
 // RefCounted is copyable, destroy is called when no more RefCountedWrapper exist
 // this modification is done because we often want to control the order and when RHI object are destroyed and also for complex lifetime RefCount is handy, so the wrapper architecture is more flexible and less dirty
 // this way we can easly manage lifetimes of the same objects differently depending of the use case
-// we may want a third wrapper which would be observer, for now raw objects can be used for this
+// we may want a third wrapper which would be observer, for now raw objects or pointers can be used for this
+
+const char* shaderPath = "../../../../wobEngine/assets/shaders/HLSL/";
 
 class TestRHIApp
 {
@@ -153,7 +155,9 @@ public:
 			static auto const geoShaderData_vs = aes::readFileBin("app0:assets/shaders/vita/basic2d_vs.gxp");
 			vertexShaderDescription.source = geoShaderData_vs.data();
 #else
-			vertexShaderDescription.source = aes::readFile("assets/shaders/HLSL/draw2d.vs");
+			String path(shaderPath);
+			path.append("draw2d.vs");
+			vertexShaderDescription.source = aes::readFile(path.c_str());
 #endif
 			vertexShaderDescription.verticesStride = sizeof(aes::vec2);
 			aes::VertexInputLayout vertexInputLayout[2];
@@ -181,7 +185,9 @@ public:
 			fragmentShaderDescription.source = geoShaderData_fs.data();
 			fragmentShaderDescription.gxpVertexProgram = geoVertexShader.getGxpShader();
 #else
-			fragmentShaderDescription.source = aes::readFile("assets/shaders/HLSL/draw2d.fs");
+			String path(shaderPath);
+			path.append("draw2d.fs");
+			fragmentShaderDescription.source = aes::readFile(path.c_str());
 #endif
 			fragmentShaderDescription.multisampleMode = MultisampleMode::None;
 
@@ -191,9 +197,9 @@ public:
 		}
 		{
 			vert tri[] = {
-				{{0.25f, 0.25f}, {1.0f, 0.0f, 0.0f}, 1.0f},
-				{{0.5f, -0.25f}, {0.0f, 1.0f, 0.0f}, 1.0f},
-				{{0.25f, 0.5f}, {0.0f, 0.0f, 1.0f}, 1.0f},
+				{{0.25f, 0.25f}, {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
+				{{0.5f, -0.25f}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
+				{{0.25f, 0.5f},  {0.0f, 0.0f, 1.0f, 1.0f},  {0.0f, 0.0f}},
 			};
 
 			aes::BufferDescription vertexBufferDesc = {};
@@ -260,12 +266,12 @@ public:
 		device.endRenderPass();
 #endif
 		vert tri[] = {
-				{{xx, -0.25f}, {1.0f, 0.0f, 0.0f}, 1.0f},
-				{{0.5f, -0.25f}, {0.0f, 1.0f, 0.0f}, 1.0f},
-				{{-0.25f, 0.5f}, {0.0f, 0.0f, 1.0f}, 1.0f},
+				{{xx, 0.25f}, {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
+				{{0.5f, -0.25f}, {0.0f, 1.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
+				{{0.25f, 0.5f},  {0.0f, 0.0f, 1.0f, 1.0f},  {0.0f, 0.0f}},
 			};
 
-		xx += 0.001f;
+		xx += 0.0001f;
 		if (auto map = device.mapBuffer(geoVertexBuffer))
 		{
 			memcpy(map.value(), &tri, sizeof(tri));

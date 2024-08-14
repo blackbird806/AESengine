@@ -1,14 +1,13 @@
 #ifndef AES_FONTRENDERER_HPP
 #define AES_FONTRENDERER_HPP
 
-#include <glm/vec2.hpp>
-#include <glm/vec4.hpp>
-
 #include "renderer/RHI/RHITexture.hpp"
 #include "renderer/RHI/RHIBuffer.hpp"
 #include "renderer/RHI/RHISampler.hpp"
 #include "renderer/RHI/RHIDevice.hpp"
 #include "core/array.hpp"
+
+#include "core/vec2.hpp"
 
 // Font system RHI complient
 // We want simple and efficient bitmap based font rendering
@@ -18,9 +17,9 @@ namespace aes
 	struct Glyph
 	{
 		int32_t c;
-		glm::vec2 x, y;
-		glm::vec2 u;
-		glm::vec2 v;
+		vec2 x, y;
+		vec2 u;
+		vec2 v;
 
 		float xoff, yoff, xadvance;
 	};

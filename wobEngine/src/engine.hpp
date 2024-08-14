@@ -7,7 +7,6 @@
 #include "core/array.hpp"
 #include "core/uniquePtr.hpp"
 #include "renderer/RHI/RHIRenderContext.hpp"
-#include "renderer/camera.hpp"
 
 namespace aes {
 
@@ -56,7 +55,6 @@ namespace aes {
 		 */
 		void getScreenMousePos(int& x, int& y) const noexcept;
 
-		Camera mainCamera;
 		UniquePtr<Window> mainWindow;
 
 	private:
