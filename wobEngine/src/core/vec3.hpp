@@ -40,24 +40,9 @@ namespace aes
 			return data[i];
 		}
 
-		constexpr vec3 operator+(float v) const noexcept
+		constexpr vec3 operator-() const noexcept
 		{
-			return vec3(x + v, y + v, z + v);
-		}
-
-		constexpr vec3 operator-(float v) const noexcept
-		{
-			return vec3(x - v, y - v, z - v);
-		}
-
-		constexpr vec3 operator*(float v) const noexcept
-		{
-			return vec3(x * v, y * v, z * v);
-		}
-
-		constexpr vec3 operator/(float v) const noexcept
-		{
-			return vec3(x / v, y / v, z / v);
+			return vec3(-x, -y, -z);
 		}
 
 		constexpr vec3& operator+=(float v) noexcept
@@ -107,10 +92,7 @@ namespace aes
 			return sqrt(sqrLength());
 		}
 
-		/*constexpr*/ void normalize() noexcept
-		{
-			*this = *this / length();
-		}
+		/*constexpr*/ void normalize() noexcept;
 
 		/*constexpr*/ vec3 getNormalized() const noexcept
 		{
@@ -126,6 +108,52 @@ namespace aes
 			struct { float r, g, b; };
 		};
 	};
+
+	constexpr vec3 operator+(vec3 const& lhs, float v) noexcept
+	{
+		return vec3(lhs.x + v, lhs.y + v, lhs.z + v);
+	}
+
+	constexpr vec3 operator-(vec3 const& lhs, float v) noexcept
+	{
+		return vec3(lhs.x - v, lhs.y - v, lhs.z - v);
+	}
+
+	constexpr vec3 operator*(vec3 const& lhs, float v) noexcept
+	{
+		return vec3(lhs.x * v, lhs.y * v, lhs.z * v);
+	}
+
+	constexpr vec3 operator/(vec3 const& lhs, float v) noexcept
+	{
+		return vec3(lhs.x / v, lhs.y / v, lhs.z / v);
+	}
+
+	constexpr vec3 operator+(vec3 const& lhs, vec3 const& rhs) noexcept
+	{
+		return vec3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
+	}
+
+	constexpr vec3 operator-(vec3 const& lhs, vec3 const& rhs) noexcept
+	{
+		return vec3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
+	}
+
+	constexpr vec3 operator*(vec3 const& lhs, vec3 const& rhs) noexcept
+	{
+		return vec3(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z);
+	}
+
+	constexpr vec3 operator/(vec3 const& lhs, vec3 const& rhs) noexcept
+	{
+		return vec3(lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z);
+	}
+
+	inline void vec3::normalize() noexcept
+	{
+		*this = *this / length();
+	}
+
 }
 
 #endif

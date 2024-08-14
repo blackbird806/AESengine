@@ -36,25 +36,6 @@ namespace aes
 			return data[i];
 		}
 
-		constexpr vec2 operator+(float v) const noexcept
-		{
-			return vec2(x + v, y + v);
-		}
-
-		constexpr vec2 operator-(float v) const noexcept
-		{
-			return vec2(x - v, y - v);
-		}
-
-		constexpr vec2 operator*(float v) const noexcept
-		{
-			return vec2(x * v, y * v);
-		}
-
-		constexpr vec2 operator/(float v) const noexcept
-		{
-			return vec2(x / v, y / v);
-		}
 
 		constexpr vec2& operator+=(float v) noexcept
 		{
@@ -99,10 +80,7 @@ namespace aes
 			return sqrt(sqrLength());
 		}
 
-		/*constexpr*/ void normalize() noexcept
-		{
-			*this = *this / length();
-		}
+		/*constexpr*/ void normalize() noexcept;
 
 		/*constexpr*/ vec2 getNormalized() const noexcept
 		{
@@ -118,6 +96,52 @@ namespace aes
 			struct { float r, g; };
 		};
 	};
+
+	constexpr vec2 operator+(vec2 lhs, float v) noexcept
+	{
+		return vec2(lhs.x + v, lhs.y + v);
+	}
+
+	constexpr vec2 operator-(vec2 lhs, float v) noexcept
+	{
+		return vec2(lhs.x - v, lhs.y - v);
+	}
+
+	constexpr vec2 operator*(vec2 lhs, float v) noexcept
+	{
+		return vec2(lhs.x * v, lhs.y * v);
+	}
+
+	constexpr vec2 operator/(vec2 lhs, float v) noexcept
+	{
+		return vec2(lhs.x / v, lhs.y / v);
+	}
+
+	constexpr vec2 operator+(vec2 lhs, vec2 rhs) noexcept
+	{
+		return vec2(lhs.x + rhs.x, lhs.y + rhs.y);
+	}
+
+	constexpr vec2 operator-(vec2 lhs, vec2 rhs) noexcept
+	{
+		return vec2(lhs.x - rhs.x, lhs.y - rhs.y);
+	}
+
+	constexpr vec2 operator*(vec2 lhs, vec2 rhs) noexcept
+	{
+		return vec2(lhs.x * rhs.x, lhs.y * rhs.y);
+	}
+
+	constexpr vec2 operator/(vec2 lhs, vec2 rhs) noexcept
+	{
+		return vec2(lhs.x / rhs.x, lhs.y / rhs.y);
+	}
+
+	inline void vec2::normalize() noexcept
+	{
+		*this = *this / length();
+	}
+
 }
 
 #endif

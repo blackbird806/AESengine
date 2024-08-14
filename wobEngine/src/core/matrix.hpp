@@ -87,6 +87,12 @@ namespace aes
 
 	struct mat4x4
 	{
+		static mat4x4 identity() noexcept
+		{
+			AES_NOT_IMPLEMENTED();
+			return mat4x4{};
+		}
+
 		float const& operator[](unsigned i) const
 		{
 			return data[i];
@@ -102,6 +108,7 @@ namespace aes
 			vec4 v[4];
 			float data[16];
 		};
+
 	};
 
 	using mat4 = mat4x4;

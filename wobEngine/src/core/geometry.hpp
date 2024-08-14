@@ -1,8 +1,10 @@
 #ifndef AES_GEOMETRY_HPP
 #define AES_GEOMETRY_HPP
 
-#include <glm/glm.hpp>
 #include <array>
+#include "core/vec2.hpp"
+#include "core/vec3.hpp"
+#include "core/matrix.hpp"
 
 // undef windows shit
 #undef near
@@ -16,24 +18,24 @@ namespace aes {
 
 	struct Line2D
 	{
-		glm::vec2 p1, p2;
+		vec2 p1, p2;
 	};
 
 	struct Line3D
 	{
-		glm::vec3 p1, p2;
+		vec3 p1, p2;
 	};
 	
 	struct RectBounds
 	{
-		glm::vec2 topL, topR, minL, minR;
+		vec2 topL, topR, minL, minR;
 	};
 	
 	struct Rect
 	{
-		glm::vec2 min, max;
+		vec2 min, max;
 
-		static Rect createHalfCenter(glm::vec2 center, glm::vec2 halfSize)
+		static Rect createHalfCenter(vec2 center, vec2 halfSize)
 		{
 			return Rect{ center - halfSize, center + halfSize };
 		}
@@ -49,59 +51,59 @@ namespace aes {
 		}
 	};
 
-	bool pointInRect(glm::vec2 p, Rect const& r);
+	bool pointInRect(vec2 p, Rect const& r);
 
 	struct Triangle2D
 	{
-		glm::vec2 a, b, c;
+		vec2 a, b, c;
 	};
 
 	struct Circle
 	{
-		glm::vec2 pos;
+		vec2 pos;
 		float size;
 	};
 	
 	struct AABB
 	{
-		static AABB createHalfCenter(glm::vec3 const& center, glm::vec3 const& halfSize)
+		static AABB createHalfCenter(vec3 const& center, vec3 const& halfSize)
 		{
 			return AABB{ center - halfSize, center + halfSize };
 		}
 
-		glm::vec3 min;
-		glm::vec3 max;
+		vec3 min;
+		vec3 max;
 
-		glm::vec3 center() const
+		vec3 center() const
 		{
-			return min + glm::length(max - min) * 0.5f;
+			return min + (max - min).length() * 0.5f;
 		}
 
-		glm::vec3 halfSize() const
+		vec3 halfSize() const
 		{
 			return max - min;
 		}
 
-		std::array<glm::vec3, 8> getVertices() const;
+		std::array<vec3, 8> getVertices() const;
 	};
 
 	bool AABB_AABBIntersect(AABB const& a, AABB const& b);
 	
 	struct Sphere
 	{
-		glm::vec3 pos;
+		vec3 pos;
 		float size;
 	};
 
 	struct Plane
 	{
 		float dist;
-		glm::vec3 dir;
+		vec3 dir;
 	};
 
 	struct Ray
 	{
-		glm::vec3 start, dir;
+		vec3 start, dir;
 	};
 
 	bool ray_AABBIntersect(Ray const& r, AABB const& aabb);
@@ -114,11 +116,11 @@ namespace aes {
 		Front = 1,
 	};
 
-	PointPlanePlacement classifyPointToPlane(Plane const& plane, glm::vec3 const& pt);
+	PointPlanePlacement classifyPointToPlane(Plane const& plane, vec3 const& pt);
 
 	struct Frustum
 	{
-		static Frustum createFromPerspective(glm::mat4 const& m);
+		static Frustum createFromPerspective(mat4 const& m);
 		Plane left, right, top, bottom, near, far;
 	};
 

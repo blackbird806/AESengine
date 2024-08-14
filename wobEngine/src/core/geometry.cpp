@@ -4,17 +4,19 @@
 #include "aes.hpp"
 #include "renderer/RHI/RHI.hpp"
 
-bool aes::pointInRect(glm::vec2 p, Rect const& r)
+using namespace aes;
+
+bool aes::pointInRect(vec2 p, Rect const& r)
 {
 	return p.x > r.min.x && p.x < r.max.x&&
 		p.y > r.min.y && p.y < r.max.y;
 }
 
-std::array<glm::vec3, 8> aes::AABB::getVertices() const
+std::array<vec3, 8> aes::AABB::getVertices() const
 {
 	AES_PROFILE_FUNCTION();
 
-	return std::array<glm::vec3, 8>
+	return std::array<vec3, 8>
 		{ min, max,
 		{ min.x, min.y, max.z },
 		{ min.x, max.y, max.z },
@@ -39,7 +41,7 @@ bool aes::ray_AABBIntersect(Ray const& ray, AABB const& box)
 {
 	AES_PROFILE_FUNCTION();
 
-	glm::vec3 const invRayDir = 1.0f / ray.dir;
+	vec3 const invRayDir = 1.0f / ray.dir;
 	
 	float const tx1 = (box.min.x - ray.start.x) * invRayDir.x;
 	float const tx2 = (box.max.x - ray.start.x) * invRayDir.x;
@@ -67,11 +69,11 @@ bool aes::ray_PlaneIntersect(Ray const& r, Plane const& plane)
 	AES_PROFILE_FUNCTION();
 
 	// assuming vectors are all normalized
-	float const d = glm::dot(-plane.dir, r.dir);
+	float const d = -plane.dir.dot(r.dir);
 	if (d > FLT_EPSILON)
 	{
-		glm::vec3 const p = (plane.dir * plane.dist) - r.start;
-		float const t = glm::dot(p, -plane.dir) / d;
+		vec3 const p = (plane.dir * plane.dist) - r.start;
+		float const t = p.dot(-plane.dir) / d;
 
 		if (t < 0)
 			return false;
@@ -82,13 +84,13 @@ bool aes::ray_PlaneIntersect(Ray const& r, Plane const& plane)
 	return false;
 }
 
-aes::PointPlanePlacement aes::classifyPointToPlane(Plane const& plane, glm::vec3 const& pt)
+aes::PointPlanePlacement aes::classifyPointToPlane(Plane const& plane, vec3 const& pt)
 {
 	AES_PROFILE_FUNCTION();
 
 	float constexpr planeThicknessEpsilon = 0.01f;
 	// Compute signed distance of point from plane
-	float const dist = glm::dot(plane.dir, pt) - plane.dist;
+	float const dist = plane.dir.dot(pt) - plane.dist;
 	// Classify p based on the signed distance
 	if (dist > planeThicknessEpsilon)
 		return PointPlanePlacement::Front;
@@ -100,50 +102,52 @@ aes::PointPlanePlacement aes::classifyPointToPlane(Plane const& plane, glm::vec3
 // http://www8.cs.umu.se/kurser/5DV051/HT12/lab/plane_extraction.pdf
 // normal is inside the frustum
 // @Review normalize dir ?
-static aes::Frustum extractFrustumD3D(glm::mat4 const& m)
+static aes::Frustum extractFrustumD3D(mat4 const& m)
 {
 	aes::Frustum f;
-	
+
+	AES_NOT_IMPLEMENTED();
+
 	// Left clipping plane
-	f.left.dir.x = m[1][4] + m[1][1];
-	f.left.dir.y = m[2][4] + m[2][1];
-	f.left.dir.z = m[3][4] + m[3][1];
-	f.left.dist  = m[4][4] + m[4][1];
-	
-	// Right clipping plane
-	f.right.dir.x = m[1][4] - m[1][1];
-	f.right.dir.y = m[2][4] - m[2][1];
-	f.right.dir.z = m[3][4] - m[3][1];
-	f.right.dist  = m[4][4] - m[4][1];
-	
-	// Top clipping plane
-	f.top.dir.x = m[1][4] - m[1][2];
-	f.top.dir.y = m[2][4] - m[2][2];
-	f.top.dir.z = m[3][4] - m[3][2];
-	f.top.dist  = m[4][4] - m[4][2];
-	
-	// Bottom clipping plane
-	f.bottom.dir.x = m[1][4] + m[1][2];
-	f.bottom.dir.y = m[2][4] + m[2][2];
-	f.bottom.dir.z = m[3][4] + m[3][2];
-	f.bottom.dist  = m[4][4] + m[4][2];
-	
-	// Near clipping plane
-	f.near.dir.x = m[1][3];
-	f.near.dir.y = m[2][3];
-	f.near.dir.z = m[3][3];
-	f.near.dist = m[4][3];
-	
-	// Far clipping plane
-	f.far.dir.x = m[1][4] - m[1][3];
-	f.far.dir.y = m[2][4] - m[2][3];
-	f.far.dir.z = m[3][4] - m[3][3];
-	f.far.dist  = m[4][4] - m[4][3];
+	//f.left.dir.x = m[1][4] + m[1][1];
+	//f.left.dir.y = m[2][4] + m[2][1];
+	//f.left.dir.z = m[3][4] + m[3][1];
+	//f.left.dist  = m[4][4] + m[4][1];
+	//
+	//// Right clipping plane
+	//f.right.dir.x = m[1][4] - m[1][1];
+	//f.right.dir.y = m[2][4] - m[2][1];
+	//f.right.dir.z = m[3][4] - m[3][1];
+	//f.right.dist  = m[4][4] - m[4][1];
+	//
+	//// Top clipping plane
+	//f.top.dir.x = m[1][4] - m[1][2];
+	//f.top.dir.y = m[2][4] - m[2][2];
+	//f.top.dir.z = m[3][4] - m[3][2];
+	//f.top.dist  = m[4][4] - m[4][2];
+	//
+	//// Bottom clipping plane
+	//f.bottom.dir.x = m[1][4] + m[1][2];
+	//f.bottom.dir.y = m[2][4] + m[2][2];
+	//f.bottom.dir.z = m[3][4] + m[3][2];
+	//f.bottom.dist  = m[4][4] + m[4][2];
+	//
+	//// Near clipping plane
+	//f.near.dir.x = m[1][3];
+	//f.near.dir.y = m[2][3];
+	//f.near.dir.z = m[3][3];
+	//f.near.dist = m[4][3];
+	//
+	//// Far clipping plane
+	//f.far.dir.x = m[1][4] - m[1][3];
+	//f.far.dir.y = m[2][4] - m[2][3];
+	//f.far.dir.z = m[3][4] - m[3][3];
+	//f.far.dist  = m[4][4] - m[4][3];
 
 	return f;
 }
 
-aes::Frustum aes::Frustum::createFromPerspective(glm::mat4 const& m)
+aes::Frustum aes::Frustum::createFromPerspective(mat4 const& m)
 {
 #ifdef AES_GRAPHIC_API_D3D11
 	return extractFrustumD3D(m);

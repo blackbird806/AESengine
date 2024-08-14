@@ -1,7 +1,6 @@
 #ifndef AES_DRAW2D_HPP
 #define AES_DRAW2D_HPP
 
-#include <glm/glm.hpp>
 #include <string_view>
 
 #include "core/error.hpp"
@@ -13,6 +12,9 @@
 #include "core/color.hpp"
 #include "core/geometry.hpp"
 #include "RHI/RHISampler.hpp"
+
+#include "core/vec2.hpp"
+#include "core/matrix.hpp"
 
 namespace aes
 {
@@ -28,15 +30,15 @@ namespace aes
 		Result<void> init();
 		
 		void setColor(Color color);
-		void setMatrix(glm::mat3 const&);
+		void setMatrix(mat3 const&);
 		void pushState();
 		void popState();
 		void drawLine(Line2D const& line);
-		void drawPoint(glm::vec2 p, float size = 0.05f);
+		void drawPoint(vec2 p, float size = 0.05f);
 		void drawFillRect(Rect const& rect);
 		void drawRect(Rect const& rect);
 		void drawImage(RHITexture& texture, Rect const& rect);
-		void drawText(FontRessource& font, std::string_view str, glm::vec2 pos);
+		void drawText(FontRessource& font, std::string_view str, vec2 pos);
 
 		void executeDrawCommands();
 		
@@ -50,21 +52,16 @@ namespace aes
 		Result<void> ensureTextureVertexBufferCapacity(size_t sizeInBytes);
 		Result<void> ensureTextureIndexBufferCapacity(size_t sizeInBytes);
 
-		struct ColorVertex
-		{
-			glm::vec2 pos;
-			Color color;
-		};
-
 		struct TextureVertex
 		{
-			glm::vec2 pos;
-			glm::vec2 uv;
+			vec2 pos;
+			vec4 color;
+			vec2 uv;
 		};
 
 		struct UniformBuffer
 		{
-			glm::mat4 transformMtr = glm::mat4(1.0f);
+			mat4 transformMtr = ;
 		};
 
 		enum class DrawCommandType
