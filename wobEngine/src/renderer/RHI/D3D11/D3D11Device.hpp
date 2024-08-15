@@ -43,7 +43,8 @@ namespace aes
 		Result<RHISampler> createSampler(SamplerDescription const& desc);
 
 		// cmds
-		Result<void*> mapBuffer(RHIBuffer const& buffer);
+		// return null if failed
+		void* mapBuffer(RHIBuffer const& buffer);
 		Result<void> unmapBuffer(RHIBuffer const& buffer);
 
 		// d3d11 specifics
@@ -96,7 +97,7 @@ namespace aes
 #endif
 	};
 
-	using RHIDevice = D3D11Device;
+	using RHIDeviceBase = D3D11Device;
 }
 
 #endif

@@ -93,8 +93,8 @@ Result<void> Draw2d::init()
 		//	return err;
 	}
 
-	ensureTextureVertexBufferCapacity(200 * sizeof(TextureVertex));
-	ensureTextureIndexBufferCapacity(400 * sizeof(Index_t));
+	ensureVertexBufferCapacity(200 * sizeof(TextureVertex));
+	ensureIndexBufferCapacity(400 * sizeof(Index_t));
 
 	AES_LOG("draw2d initialized");
 	return {};
@@ -127,12 +127,12 @@ void Draw2d::drawLine(Line2D const& line)
 {
 	AES_PROFILE_FUNCTION();
 	commands.push(Command{ DrawCommandType::Line, currentState.color });
-	
-	colorVertices.push({ line.p1, currentState.color });
-	colorVertices.push({ line.p2, currentState.color });
-	colorIndices.push(colorOffset + 0);
-	colorIndices.push(colorOffset + 1);
-	colorOffset += 2;
+	vec4 const col = currentState.color.toVec4();
+	vertices.push({ line.p1, col });
+	vertices.push({ line.p2, col });
+	indices.push(offset + 0);
+	indices.push(offset + 1);
+	offset += 2;
 }
 
 void Draw2d::drawPoint(vec2 p, float size)
@@ -148,16 +148,18 @@ void Draw2d::drawFillRect(Rect const& rect)
 	commands.push(Command{ DrawCommandType::FillRect, currentState.color });
 
 	RectBounds const bounds = rect.getBounds();
-	colorVertices.push({ bounds.minL, currentState.color });
-	colorVertices.push({ bounds.minR, currentState.color });
-	colorVertices.push({ bounds.topL, currentState.color });
-	colorVertices.push({ bounds.topR, currentState.color });
+	vec4 const col = currentState.color.toVec4();
+	// uv can be omitted since we don't use texture
+	vertices.push({ bounds.minL, col });
+	vertices.push({ bounds.minR, col });
+	vertices.push({ bounds.topL, col });
+	vertices.push({ bounds.topR, col });
 
-	colorIndices.push(colorOffset + 3);
-	colorIndices.push(colorOffset + 1);
-	colorIndices.push(colorOffset + 2);
-	colorIndices.push(colorOffset + 0);
-	colorOffset += 4;
+	indices.push(offset + 3);
+	indices.push(offset + 1);
+	indices.push(offset + 2);
+	indices.push(offset + 0);
+	offset += 4;
 }
 
 void Draw2d::drawRect(Rect const& rect)
@@ -177,16 +179,16 @@ void Draw2d::drawImage(RHITexture& texture, Rect const& rect)
 	commands.push(Command{ DrawCommandType::Image, currentState, &texture });
 
 	RectBounds const bounds = rect.getBounds();
-	textureVertices.push({ bounds.minL, {0, 1} });
-	textureVertices.push({ bounds.minR, {1, 1} });
-	textureVertices.push({ bounds.topL, {0, 0} });
-	textureVertices.push({ bounds.topR, {1, 0} });
+	vertices.push({ bounds.minL, {0, 1} });
+	vertices.push({ bounds.minR, {1, 1} });
+	vertices.push({ bounds.topL, {0, 0} });
+	vertices.push({ bounds.topR, {1, 0} });
 
-	textureIndices.push(textureOffset + 3);
-	textureIndices.push(textureOffset + 1);
-	textureIndices.push(textureOffset + 2);
-	textureIndices.push(textureOffset + 0);
-	textureOffset += 4;
+	indices.push(offset + 3);
+	indices.push(offset + 1);
+	indices.push(offset + 2);
+	indices.push(offset + 0);
+	offset += 4;
 }
 
 // check https://github.com/ocornut/imgui/blob/master/imgui_draw.cpp#L3542
@@ -223,24 +225,24 @@ void Draw2d::drawText(FontRessource& font, std::string_view str, vec2 pos)
 		auto dp = p;
 		dp.y = p.y - (gsize.y + glyph.yoff);
 
-		textureVertices.push({ dp,								{ glyph.u[0], glyph.v[1]} });
-		textureVertices.push({ vec2{dp.x + gsize.x, dp.y},	{ glyph.u[1], glyph.v[1]} });
-		textureVertices.push({ vec2{dp.x, dp.y + gsize.y},	{ glyph.u[0], glyph.v[0]} });
-		textureVertices.push({ (dp + gsize),					{ glyph.u[1], glyph.v[0]} });
+		vertices.push({ dp,								{ glyph.u[0], glyph.v[1]} });
+		vertices.push({ vec2{dp.x + gsize.x, dp.y},	{ glyph.u[1], glyph.v[1]} });
+		vertices.push({ vec2{dp.x, dp.y + gsize.y},	{ glyph.u[0], glyph.v[0]} });
+		vertices.push({ (dp + gsize),					{ glyph.u[1], glyph.v[0]} });
 
-		//textureVertices.push({ p,								{ glyph.u[0], glyph.v[1]} });
-		//textureVertices.push({ vec2{p.x + gsize.x, p.y},	{ glyph.u[1], glyph.v[1]} });
-		//textureVertices.push({ vec2{p.x, p.y + gsize.y},	{ glyph.u[0], glyph.v[0]} });
-		//textureVertices.push({ (p + gsize),					{ glyph.u[1], glyph.v[0]} });
+		//vertices.push({ p,								{ glyph.u[0], glyph.v[1]} });
+		//vertices.push({ vec2{p.x + gsize.x, p.y},	{ glyph.u[1], glyph.v[1]} });
+		//vertices.push({ vec2{p.x, p.y + gsize.y},	{ glyph.u[0], glyph.v[0]} });
+		//vertices.push({ (p + gsize),					{ glyph.u[1], glyph.v[0]} });
 
 		p.x += gsize.x;
 		//p.x += glyph.xadvance;
 
-		textureIndices.push(textureOffset + 3);
-		textureIndices.push(textureOffset + 1);
-		textureIndices.push(textureOffset + 2);
-		textureIndices.push(textureOffset + 0);
-		textureOffset += 4;
+		indices.push(offset + 3);
+		indices.push(offset + 1);
+		indices.push(offset + 2);
+		indices.push(offset + 0);
+		offset += 4;
 	}
 }
 
@@ -248,12 +250,12 @@ void Draw2d::executeDrawCommands()
 {
 	AES_PROFILE_FUNCTION();
 
-	textureOffset = 0;
+	offset = 0;
 
-	//ensureTextureVertexBufferCapacity(textureVertices.size() * sizeof(TextureVertex));
-	//ensureTextureIndexBufferCapacity(textureIndices.size() * sizeof(Index_t));
-	//textureVertexBuffer.setData(textureVertices.data(), textureVertices.size() * sizeof(TextureVertex));
-	//textureIndexBuffer.setData(textureIndices.data(), textureIndices.size() * sizeof(Index_t));
+	//ensureVertexBufferCapacity(textureVertices.size() * sizeof(TextureVertex));
+	//ensureIndexBufferCapacity(textureIndices.size() * sizeof(Index_t));
+	//vertexBuffer.setData(textureVertices.data(), textureVertices.size() * sizeof(TextureVertex));
+	//indexBuffer.setData(textureIndices.data(), textureIndices.size() * sizeof(Index_t));
 
 	auto& context = RHIRenderContext::instance();
 
@@ -264,11 +266,11 @@ void Draw2d::executeDrawCommands()
 	context.bindVSUniformBuffer(uniformBuffer, 0);
 	
 	context.setFragmentSampler(sampler, 0);
-	context.setVertexShader(textureVertexShader);
-	context.setFragmentShader(textureFragmentShader);
+	context.setVertexShader(vertexShader);
+	context.setFragmentShader(fragmentShader);
 
-	context.bindVertexBuffer(textureVertexBuffer, sizeof(TextureVertex));
-	context.bindIndexBuffer(textureIndexBuffer, IndexTypeFormat::Uint16);
+	context.bindVertexBuffer(vertexBuffer, sizeof(TextureVertex));
+	context.bindIndexBuffer(indexBuffer, IndexTypeFormat::Uint16);
 
 	for (auto const& cmd : commands)
 	{
@@ -295,14 +297,14 @@ void Draw2d::executeDrawCommands()
 		textureIndicesOffset += indicesCount;
 	}
 
-	textureIndices.clear();
-	textureVertices.clear();
+	indices.clear();
+	vertices.clear();
 	commands.clear();
 }
 
 // @Review
 
-Result<void> Draw2d::ensureTextureVertexBufferCapacity(size_t sizeInBytes)
+Result<void> Draw2d::ensureVertexBufferCapacity(size_t sizeInBytes)
 {
 	AES_PROFILE_FUNCTION();
 
@@ -314,11 +316,11 @@ Result<void> Draw2d::ensureTextureVertexBufferCapacity(size_t sizeInBytes)
 	vertexBufferDesc.sizeInBytes = sizeInBytes;
 
 	AES_NOT_IMPLEMENTED();
-	//return ensureRHIBufferCapacity(textureVertexBuffer, vertexBufferDesc);
+	return device.ensureBufferCapacity(vertexBuffer, vertexBufferDesc);
 	return {};
 }
 
-Result<void> Draw2d::ensureTextureIndexBufferCapacity(size_t sizeInBytes)
+Result<void> Draw2d::ensureIndexBufferCapacity(size_t sizeInBytes)
 {
 	AES_PROFILE_FUNCTION();
 

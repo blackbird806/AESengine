@@ -567,15 +567,15 @@ Result<RHISampler> aes::D3D11Device::createSampler(SamplerDescription const& des
 	return {std::move(sampler)};
 }
 
-Result<void*> aes::D3D11Device::mapBuffer(RHIBuffer const& buffer)
+void* aes::D3D11Device::mapBuffer(RHIBuffer const& buffer)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	auto const result = deviceContext->Map(buffer.apiBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result))
 	{
-		return { AESError::GPUBufferMappingFailed };
+		return nullptr;
 	}
-	return { mappedResource.pData };
+	return mappedResource.pData;
 }
 
 Result<void> aes::D3D11Device::unmapBuffer(RHIBuffer const& buffer)

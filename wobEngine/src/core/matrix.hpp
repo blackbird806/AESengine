@@ -52,6 +52,20 @@ namespace aes
 			return mat3x3{};
 		}
 
+		mat3x3() noexcept
+		{
+			v[0] = vec3();
+			v[1] = vec3();
+			v[2] = vec3();
+		}
+
+		mat3x3(mat3x3 const& rhs) noexcept
+		{
+			v[0] = rhs[0];
+			v[1] = rhs[1];
+			v[2] = rhs[2];
+		}
+
 		float const& operator[](unsigned i) const
 		{
 			return data[i];

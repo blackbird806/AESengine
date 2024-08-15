@@ -9,4 +9,15 @@
 	#include "renderer/RHI/SceGxm/gxmDevice.hpp"
 #endif
 
+namespace aes 
+{
+	class RHIDevice : public RHIDeviceBase
+	{
+	public:
+		Result<void> setBufferData(RHIBuffer const& buffer, void* data, size_t size);
+		Result<void> reallocBuffer(RHIBuffer& buffer, BufferDescription const& reallocDesc);
+		Result<void> ensureBufferCapacity(RHIBuffer& buffer, BufferDescription const& reallocDesc);
+	};
+}
+
 #endif

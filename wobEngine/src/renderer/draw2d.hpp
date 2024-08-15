@@ -46,8 +46,8 @@ namespace aes
 
 		using Index_t = uint16_t;
 		
-		Result<void> ensureTextureVertexBufferCapacity(size_t sizeInBytes);
-		Result<void> ensureTextureIndexBufferCapacity(size_t sizeInBytes);
+		Result<void> ensureVertexBufferCapacity(size_t sizeInBytes);
+		Result<void> ensureIndexBufferCapacity(size_t sizeInBytes);
 
 		struct TextureVertex
 		{
@@ -86,19 +86,16 @@ namespace aes
 
 		Array<Command> commands;
 
-		Array<TextureVertex> textureVertices;
-		Array<Index_t> textureIndices;
-		Index_t textureOffset = 0;
+		Array<TextureVertex> vertices;
+		Array<Index_t> indices;
+		Index_t offset = 0;
 
-		RHIVertexShader textureVertexShader;
-		RHIFragmentShader textureFragmentShader;
+		RHIVertexShader vertexShader;
+		RHIFragmentShader fragmentShader;
 		RHISampler sampler;
 
-		RHIBuffer colorVertexBuffer;
-		RHIBuffer colorIndexBuffer;
-
-		RHIBuffer textureVertexBuffer;
-		RHIBuffer textureIndexBuffer;
+		RHIBuffer vertexBuffer;
+		RHIBuffer indexBuffer;
 
 		RHIBuffer uniformBuffer;
 	};
