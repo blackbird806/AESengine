@@ -8,9 +8,11 @@
 
 using namespace aes;
 
-Result<void> Draw2d::init()
+Result<void> Draw2d::init(RHIDevice& dev)
 {
 	AES_PROFILE_FUNCTION();
+
+	device = &dev;
 
 	// init shaders
 	{
@@ -40,11 +42,13 @@ Result<void> Draw2d::init()
 		vertexShaderDescription.verticesLayout = vertexInputLayout;
 		vertexShaderDescription.verticesStride = sizeof(TextureVertex);
 
-		AES_NOT_IMPLEMENTED();
-		//auto err = textureVertexShader.init(vertexShaderDescription);
-		//if (!err)
-		//	return err;
+		auto result = device->createVertexShader(vertexShaderDescription);
+		if (!result)
+			return result.error();
+		vertexShader = std::move(result.value());
 
+	}
+	{
 		BlendInfo blendInfo{};
 		blendInfo.colorMask = ColorMaskBits::All;
 		blendInfo.alphaOp = BlendOp::Add;
@@ -53,7 +57,6 @@ Result<void> Draw2d::init()
 		blendInfo.alphaSrc = BlendFactor::One;
 		blendInfo.colorDst = BlendFactor::OneMinusSrcAlpha;
 		blendInfo.colorSrc = BlendFactor::SrcAlpha;
-
 		FragmentShaderDescription fragmentShaderDescription;
 #ifdef __vita__
 		auto const source_fs = readFileBin("app0:assets/shaders/vita/texture2d_fs.gxp");
@@ -63,9 +66,11 @@ Result<void> Draw2d::init()
 		fragmentShaderDescription.source = readFile("assets/shaders/HLSL/texture2d.fs");
 		fragmentShaderDescription.blendInfo = blendInfo;
 #endif
-		//err = textureFragmentShader.init(fragmentShaderDescription);
-		//if (!err)
-		//	return err;
+
+		auto result = device->createFragmentShader(fragmentShaderDescription);
+		if (!result)
+			return result.error();
+		fragmentShader = std::move(result.value());
 	}
 
 	// init default sampler
@@ -76,7 +81,10 @@ Result<void> Draw2d::init()
 		samplerDesc.filter = TextureFilter::Linear;
 		samplerDesc.lodMin = 0;
 		samplerDesc.lodBias = 0;
-		//sampler.init(samplerDesc);
+		auto result = device->createSampler(samplerDesc);
+		if (!result)
+			return result.error();
+		sampler = std::move(result.value());
 	}
 
 	// init uniform buffer
@@ -88,9 +96,10 @@ Result<void> Draw2d::init()
 		bufferDesc.sizeInBytes = sizeof(UniformBuffer);
 		UniformBuffer defaultContent{};
 		bufferDesc.initialData = &defaultContent;
-		//auto err = uniformBuffer.init(bufferDesc);
-		//if (!err)
-		//	return err;
+		auto result = device->createBuffer(bufferDesc);
+		if (!result)
+			return result.error();
+		uniformBuffer = std::move(result.value());
 	}
 
 	ensureVertexBufferCapacity(200 * sizeof(TextureVertex));
@@ -252,25 +261,23 @@ void Draw2d::executeDrawCommands()
 
 	offset = 0;
 
-	//ensureVertexBufferCapacity(textureVertices.size() * sizeof(TextureVertex));
-	//ensureIndexBufferCapacity(textureIndices.size() * sizeof(Index_t));
+	ensureVertexBufferCapacity(vertices.size() * sizeof(TextureVertex));
+	ensureIndexBufferCapacity(indices.size() * sizeof(Index_t));
 	//vertexBuffer.setData(textureVertices.data(), textureVertices.size() * sizeof(TextureVertex));
 	//indexBuffer.setData(textureIndices.data(), textureIndices.size() * sizeof(Index_t));
-
-	auto& context = RHIRenderContext::instance();
 
 	uint colorIndicesOffset = 0;
 	uint textureIndicesOffset = 0;
 	uint indicesCount;
 
-	context.bindVSUniformBuffer(uniformBuffer, 0);
-	
-	context.setFragmentSampler(sampler, 0);
-	context.setVertexShader(vertexShader);
-	context.setFragmentShader(fragmentShader);
+	device->bindVertexUniformBuffer(uniformBuffer, 0);
 
-	context.bindVertexBuffer(vertexBuffer, sizeof(TextureVertex));
-	context.bindIndexBuffer(indexBuffer, IndexTypeFormat::Uint16);
+	device->bindFragmentSampler(sampler, 0);
+	device->setVertexShader(vertexShader);
+	device->setFragmentShader(fragmentShader);
+
+	device->setVertexBuffer(vertexBuffer, sizeof(TextureVertex));
+	device->setIndexBuffer(indexBuffer, IndexTypeFormat::Uint16);
 
 	for (auto const& cmd : commands)
 	{
@@ -279,21 +286,21 @@ void Draw2d::executeDrawCommands()
 		// @Review only draw triangles ?
 		if (cmd.type == DrawCommandType::Line)
 		{
-			context.setDrawPrimitiveMode(DrawPrimitiveType::Lines);
+			device->setDrawPrimitiveMode(DrawPrimitiveType::Lines);
 			indicesCount = 2;
 		}
 		else
 		{
-			context.setDrawPrimitiveMode(DrawPrimitiveType::TriangleStrip);
+			device->setDrawPrimitiveMode(DrawPrimitiveType::TriangleStrip);
 			indicesCount = 4;
 		}
 
 		if (cmd.type == DrawCommandType::Image)
 		{
-			context.bindFragmentTexture(*cmd.texture, 0);
+			device->bindFragmentTexture(*cmd.texture, 0);
 		}
 
-		context.drawIndexed(indicesCount, textureIndicesOffset);
+		device->drawIndexed(indicesCount, textureIndicesOffset);
 		textureIndicesOffset += indicesCount;
 	}
 
@@ -315,9 +322,7 @@ Result<void> Draw2d::ensureVertexBufferCapacity(size_t sizeInBytes)
 	vertexBufferDesc.cpuAccessFlags = CPUAccessFlagBits::Write;
 	vertexBufferDesc.sizeInBytes = sizeInBytes;
 
-	AES_NOT_IMPLEMENTED();
-	return device.ensureBufferCapacity(vertexBuffer, vertexBufferDesc);
-	return {};
+	return device->ensureBufferCapacity(vertexBuffer, vertexBufferDesc);
 }
 
 Result<void> Draw2d::ensureIndexBufferCapacity(size_t sizeInBytes)
@@ -331,9 +336,7 @@ Result<void> Draw2d::ensureIndexBufferCapacity(size_t sizeInBytes)
 	indexBufferDesc.cpuAccessFlags = CPUAccessFlagBits::Write;
 	indexBufferDesc.sizeInBytes = sizeInBytes;
 
-	AES_NOT_IMPLEMENTED();
-	//return ensureRHIBufferCapacity(textureIndexBuffer, indexBufferDesc);
-	return {};
+	return device->ensureBufferCapacity(indexBuffer, indexBufferDesc);
 }
 
 

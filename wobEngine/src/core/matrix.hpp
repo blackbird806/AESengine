@@ -48,8 +48,12 @@ namespace aes
 	{
 		static mat3x3 identity() noexcept
 		{
-			AES_NOT_IMPLEMENTED();
-			return mat3x3{};
+			mat3x3 m;
+			memset(&m, 0, sizeof(m));
+			m.data[0] = 1;
+			m.data[4] = 1;
+			m.data[8] = 1;
+			return m;
 		}
 
 		mat3x3() noexcept

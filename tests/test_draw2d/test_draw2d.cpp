@@ -3,6 +3,8 @@
 #include "renderer/draw2d.hpp"
 #include "core/color.hpp"
 #include "core/vec2.hpp"
+#include "renderer/RHI/RHIDevice.hpp"
+#include "renderer/RHI/Scoped.hpp"
 
 using namespace aes;
 
@@ -10,6 +12,7 @@ class TestDraw2dApp : public Engine
 {
 public:
 
+	Scoped<RHIDevice> device;
 	aes::Draw2d draw2d;
 
 	TestDraw2dApp(InitInfo const& info) : Engine(info)
@@ -19,7 +22,7 @@ public:
 
 	void start() override
 	{
-		if (!draw2d.init())
+		if (!draw2d.init(device))
 			AES_FATAL_ERROR("draw2d creation failed");
 	}
 

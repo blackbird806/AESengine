@@ -8,6 +8,7 @@
 #include "RHI/RHIBuffer.hpp"
 #include "RHI/RHIShader.hpp"
 #include "RHI/RHITexture.hpp"
+#include "RHI/RHIDevice.hpp"
 
 #include "core/color.hpp"
 #include "core/geometry.hpp"
@@ -27,7 +28,7 @@ namespace aes
 	{
 	public:
 
-		Result<void> init();
+		Result<void> init(RHIDevice& device);
 		
 		void setColor(Color color);
 		void setMatrix(mat3 const&);
@@ -81,6 +82,7 @@ namespace aes
 			RHITexture* texture = nullptr;
 		};
 		
+		RHIDevice* device;
 		State currentState;
 		Array<State> statesStack;
 

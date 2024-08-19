@@ -727,6 +727,13 @@ void D3D11Device::setRasterizerState()
 	deviceContext->RSSetState(rasterState);
 }
 
+Result<void> aes::D3D11Device::bindFragmentSampler(RHISampler& sampler, uint slot)
+{
+	AES_PROFILE_FUNCTION();
+	ID3D11SamplerState* samplerStates[] = { sampler.getSamplerState() };
+	deviceContext->PSSetSamplers(slot, 1, samplerStates);
+	return {};
+}
 
 void D3D11Device::setBlendState(D3D11BlendState& blendState)
 {
@@ -769,4 +776,12 @@ Result<void> D3D11Device::bindVertexUniformBuffer(RHIBuffer& buffer, uint slot)
 	AES_PROFILE_FUNCTION();
 	deviceContext->VSSetConstantBuffers(slot, 1, &buffer.apiBuffer);
 	return{};
+}
+
+Result<void> aes::D3D11Device::bindFragmentTexture(RHITexture& texture, uint slot)
+{
+	AES_PROFILE_FUNCTION();
+	ID3D11ShaderResourceView* res[] = { texture.getResourceView() };
+	deviceContext->PSSetShaderResources(slot, 1, res);
+	return {};
 }

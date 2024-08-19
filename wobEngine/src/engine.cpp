@@ -24,7 +24,6 @@ Engine::Engine(InitInfo const& info) :
 
 Engine::~Engine()
 {
-	renderer.destroy();
 	mainWindow->close();
 	AES_LOG("engine destroyed");
 }
@@ -56,7 +55,6 @@ void Engine::init()
 
 		}, this });
 
-	renderer.init(*mainWindow);
 	AES_LOG("engine initialized");
 }
 
@@ -74,12 +72,10 @@ void Engine::run()
 		auto const start = std::chrono::high_resolution_clock::now();
 
 		mainWindow->pollEvents();
-		renderer.startFrame();
 
 		update(deltaTime);
 		draw();
 
-		renderer.endFrame();
 		keyJustPressed.clear();
 
 		auto const end = std::chrono::high_resolution_clock::now();

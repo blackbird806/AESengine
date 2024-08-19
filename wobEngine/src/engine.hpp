@@ -70,7 +70,6 @@ namespace aes {
 		uint64_t frameCount = 0;
 
 		const char* appName;
-		RHIRenderContext renderer;
 
 		Array<InputState> keyStates;
 		Array<Key> keyJustPressed;

@@ -80,8 +80,10 @@ namespace aes
 
 		Result<void> bindFragmentUniformBuffer(RHIBuffer& buffer, uint slot);
 		Result<void> bindVertexUniformBuffer(RHIBuffer& buffer, uint slot);
-		Result<void> bindFragmentTexture(RHITexture& buffer, uint slot);
-		Result<void> bindVertexTexture(RHITexture& buffer, uint slot);
+		Result<void> bindFragmentTexture(RHITexture& texture, uint slot);
+		Result<void> bindVertexTexture(RHITexture& texture, uint slot);
+		Result<void> bindVertexSampler(RHISampler& sampler, uint slot);
+		Result<void> bindFragmentSampler(RHISampler& sampler, uint slot);
 
 	private:
 		void setBlendState(D3D11BlendState& blendState);
