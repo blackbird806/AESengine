@@ -39,15 +39,15 @@ const char* shaderPath = "../../../../wobEngine/assets/shaders/HLSL/";
 class TestRHIApp
 {
 	UniquePtr<Window> window;
-	RHIDevice device;
-	RHISwapchain swapchain;
-	RHIFragmentShader clearFragmentShader;
-	RHIVertexShader clearVertexShader;
+	Scoped<RHIDevice> device;
+	Scoped<RHISwapchain> swapchain;
+	Scoped<RHIFragmentShader> clearFragmentShader;
+	Scoped<RHIVertexShader> clearVertexShader;
 
-	RHIFragmentShader geoFragmentShader;
-	RHIVertexShader geoVertexShader;
-	RHIBuffer clearVertexBuffer, clearIndexBuffer;
-	RHIBuffer geoVertexBuffer, geoIndexBuffer;
+	Scoped<RHIFragmentShader> geoFragmentShader;
+	Scoped<RHIVertexShader> geoVertexShader;
+	Scoped<RHIBuffer> clearVertexBuffer, clearIndexBuffer;
+	Scoped<RHIBuffer> geoVertexBuffer, geoIndexBuffer;
 	Scoped<RHIBuffer> uniformBuffer;
 
 public:
@@ -81,7 +81,7 @@ public:
 			swDesc.count = 2;
 			swDesc.width = 960;
 			swDesc.height = 544;
-			swDesc.multisampleMode = MultisampleMode::None;
+			swDesc.multisampleMode = MultisampleMode::X4;
 			swDesc.window = window->getHandle();
 			swDesc.format = RHIFormat::R8G8B8A8_Uint;
 			swDesc.depthFormat = RHIFormat::D24_S8_Uint;
@@ -274,7 +274,7 @@ public:
 		xx += 0.0001f;
 		if (auto map = device.mapBuffer(geoVertexBuffer))
 		{
-			memcpy(map.value(), &tri, sizeof(tri));
+			memcpy(map, &tri, sizeof(tri));
 			device.unmapBuffer(geoVertexBuffer);
 		}
 		else

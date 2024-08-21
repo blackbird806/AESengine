@@ -173,9 +173,21 @@ Result<RHISwapchain> D3D11Device::createSwapchain(SwapchainDescription const& de
 
 	swapChainDesc.OutputWindow = static_cast<HWND>(desc.window);
 
-	// Turn multisampling off.
-	swapChainDesc.SampleDesc.Count = 1;
-	swapChainDesc.SampleDesc.Quality = 0;
+	if (desc.multisampleMode == MultisampleMode::X2)
+	{
+		swapChainDesc.SampleDesc.Count = 2;
+		swapChainDesc.SampleDesc.Quality = 0;
+	}
+	else if (desc.multisampleMode == MultisampleMode::X4)
+	{
+		swapChainDesc.SampleDesc.Count = 4;
+		swapChainDesc.SampleDesc.Quality = 0;
+	}
+	else
+	{
+		swapChainDesc.SampleDesc.Count = 1;
+		swapChainDesc.SampleDesc.Quality = 0;
+	}
 
 	swapChainDesc.Windowed = true;
 
@@ -211,12 +223,27 @@ Result<RHISwapchain> D3D11Device::createSwapchain(SwapchainDescription const& de
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;
 	depthBufferDesc.Format = rhiFormatToApi(desc.depthFormat);
-	depthBufferDesc.SampleDesc.Count = 1;
-	depthBufferDesc.SampleDesc.Quality = 0;
 	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	depthBufferDesc.CPUAccessFlags = 0;
 	depthBufferDesc.MiscFlags = 0;
+
+
+	if (desc.multisampleMode == MultisampleMode::X2)
+	{
+		depthBufferDesc.SampleDesc.Count = 2;
+		depthBufferDesc.SampleDesc.Quality = 0;
+	}
+	else if (desc.multisampleMode == MultisampleMode::X4)
+	{
+		depthBufferDesc.SampleDesc.Count = 4;
+		depthBufferDesc.SampleDesc.Quality = 0;
+	}
+	else
+	{
+		depthBufferDesc.SampleDesc.Count = 1;
+		depthBufferDesc.SampleDesc.Quality = 0;
+	}
 
 	result = device->CreateTexture2D(&depthBufferDesc, nullptr, &sc.depthStencilBuffer);
 	if (FAILED(result))
@@ -255,7 +282,7 @@ Result<RHISwapchain> D3D11Device::createSwapchain(SwapchainDescription const& de
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
 	depthStencilViewDesc.Format = rhiFormatToApi(desc.depthFormat);
-	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	depthStencilViewDesc.ViewDimension = desc.multisampleMode != MultisampleMode::None ? D3D11_DSV_DIMENSION_TEXTURE2DMS : D3D11_DSV_DIMENSION_TEXTURE2D;
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 
 	result = device->CreateDepthStencilView(sc.depthStencilBuffer, &depthStencilViewDesc, &sc.depthStencilView);

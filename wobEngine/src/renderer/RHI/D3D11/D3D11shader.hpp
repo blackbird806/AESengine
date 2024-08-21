@@ -20,7 +20,8 @@ namespace aes {
 		D3D11Shader(D3D11Shader&& rhs) noexcept;
 		D3D11Shader& operator=(D3D11Shader&& rhs) noexcept;
 		//std::vector<UniformBufferReflectionInfo> getUniformBufferInfos() const;
-		virtual ~D3D11Shader();
+		virtual void destroy();
+
 	protected:
 		ID3D11ShaderReflection* reflector = nullptr;
 	};
@@ -34,7 +35,7 @@ namespace aes {
 		D3D11VertexShader(D3D11VertexShader const& rhs) = delete;
 		D3D11VertexShader& operator=(D3D11VertexShader&&) noexcept;
 		D3D11VertexShader& operator=(D3D11VertexShader const&) = delete;
-		~D3D11VertexShader() override;
+		virtual void destroy() override;
 
 		ID3D11InputLayout* getInputLayout();
 		ID3D11VertexShader* getHandle();
@@ -55,8 +56,8 @@ namespace aes {
 		D3D11FragmentShader(D3D11FragmentShader const& rhs) = delete;
 		D3D11FragmentShader& operator=(D3D11FragmentShader&& rhs) noexcept;
 		D3D11FragmentShader& operator=(D3D11FragmentShader const& rhs) = delete;
-		
-		~D3D11FragmentShader() override;
+		virtual void destroy() override;
+
 
 		ID3D11PixelShader* getHandle();
 		D3D11BlendState blendState;

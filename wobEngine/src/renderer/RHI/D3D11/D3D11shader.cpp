@@ -40,7 +40,7 @@ D3D11Shader& D3D11Shader::operator=(D3D11Shader&& rhs) noexcept
 //	return bufferInfos;
 //}
 
-D3D11Shader::~D3D11Shader()
+void aes::D3D11Shader::destroy()
 {
 	if (reflector)
 		reflector->Release();
@@ -67,11 +67,10 @@ D3D11VertexShader& D3D11VertexShader::operator=(D3D11VertexShader&& rhs) noexcep
 	return *this;
 }
 
-D3D11VertexShader::~D3D11VertexShader()
+void aes::D3D11VertexShader::destroy()
 {
 	AES_PROFILE_FUNCTION();
-	D3D11Shader::~D3D11Shader();
-
+	D3D11Shader::destroy();
 	if (vertexShader) // if shader is valid so is layout and reflector
 	{
 		vertexShader->Release();
@@ -104,10 +103,10 @@ D3D11FragmentShader& D3D11FragmentShader::operator=(D3D11FragmentShader&& rhs) n
 	return *this;
 }
 
-D3D11FragmentShader::~D3D11FragmentShader()
+void aes::D3D11FragmentShader::destroy()
 {
 	AES_PROFILE_FUNCTION();
-	D3D11Shader::~D3D11Shader();
+	D3D11Shader::destroy();
 
 	if (pixelShader)
 		pixelShader->Release();
