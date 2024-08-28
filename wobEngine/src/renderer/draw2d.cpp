@@ -2,8 +2,6 @@
 
 #include "core/utility.hpp"
 #include "RHI/RHIRenderContext.hpp"
-#include <glm/ext/matrix_clip_space.hpp>
-
 #include "fontRenderer.hpp"
 
 using namespace aes;

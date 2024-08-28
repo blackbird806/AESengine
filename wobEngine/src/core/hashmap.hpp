@@ -97,20 +97,16 @@ namespace aes
 
 		constexpr void removeFirst(T const& e) noexcept
 		{
-			Iterator d = find();
-
-			// node not found
-			if (d == end())
-				return;
-
+			Node* prev = first;
 			for (Node* c = first; c != nullptr; c = c->next)
 			{
-				if (c->next == d.node)
+				if (c.data == e)
 				{
-					c->next = d.node->next;
-					deleteNode(d);
+					prev->next = c->next;
+					deleteNode(c);
 					return;
 				}
+				prev = c;
 			}
 		}
 
@@ -221,7 +217,7 @@ namespace aes
 			
 			auto const it = buckets[index].findIf([key](auto const& pair) {
 				return pair.first == key;
-				});
+			});
 
 			if (it != buckets[index].end())
 				return (*it).second;

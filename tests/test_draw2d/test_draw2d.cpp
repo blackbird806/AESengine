@@ -4,7 +4,6 @@
 #include "core/color.hpp"
 #include "core/vec2.hpp"
 #include "renderer/RHI/RHIDevice.hpp"
-#include "renderer/RHI/Scoped.hpp"
 
 using namespace aes;
 
@@ -12,7 +11,7 @@ class TestDraw2dApp : public Engine
 {
 public:
 
-	Scoped<RHIDevice> device;
+	RHIDevice device;
 	aes::Draw2d draw2d;
 
 	TestDraw2dApp(InitInfo const& info) : Engine(info)

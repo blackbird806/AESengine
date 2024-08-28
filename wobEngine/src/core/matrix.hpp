@@ -65,9 +65,9 @@ namespace aes
 
 		mat3x3(mat3x3 const& rhs) noexcept
 		{
-			v[0] = rhs[0];
-			v[1] = rhs[1];
-			v[2] = rhs[2];
+			v[0] = rhs.v[0];
+			v[1] = rhs.v[1];
+			v[2] = rhs.v[2];
 		}
 
 		float const& operator[](unsigned i) const
@@ -113,8 +113,29 @@ namespace aes
 	{
 		static mat4x4 identity() noexcept
 		{
-			AES_NOT_IMPLEMENTED();
-			return mat4x4{};
+			mat4x4 m;
+			memset(&m, 0, sizeof(m));
+			m.data[0] = 1;
+			m.data[5] = 1;
+			m.data[10] = 1;
+			m.data[15] = 1;
+			return m;
+		}
+
+		mat4x4() noexcept
+		{
+			v[0] = vec4();
+			v[1] = vec4();
+			v[2] = vec4();
+			v[3] = vec4();
+		}
+
+		mat4x4(mat4x4 const& rhs) noexcept
+		{
+			v[0] = rhs.v[0];
+			v[1] = rhs.v[1];
+			v[2] = rhs.v[2];
+			v[3] = rhs.v[3];
 		}
 
 		float const& operator[](unsigned i) const

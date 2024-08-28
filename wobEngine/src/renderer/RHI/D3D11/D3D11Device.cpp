@@ -228,7 +228,6 @@ Result<RHISwapchain> D3D11Device::createSwapchain(SwapchainDescription const& de
 	depthBufferDesc.CPUAccessFlags = 0;
 	depthBufferDesc.MiscFlags = 0;
 
-
 	if (desc.multisampleMode == MultisampleMode::X2)
 	{
 		depthBufferDesc.SampleDesc.Count = 2;
@@ -420,7 +419,7 @@ Result<RHITexture> aes::D3D11Device::createTexture(TextureDescription const& inf
 	textureDesc.Usage = rhiMemoryUsageToApi(info.usage);
 	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;  // @Review
 	textureDesc.CPUAccessFlags = rhiCPUAccessFlagsToApi(info.cpuAccess);
-	//textureDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
+	textureDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
 	HRESULT err;
 	if (info.initialData)
@@ -455,12 +454,12 @@ Result<RHITexture> aes::D3D11Device::createTexture(TextureDescription const& inf
 		AES_LOG_ERROR("D3D11 CreateShaderResourceView failed !");
 		return { AESError::GPUTextureCreationFailed };
 	}
-	//D3D11Renderer::instance().getDeviceContext()->GenerateMips(textureView);
+	deviceContext->GenerateMips(tex.textureView);
 
 	return {std::move(tex)};
 }
 
-Result<RHIVertexShader> aes::D3D11Device::createVertexShader(VertexShaderDescription const& desc)
+Result<RHIVertexShader> D3D11Device::createVertexShader(VertexShaderDescription const& desc)
 {
 	AES_PROFILE_FUNCTION();
 
@@ -567,7 +566,7 @@ Result<RHIFragmentShader> D3D11Device::createFragmentShader(FragmentShaderDescri
 	return {std::move(frag)};
 }
 
-Result<RHISampler> aes::D3D11Device::createSampler(SamplerDescription const& desc)
+Result<RHISampler> D3D11Device::createSampler(SamplerDescription const& desc)
 {
 	AES_PROFILE_FUNCTION();
 	RHISampler sampler;
@@ -594,7 +593,7 @@ Result<RHISampler> aes::D3D11Device::createSampler(SamplerDescription const& des
 	return {std::move(sampler)};
 }
 
-void* aes::D3D11Device::mapBuffer(RHIBuffer const& buffer)
+void* D3D11Device::mapBuffer(RHIBuffer const& buffer)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	auto const result = deviceContext->Map(buffer.apiBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -754,7 +753,7 @@ void D3D11Device::setRasterizerState()
 	deviceContext->RSSetState(rasterState);
 }
 
-Result<void> aes::D3D11Device::bindFragmentSampler(RHISampler& sampler, uint slot)
+Result<void> D3D11Device::bindFragmentSampler(RHISampler& sampler, uint slot)
 {
 	AES_PROFILE_FUNCTION();
 	ID3D11SamplerState* samplerStates[] = { sampler.getSamplerState() };
@@ -798,6 +797,13 @@ Result<void> D3D11Device::setIndexBuffer(RHIBuffer& buffer, IndexTypeFormat type
 	return {};
 }
 
+Result<void> D3D11Device::bindFragmentUniformBuffer(RHIBuffer& buffer, uint slot)
+{
+	AES_PROFILE_FUNCTION();
+	deviceContext->PSSetConstantBuffers(slot, 1, &buffer.apiBuffer);
+	return{};
+}
+
 Result<void> D3D11Device::bindVertexUniformBuffer(RHIBuffer& buffer, uint slot)
 {
 	AES_PROFILE_FUNCTION();
@@ -805,10 +811,26 @@ Result<void> D3D11Device::bindVertexUniformBuffer(RHIBuffer& buffer, uint slot)
 	return{};
 }
 
-Result<void> aes::D3D11Device::bindFragmentTexture(RHITexture& texture, uint slot)
+Result<void> D3D11Device::bindFragmentTexture(RHITexture& texture, uint slot)
 {
 	AES_PROFILE_FUNCTION();
 	ID3D11ShaderResourceView* res[] = { texture.getResourceView() };
 	deviceContext->PSSetShaderResources(slot, 1, res);
+	return {};
+}
+
+Result<void> D3D11Device::bindVertexTexture(RHITexture& texture, uint slot)
+{
+	AES_PROFILE_FUNCTION();
+	ID3D11ShaderResourceView* res[] = { texture.getResourceView() };
+	deviceContext->VSSetShaderResources(slot, 1, res);
+	return {};
+}
+
+Result<void> D3D11Device::bindVertexSampler(RHISampler& sampler, uint slot)
+{
+	AES_PROFILE_FUNCTION();
+	ID3D11SamplerState* samplerStates[] = { sampler.getSamplerState() };
+	deviceContext->VSSetSamplers(slot, 1, samplerStates);
 	return {};
 }

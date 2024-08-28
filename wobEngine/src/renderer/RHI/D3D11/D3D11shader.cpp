@@ -46,6 +46,11 @@ void aes::D3D11Shader::destroy()
 		reflector->Release();
 }
 
+D3D11Shader::~D3D11Shader() noexcept
+{
+	destroy();
+}
+
 D3D11VertexShader::D3D11VertexShader(D3D11VertexShader&& rhs) noexcept : D3D11Shader(std::move(rhs)),
 	vertexShader(rhs.vertexShader), layout(rhs.layout)
 {

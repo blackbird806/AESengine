@@ -3,10 +3,15 @@
 
 #include "core/aes.hpp"
 #include "core/allocator.hpp"
-#include "scoped.hpp"
 
 namespace aes
 {
+	template<typename T>
+	concept Destructible = requires(T a)
+	{
+		{ a.destroy() };
+	};
+
 	template<Destructible T>
 	struct RefCounted
 	{
