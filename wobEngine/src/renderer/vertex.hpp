@@ -1,21 +1,21 @@
 #ifndef AES_VERTEX_HPP
 #define AES_VERTEX_HPP
 
-#include <glm/glm.hpp>
 #include "core/vec3.hpp"
 #include "core/vec4.hpp"
+#include "core/matrix.hpp"
 
 namespace aes {
 
 	struct ModelBuffer
 	{
-		glm::mat4 world;
+		mat4 world;
 	};
 
 	struct CameraBuffer
 	{
-		glm::mat4 view;
-		glm::mat4 proj;
+		mat4 view;
+		mat4 proj;
 	};
 
 	struct Vertex

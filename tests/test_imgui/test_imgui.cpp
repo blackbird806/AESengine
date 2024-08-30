@@ -41,7 +41,7 @@ public:
 			defaultFont = std::move(fontResult.value());
 		}
 
-		if (!draw2d.init())
+		if (!draw2d.init(device))
 			AES_FATAL_ERROR("draw2d creation failed");
 	}
 
@@ -91,7 +91,7 @@ public:
 			case ImguiDrawCmdType::Text:
 			{
 				auto arg = std::get<TextArg>(cmd.arg);
-				draw2d.drawText(defaultFont, arg.str, arg.pos);
+				draw2d.drawText(defaultFont, arg.str.c_str(), arg.pos);
 			}
 				break;
 			case ImguiDrawCmdType::Rect: break;

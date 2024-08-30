@@ -417,3 +417,4 @@ wobEngine/prof.txt
 *.incl
 vsxmake2022
 build/.gens
+wobEngine/assets/fonts/CommitMonoNerdFontPropo-Regular.otf

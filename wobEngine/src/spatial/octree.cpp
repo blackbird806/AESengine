@@ -1,6 +1,5 @@
 #include "octree.hpp"
 
-#include <glm/gtx/norm.hpp>
 #include "core/aes.hpp"
 
 using namespace aes;

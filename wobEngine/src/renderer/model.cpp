@@ -5,9 +5,10 @@
 
 using namespace aes;
 
-std::vector<Vertex> aes::getCubeVertices()
+Array<Vertex> aes::getCubeVertices()
 {
-	std::vector<Vertex> vertices(8);
+	Array<Vertex> vertices;
+	vertices.resize(8);
 
 	vertices[0].pos = { -1, -1,  1.0f };
 	vertices[0].color = { 1.0f, 0.0f, 0.0f, 1.0f };
@@ -36,9 +37,10 @@ std::vector<Vertex> aes::getCubeVertices()
 	return vertices;
 }
 
-std::vector<Vertex> aes::getCubeVertices(vec4 const& color)
+Array<Vertex> aes::getCubeVertices(vec4 const& color)
 {
-	std::vector<Vertex> vertices(8);
+	Array<Vertex> vertices;
+	vertices.resize(8);
 
 	vertices[0].pos = { -1, -1,  1.0f };
 	vertices[0].color = color;

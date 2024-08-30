@@ -2,8 +2,10 @@
 #define AES_MODEL_HPP
 
 #include <span>
-#include <vector>
-#include <glm/glm.hpp>
+#include "core/vec3.hpp"
+#include "core/vec4.hpp"
+#include "core/matrix.hpp"
+#include "core/array.hpp"
 
 #include "RHI/RHIBuffer.hpp"
 #include "vertex.hpp"
@@ -50,8 +52,8 @@ namespace aes
 		{ 1,  1, -1.0f }
 	};
 
-	std::vector<Vertex> getCubeVertices();
-	std::vector<Vertex> getCubeVertices(vec4 const&);
+	Array<Vertex> getCubeVertices();
+	Array<Vertex> getCubeVertices(vec4 const&);
 	
 	class Model
 	{
@@ -66,7 +68,7 @@ namespace aes
 		
 		void draw();
 		
-		glm::mat4 toWorld;
+		mat4 toWorld;
 		RHIBuffer modelBuffer;
 		
 	private:

@@ -1,6 +1,5 @@
 #include "D3D11Device.hpp"
 #include "D3D11Elements.hpp"
-#include "core/aesException.hpp"
 #include "D3D11shader.hpp"
 #include "renderer/RHI/RHIBuffer.hpp"
 #include "core/array.hpp"
