@@ -13,7 +13,7 @@
 #define AES_LOG(msg, ...) ::aes::Logger::instance().log(aes::format("info : " msg "\n" __VA_OPT__(,) __VA_ARGS__).c_str())
 #define AES_LOG_RAW(msg, ...) ::aes::Logger::instance().log(aes::format(msg "\n" __VA_OPT__(,) __VA_ARGS__).c_str())
 #define AES_WARN(msg, ...) ::aes::Logger::instance().log(aes::format("warn : " msg "\n" __VA_OPT__(,) __VA_ARGS__).c_str())
-#define AES_LOG_ERROR(msg, ...) ::aes::Logger::instance().log(aes::format("error {} {} line {} : {}\n", __FUNCTION__, __FILE__, __LINE__, fmt::format(msg __VA_OPT__(,) __VA_ARGS__).c_str()))
+#define AES_LOG_ERROR(msg, ...) ::aes::Logger::instance().log(aes::format("error : " msg "\n" __VA_OPT__(,) __VA_ARGS__).c_str())
 #else
 #define AES_LOG(msg, ...) ::aes::Logger::instance().log(aes::format("info : " msg "\n", __VA_ARGS__).c_str())
 #define AES_LOG_RAW(msg, ...) ::aes::Logger::instance().log(aes::format(msg "\n", __VA_ARGS__).c_str())

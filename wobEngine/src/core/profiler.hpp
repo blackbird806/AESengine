@@ -2,6 +2,7 @@
 #define AES_PROFILER_HPP
 
 #include "macro_helpers.hpp"
+#include <cstdint>
 
 #ifdef AES_ENABLE_PROFILINGs
 
@@ -33,7 +34,7 @@ namespace aes
 		const char* name;
 		const char* parentName;
 		ProfileTime_t elapsedTime;
-		size_t count = 1;
+		std::size_t count = 1;
 	};
 
 	struct ProfileSession

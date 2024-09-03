@@ -2,6 +2,7 @@
 #define AES_DRAGON4_HPP
 
 #include <cstdint>
+#include <cstddef>
 
 // implementation from https://github.com/ahaldane/Dragon4
 // algo and original code from https://www.ryanjuckett.com/printing-floating-point-numbers/
@@ -58,8 +59,8 @@ namespace aes::d4
     typedef double      tF64;
 
     // Size types
-    typedef size_t		tSize;
-    typedef ptrdiff_t	tPtrDiff;
+    typedef std::size_t	    Size;
+    typedef std::ptrdiff_t	tPtrDiff;
 
     // TODO make this constexpr
 

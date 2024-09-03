@@ -1,6 +1,7 @@
 #include "geometry.hpp"
 
 #include <algorithm>
+#include <cfloat>
 #include "aes.hpp"
 #include "renderer/RHI/RHI.hpp"
 

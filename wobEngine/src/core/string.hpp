@@ -3,6 +3,7 @@
 
 #include <cstring>
 #include <compare>
+#include <math.h>
 
 #include "array.hpp"
 #include "hash.hpp"

@@ -25,6 +25,7 @@
 #include "dragon4.hpp"
 #include "aes.hpp"
 #include <string.h>
+#include <math.h>
 
 using namespace aes::d4;
 

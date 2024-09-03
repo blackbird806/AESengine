@@ -36,7 +36,6 @@ namespace aes
 		Result<RHISwapchain> createSwapchain(SwapchainDescription const& desc);
 		Result<RHIRenderTarget> createRenderTarget(RenderTargetDescription const& desc);
 		Result<RHIBuffer> createBuffer(BufferDescription const& desc);
-		Result<void> copyBuffer(RHIBuffer const& from, RHIBuffer& to);
 		Result<RHITexture> createTexture(TextureDescription const& desc);
 		Result<RHIVertexShader> createVertexShader(VertexShaderDescription const& desc);
 		Result<RHIFragmentShader> createFragmentShader(FragmentShaderDescription const& desc);
@@ -46,6 +45,7 @@ namespace aes
 		// return null if failed
 		void* mapBuffer(RHIBuffer const& buffer);
 		Result<void> unmapBuffer(RHIBuffer const& buffer);
+		Result<void> copyBuffer(RHIBuffer const& from, RHIBuffer& to);
 
 		// d3d11 specifics
 		Result<D3D11BlendState> createBlendState(BlendInfo const& desc);

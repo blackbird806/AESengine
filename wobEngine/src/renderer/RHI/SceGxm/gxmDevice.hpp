@@ -79,7 +79,7 @@ namespace aes
 		State currentState;
 	};
 
-	using RHIDevice = GxmDevice;
+	using RHIDeviceBase = GxmDevice;
 }
 
 #endif

@@ -2,8 +2,11 @@
 #define AES_ALLOCATOR_HPP
 #include <cstdint>
 #include <utility>
+
+using size_t = std::size_t;
 namespace aes
 {
+
 	constexpr unsigned long long operator "" _kb(unsigned long long p)
 	{
 		return p * 1024;
