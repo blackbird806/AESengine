@@ -7,6 +7,7 @@
 #include "gxmShader.hpp"
 #include "gxmTexture.hpp"
 #include "renderer/RHI/RHIBuffer.hpp"
+#include "renderer/RHI/RHISwapchain.hpp"
 #include "renderer/RHI/RHIRenderTarget.hpp"
 
 #include <psp2/gxm.h>
@@ -43,8 +44,22 @@ namespace aes
 		Result<void> init();
 		void destroy();
 
+
+		// resource creation
+		Result<RHISwapchain> createSwapchain(SwapchainDescription const& desc);
+		Result<RHIRenderTarget> createRenderTarget(RenderTargetDescription const& desc);
+		Result<RHIBuffer> createBuffer(BufferDescription const& desc);
+		Result<RHITexture> createTexture(TextureDescription const& desc);
+		Result<RHIVertexShader> createVertexShader(VertexShaderDescription const& desc);
+		Result<RHIFragmentShader> createFragmentShader(FragmentShaderDescription const& desc);
+		Result<RHISampler> createSampler(SamplerDescription const& desc);
+
 		// not sure about this name
 		void swapBuffers(RHIRenderTarget const& oldBuffer, RHIRenderTarget const& newBuffer);
+
+		void* mapBuffer(RHIBuffer const& buffer) { return nullptr; }
+		Result<void> unmapBuffer(RHIBuffer const& buffer) { return {}; }
+		Result<void> copyBuffer(RHIBuffer const& from, RHIBuffer& to) { return {}; }
 
 		// draw calls
 

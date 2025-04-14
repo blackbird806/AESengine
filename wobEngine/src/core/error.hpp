@@ -7,14 +7,13 @@
 #include "aes.hpp"
 #include "errorCodes.hpp"
 
-/*
- * Error class Inspired by rust and Boost leaf
- * However returning error sucks, we may want to go back to exceptions in the future
- * we will use this only as common error object when exception will be back
- * <update> exception sucks too I may try global errorx to simulate them
- */
 namespace aes {
-
+	/**
+	 * Error class Inspired by rust and Boost leaf
+	 * However returning error sucks, we may want to go back to exceptions in the future
+	 * we will use this only as common error object when exception will be back
+	 * <update> exception sucks too I may try global errorx to simulate them
+	 */
 	template<typename T>
 	class [[nodiscard]] Result
 	{

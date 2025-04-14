@@ -3,6 +3,7 @@
 
 #include <string_view>
 #include <vector>
+#include <string>
 #include "aes.hpp"
 #include "string.hpp"
 #include "macro_helpers.hpp"

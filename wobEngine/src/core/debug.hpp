@@ -25,8 +25,8 @@
 #define AES_CHECK(r) if (!r) { AES_LOG_ERROR("{}", r.error()); };
 
 namespace aes {
-	// The Sink interface is used to dispatch log message
-	// a typical sink implementation will show the log message in the console or send it over network for remote debugging
+	/// The Sink interface is used to dispatch log message
+	/// a typical sink implementation will show the log message in the console or send it over network for remote debugging
 	class Sink
 	{
 	public:

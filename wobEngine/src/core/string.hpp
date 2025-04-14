@@ -11,9 +11,7 @@
 
 namespace aes
 {
-	// General usage string class
-	// TODO try some optimisations details
-	// TODO constexpr functions that relies on cstring funcs
+
 
 	constexpr size_t strlen(const char* start)
 	{
@@ -29,7 +27,9 @@ namespace aes
 	{
 		while (*dst++ = *src++) {}
 	}
-
+	/// General usage string class, for now just a wrapper over Array<Char>, we may want to implemet SSO in the future
+	// TODO try some optimisations details
+	// TODO constexpr functions that relies on cstring funcs
 	class String
 	{
 
@@ -260,7 +260,7 @@ namespace aes
 		{
 			constexpr uint64_t A = 54059; /* a prime */
 			constexpr uint64_t B = 76963; /* another prime */
-			constexpr uint64_t C = 86969; /* yet 1another prime */
+			//constexpr uint64_t C = 86969; /* yet 1another prime */
 			constexpr uint64_t FIRSTH = 37; /* also prime */
 			unsigned h = FIRSTH;
 			auto* s = str.data();

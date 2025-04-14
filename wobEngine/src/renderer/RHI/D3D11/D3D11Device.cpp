@@ -707,6 +707,7 @@ void D3D11Device::drawIndexed(uint indexCount, uint indexOffset)
 
 void D3D11Device::beginRenderPass(RHIRenderTarget& rt)
 {
+	AES_NOT_IMPLEMENTED();
 	//deviceContext->OMSetRenderTargets(1, &rt.renderTargetView, );
 }
 

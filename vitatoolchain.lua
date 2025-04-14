@@ -3,9 +3,12 @@ toolchain("vita")
 	
 	set_description("ps vita target with VITA SDK")
 
-    set_kind("cross")
+	--set_kind("cross")
+    set_kind("standalone")
     set_sdkdir("/usr/local/vitasdk")
+	set_bindir("/usr/local/vitasdk/bin")
 	add_defines("__vita__")
+	set_toolset("cxx", "arm-vita-eabi-g++")
 
     on_load(function (toolchain)
 		-- add flags for arch

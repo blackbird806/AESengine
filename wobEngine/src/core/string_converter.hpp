@@ -2,6 +2,7 @@
 #define AES_STRING_CONVERTER_HPP
 
 #include <string_view>
+#include <string>
 
 namespace aes
 {

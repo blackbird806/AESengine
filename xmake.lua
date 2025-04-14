@@ -16,7 +16,7 @@ add_rules("mode.debug", "mode.release")
 add_defines("GLM_FORCE_LEFT_HANDED","GLM_FORCE_DEPTH_ZERO_TO_ONE","GLM_FORCE_CTOR_INIT")
 
 if is_plat("vita") then
-	set_toolchains("vita")
+--	set_toolchains("vita")
 end
 
 if is_mode("debug") then
