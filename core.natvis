@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+	<Type Name="aes::Array&lt;*&gt;">
+		<DisplayString>{{ size={size_}, ptr={buffer} }}</DisplayString>
+		<Expand>
+			<Item Name="[size]" ExcludeView="simple">size_</Item>
+			<Item Name="[capacity]" ExcludeView="simple">capacity_</Item>
+			<ArrayItems>
+				<Size>size_</Size>
+				<ValuePointer>buffer</ValuePointer>
+			</ArrayItems>
+		</Expand>
+	</Type>
+	<Type Name="aes::String">
+	    <DisplayString>{buffer.buffer,na}</DisplayString>
+		<StringView>buffer.buffer,[buffer.size_-1]</StringView>
+	</Type>
+</AutoVisualizer>

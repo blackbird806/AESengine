@@ -53,6 +53,11 @@ public:
 		map.add(String("pistav"), 15);
 		map["hello"] = 16;
 
+		map.remove(String("hello"));
+
+		int out = 0;
+		bool b = map.tryFind(String("Hello"), out);
+
 #ifdef _WIN32
 		window = makeUnique<Win_Window>("aes engine");
 #else

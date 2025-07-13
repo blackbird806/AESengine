@@ -11,8 +11,6 @@
 
 namespace aes
 {
-
-
 	constexpr size_t strlen(const char* start)
 	{
 		AES_ASSERT_NOLOG(start);

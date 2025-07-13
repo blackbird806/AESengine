@@ -5,10 +5,22 @@ toolchain("vita")
 
 	--set_kind("cross")
     set_kind("standalone")
-    set_sdkdir("/usr/local/vitasdk")
-	set_bindir("/usr/local/vitasdk/bin")
+--  set_sdkdir("/usr/local/vitasdk")
+--	set_bindir("/usr/local/vitasdk/bin")
 	add_defines("__vita__")
-	set_toolset("cxx", "arm-vita-eabi-g++")
+
+	use_vita_toolchain = false
+--	if use_vita_toolchain then
+--		set_toolset("cxx", "arm-vita-eabi-g++")
+--		set_toolset("ld", "arm-vita-eabi-g++")
+--		set_toolset("ar", "arm-vita-eabi-g++")
+--		set_toolset("cc", "arm-vita-eabi-gcc")
+--	else
+		set_toolset("cxx", "clang++")
+		set_toolset("ld", "clang++")
+		set_toolset("ar", "clang+++")
+		set_toolset("cc", "clang")
+--	end
 
     on_load(function (toolchain)
 		-- add flags for arch

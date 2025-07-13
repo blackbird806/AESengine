@@ -95,15 +95,18 @@ namespace aes
 			it.n->next = tmp;
 		}
 
-		constexpr void removeFirst(T const& e) noexcept
+		template<typename Pred>
+		constexpr void removeFirst(Pred&& pred) noexcept
 		{
-			Node* prev = first;
-			for (Node* c = first; c != nullptr; c = c->next)
+			Node** prev = nullptr;
+			for (Node** c = &first; *c != nullptr; c = &(*c)->next)
 			{
-				if (c.data == e)
+				if (pred(*c))
 				{
-					prev->next = c->next;
-					deleteNode(c);
+					if (prev)
+						(*prev)->next = (*c)->next;
+					deleteNode(*c);
+					*c = nullptr;
 					return;
 				}
 				prev = c;
@@ -140,7 +143,7 @@ namespace aes
 
 		void deleteNode(Node* n)
 		{
-			n->data.~T();
+			n->~Node();
 			allocator->deallocate(n);
 		}
 
@@ -189,10 +192,16 @@ namespace aes
 
 		constexpr void remove(K const& key)
 		{
-			AES_NOT_IMPLEMENTED();
+			auto const hash = Hash_t{}(key);
+			uint32_t const index = hash % buckets.size();
+
+			buckets[index].removeFirst([key](auto const& node) {
+				return node->data.first == key;
+				});
+			size_--;
 		}
 
-		bool tryFind(K const& key, V* value) const
+		bool tryFind(K const& key, V& value) const
 		{
 			auto const hash = Hash_t{}(key);
 			uint32_t const index = hash % buckets.size();
@@ -203,7 +212,7 @@ namespace aes
 
 			if (it != buckets[index].end())
 			{
-				value = &(*it).second;
+				value = (*it).second;
 				return true;
 			}
 

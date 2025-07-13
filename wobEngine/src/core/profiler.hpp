@@ -34,7 +34,11 @@ namespace aes
 		const char* name;
 		const char* parentName;
 		ProfileTime_t elapsedTime;
+#ifdef _WIN32
+		size_t count = 1;
+#else
 		std::size_t count = 1;
+#endif
 	};
 
 	struct ProfileSession

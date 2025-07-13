@@ -8,6 +8,7 @@
 #include "gxmTexture.hpp"
 #include "renderer/RHI/RHIBuffer.hpp"
 #include "renderer/RHI/RHISwapchain.hpp"
+#include "renderer/RHI/RHISampler.hpp"
 #include "renderer/RHI/RHIRenderTarget.hpp"
 
 #include <psp2/gxm.h>

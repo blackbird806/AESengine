@@ -5,7 +5,7 @@ set_license("GPLv3")
 
 set_allowedmodes("debug", "release")
 set_defaultmode("debug")
---set_allowedplats("windows", "vita")
+set_allowedplats("windows", "vita")
 
 set_languages("c99", "cxxlatest")
 add_rules("plugin.vsxmake.autoupdate")
@@ -16,7 +16,7 @@ add_rules("mode.debug", "mode.release")
 add_defines("GLM_FORCE_LEFT_HANDED","GLM_FORCE_DEPTH_ZERO_TO_ONE","GLM_FORCE_CTOR_INIT")
 
 if is_plat("vita") then
---	set_toolchains("vita")
+	set_toolchains("vita")
 end
 
 if is_mode("debug") then
@@ -57,7 +57,7 @@ target("wobEngine")
 		add_headerfiles("wobEngine/src/core/platformWindows/*.hpp")
 		add_defines("UNICODE", "_UNICODE", "AES_GRAPHIC_API_D3D11")
 		add_links("d3d11", "dxgi", "d3dcompiler", "dxguid", "Dwmapi")
-	elseif is_os("vita") then
+	elseif is_plat("vita") then
 		add_files("wobEngine/src/renderer/RHI/SceGxm/*.cpp")
 		add_headerfiles("wobEngine/src/renderer/RHI/SceGxm/*.hpp")
 		add_defines("AES_GRAPHIC_API_GXM")
