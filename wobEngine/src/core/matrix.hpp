@@ -21,14 +21,9 @@ namespace aes
 							0, 1);
 		}
 
-		float const& operator[](unsigned i) const
+		decltype(auto) operator[](this auto& self, unsigned i)
 		{
-			return data[i];
-		}
-
-		float& operator[](unsigned i)
-		{
-			return data[i];
+			return self.data[i];
 		}
 
 		//mat2x2 operator*(mat2x2 const& rhs)
@@ -70,14 +65,9 @@ namespace aes
 			v[2] = rhs.v[2];
 		}
 
-		float const& operator[](unsigned i) const
+		decltype(auto) operator[](this auto& self, unsigned i)
 		{
-			return data[i];
-		}
-
-		float& operator[](unsigned i)
-		{
-			return data[i];
+			return self.data[i];
 		}
 
 		union
@@ -92,14 +82,9 @@ namespace aes
 	struct mat3x4
 	{
 
-		float const& operator[](unsigned i) const
+		decltype(auto) operator[](this auto& self, unsigned i)
 		{
-			return data[i];
-		}
-
-		float& operator[](unsigned i)
-		{
-			return data[i];
+			return self.data[i];
 		}
 
 		union
@@ -138,14 +123,15 @@ namespace aes
 			v[3] = rhs.v[3];
 		}
 
-		float const& operator[](unsigned i) const
+		decltype(auto) operator[](this auto& self, unsigned i)
 		{
-			return data[i];
+			return self.data[i];
 		}
 
-		float& operator[](unsigned i)
+		decltype(auto) operator[](this auto& self, unsigned i, unsigned j)
 		{
-			return data[i];
+			// @Review
+			return self.data[i * 4 + j];
 		}
 
 		union

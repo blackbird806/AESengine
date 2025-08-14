@@ -48,15 +48,18 @@ public:
 	{
 		AES_LOG("[TEST] RHI");
 		HashMap<String, int> map(16);
-		map.add(String("hello"), 15);
+		map.add(String("hello"), 2);
 		map.add(String("world"), 15);
-		map.add(String("pistav"), 15);
+		map.add(String("pistav"), 12);
 		map["hello"] = 16;
 
+		AES_ASSERT(map.size() == 3);
 		map.remove(String("hello"));
+		AES_ASSERT(map.size() == 2);
 
 		int out = 0;
 		bool b = map.tryFind(String("Hello"), out);
+		AES_ASSERT(b == false);
 
 #ifdef _WIN32
 		window = makeUnique<Win_Window>("aes engine");

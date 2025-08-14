@@ -59,6 +59,7 @@ namespace aes
 
 		void drawIndexed(uint indexCount, uint indexOffset = 0);
 
+		// @TODO implement proper render passes to match gxm scenes
 		void beginRenderPass(RHIRenderTarget& rt);
 		void beginRenderPass(RHISwapchain& rt);
 		void endRenderPass();

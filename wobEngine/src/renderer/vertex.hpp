@@ -20,7 +20,7 @@ namespace aes {
 
 	struct Vertex
 	{
-		vec3 pos;
+		vec4 pos;
 		vec4 color;
 	};
 }

@@ -11,9 +11,8 @@ set_languages("c99", "cxxlatest")
 add_rules("plugin.vsxmake.autoupdate")
 add_rules("mode.debug", "mode.release")
 
--- glm to remove
-
-add_defines("GLM_FORCE_LEFT_HANDED","GLM_FORCE_DEPTH_ZERO_TO_ONE","GLM_FORCE_CTOR_INIT")
+-- default paths
+add_defines("AES_DEFAULT_ENGINE_SHADER_PATH=" .. "R\"(" .. path.translate("$(scriptdir)/wobEngine/assets/shaders/)\""))
 
 if is_plat("vita") then
 	set_toolchains("vita")

@@ -10,9 +10,6 @@
 
 namespace aes {
 
-	/*
-	 * We may want to completly redesign this class in the future to thread AES more as a framework rather than as an engine
-	 */
 	class Engine
 	{
 	public:
@@ -27,6 +24,8 @@ namespace aes {
 	
 		void init();
 		void run();
+
+		const char* getEngineShaderPath() const;
 
 	protected:
 

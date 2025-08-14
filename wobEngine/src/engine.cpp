@@ -86,6 +86,11 @@ void Engine::run()
 	}
 }
 
+const char* Engine::getEngineShaderPath() const
+{
+	return AES_DEFAULT_ENGINE_SHADER_PATH;
+}
+
 InputState Engine::getKeyState(Key k) noexcept
 {
 	return keyStates[(int)k];
