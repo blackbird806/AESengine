@@ -23,7 +23,7 @@ class TestDraw3dApp : public Engine
 	RHIFragmentShader geoFragmentShader;
 	RHIVertexShader geoVertexShader;
 	RHIBuffer geoVertexBuffer, geoIndexBuffer;
-	RHIBuffer uniformBuffer;
+	RHIBuffer viewProjBuffer, ModelBuffer;
 
 public:
 
@@ -106,19 +106,39 @@ public:
 			geoIndexBufferDesc.usage = aes::MemoryUsage::Immutable;
 			geoIndexBufferDesc.sizeInBytes = sizeof(cubeIndices);
 			geoIndexBufferDesc.initialData = (void*)cubeIndices;
-			geoVertexBuffer = device.createBuffer(geoIndexBufferDesc).value();
+			geoIndexBuffer = device.createBuffer(geoIndexBufferDesc).value();
 		}
 
 		{
+			CameraBuffer cameraBuffer;
+			cameraBuffer.proj = mat4::identity();
+			cameraBuffer.view = mat4::identity();
+
 			aes::BufferDescription uniformBufferDesc;
 			uniformBufferDesc.bindFlags = aes::BindFlagBits::UniformBuffer;
 			uniformBufferDesc.usage = aes::MemoryUsage::Dynamic;
 			uniformBufferDesc.cpuAccessFlags = aes::CPUAccessFlagBits::Write;
 			uniformBufferDesc.sizeInBytes = sizeof(CameraBuffer);
+			uniformBufferDesc.initialData = &cameraBuffer;
 
-			uniformBuffer = device.createBuffer(uniformBufferDesc).value();
+			viewProjBuffer = device.createBuffer(uniformBufferDesc).value();
+		}
+
+		{
+			mat4 model = mat4::identity();
+
+			aes::BufferDescription uniformBufferDesc;
+			uniformBufferDesc.bindFlags = aes::BindFlagBits::UniformBuffer;
+			uniformBufferDesc.usage = aes::MemoryUsage::Dynamic;
+			uniformBufferDesc.cpuAccessFlags = aes::CPUAccessFlagBits::Write;
+			uniformBufferDesc.sizeInBytes = sizeof(mat4);
+			uniformBufferDesc.initialData = &model;
+
+			ModelBuffer = device.createBuffer(uniformBufferDesc).value();
 		}
 	}
+
+	int frontBufferIndex = 0, backBufferIndex = 0;
 
 	void update(float deltaTime) override
 	{
@@ -127,6 +147,25 @@ public:
 
 	void draw() override
 	{
+		device.clearSwapchain(swapchain);
+
+		// draw
+		device.setVertexBuffer(geoVertexBuffer, sizeof(Vertex));
+		device.setIndexBuffer(geoIndexBuffer, IndexTypeFormat::Uint32);
+		device.setVertexShader(geoVertexShader);
+		device.setFragmentShader(geoFragmentShader);
+
+		device.bindVertexUniformBuffer(viewProjBuffer, 0);
+		device.bindVertexUniformBuffer(ModelBuffer, 1);
+		
+		device.beginRenderPass(swapchain);
+		device.drawIndexed(std::size(cubeIndices));
+		device.endRenderPass();
+
+		device.swapBuffers(swapchain);
+
+		frontBufferIndex = backBufferIndex;
+		backBufferIndex = (backBufferIndex + 1) % 2;
 	}
 };
 

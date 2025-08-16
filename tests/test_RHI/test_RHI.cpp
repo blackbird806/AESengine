@@ -40,7 +40,7 @@ class TestRHIApp
 	RHIVertexShader geoVertexShader;
 	RHIBuffer clearVertexBuffer, clearIndexBuffer;
 	RHIBuffer geoVertexBuffer, geoIndexBuffer;
-	RHIBuffer uniformBuffer;
+	RHIBuffer viewProjBuffer;
 
 public:
 
@@ -240,9 +240,9 @@ public:
 			uniformBufferDesc.usage = MemoryUsage::Immutable;
 			uniformBufferDesc.initialData = matrix;
 
-			uniformBuffer = device.createBuffer(uniformBufferDesc).value();
+			viewProjBuffer = device.createBuffer(uniformBufferDesc).value();
 			AES_LOG("uniform buffer created");
-			device.bindVertexUniformBuffer(uniformBuffer, 0);
+			device.bindVertexUniformBuffer(viewProjBuffer, 0);
 		}
 
 	}

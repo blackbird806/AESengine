@@ -97,7 +97,7 @@ Result<void> Draw2d::init(RHIDevice& dev)
 		auto result = device->createBuffer(bufferDesc);
 		if (!result)
 			return result.error();
-		uniformBuffer = std::move(result.value());
+		viewProjBuffer = std::move(result.value());
 	}
 
 	ensureVertexBufferCapacity(200 * sizeof(TextureVertex));
@@ -268,7 +268,7 @@ void Draw2d::executeDrawCommands()
 	uint textureIndicesOffset = 0;
 	uint indicesCount;
 
-	device->bindVertexUniformBuffer(uniformBuffer, 0);
+	device->bindVertexUniformBuffer(viewProjBuffer, 0);
 
 	device->bindFragmentSampler(sampler, 0);
 	device->setVertexShader(vertexShader);

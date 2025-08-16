@@ -99,7 +99,7 @@ namespace aes
 		RHIBuffer vertexBuffer;
 		RHIBuffer indexBuffer;
 
-		RHIBuffer uniformBuffer;
+		RHIBuffer viewProjBuffer;
 	};
 }
 

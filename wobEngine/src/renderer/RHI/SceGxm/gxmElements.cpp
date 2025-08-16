@@ -34,8 +34,8 @@ uint8_t aes::rhiMemoryUsageToApi(MemoryUsage usage)
 	{
 		case MemoryUsage::Default:
 		case MemoryUsage::Staging:
-			return SCE_GXM_MEMORY_ATTRIB_READ | SCE_GXM_MEMORY_ATTRIB_WRITE;
 		case MemoryUsage::Dynamic:
+			return SCE_GXM_MEMORY_ATTRIB_READ | SCE_GXM_MEMORY_ATTRIB_WRITE;
 		case MemoryUsage::Immutable:
 			return SCE_GXM_MEMORY_ATTRIB_READ;
 	}
