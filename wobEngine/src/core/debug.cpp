@@ -23,6 +23,7 @@ Logger& Logger::instance() noexcept
 void Logger::addSink(Sink* sink) noexcept
 {
 	AES_ASSERT(sink);
+	AES_ASSERT(sinkCount >= std::size(sinks));
 	sinks[sinkCount++] = sink;
 }
 

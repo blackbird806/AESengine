@@ -23,7 +23,7 @@ class TestDraw3dApp : public Engine
 	RHIFragmentShader geoFragmentShader;
 	RHIVertexShader geoVertexShader;
 	RHIBuffer geoVertexBuffer, geoIndexBuffer;
-	RHIBuffer viewProjBuffer, ModelBuffer;
+	RHIBuffer viewProjBuffer, modelBuffer;
 
 public:
 
@@ -39,7 +39,7 @@ public:
 
 		// create device
 		device.init();
-		device.setCullMode(CullMode::None);
+		device.setCullMode(CullMode::Clockwise);
 		device.setDrawPrimitiveMode(DrawPrimitiveType::TrianglesFill);
 
 		{
@@ -58,7 +58,7 @@ public:
 			String shaderPath = getEngineShaderPath();
 			shaderPath.append("/HLSL/draw3d.fs");
 			fragmentShaderDescription.source = readFile(shaderPath.c_str());
-			fragmentShaderDescription.multisampleMode = MultisampleMode::None;
+			fragmentShaderDescription.multisampleMode = MultisampleMode::X4;
 			geoFragmentShader = device.createFragmentShader(fragmentShaderDescription).value();
 
 			AES_LOG("fragment shader created");
@@ -67,7 +67,6 @@ public:
 			aes::VertexShaderDescription vertexShaderDescription;
 			String shaderPath = getEngineShaderPath();
 			shaderPath.append("/HLSL/draw3d.vs");
-
 			vertexShaderDescription.source = readFile(shaderPath.c_str());
 			vertexShaderDescription.verticesStride = sizeof(aes::Vertex);
 
@@ -134,7 +133,7 @@ public:
 			uniformBufferDesc.sizeInBytes = sizeof(mat4);
 			uniformBufferDesc.initialData = &model;
 
-			ModelBuffer = device.createBuffer(uniformBufferDesc).value();
+			modelBuffer = device.createBuffer(uniformBufferDesc).value();
 		}
 	}
 
@@ -142,6 +141,13 @@ public:
 
 	void update(float deltaTime) override
 	{
+		static mat4 model = mat4::identity();
+		
+		model = model * mat4::rotateZMat(0.0001);
+
+		void* mappedBuffer = device.mapBuffer(modelBuffer);
+			memcpy(mappedBuffer, &model, sizeof(model));
+		device.unmapBuffer(modelBuffer);
 
 	}
 
@@ -156,7 +162,7 @@ public:
 		device.setFragmentShader(geoFragmentShader);
 
 		device.bindVertexUniformBuffer(viewProjBuffer, 0);
-		device.bindVertexUniformBuffer(ModelBuffer, 1);
+		device.bindVertexUniformBuffer(modelBuffer, 1);
 		
 		device.beginRenderPass(swapchain);
 		device.drawIndexed(std::size(cubeIndices));
