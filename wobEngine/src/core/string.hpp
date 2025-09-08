@@ -248,25 +248,12 @@ namespace aes
 		return (lhs <=> rhs) == std::strong_ordering::equal;
 	}
 
-
-
 	template<>
 	struct Hash<String>
 	{
-		// https://stackoverflow.com/a/8317622
 		constexpr uint64_t operator()(String const& str)
 		{
-			constexpr uint64_t A = 54059; /* a prime */
-			constexpr uint64_t B = 76963; /* another prime */
-			//constexpr uint64_t C = 86969; /* yet 1another prime */
-			constexpr uint64_t FIRSTH = 37; /* also prime */
-			unsigned h = FIRSTH;
-			auto* s = str.data();
-			while (*s) {
-				h = (h * A) ^ (s[0] * B);
-				s++;
-			}
-			return h; // or return h % C;
+			return Hash<const char*>{}(str.c_str());
 		}
 	};
 }

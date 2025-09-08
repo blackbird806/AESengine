@@ -29,10 +29,11 @@ namespace aes
 				return n->data;
 			}
 
-			void operator++() noexcept
+			Iterator& operator++() noexcept
 			{
 				AES_ASSERT(n);
 				n = n->next;
+				return *this;
 			}
 
 			bool operator==(Iterator const&) const noexcept = default;
@@ -165,6 +166,50 @@ namespace aes
 		using Key_t = K;
 		using Value_t = V;
 		using Hash_t = H;
+		using BucketList_t = Array<SList<Pair<K, V>>>;
+
+		// this is pure shit
+		// TODO restart from scratch
+		struct Iterator
+		{
+			Pair<K, V>& operator*() const noexcept
+			{
+				return *currentBucketIt;
+			}
+
+			Iterator& operator++() noexcept
+			{
+				start:
+				if (currentBucketIt == typename SList<Pair<K, V>>::Iterator{nullptr })
+				{
+					while (currentBucketIt == typename SList<Pair<K, V>>::Iterator{ nullptr })
+					{
+						bucketListIndex++;
+						if (bucketListIndex < map->buckets.size())
+						{
+							currentBucketIt = map->buckets[bucketListIndex].begin();
+						}
+						else
+						{
+							currentBucketIt = typename SList<Pair<K, V>>::Iterator{ nullptr };
+						}
+					}
+				}
+				else
+				{
+					++currentBucketIt;
+					goto start; // bruh
+				}
+
+				return *this;
+			}
+
+			bool operator==(Iterator const&) const noexcept = default;
+
+			HashMap* map;
+			int32_t bucketListIndex;
+			SList<Pair<K, V>>::Iterator currentBucketIt;
+		};
 
 		constexpr HashMap(uint32_t nBuckets) : allocator(context.allocator), size_(0)
 		{
@@ -179,6 +224,12 @@ namespace aes
 		constexpr uint32_t size() const noexcept
 		{
 			return size_;
+		}
+
+		constexpr void rehash(uint32_t newBucketCount)
+		{
+			BucketList_t newBuckets;
+			newBuckets.resize(newBucketCount);
 		}
 
 		constexpr void add(K&& key, V&& value)
@@ -239,10 +290,21 @@ namespace aes
 			return (*this)[key];
 		}
 
+		constexpr Iterator begin()
+		{
+			Iterator it = Iterator{ this, -1, buckets.begin()->begin() };
+			return ++it;
+		}
+
+		constexpr Iterator end()
+		{
+			return Iterator{ this, (int32_t)buckets.size(), typename SList<Pair<K, V>>::Iterator{ nullptr } };
+		}
+
 	private:
 
 		IAllocator* allocator;
-		Array<SList<Pair<K, V>>> buckets;
+		BucketList_t buckets;
 		uint32_t size_;
 	};
 }

@@ -26,11 +26,6 @@ namespace aes
 			return self.data[i];
 		}
 
-		//mat2x2 operator*(mat2x2 const& rhs)
-		//{
-		//	return mat2x2(data[0] * rhs[0] + data[1] * rhs[3], data[0] * rhs[0] + data[1] * rhs[1]);
-		//}
-
 		union
 		{
 			vec2 v[2];
@@ -38,6 +33,7 @@ namespace aes
 		};
 	};
 
+	using mat2 = mat2x2;
 
 	struct mat3x3
 	{
@@ -70,6 +66,11 @@ namespace aes
 			return self.data[i];
 		}
 
+		decltype(auto) operator[](this auto& self, unsigned i, unsigned j)
+		{
+			return self.data[i * 3 + j];
+		}
+
 		union
 		{
 			vec3 v[3];
@@ -85,6 +86,11 @@ namespace aes
 		decltype(auto) operator[](this auto& self, unsigned i)
 		{
 			return self.data[i];
+		}
+
+		decltype(auto) operator[](this auto& self, unsigned i, unsigned j)
+		{
+			return self.data[i * 3 + j];
 		}
 
 		union
@@ -123,6 +129,20 @@ namespace aes
 			v[3] = rhs.v[3];
 		}
 
+		void transpose()
+		{
+			mat4x4& self = *this;
+			mat4x4 result;
+			for (int i = 0; i < 4; i++)
+			{
+				for (int j = 0; j < 4; j++)
+				{
+					result[j,i] = self[i,j];
+				}
+			}
+			self = result;
+		}
+
 		decltype(auto) operator[](this auto& self, unsigned i)
 		{
 			return self.data[i];
@@ -130,16 +150,15 @@ namespace aes
 
 		decltype(auto) operator[](this auto& self, unsigned i, unsigned j)
 		{
-			// @Review
 			return self.data[i * 4 + j];
 		}
 
 		static mat4x4 translationMat(vec3 v)
 		{
 			mat4x4 result = mat4x4::identity();
-			result[0, 3] = v.x;
-			result[1, 3] = v.y;
-			result[2, 3] = v.z;
+			result[3, 0] = v.x;
+			result[3, 1] = v.y;
+			result[3, 2] = v.z;
 			return result;
 		}
 
@@ -180,6 +199,66 @@ namespace aes
 			result[5] = s.y;
 			result[10] = s.z;
 			return result;
+		}
+
+		// impl from https://songho.ca/opengl/gl_projectionmatrix.html
+		static mat4x4 makePerspectiveProjectionMat(float fov, float aspectRatio, float front, float back)
+		{
+			float const tangent = tan(fov * 0.5 * degToRad);    // tangent of half fovX
+			float const right = front * tangent;            // half width of near plane
+			float const top = right / aspectRatio;          // half height of near plane
+
+			// params: left, right, bottom, top, near(front), far(back)
+			mat4x4 matrix;
+			matrix[0] = front / tangent;
+			matrix[5] = 1 / tangent;
+			matrix[10] = back / (back - front);
+			matrix[11] = 1;
+			matrix[14] = (-back * front) / (back - front);
+			matrix[15] = 0;
+			return matrix;
+		}
+
+		static mat4x4 makePerspectiveProjectionMatD3D(float Sw, float Sh, float near_, float far_)
+		{
+			mat4x4 matrix;
+			matrix[0, 0] = (2 * near_) / Sw;
+			matrix[1, 1] = (2 * near_) / Sh;
+			matrix[2, 2] = far_ / (far_ - near_);
+			matrix[3, 2] = 1;
+			matrix[2, 3] = (-far_ * near_) / (far_ - near_);
+			return matrix;
+		}
+
+		static mat4x4 makeOrthoProjectionMatD3D(float Sw, float Sh, float near_, float far_)
+		{
+			mat4x4 matrix;
+			matrix[0, 0] = 2 / Sw;
+			matrix[1, 1] = 2 / Sh;
+			matrix[2, 2] = 1 / (far_ - near_);
+			matrix[3, 2] = 1;
+			matrix[2, 3] = -near_ / (far_ - near_);
+			return matrix;
+		}
+
+		static mat4x4 makeLookAtMatrix(vec3 pos, vec3 up, vec3 right, vec3 front)
+		{
+			mat4x4 const posMtr = translationMat(-pos);
+			mat4x4 lookMtr = mat4x4::identity();
+
+			lookMtr[0, 0] = right.x;
+			lookMtr[1, 0] = right.y;
+			lookMtr[2, 0] = right.z;
+
+			lookMtr[0, 1] = up.x;
+			lookMtr[1, 1] = up.y;
+			lookMtr[2, 1] = up.z;
+
+			lookMtr[0, 2] = front.x;
+			lookMtr[1, 2] = front.y;
+			lookMtr[2, 2] = front.z;
+
+			return lookMtr * posMtr;
 		}
 
 		mat4x4 operator*(mat4x4 const& r) const

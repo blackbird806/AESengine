@@ -39,7 +39,7 @@ public:
 
 		// create device
 		device.init();
-		device.setCullMode(CullMode::Clockwise);
+		device.setCullMode(CullMode::None);
 		device.setDrawPrimitiveMode(DrawPrimitiveType::TrianglesFill);
 
 		{
@@ -105,12 +105,17 @@ public:
 			geoIndexBufferDesc.usage = aes::MemoryUsage::Immutable;
 			geoIndexBufferDesc.sizeInBytes = sizeof(cubeIndices);
 			geoIndexBufferDesc.initialData = (void*)cubeIndices;
+
 			geoIndexBuffer = device.createBuffer(geoIndexBufferDesc).value();
 		}
 
 		{
 			CameraBuffer cameraBuffer;
-			cameraBuffer.proj = mat4::identity();
+			cameraBuffer.proj = mat4::makePerspectiveProjectionMat(100.0f, 16.0f / 9.0f, 0.01f, 100.0f);
+			//cameraBuffer.proj = mat4::makePerspectiveProjectionMatD3D(16, 9, 0.1, 100);
+			//cameraBuffer.proj = mat4::makeOrthoProjectionMatD3D(16, 9, 0.1, 100);
+			cameraBuffer.view = mat4::makeLookAtMatrix(vec3(0, 0, 0), vec3(0, 1, 0), vec3(1, 0, 0), vec3(0, 0, 1));
+			//cameraBuffer.proj = mat4::identity();
 			cameraBuffer.view = mat4::identity();
 
 			aes::BufferDescription uniformBufferDesc;
@@ -141,14 +146,16 @@ public:
 
 	void update(float deltaTime) override
 	{
-		static mat4 model = mat4::identity();
-		
-		model = model * mat4::rotateZMat(0.0001);
+		static mat4 model = mat4::translationMat(vec3(0, 0, 0));
+
+		mat4 tr = mat4::translationMat(vec3(0, 0, 0.0 * deltaTime));
+		tr.transpose();
+
+		model = model * tr;// mat4::rotateYMat(1 * deltaTime);
 
 		void* mappedBuffer = device.mapBuffer(modelBuffer);
 			memcpy(mappedBuffer, &model, sizeof(model));
 		device.unmapBuffer(modelBuffer);
-
 	}
 
 	void draw() override

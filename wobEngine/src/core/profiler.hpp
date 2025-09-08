@@ -43,20 +43,13 @@ namespace aes
 
 	struct ProfileSession
 	{
-		ProfileSession() noexcept : name(nullptr), elapsedSessionTime(0.0)//, profileDatas(64)
-		{
+		ProfileSession() noexcept;
 
-		}
-
-		ProfileSession(const char* name, ProfileTime_t elapsed) noexcept : name(name), elapsedSessionTime(elapsed)//, profileDatas(64)
-		{
-
-		}
-
+		ProfileSession(const char* name, ProfileTime_t elapsed) noexcept;
 
 		const char* name;
 		ProfileTime_t elapsedSessionTime;
-		//HashMap<const char*, ProfileData> profileDatas;
+		struct ProfilerImpl* impl;
 	};
 
 	void startInstrumentorSession(const char* name) noexcept;

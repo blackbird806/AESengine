@@ -3,6 +3,9 @@
 
 #include <cstdint>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 namespace aes {
 	
 	template <typename T> constexpr int sign(T val) noexcept {
@@ -12,6 +15,8 @@ namespace aes {
 	template <typename T> constexpr T abs(T val) noexcept {
 		return val > 0 ? val : -val;
 	}
+
+	constexpr double degToRad = M_PI / 180.0;
 
 	// https://stackoverflow.com/a/1489873
 	// '-' count as a digit

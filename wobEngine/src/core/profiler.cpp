@@ -39,6 +39,23 @@ namespace aes
 	{
 		return Instrumentor::instance().stopSession();
 	}
+
+	struct ProfilerImpl
+	{
+		ProfilerImpl(IAllocator* alloc) : profileDatas(alloc, 32)
+		{
+
+		}
+
+		HashMap<const char*, ProfileData> profileDatas;
+	};
+
+	static Mallocator profStaticAllocator;
+
+	ProfileSession::ProfileSession() noexcept
+	{
+		impl = profStaticAllocator.create<ProfilerImpl>(&profStaticAllocator);
+	}
 }
 
 void Instrumentor::startSession(const char* name)

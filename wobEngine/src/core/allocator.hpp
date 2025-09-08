@@ -32,9 +32,11 @@ namespace aes
 		}
 
 		template<typename T, typename ...Args>
-		[[nodiscard]] T create(Args&&... args)
+		[[nodiscard]] T* create(Args&&... args)
 		{
-			return new (allocate<T>()) T(std::forward<Args>(args)...);
+			T* elem = static_cast<T*>(allocate<T>());
+			new (elem) T(std::forward<Args>(args)...);
+			return elem;
 		}
 
 		template<typename T>

@@ -1,5 +1,6 @@
 #include "core/aes.hpp"
 #include "core/string.hpp"
+#include "core/hashmap.hpp"
 
 using namespace aes;
 
@@ -40,6 +41,28 @@ int main()
 		AES_ASSERT(strB.capacity() > 0);
 		strB.shrink();
 	}
+	{
+		AES_LOG("[TEST] RHI");
+		HashMap<String, int> map(16);
+		map.add(String("hello"), 2);
+		map.add(String("world"), 15);
+		map.add(String("pistav"), 12);
+		map["hello"] = 16;
 
+		AES_ASSERT(map.size() == 3);
+		map.remove(String("hello"));
+		AES_ASSERT(map.size() == 2);
+
+		int out = 0;
+		bool b = map.tryFind(String("Hello"), out);
+		AES_ASSERT(b == false);
+
+		for (auto const& [k, v] : map)
+		{
+			//AES_LOG("elem {} : {}", k, v);
+			printf("%s %d\n", k.c_str(), v);
+		}
+
+	}
 	return 0;
 }
