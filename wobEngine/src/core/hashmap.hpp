@@ -122,6 +122,11 @@ namespace aes
 			return s;
 		}
 
+		constexpr bool isEmpty() const noexcept
+		{
+			return first == nullptr;
+		}
+
 		constexpr Iterator begin() const noexcept
 		{
 			return Iterator{ first };
@@ -166,10 +171,8 @@ namespace aes
 		using Key_t = K;
 		using Value_t = V;
 		using Hash_t = H;
-		using BucketList_t = Array<SList<Pair<K, V>>>;
+		using Bucket_t = SList<Pair<K, V>>;
 
-		// this is pure shit
-		// TODO restart from scratch
 		struct Iterator
 		{
 			Pair<K, V>& operator*() const noexcept
@@ -177,38 +180,44 @@ namespace aes
 				return *currentBucketIt;
 			}
 
+			// goofy code ahead
+			// @Review I'm really not happy with this 
 			Iterator& operator++() noexcept
 			{
-				start:
-				if (currentBucketIt == typename SList<Pair<K, V>>::Iterator{nullptr })
+				++currentBucketIt;
+				if (currentBucketIt == BucketArrayIt->end())
 				{
-					while (currentBucketIt == typename SList<Pair<K, V>>::Iterator{ nullptr })
+					++BucketArrayIt;
+					if (BucketArrayIt == map->buckets.end())
 					{
-						bucketListIndex++;
-						if (bucketListIndex < map->buckets.size())
+						currentBucketIt = BucketArrayIt->end();
+						return *this;
+					}
+					while (BucketArrayIt->isEmpty())
+					{
+							if (BucketArrayIt == map->buckets.end())
+							{
+								currentBucketIt = BucketArrayIt->end();
+								return *this;
+							}
+						++BucketArrayIt;
+						
+						if (BucketArrayIt == map->buckets.end())
 						{
-							currentBucketIt = map->buckets[bucketListIndex].begin();
-						}
-						else
-						{
-							currentBucketIt = typename SList<Pair<K, V>>::Iterator{ nullptr };
+							currentBucketIt = BucketArrayIt->end();
+							return *this;
 						}
 					}
+					currentBucketIt = BucketArrayIt->begin();
 				}
-				else
-				{
-					++currentBucketIt;
-					goto start; // bruh
-				}
-
 				return *this;
 			}
 
 			bool operator==(Iterator const&) const noexcept = default;
 
 			HashMap* map;
-			int32_t bucketListIndex;
-			SList<Pair<K, V>>::Iterator currentBucketIt;
+			Array<Bucket_t>::Iterator_t BucketArrayIt;
+			Bucket_t::Iterator currentBucketIt;
 		};
 
 		constexpr HashMap(uint32_t nBuckets) : allocator(context.allocator), size_(0)
@@ -228,16 +237,18 @@ namespace aes
 
 		constexpr void rehash(uint32_t newBucketCount)
 		{
-			BucketList_t newBuckets;
+			Array<Bucket_t> newBuckets;
 			newBuckets.resize(newBucketCount);
+			for (auto&& [k, v] : *this)
+			{
+				add(newBuckets, std::move(k), std::move(v));
+			}
+			buckets = std::move(newBuckets);
 		}
 
 		constexpr void add(K&& key, V&& value)
 		{
-			auto pair = Pair<K, V>{ std::forward<K>(key), std::forward<V>(value) };
-			auto const hash = Hash_t{}(pair.first);
-			uint32_t const index = hash % buckets.size();
-			buckets[index].add(std::move(pair));
+			add(buckets, std::forward<K>(key), std::forward<V>(value));
 			size_++;
 		}
 
@@ -274,14 +285,14 @@ namespace aes
 		{
 			auto const hash = Hash_t{}(key);
 			uint32_t const index = hash % buckets.size();
-			
+
 			auto const it = buckets[index].findIf([key](auto const& pair) {
 				return pair.first == key;
-			});
+				});
 
 			if (it != buckets[index].end())
 				return (*it).second;
-			
+
 			AES_FATAL_ERROR("Key not present in map");
 		}
 
@@ -292,19 +303,40 @@ namespace aes
 
 		constexpr Iterator begin()
 		{
-			Iterator it = Iterator{ this, -1, buckets.begin()->begin() };
-			return ++it;
+			uint32_t const idx = getNextNonEmptyBucketIndex(0);
+			if (idx == buckets.size())
+				return end();
+
+			return Iterator{ this, buckets.begin() + idx, buckets[idx].begin()};
 		}
 
 		constexpr Iterator end()
 		{
-			return Iterator{ this, (int32_t)buckets.size(), typename SList<Pair<K, V>>::Iterator{ nullptr } };
+			return Iterator{ this, buckets.end(), buckets[buckets.size()-1].end() };
 		}
 
 	private:
 
+		static constexpr void add(Array<Bucket_t>& buckets, K&& key, V&& value)
+		{
+			auto pair = Pair<K, V>{ std::forward<K>(key), std::forward<V>(value) };
+			auto const hash = Hash_t{}(pair.first);
+			uint32_t const index = hash % buckets.size();
+			buckets[index].add(std::move(pair));
+		}
+
+		uint32_t getNextNonEmptyBucketIndex(uint32_t startIndex)
+		{
+			for (uint32_t i = startIndex; i < buckets.size(); i++)
+			{
+				if (!buckets[i].isEmpty())
+					return i;
+			}
+			return buckets.size();
+		}
+
 		IAllocator* allocator;
-		BucketList_t buckets;
+		Array<Bucket_t> buckets;
 		uint32_t size_;
 	};
 }

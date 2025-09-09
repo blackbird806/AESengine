@@ -51,6 +51,8 @@ int main()
 
 		AES_ASSERT(map.size() == 3);
 		map.remove(String("hello"));
+		map.rehash(2);
+		map.rehash(32);
 		AES_ASSERT(map.size() == 2);
 
 		int out = 0;
