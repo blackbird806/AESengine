@@ -22,6 +22,12 @@ int main()
 #else
 #endif
 
+	const char* source = "(5 3 5 laed (test un deux (trois septs quatr es 5)))";
+	phenix::PhenixFront front;
+	front.source = source;
+	auto* exp = front.parse();
+	exp->print();
+
 	//Array<phenix::FunDef> fnDefs;
 	//Array<phenix::StructDecl> bufferDecl;
 	//Array<phenix::VarDecl> members;

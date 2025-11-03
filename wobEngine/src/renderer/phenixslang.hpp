@@ -10,8 +10,106 @@
 #include "core/vec4.hpp"
 #include "core/format.hpp"
 
+#include <cctype>
+
 namespace aes::phenix
 {
+
+	// front
+
+	struct Sexp
+	{
+		virtual void print() const = 0;
+	};
+
+	struct Atom : Sexp
+	{
+		void print() const override
+		{
+			auto sub = value.substr(0, 5);
+			printf("Atom : ");
+			printf("%.*s\n", static_cast<int>(sub.length()), sub.data());
+		}
+
+
+		std::string_view value;
+	};
+
+	struct Pair : Sexp
+	{
+		void print() const override
+		{
+			printf("Pair : \n");
+			car->print();
+			if (cdr)
+				cdr->print();
+		}
+
+		Sexp* car = nullptr, *cdr = nullptr;
+	};
+
+	struct PhenixFront
+	{
+		int c = 0;
+		std::string_view source;
+
+		Sexp* parseList()
+		{
+			auto& parserAllocator = *context.allocator;
+
+			Pair* list = parserAllocator.create<Pair>();
+
+			list->car = parse();
+			if (list->car == nullptr)
+				return nullptr;
+			list->cdr = parseList();
+
+			return list;
+		}
+
+		Sexp* parse()
+		{
+			//StackAllocator parserAllocator(*context.allocator, 32_kb);
+
+			auto& parserAllocator = *context.allocator;
+			if (c == source.size())
+				return nullptr;
+			while (isblank(source[c]) && c < source.size())
+			{
+				c++;
+			}
+			if (c == source.size())
+				return nullptr;
+
+			if (source[c] == ')')
+			{
+				c++;
+				return nullptr;
+			}
+			else if (source[c] == '(')
+			{
+				c++;
+				return parseList();
+			}
+			else if (std::isalnum(source[c]))
+			{
+				// parse atom
+				Atom* atom = parserAllocator.create<Atom>();
+				// get atom value
+				int const wordStart = c;
+				while (std::isalnum(source[c++]) && c < source.size())
+				{
+				}
+				int const wordLen = c - wordStart;
+				atom->value = std::string_view(&source[wordStart], wordLen-1);
+				return atom;
+			}
+			return nullptr;
+		}
+	};
+
+	// end front
+
 	enum class ASTNodeType
 	{
 		Undefined,
