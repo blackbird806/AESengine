@@ -14,30 +14,22 @@
 
 namespace aes::phenix
 {
-
 	// front
-
-	struct Sexp
+	struct Atom
 	{
-		virtual void print() const = 0;
-	};
-
-	struct Atom : Sexp
-	{
-		void print() const override
+		void print() const
 		{
 			auto sub = value.substr(0, 5);
 			printf("Atom : ");
 			printf("%.*s\n", static_cast<int>(sub.length()), sub.data());
 		}
 
-
 		std::string_view value;
 	};
 
-	struct Pair : Sexp
+	struct Pair
 	{
-		void print() const override
+		void print() const
 		{
 			printf("Pair : \n");
 			car->print();
@@ -45,33 +37,80 @@ namespace aes::phenix
 				cdr->print();
 		}
 
-		Sexp* car = nullptr, *cdr = nullptr;
+		struct Sexp* car = nullptr, * cdr = nullptr;
 	};
+
+	struct Sexp
+	{
+		enum class Type
+		{
+			Atom,
+			Pair
+		};
+
+		void print()
+		{
+			if (type == Type::Atom)
+			{
+				atom.print();
+			}
+			else
+			{
+				pair.print();
+			}
+		}
+
+		Type type;
+		union
+		{
+			Pair pair;
+			Atom atom;
+		};
+	};
+
 
 	struct PhenixFront
 	{
 		int c = 0;
 		std::string_view source;
+		StackAllocator parserAllocator;
+
+		PhenixFront(std::string_view src) : source(src), parserAllocator(*context.allocator, 32_kb)
+		{
+
+		}
+
+		Sexp* createAtom(std::string_view value)
+		{
+			Sexp* exp = parserAllocator.create<Sexp>();
+			exp->type = Sexp::Type::Atom;
+			exp->atom.value = value;
+			return exp;
+		}
+
+		Sexp* createPair()
+		{
+			Sexp* exp = parserAllocator.create<Sexp>();
+			exp->type = Sexp::Type::Pair;
+			exp->pair.car = nullptr;
+			exp->pair.cdr = nullptr;
+			return exp;
+		}
 
 		Sexp* parseList()
 		{
-			auto& parserAllocator = *context.allocator;
+			Sexp* list = createPair();
 
-			Pair* list = parserAllocator.create<Pair>();
-
-			list->car = parse();
-			if (list->car == nullptr)
+			list->pair.car = parse();
+			if (list->pair.car == nullptr)
 				return nullptr;
-			list->cdr = parseList();
+			list->pair.cdr = parseList();
 
 			return list;
 		}
 
 		Sexp* parse()
 		{
-			//StackAllocator parserAllocator(*context.allocator, 32_kb);
-
-			auto& parserAllocator = *context.allocator;
 			if (c == source.size())
 				return nullptr;
 			while (isblank(source[c]) && c < source.size())
@@ -94,15 +133,13 @@ namespace aes::phenix
 			else if (std::isalnum(source[c]))
 			{
 				// parse atom
-				Atom* atom = parserAllocator.create<Atom>();
 				// get atom value
 				int const wordStart = c;
 				while (std::isalnum(source[c++]) && c < source.size())
 				{
 				}
 				int const wordLen = c - wordStart;
-				atom->value = std::string_view(&source[wordStart], wordLen-1);
-				return atom;
+				return createAtom(std::string_view(&source[wordStart], wordLen - 1));
 			}
 			return nullptr;
 		}
@@ -255,6 +292,30 @@ namespace aes::phenix
 		Array<FunDef> const& fnDefs;
 		Array<StructDecl> const& structDecl;
 	};
+
+	// assuming that list is a list of at least index items 
+	bool assumeListElem(Sexp* list, std::string_view value)
+	{
+		return list->pair.car->type == Sexp::Type::Atom && list->pair.car->atom.value == value;
+	}
+
+	struct SexpWalker
+	{
+		Sexp* current;
+	};
+
+	ShaderProgram createShaderProgram(Sexp* exp)
+	{
+		Sexp* currentExp = exp;
+		if (currentExp->type == Sexp::Type::Pair)
+		{
+			if (assumeListElem(currentExp, "defstruct"))
+			{
+				currentExp = currentExp->pair.cdr;
+				auto structName = currentExp->pair.car->atom.value;
+			}
+		}
+	}
 
 	String compileToHLSL(ShaderProgram const& program);
 }
