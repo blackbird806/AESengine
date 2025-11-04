@@ -23,13 +23,11 @@ int main()
 #endif
 
 	const char* source = 
-	R"((defstruct VSinput 
-		(vec2 position :POSITION)
-		(vec4 color :COLOR)
-		))";
+	R"((defstruct VSinput (vec2 position POSITION) (vec4 color COLOR)))";
 	phenix::PhenixFront front(source);
 	auto* exp = front.parse();
 	exp->print();
+	phenix::createShaderProgram(exp);
 
 	//Array<phenix::FunDef> fnDefs;
 	//Array<phenix::StructDecl> bufferDecl;

@@ -26,9 +26,9 @@ namespace aes
 	{
 	public:
 		template<typename T>
-		[[nodiscard]] void* allocate(size_t count = 1)
+		[[nodiscard]] T* allocate(size_t count = 1)
 		{
-			return allocate(count * sizeof(T), alignof(T));
+			return static_cast<T*>(allocate(count * sizeof(T), alignof(T)));
 		}
 
 		template<typename T, typename ...Args>

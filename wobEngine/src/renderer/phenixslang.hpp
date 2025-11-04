@@ -19,9 +19,8 @@ namespace aes::phenix
 	{
 		void print() const
 		{
-			auto sub = value.substr(0, 5);
 			printf("Atom : ");
-			printf("%.*s\n", static_cast<int>(sub.length()), sub.data());
+			printf("%.*s\n", static_cast<int>(value.length()), value.data());
 		}
 
 		std::string_view value;
@@ -29,13 +28,7 @@ namespace aes::phenix
 
 	struct Pair
 	{
-		void print() const
-		{
-			printf("Pair : \n");
-			car->print();
-			if (cdr)
-				cdr->print();
-		}
+		void print() const;
 
 		struct Sexp* car = nullptr, * cdr = nullptr;
 	};
@@ -60,6 +53,24 @@ namespace aes::phenix
 			}
 		}
 
+		std::string_view getAtomValue()
+		{
+			AES_ASSERT(type == Type::Atom);
+			return atom.value;
+		}
+
+		Sexp* Car()
+		{
+			AES_ASSERT(type == Type::Pair);
+			return pair.car;
+		}
+
+		Sexp* Cdr()
+		{
+			AES_ASSERT(type == Type::Pair);
+			return pair.cdr;
+		}
+
 		Type type;
 		union
 		{
@@ -67,6 +78,14 @@ namespace aes::phenix
 			Atom atom;
 		};
 	};
+
+	void Pair::print() const
+	{
+		printf("Pair : \n");
+		car->print();
+		if (cdr)
+			cdr->print();
+	}
 
 
 	struct PhenixFront
@@ -82,7 +101,7 @@ namespace aes::phenix
 
 		Sexp* createAtom(std::string_view value)
 		{
-			Sexp* exp = parserAllocator.create<Sexp>();
+			Sexp* exp = parserAllocator.IAllocator::allocate<Sexp>();
 			exp->type = Sexp::Type::Atom;
 			exp->atom.value = value;
 			return exp;
@@ -90,7 +109,7 @@ namespace aes::phenix
 
 		Sexp* createPair()
 		{
-			Sexp* exp = parserAllocator.create<Sexp>();
+			Sexp* exp = parserAllocator.IAllocator::allocate<Sexp>();
 			exp->type = Sexp::Type::Pair;
 			exp->pair.car = nullptr;
 			exp->pair.cdr = nullptr;
@@ -301,18 +320,58 @@ namespace aes::phenix
 
 	struct SexpWalker
 	{
-		Sexp* current;
+		Sexp* current, *prev;
+
+		void moveNext()
+		{
+			prev = current;
+			current = current->pair.cdr;
+		}
+
+		Sexp* popListElem()
+		{
+			AES_ASSERT(isPair());
+			Sexp* val = current->pair.car;
+			moveNext();
+			return val;
+		}
+
+		bool isPair()
+		{
+			return current && current->type == Sexp::Type::Pair;
+		}
+
+		bool isAtom()
+		{
+			return current && current->type == Sexp::Type::Atom;
+		}
+
+		bool matchListElem(std::string_view value)
+		{
+			AES_ASSERT(isPair());
+			bool const val = current->Car()->type == Sexp::Type::Atom && current->Car()->getAtomValue() == value;
+			if (val)
+				moveNext();
+			return val;
+		}
 	};
 
-	ShaderProgram createShaderProgram(Sexp* exp)
+	void createShaderProgram(Sexp* exp)
 	{
-		Sexp* currentExp = exp;
-		if (currentExp->type == Sexp::Type::Pair)
+		SexpWalker walker(exp);
+		if (walker.isPair())
 		{
-			if (assumeListElem(currentExp, "defstruct"))
+			if (walker.matchListElem("defstruct"))
 			{
-				currentExp = currentExp->pair.cdr;
-				auto structName = currentExp->pair.car->atom.value;
+				auto structName = walker.popListElem()->getAtomValue();
+				while (walker.isPair())
+				{
+					Sexp* memberDecl = walker.popListElem();
+					AES_ASSERT(memberDecl->type == Sexp::Type::Pair);
+					SexpWalker memberDeclWalker(memberDecl);
+					auto memberType = memberDeclWalker.popListElem()->getAtomValue();
+					auto memberName = memberDeclWalker.popListElem()->getAtomValue();
+				}
 			}
 		}
 	}
