@@ -59,13 +59,13 @@ namespace aes::phenix
 			return atom.value;
 		}
 
-		Sexp* Car()
+		Sexp* car()
 		{
 			AES_ASSERT(type == Type::Pair);
 			return pair.car;
 		}
 
-		Sexp* Cdr()
+		Sexp* cdr()
 		{
 			AES_ASSERT(type == Type::Pair);
 			return pair.cdr;
@@ -86,7 +86,6 @@ namespace aes::phenix
 		if (cdr)
 			cdr->print();
 	}
-
 
 	struct PhenixFront
 	{
@@ -132,7 +131,7 @@ namespace aes::phenix
 		{
 			if (c == source.size())
 				return nullptr;
-			while (isblank(source[c]) && c < source.size())
+			while (isspace(source[c]) && c < source.size())
 			{
 				c++;
 			}
@@ -242,6 +241,48 @@ namespace aes::phenix
 		UserDefined
 	};
 
+	constexpr TType stringToType(std::string_view str)
+	{
+		if (str.size() == 3)
+			return TType::Int;
+		
+		if (str.size() == 4)
+		{
+			if (str[0] == 'v')
+			{
+				if (str[1] == 'o')
+					return TType::Void;
+				if (str[3] == '2')
+					return TType::Vec2;
+				if (str[3] == '3')
+					return TType::Vec3;
+				if (str[3] == '4')
+					return TType::Vec4;
+			}
+			else if (str[0] == 'm')
+			{
+				if (str[3] == '2')
+					return TType::Mat2;
+				if (str[3] == '3')
+					return TType::Mat3;
+				if (str[3] == '4')
+					return TType::Mat4;
+			}
+			else if (str[0] == 'u')
+			{
+				return TType::UInt;
+			}
+		}
+		if (str[0] == 'f')
+			return TType::Float;
+		if (str[0] == 'd')
+			return TType::Double;
+		if (str[0] == 's')
+			return TType::Sampler2D;
+
+		return TType::Undefined;
+	}
+
 	struct Type
 	{
 		Type() : type(TType::Undefined) {}
@@ -279,6 +320,18 @@ namespace aes::phenix
 		String name;
 	};
 
+	AttributeType stringToAttributeType(std::string_view str)
+	{
+		AES_ASSERT(!str.empty());
+
+		if (str.size() == 5)
+			return AttributeType::Color;
+		if (str.size() == 8)
+			return AttributeType::Position;
+
+		return AttributeType::Custom;
+	}
+
 	struct VarDecl
 	{
 		Type type;
@@ -308,8 +361,8 @@ namespace aes::phenix
 
 	struct ShaderProgram
 	{
-		Array<FunDef> const& fnDefs;
-		Array<StructDecl> const& structDecl;
+		Array<FunDef> fnDefs;
+		Array<StructDecl> structDecl;
 	};
 
 	// assuming that list is a list of at least index items 
@@ -349,31 +402,67 @@ namespace aes::phenix
 		bool matchListElem(std::string_view value)
 		{
 			AES_ASSERT(isPair());
-			bool const val = current->Car()->type == Sexp::Type::Atom && current->Car()->getAtomValue() == value;
+			bool const val = current->car()->type == Sexp::Type::Atom && current->car()->getAtomValue() == value;
 			if (val)
 				moveNext();
 			return val;
 		}
 	};
 
-	void createShaderProgram(Sexp* exp)
+	/*
+	*	
+	*	fielddecl := (type name attribute *)
+		structdecl := (defstruct structname
+			(fielddecl) *
+			)
+	*/
+
+	VarDecl parseField(Sexp* exp)
 	{
+		SexpWalker walker(exp);
+		VarDecl decl;
+		auto memberType = walker.popListElem()->getAtomValue();
+		auto memberName = walker.popListElem()->getAtomValue();
+		decl.name = String(memberName);
+		return decl;
+	}
+
+	ShaderProgram createShaderProgram(Sexp* exp)
+	{
+		ShaderProgram shader;
+
 		SexpWalker walker(exp);
 		if (walker.isPair())
 		{
 			if (walker.matchListElem("defstruct"))
 			{
-				auto structName = walker.popListElem()->getAtomValue();
-				while (walker.isPair())
+				auto const structName = walker.popListElem()->getAtomValue();
+				StructDecl newStruct;
+				newStruct.name = structName;
+				while (walker.current != nullptr)
 				{
 					Sexp* memberDecl = walker.popListElem();
 					AES_ASSERT(memberDecl->type == Sexp::Type::Pair);
 					SexpWalker memberDeclWalker(memberDecl);
-					auto memberType = memberDeclWalker.popListElem()->getAtomValue();
-					auto memberName = memberDeclWalker.popListElem()->getAtomValue();
+					auto const memberType = memberDeclWalker.popListElem()->getAtomValue();
+					auto const memberName = memberDeclWalker.popListElem()->getAtomValue();
+					VarDecl newVar;
+					newVar.type = stringToType(memberType);
+					newVar.name = memberName;
+
+					while (memberDeclWalker.current != nullptr)
+					{
+						auto const attribute = memberDeclWalker.popListElem()->getAtomValue();
+						newVar.attributes.push(Attribute{ stringToAttributeType(attribute), attribute });
+						memberDeclWalker.moveNext();
+					}
+
+					newStruct.members.push(std::move(newVar));
 				}
+				shader.structDecl.push(std::move(newStruct));
 			}
 		}
+		return shader;
 	}
 
 	String compileToHLSL(ShaderProgram const& program);

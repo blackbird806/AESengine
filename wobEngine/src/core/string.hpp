@@ -4,10 +4,12 @@
 #include <cstring>
 #include <compare>
 #include <math.h>
+#include <string_view>
 
 #include "array.hpp"
 #include "hash.hpp"
 #include "coreMacros.hpp"
+
 
 namespace aes
 {
@@ -50,7 +52,16 @@ namespace aes
 			AES_ASSERT_NOLOG(cstr);
 
 			buffer.resize(count);
+			// @review
+			// do we want strncpy ?
 			strncpy(buffer.data(), cstr, count);
+		}
+
+		/*constexpr*/ String(std::string_view str) noexcept
+		{
+			buffer.resize(str.size());
+			// @review same
+			strncpy(buffer.data(), str.data(), str.size());
 		}
 
 		constexpr String(String const& rhs) noexcept : buffer(rhs.buffer)

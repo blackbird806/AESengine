@@ -12,7 +12,7 @@
 		</Expand>
 	</Type>
 	<Type Name="aes::String">
-	    <DisplayString>{buffer.buffer,na}</DisplayString>
-		<StringView>buffer.buffer,[buffer.size_-1]</StringView>
+	    <DisplayString>{buffer.buffer,[buffer.size_]}</DisplayString>
+		<StringView>buffer.buffer,[buffer.size_]</StringView>
 	</Type>
 </AutoVisualizer>
