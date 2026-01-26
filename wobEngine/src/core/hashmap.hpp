@@ -25,13 +25,13 @@ namespace aes
 
 			T& operator*() const noexcept
 			{
-				AES_ASSERT(n);
+				AES_BOUNDS_CHECK(n);
 				return n->data;
 			}
 
 			Iterator& operator++() noexcept
 			{
-				AES_ASSERT(n);
+				AES_BOUNDS_CHECK(n);
 				n = n->next;
 				return *this;
 			}
@@ -56,7 +56,7 @@ namespace aes
 			}
 
 			Node* c = first;
-			for (; c != nullptr; c = c->next)
+			for (; c->next != nullptr; c = c->next)
 			{ }
 			c->next = createNode(std::forward<T>(e));
 		}
@@ -173,6 +173,8 @@ namespace aes
 		using Hash_t = H;
 		using Bucket_t = SList<Pair<K, V>>;
 
+		static constexpr float defaultMaxLoadFactor = 0.75;
+
 		struct Iterator
 		{
 			Pair<K, V>& operator*() const noexcept
@@ -220,7 +222,7 @@ namespace aes
 			Bucket_t::Iterator currentBucketIt;
 		};
 
-		constexpr HashMap(uint32_t nBuckets) : allocator(context.allocator), size_(0)
+		constexpr HashMap(uint32_t nBuckets = 16) : allocator(context.allocator), size_(0)
 		{
 			buckets.resize(nBuckets);
 		}
@@ -235,21 +237,39 @@ namespace aes
 			return size_;
 		}
 
+		constexpr float getLoadFactor() const noexcept
+		{
+			return size_ / buckets.size();
+		}
+
 		constexpr void rehash(uint32_t newBucketCount)
 		{
 			Array<Bucket_t> newBuckets;
 			newBuckets.resize(newBucketCount);
 			for (auto&& [k, v] : *this)
 			{
-				add(newBuckets, std::move(k), std::move(v));
+				add(newBuckets, std::forward<K>(k), std::forward<V>(v));
 			}
 			buckets = std::move(newBuckets);
+		}
+
+		constexpr void rehash()
+		{
+			rehash(buckets.size() * 2);
+		}
+
+		constexpr void add(K const& key, V const& value)
+		{
+			add(buckets, key, value);
+			size_++;
+			rehashIfNecessary();
 		}
 
 		constexpr void add(K&& key, V&& value)
 		{
 			add(buckets, std::forward<K>(key), std::forward<V>(value));
 			size_++;
+			rehashIfNecessary();
 		}
 
 		constexpr void remove(K const& key)
@@ -265,14 +285,10 @@ namespace aes
 
 		bool tryFind(K const& key, V& value) const
 		{
-			auto const hash = Hash_t{}(key);
-			uint32_t const index = hash % buckets.size();
+			Bucket_t bucket;
+			auto const it = getKeyItAndBucket(key, bucket);
 
-			auto const it = buckets[index].findIf([key](auto const& pair) {
-				return pair.first == key;
-				});
-
-			if (it != buckets[index].end())
+			if (it != bucket.end())
 			{
 				value = (*it).second;
 				return true;
@@ -281,16 +297,19 @@ namespace aes
 			return false;
 		}
 
+		constexpr bool exist(K const& key) const
+		{
+			Bucket_t bucket;
+			auto const it = getKeyItAndBucket(key, bucket);
+			return it != bucket.end();
+		}
+
 		constexpr V& operator[](K const& key)
 		{
-			auto const hash = Hash_t{}(key);
-			uint32_t const index = hash % buckets.size();
+			Bucket_t bucket;
+			auto const it = getKeyItAndBucket(key, bucket);
 
-			auto const it = buckets[index].findIf([key](auto const& pair) {
-				return pair.first == key;
-				});
-
-			if (it != buckets[index].end())
+			if (it != bucket.end())
 				return (*it).second;
 
 			AES_FATAL_ERROR("Key not present in map");
@@ -325,7 +344,23 @@ namespace aes
 			buckets[index].add(std::move(pair));
 		}
 
-		uint32_t getNextNonEmptyBucketIndex(uint32_t startIndex)
+		static constexpr void add(Array<Bucket_t>& buckets, K const& key, V const& value)
+		{
+			auto pair = Pair<K, V>{ key, value };
+			auto const hash = Hash_t{}(pair.first);
+			uint32_t const index = hash % buckets.size();
+			buckets[index].add(std::move(pair));
+		}
+
+		constexpr void rehashIfNecessary()
+		{
+			if (getLoadFactor() > defaultMaxLoadFactor)
+			{
+				rehash();
+			}
+		}
+
+		constexpr uint32_t getNextNonEmptyBucketIndex(uint32_t startIndex) const
 		{
 			for (uint32_t i = startIndex; i < buckets.size(); i++)
 			{
@@ -333,6 +368,18 @@ namespace aes
 					return i;
 			}
 			return buckets.size();
+		}
+
+		constexpr auto getKeyItAndBucket(K const& key, Bucket_t& bucket) const
+		{
+			auto const hash = Hash_t{}(key);
+			uint32_t const index = hash % buckets.size();
+
+			auto const it = buckets[index].findIf([key](auto const& pair) {
+				return pair.first == key;
+				});
+			bucket = buckets[index];
+			return it;
 		}
 
 		IAllocator* allocator;

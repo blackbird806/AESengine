@@ -6,6 +6,7 @@
 #include "core/dragon4.hpp"
 
 #include "renderer/phenixslang.hpp"
+#include "lang/sbl.hpp"
 
 using namespace aes;
 
@@ -22,14 +23,23 @@ int main()
 #else
 #endif
 
-	const char* source = 
-	R"((defstruct VSinput 
-		(vec2 position POSITION) 
-		(vec4 color COLOR)))";
-	phenix::PhenixFront front(source);
-	auto* exp = front.parse();
-	exp->print();
-	phenix::ShaderProgram shader = phenix::createShaderProgram(exp);
+	SBLLexer parser(R"(
+		(struct Test
+		(int a)
+		(float b)
+			)
+	)");
+	SBLParser sbl;
+	auto decl = sbl.parseStructDecl(parser.parse().getStatement());
+	volatile int o = 0;
+	//const char* source = 
+	//R"((defstruct VSinput 
+	//	(vec2 position POSITION) 
+	//	(vec4 color COLOR)))";
+	//phenix::PhenixFront front(source);
+	//auto* exp = front.parse();
+	//exp->print();
+	//phenix::ShaderProgram shader = phenix::createShaderProgram(exp);
 
 	//Array<phenix::FunDef> fnDefs;
 	//Array<phenix::StructDecl> bufferDecl;

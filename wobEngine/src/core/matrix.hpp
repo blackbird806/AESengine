@@ -61,12 +61,12 @@ namespace aes
 			v[2] = rhs.v[2];
 		}
 
-		decltype(auto) operator[](this auto& self, unsigned i)
+		constexpr decltype(auto) operator[](this auto& self, unsigned i)
 		{
 			return self.data[i];
 		}
 
-		decltype(auto) operator[](this auto& self, unsigned i, unsigned j)
+		constexpr decltype(auto) operator[](this auto& self, unsigned i, unsigned j)
 		{
 			return self.data[i * 3 + j];
 		}
@@ -82,13 +82,12 @@ namespace aes
 
 	struct mat3x4
 	{
-
-		decltype(auto) operator[](this auto& self, unsigned i)
+		constexpr decltype(auto) operator[](this auto& self, unsigned i)
 		{
 			return self.data[i];
 		}
 
-		decltype(auto) operator[](this auto& self, unsigned i, unsigned j)
+		constexpr decltype(auto) operator[](this auto& self, unsigned i, unsigned j)
 		{
 			return self.data[i * 3 + j];
 		}

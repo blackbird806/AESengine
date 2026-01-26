@@ -171,7 +171,7 @@ namespace aes::phenix
 		BinOp,
 		UnOp,
 		Literal,
-		Variable,
+		VarDecl,
 		FnCall,
 		ReturnStatement,
 		CompoundStatement

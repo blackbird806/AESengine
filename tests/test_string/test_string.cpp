@@ -40,6 +40,7 @@ int main()
 		AES_ASSERT(strB.empty());
 		AES_ASSERT(strB.capacity() > 0);
 		strB.shrink();
+		AES_ASSERT(strB.capacity() == 0);
 	}
 	{
 		AES_LOG("[TEST] RHI");

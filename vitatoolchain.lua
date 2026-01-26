@@ -24,7 +24,9 @@ toolchain("vita")
 
     on_load(function (toolchain)
 		-- add flags for arch
-        toolchain:add("cxflags", "-march=armv7-a", "-msoft-float", {force = true})
+		--https://github.com/psvsdk/psvsdk/blob/master/src/psv-gcc.sh
+        toolchain:add("cxflags", "-march=armv7-a", "-mfloat-abi=hard", 
+						"-mtune=cortex-a9", "-mfpu=neon", "-mthumb" , {force = true})
         toolchain:add("cxxflags", "-march=armv7-a", "-msoft-float", {force = true})
         toolchain:add("ldflags", "-march=armv7-a", "-msoft-float", {force = true})
 --        toolchain:add("ldflags", "--static", {force = true})

@@ -45,15 +45,15 @@ public:
 
 int main()
 {
-	AES_START_PROFILE_SESSION("test draw2d startup");
+	//AES_START_PROFILE_SESSION("test draw2d startup");
 	TestDraw2dApp app({
 		.appName = "aes draw2d test"
 		});
 	app.init();
-	auto startupSession = AES_STOP_PROFILE_SESSION();
+	//auto startupSession = AES_STOP_PROFILE_SESSION();
 
-	AES_START_PROFILE_SESSION("test draw2d running");
+	//AES_START_PROFILE_SESSION("test draw2d running");
 	app.run();
-	auto runningSession = AES_STOP_PROFILE_SESSION();
+	//auto runningSession = AES_STOP_PROFILE_SESSION();
 	return 0;
 }

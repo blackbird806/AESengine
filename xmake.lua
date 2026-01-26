@@ -41,10 +41,6 @@ add_includedirs("wobEngine/thirdParty")
 
 target("wobEngine")
 	set_kind("static")
-	-- will be removed
-	add_includedirs("wobEngine/thirdParty/fmt/include")
-	add_includedirs("wobEngine/thirdParty/glm")
-	--
 	add_files("wobEngine/thirdParty/**.cpp|wobEngine/thirdParty/**.c")
 	add_headerfiles("wobEngine/thirdParty/**.hpp|wobEngine/thirdParty/**.h")
 	add_files("wobEngine/src/**.cpp|renderer/RHI/D3D11/*.cpp|renderer/RHI/SceGxm/*.cpp|core/platformWindows/*.cpp")

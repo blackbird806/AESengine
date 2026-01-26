@@ -88,7 +88,7 @@ static String evalASTNode(ASTNode* node)
 	{
 	case ASTNodeType::Literal:
 		return evalASTNode((LiteralNode*)node);
-	case ASTNodeType::Variable:
+	case ASTNodeType::VarDecl:
 		return evalASTNode((VariableNode*)node);
 	case ASTNodeType::ReturnStatement:
 		return evalASTNode((ReturnStatement*)node);

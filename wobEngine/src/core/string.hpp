@@ -10,7 +10,6 @@
 #include "hash.hpp"
 #include "coreMacros.hpp"
 
-
 namespace aes
 {
 	constexpr size_t strlen(const char* start)
@@ -265,6 +264,15 @@ namespace aes
 		constexpr uint64_t operator()(String const& str)
 		{
 			return Hash<const char*>{}(str.c_str());
+		}
+	};
+
+	template<>
+	struct Hash<std::string_view>
+	{
+		uint64_t operator()(std::string_view str)
+		{
+			return std::hash<std::string_view>()(str);
 		}
 	};
 }
