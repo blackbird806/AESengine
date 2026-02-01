@@ -38,10 +38,10 @@ static String evalASTNode(LiteralNode* lit)
 	AES_UNREACHABLE();
 }
 
-static String evalASTNode(CompoundStatementNode* stmt)
+static String evalASTNode(CompoundStatementNode* data)
 {
 	String out("{\n");
-	for (ASTNode* node : stmt->statements)
+	for (ASTNode* node : data->statements)
 	{
 		evalASTNode(node);
 	}
@@ -49,10 +49,10 @@ static String evalASTNode(CompoundStatementNode* stmt)
 	return out;
 }
 
-static String evalASTNode(ReturnStatement* stmt)
+static String evalASTNode(ReturnStatement* data)
 {
 	String out("return ");
-	out.append(evalASTNode(stmt->node));
+	out.append(evalASTNode(data->node));
 	return out;
 }
 
@@ -191,10 +191,10 @@ String aes::phenix::compileToHLSL(ShaderProgram const& program)
 		// Add SV_TARGET here ?
 		out.append(")\n{\n");
 
-		for (auto const& stmt : fn.body.statements)
+		for (auto const& data : fn.body.statements)
 		{
 			out.append("\t");
-			out.append(evalASTNode(stmt));
+			out.append(evalASTNode(data));
 			out.append(";\n");
 		}
 		out.append("}\n");

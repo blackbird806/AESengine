@@ -13,27 +13,27 @@ void SBLLexer::skipWhite()
 	}
 }
 
-Exp SBLLexer::parse()
+BaseExp SBLLexer::parse()
 {
-	Exp expression;
+	BaseExp expression;
 	skipWhite();
 	if (c == source.size())
 		return expression;
-	// TODO remove loop do full recursive with parse astnode specific functions
+
 	if (source[c] == '(')
 	{
 		c++; // skip (
 		// parse statement
-		expression.setType(ExpType::EStatement);
+		expression.setType(ExpType::List);
 		while (c < source.size() && source[c] != ')')
 		{
-			expression.getStatement().expressions.push(parse());
+			expression.getList().expressions.push(parse());
 		}
 		c++; // skip )
 	}
 	else
 	{
-		expression.setType(ExpType::EAtom);
+		expression.setType(ExpType::Atom);
 		expression.getAtom() = parseAtom();
 	}
 	skipWhite();
@@ -55,27 +55,27 @@ Atom SBLLexer::parseAtom()
 	return atom;
 }
 
-void Exp::setType(ExpType type_)
+void BaseExp::setType(ExpType type_)
 {
 	type = type_;
-	if (type == ExpType::EAtom)
+	if (type == ExpType::Atom)
 	{
 		value.emplace<Atom>();
 	}
 	else
 	{
-		value.emplace<Statement>();
+		value.emplace<List>();
 	}
 }
 
-Atom& Exp::getAtom()
+Atom& BaseExp::getAtom()
 {
 	return std::get<Atom>(value);
 }
 
-Statement& Exp::getStatement()
+List& BaseExp::getList()
 {
-	return std::get<Statement>(value);
+	return std::get<List>(value);
 }
 
 void SBLParser::reportError(String&& errorMsg)
@@ -83,6 +83,7 @@ void SBLParser::reportError(String&& errorMsg)
 	Error err;
 	err.msg = std::move(errorMsg);
 	errorHandler.ErrorStack.push(std::move(err));
+	AES_ASSERT(false);
 }
 
 void SBLParser::notEnoughArgError(uint current, uint expected)
@@ -95,21 +96,21 @@ void SBLParser::notEnoughArgError(uint current, uint expected)
 	<vardecl>)
 * 
 */
-StructDecl SBLParser::parseStructDecl(Statement& stmt)
+StructDecl SBLParser::parseStructDecl(List& data)
 {
 	StructDecl struct_;
-	if (stmt.expressions.size() < 3)
+	if (data.expressions.size() < 3)
 	{
-		notEnoughArgError(stmt.expressions.size(), 3);
+		notEnoughArgError(data.expressions.size(), 3);
 		return struct_;
 	}
 
 	// 0 is struct keyword
-	struct_.name = stmt.expressions[1].getAtom().src;
+	struct_.name = data.expressions[1].getAtom().src;
 
-	for (int i = 2; i < stmt.expressions.size(); i++)
+	for (int i = 2; i < data.expressions.size(); i++)
 	{
-		struct_.members.push(parseVarDecl(stmt.expressions[i].getStatement()));
+		struct_.members.push(parseVarDecl(data.expressions[i].getList()));
 	}
 
 	structs.add(struct_.name, struct_);
@@ -119,26 +120,26 @@ StructDecl SBLParser::parseStructDecl(Statement& stmt)
 /*
 * <vardecl> ::= (type name)
 */
-VarDecl SBLParser::parseVarDecl(Statement& stmt)
+VarDecl SBLParser::parseVarDecl(List& data)
 {
 	VarDecl var;
-	if (stmt.expressions.size() < 2)
+	if (data.expressions.size() < 2)
 	{
-		notEnoughArgError(stmt.expressions.size(), 2);
+		notEnoughArgError(data.expressions.size(), 2);
 		return var;
 	}
 
-	var.type = getTypeFromString(stmt.expressions[0].getAtom().src);
-	if (stmt.expressions.size() > 2)
+	var.type = getTypeFromString(data.expressions[0].getAtom().src);
+	if (data.expressions.size() > 2)
 	{
-		var.initExp = stmt.expressions[2];
+		var.initExp = data.expressions[2];
 	}
 
 	if (var.type == Type::Struct)
 	{
 		//var.structName = stmt.expressions[0].getAtom().src.data();
 	}
-	var.name = stmt.expressions[1].getAtom().src;
+	var.name = data.expressions[1].getAtom().src;
 	return var;
 }
 
@@ -148,29 +149,78 @@ VarDecl SBLParser::parseVarDecl(Statement& stmt)
 *	(do (Expression)
 	))
 */
-FuncDef SBLParser::parseFuncDef(Statement& stmt)
+FuncDef SBLParser::parseFuncDef(List& data)
 {
 	FuncDef func;
-	if (stmt.expressions.size() < 3)
+	if (data.expressions.size() < 3)
 	{
-		notEnoughArgError(stmt.expressions.size(), 3);
+		notEnoughArgError(data.expressions.size(), 3);
 		return func;
 	}
 
-	func.returnType = getTypeFromString(stmt.expressions[1].getAtom().src);
-	func.name = stmt.expressions[2].getAtom().src;
+	func.returnType = getTypeFromString(data.expressions[1].getAtom().src);
+	func.name = data.expressions[2].getAtom().src;
 
-	for (int i = 3; i < stmt.expressions.size(); i++)
+	for (int i = 3; i < data.expressions.size(); i++)
 	{
-		if (stmt.expressions[i].getStatement().expressions[0].getAtom().src == "do"sv)
+		if (data.expressions[i].getList().expressions[0].getAtom().src == "do"sv)
 		{
-			func.body = stmt.expressions[i].getStatement().expressions[1];
+			func.body = data.expressions[i].getList().expressions[1];
 			break;
 		}
-		func.args.push(parseVarDecl(stmt.expressions[i].getStatement()));
+		func.args.push(parseVarDecl(data.expressions[i].getList()));
 	}
 	functions.add(func.name, func);
 	return func;
+}
+
+Statement SBLParser::parseStatement(BaseExp& exp)
+{
+	if (exp.type == ExpType::Atom)
+	{
+
+	}
+
+	Statement data;
+
+	List& lst = exp.getList();
+	if (lst.expressions.size() < 2)
+	{
+		notEnoughArgError(lst.expressions.size(), 2);
+		return data;
+	}
+
+	Atom& firstAtom = lst.expressions[0].getAtom();
+
+	if (firstAtom.src == "do"sv)
+	{
+		data.type = StatementType::Compound;
+		data.data = parseCompoundStatement(lst);
+	}
+	else if (firstAtom.src == "if"sv)
+	{
+		data.type = StatementType::If;
+		data.data = parseIfStatement(lst);
+	}
+
+	return data;
+}
+
+CompoundStatement SBLParser::parseCompoundStatement(List& lst)
+{
+	CompoundStatement compound;
+
+	for (auto& elem : lst.expressions)
+	{
+		compound.statements.push(parseStatement(elem));
+	}
+
+	return compound;
+}
+
+IfStatement SBLParser::parseIfStatement(List& lst)
+{
+	return IfStatement();
 }
 
 constexpr const char* SBLParser::getPrimitiveTypeName(Type type)

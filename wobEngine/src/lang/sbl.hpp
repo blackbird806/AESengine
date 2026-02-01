@@ -14,7 +14,7 @@ namespace aes {
 		Int,
 		Uint,
 		Bool,
-		Float, 
+		Float,
 		Double,
 		Struct,
 		Size
@@ -25,25 +25,25 @@ namespace aes {
 		std::string_view src;
 	};
 
-	struct Statement
+	struct List
 	{
-		Array<struct Exp> expressions;
+		Array<struct BaseExp> expressions;
 	};
 
 	enum class ExpType
 	{
-		EAtom,
-		EStatement
+		Atom,
+		List
 	};
 
-	struct Exp
+	struct BaseExp
 	{
 		void setType(ExpType type);
 		ExpType type;
-		std::variant<Atom, Statement> value;
+		std::variant<Atom, List> value;
 
 		Atom& getAtom();
-		Statement& getStatement();
+		List& getList();
 	};
 
 	struct SBLLexer
@@ -58,7 +58,7 @@ namespace aes {
 
 		void skipWhite();
 
-		Exp parse();
+		BaseExp parse();
 		Atom parseAtom();
 	};
 
@@ -66,7 +66,7 @@ namespace aes {
 	{
 		String name;
 		Type type;
-		Exp initExp;
+		BaseExp initExp;
 	};
 
 	struct StructDecl
@@ -80,7 +80,56 @@ namespace aes {
 		String name;
 		Type returnType;
 		Array<VarDecl> args;
-		Exp body;
+		BaseExp body;
+	};
+
+	struct Statement;
+
+	struct CompoundStatement
+	{
+		Array<Statement> statements;
+	};
+
+	struct IfStatement
+	{
+		BaseExp condition;
+		BaseExp body;
+		BaseExp elseBody;
+	};
+
+	enum class StatementType
+	{
+		Compound,
+		If, 
+		While
+	};
+
+	struct Statement
+	{
+		StatementType type;
+		std::variant<CompoundStatement, IfStatement> data;
+	};
+
+	struct IdentifierExp
+	{
+
+	};
+
+	struct LiteralExp
+	{
+
+	};
+
+	enum class PrimaryType
+	{
+		Literal,
+		Identifier
+	};
+
+	struct PrimaryExp
+	{
+		PrimaryType type;
+		std::variant<LiteralExp, IdentifierExp> data;
 	};
 
 	struct SBLParser
@@ -95,15 +144,20 @@ namespace aes {
 			Array<Error> ErrorStack;
 		};
 
-		Exp code;
+		BaseExp code;
 		ErrorHandler errorHandler;
 
 		void reportError(String&& errorMsg);
 		void notEnoughArgError(uint current, uint expected);
 
-		StructDecl parseStructDecl(Statement& stmt);
-		VarDecl parseVarDecl(Statement& stmt);
-		FuncDef parseFuncDef(Statement& stmt);
+		StructDecl parseStructDecl(List& data);
+		VarDecl parseVarDecl(List& data);
+		FuncDef parseFuncDef(List& data);
+
+		Statement parseStatement(BaseExp& exp);
+		CompoundStatement parseCompoundStatement(List& lst);
+		IfStatement parseIfStatement(List& lst);
+
 
 		HashMap<String, StructDecl> structs;
 		HashMap<String, FuncDef> functions;

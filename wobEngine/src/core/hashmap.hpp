@@ -239,16 +239,16 @@ namespace aes
 
 		constexpr float getLoadFactor() const noexcept
 		{
-			return size_ / buckets.size();
+			return (float)size_ / buckets.size();
 		}
 
 		constexpr void rehash(uint32_t newBucketCount)
 		{
 			Array<Bucket_t> newBuckets;
 			newBuckets.resize(newBucketCount);
-			for (auto&& [k, v] : *this)
+			for (auto& [k, v] : *this)
 			{
-				add(newBuckets, std::forward<K>(k), std::forward<V>(v));
+				add(newBuckets, k, v);
 			}
 			buckets = std::move(newBuckets);
 		}

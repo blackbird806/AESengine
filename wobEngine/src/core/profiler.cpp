@@ -56,6 +56,13 @@ namespace aes
 	{
 		impl = profStaticAllocator.create<ProfilerImpl>(&profStaticAllocator);
 	}
+
+	ProfileSession::ProfileSession(const char* name_, ProfileTime_t elapsed) noexcept
+	{
+		name = name_;
+		elapsedSessionTime = elapsed;
+		impl = profStaticAllocator.create<ProfilerImpl>(&profStaticAllocator);
+	}
 }
 
 void Instrumentor::startSession(const char* name)

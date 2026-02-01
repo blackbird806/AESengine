@@ -23,14 +23,40 @@ int main()
 #else
 #endif
 
-	SBLLexer parser(R"(
+	const char* base3dShaderfs = R"(
+		(struct VS_OUTPUT
+			(vec4 position :SV_POSITION)
+			(vec4 color :COLOR)
+			)
+		
+		(defun vec4 main (VS_OUTPUT input)
+			(do 
+				(return input.color)
+			)
+		:SV_TARGET)
+	)";
+
+	const char* base3dShadervs = R"(
+		(struct VS_INPUT
+			(vec4 position :POSITION)
+			(vec4 color :COLOR)
+			)
+
+		(struct VS_OUTPUT
+			(vec4 position :SV_POSITION)
+			(vec4 color :COLOR)
+			)
+
+	)";
+
+	SBLLexer lexer(R"(
 		(struct Test
 		(int a)
 		(float b)
 			)
 	)");
 	SBLParser sbl;
-	auto decl = sbl.parseStructDecl(parser.parse().getStatement());
+	auto decl = sbl.parseStructDecl(lexer.parse().getList());
 	volatile int o = 0;
 	//const char* source = 
 	//R"((defstruct VSinput 
