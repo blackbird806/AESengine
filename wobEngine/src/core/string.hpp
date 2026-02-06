@@ -58,9 +58,10 @@ namespace aes
 
 		/*constexpr*/ String(std::string_view str) noexcept
 		{
-			buffer.resize(str.size());
+			buffer.resize(str.size() + 1);
 			// @review same
 			strncpy(buffer.data(), str.data(), str.size());
+			buffer.back() = '\0';
 		}
 
 		constexpr String(String const& rhs) noexcept : buffer(rhs.buffer)

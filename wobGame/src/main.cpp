@@ -8,6 +8,7 @@
 #include "lang/sbl.hpp"
 
 using namespace aes;
+using namespace aes::sbl;
 
 int main()
 {
@@ -31,9 +32,10 @@ int main()
 		
 		(fn float main (var VS_OUTPUT input)
 			(do 
-				(return input)
+
 			)
-		SV_TARGET))
+		)
+	)
 	)";
 
 	const char* base3dShadervs = R"(

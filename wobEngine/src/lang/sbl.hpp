@@ -6,7 +6,66 @@
 #include "core/array.hpp"
 #include "core/hashmap.hpp"
 
-namespace aes {
+namespace aes::sbl 
+{
+	struct SourceLoc
+	{
+		size_t line;
+		size_t column;
+		std::string_view filename;
+	};
+
+	struct Atom
+	{
+		std::string_view src;
+		SourceLoc loc;
+	};
+
+	struct List
+	{
+		Array<struct Node> nodes;
+		SourceLoc loc;
+	};
+
+	enum class NodeType
+	{
+		Atom,
+		List
+	};
+
+	struct Node
+	{
+		void setType(NodeType type);
+		NodeType type;
+		std::variant<Atom, List> value;
+
+		Atom& getAtom();
+		List& getList();
+	};
+
+	struct SBLLexer
+	{
+		int c = 0;
+		int currentLine = 0;
+		int currentColumn = 0;
+		std::string_view source;
+
+		SBLLexer(std::string_view src) : source(src)
+		{
+
+		}
+
+		SourceLoc getCurrentLoc();
+
+		void skipWhite();
+
+		void consume(char c);
+		char peek();
+
+		Node parse();
+		Atom parseAtom();
+		List parseList();
+	};
 
 	enum class Type
 	{
@@ -20,67 +79,17 @@ namespace aes {
 		Size
 	};
 
-	struct Atom
-	{
-		std::string_view src;
-	};
-
-	struct List
-	{
-		Array<struct BaseExp> expressions;
-	};
-
-	enum class ExpType
-	{
-		Atom,
-		List
-	};
-
-	struct BaseExp
-	{
-		void setType(ExpType type);
-		ExpType type;
-		std::variant<Atom, List> value;
-
-		Atom& getAtom();
-		List& getList();
-	};
-
-	struct SBLLexer
-	{
-		int c = 0;
-		std::string_view source;
-
-		SBLLexer(std::string_view src) : source(src)
-		{
-
-		}
-
-		void skipWhite();
-
-		BaseExp parse();
-		Atom parseAtom();
-	};
-
 	struct VarDecl
 	{
 		String name;
 		Type type;
-		BaseExp initExp;
+		Node initExp;
 	};
 
 	struct StructDecl
 	{
 		String name;
 		Array<VarDecl> members;
-	};
-
-	struct FuncDef
-	{
-		String name;
-		Type returnType;
-		Array<VarDecl> args;
-		BaseExp body;
 	};
 
 	struct Statement;
@@ -90,35 +99,41 @@ namespace aes {
 		Array<Statement> statements;
 	};
 
+	struct FuncDef
+	{
+		String name;
+		Type returnType;
+		Array<VarDecl> args;
+		CompoundStatement body;
+	};
+
 	struct IfStatement
 	{
-		BaseExp condition;
-		BaseExp body;
-		BaseExp elseBody;
+		Node condition;
+		CompoundStatement body;
+		CompoundStatement elseBody;
 	};
 
 	enum class StatementType
 	{
 		Compound,
 		If, 
-		While
+		While,
+		VarDecl,
+		StructDecl,
+		FunDef
 	};
 
 	struct Statement
 	{
 		StatementType type;
-		std::variant<CompoundStatement, IfStatement> data;
+		std::variant<CompoundStatement, 
+					IfStatement, 
+					VarDecl, 
+					StructDecl, 
+					FuncDef> data;
 	};
 
-	struct IdentifierExp
-	{
-
-	};
-
-	struct LiteralExp
-	{
-
-	};
 
 	enum class PrimaryType
 	{
@@ -129,7 +144,52 @@ namespace aes {
 	struct PrimaryExp
 	{
 		PrimaryType type;
-		std::variant<LiteralExp, IdentifierExp> data;
+		Atom atom;
+	};
+
+	struct Symbol
+	{
+		String name;
+		Type type;
+		bool isMutable;
+		SourceLoc definedAt;
+	};
+
+	class TypeEnvironment
+	{
+		HashMap<String, Symbol> variables;
+		HashMap<String, StructDecl> structs;
+		HashMap<String, FuncDef> functions;
+		TypeEnvironment* parent = nullptr;  // For nested scopes
+
+	public:
+		TypeEnvironment(TypeEnvironment* p = nullptr) : parent(p) {}
+
+		void define(const String& name, Type type, bool mutable_ = true) 
+		{
+			if (variables.exist(name)) {
+				AES_ASSERT(false);
+			}
+			variables[name] = { name, type, mutable_ };
+		}
+
+		Symbol lookup(const String& name) 
+		{
+			Symbol sym;
+			if (variables.tryFind(name, sym))
+			{
+				return sym;
+			}
+
+			if (parent) 
+				return parent->lookup(name);
+			AES_ASSERT(false);
+
+		}
+
+		TypeEnvironment enterScope() {
+			return TypeEnvironment(this);
+		}
 	};
 
 	struct SBLParser
@@ -144,7 +204,7 @@ namespace aes {
 			Array<Error> ErrorStack;
 		};
 
-		BaseExp code;
+		Node code;
 		ErrorHandler errorHandler;
 
 		void reportError(String&& errorMsg);
@@ -154,10 +214,9 @@ namespace aes {
 		VarDecl parseVarDecl(List& data);
 		FuncDef parseFuncDef(List& data);
 
-		Statement parseStatement(BaseExp& exp);
+		Statement parseStatement(Node& exp);
 		CompoundStatement parseCompoundStatement(List& lst);
 		IfStatement parseIfStatement(List& lst);
-
 
 		HashMap<String, StructDecl> structs;
 		HashMap<String, FuncDef> functions;
