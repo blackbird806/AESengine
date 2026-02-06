@@ -91,6 +91,8 @@ namespace aes
 		constexpr void removeAfter(Iterator const& it) noexcept
 		{
 			AES_BOUNDS_CHECK(it.n != nullptr);
+			AES_BOUNDS_CHECK(it.n->next != nullptr);
+
 			auto const* tmp = it.n->next->next;
 			deleteNode(it.n->next);
 			it.n->next = tmp;
@@ -99,18 +101,17 @@ namespace aes
 		template<typename Pred>
 		constexpr void removeFirst(Pred&& pred) noexcept
 		{
-			Node** prev = nullptr;
 			for (Node** c = &first; *c != nullptr; c = &(*c)->next)
 			{
 				if (pred(*c))
 				{
-					if (prev)
-						(*prev)->next = (*c)->next;
-					deleteNode(*c);
-					*c = nullptr;
+					// Link around the node being removed
+					Node* nodeToDelete = *c;
+					*c = nodeToDelete->next;  // Update the pointer to skip this node
+
+					deleteNode(nodeToDelete);
 					return;
 				}
-				prev = c;
 			}
 		}
 
@@ -182,41 +183,41 @@ namespace aes
 				return *currentBucketIt;
 			}
 
-			// goofy code ahead
-			// @Review I'm really not happy with this 
 			Iterator& operator++() noexcept
 			{
 				++currentBucketIt;
+
+				// If we finished the current bucket, advance to the next
 				if (currentBucketIt == BucketArrayIt->end())
 				{
-					++BucketArrayIt;
-					if (BucketArrayIt == map->buckets.end())
-					{
-						currentBucketIt = BucketArrayIt->end();
-						return *this;
-					}
-					while (BucketArrayIt->isEmpty())
-					{
-							if (BucketArrayIt == map->buckets.end())
-							{
-								currentBucketIt = BucketArrayIt->end();
-								return *this;
-							}
-						++BucketArrayIt;
-						
-						if (BucketArrayIt == map->buckets.end())
-						{
-							currentBucketIt = BucketArrayIt->end();
-							return *this;
-						}
-					}
-					currentBucketIt = BucketArrayIt->begin();
+					advanceToNextNonEmptyBucket();
 				}
+
 				return *this;
 			}
 
 			bool operator==(Iterator const&) const noexcept = default;
 
+			void advanceToNextNonEmptyBucket() noexcept
+			{
+				++BucketArrayIt;
+
+				// Skip empty buckets
+				while (BucketArrayIt != map->buckets.end() && BucketArrayIt->isEmpty())
+				{
+					++BucketArrayIt;
+				}
+
+				// Set position in new bucket (or end if we reached the end)
+				if (BucketArrayIt != map->buckets.end())
+				{
+					currentBucketIt = BucketArrayIt->begin();
+				}
+				else
+				{
+					currentBucketIt = typename Bucket_t::Iterator{ nullptr };
+				}
+			}
 			HashMap* map;
 			Array<Bucket_t>::Iterator_t BucketArrayIt;
 			Bucket_t::Iterator currentBucketIt;
@@ -286,11 +287,11 @@ namespace aes
 		bool tryFind(K const& key, V& value) const
 		{
 			Bucket_t bucket;
-			auto const it = getKeyItAndBucket(key, bucket);
+			auto const result = getKeyItAndBucketIndex(key);
 
-			if (it != bucket.end())
+			if (result.it != buckets[result.bucketIndex].end())
 			{
-				value = (*it).second;
+				value = (*result.it).second;
 				return true;
 			}
 
@@ -299,18 +300,18 @@ namespace aes
 
 		constexpr bool exist(K const& key) const
 		{
-			Bucket_t bucket;
-			auto const it = getKeyItAndBucket(key, bucket);
-			return it != bucket.end();
+			auto const result = getKeyItAndBucketIndex(key);
+			return result.it != buckets[result.bucketIndex].end();
 		}
 
 		constexpr V& operator[](K const& key)
 		{
 			Bucket_t bucket;
-			auto const it = getKeyItAndBucket(key, bucket);
-
-			if (it != bucket.end())
-				return (*it).second;
+			auto const result = getKeyItAndBucketIndex(key);
+			if (result.it != buckets[result.bucketIndex].end())
+			{
+				return (*result.it).second;
+			}
 
 			AES_FATAL_ERROR("Key not present in map");
 		}
@@ -370,7 +371,13 @@ namespace aes
 			return buckets.size();
 		}
 
-		constexpr auto getKeyItAndBucket(K const& key, Bucket_t& bucket) const
+		struct KeySearchResult
+		{
+			typename Bucket_t::Iterator it;
+			uint32_t bucketIndex;
+		};
+
+		constexpr KeySearchResult getKeyItAndBucketIndex(K const& key) const
 		{
 			auto const hash = Hash_t{}(key);
 			uint32_t const index = hash % buckets.size();
@@ -378,8 +385,7 @@ namespace aes
 			auto const it = buckets[index].findIf([key](auto const& pair) {
 				return pair.first == key;
 				});
-			bucket = buckets[index];
-			return it;
+			return {it, index};
 		}
 
 		IAllocator* allocator;

@@ -153,10 +153,11 @@ namespace aes
 		template<std::ranges::input_range Range>
 		constexpr void insert(Iterator_t pos, Range&& range) noexcept
 		{
-			AES_BOUNDS_CHECK(pos < end());
-			AES_BOUNDS_CHECK(pos > begin());
+			AES_BOUNDS_CHECK(pos <= end());
+			AES_BOUNDS_CHECK(pos >= begin());
 			uint32_t const rangeSize = std::ranges::size(range);
 			uint32_t const newSize = size_ + rangeSize;
+			uint32_t const ipos = pos - begin();
 
 			T* workBuffer = buffer;
 			if (newSize > capacity_)
@@ -170,33 +171,27 @@ namespace aes
 				T* const newBuffer = static_cast<T*>(alloc->allocate<T>(newCapacity));
 				capacity_ = newCapacity;
 
-				// move previous elements in new buffer
-				uint32_t i = 0;
-				for (Iterator_t it = begin(); it != pos && it != nullptr; ++it)
+				// Move elements after insertion point (shifted by rangeSize)
+				for (uint32_t i = ipos; i < size_; i++)
 				{
-					new (&newBuffer[i]) T(std::move(buffer[i]));
-					i++;
+					new (&newBuffer[i + rangeSize]) T(std::move(buffer[i]));
 				}
 				workBuffer = newBuffer;
+				alloc->deallocate(buffer);
 			}
-
-			uint32_t ipos = pos - begin();
-			
-			// move next elements
-			for (uint32_t i = newSize - 1; i > ipos + rangeSize - 1; i--)
+			else if (ipos < size_)
 			{
-				new (&workBuffer[i]) T(std::move(buffer[i - rangeSize]));
+				for (uint32_t i = size_; i > ipos; i--)
+				{
+					new (&workBuffer[i + rangeSize - 1]) T(std::move(workBuffer[i - 1]));
+				}
 			}
 
 			// insert range after pos
+			uint32_t insertIdx = ipos;
 			for (auto&& e : range)
 			{
-				new (&workBuffer[ipos++]) T(std::move(e));
-			}
-
-			if (workBuffer != buffer)
-			{
-				alloc->deallocate(buffer);
+				new (&workBuffer[insertIdx++]) T(std::move(e));
 			}
 
 			buffer = workBuffer;
@@ -231,10 +226,10 @@ namespace aes
 		constexpr bool empty() const noexcept { return size_ == 0; }
 
 		constexpr Iterator_t begin() noexcept { return buffer; }
-		constexpr Iterator_t end() noexcept { return buffer ? buffer + size_ : nullptr; }
+		constexpr Iterator_t end() noexcept { return buffer + size_; }
 
 		constexpr ConstIterator_t begin() const noexcept { return buffer; }
-		constexpr ConstIterator_t end() const noexcept { return buffer ? buffer + size_ : nullptr; }
+		constexpr ConstIterator_t end() const noexcept { return buffer + size_; }
 
 		constexpr T const& front() const noexcept { AES_BOUNDS_CHECK(size_ > 0); return buffer[0]; }
 		constexpr T const& back() const noexcept { AES_BOUNDS_CHECK(size_ > 0); return buffer[size_ - 1]; }
