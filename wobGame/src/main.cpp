@@ -3,7 +3,6 @@
 #include "core/aes.hpp"
 #include "core/debug.hpp"
 #include "core/uniquePtr.hpp"
-#include "core/dragon4.hpp"
 
 #include "renderer/phenixslang.hpp"
 #include "lang/sbl.hpp"
@@ -24,39 +23,36 @@ int main()
 #endif
 
 	const char* base3dShaderfs = R"(
+	(do
 		(struct VS_OUTPUT
-			(vec4 position :SV_POSITION)
-			(vec4 color :COLOR)
+			(var float position SV_POSITION)
+			(var float color COLOR)
 			)
 		
-		(defun vec4 main (VS_OUTPUT input)
+		(fn float main (var VS_OUTPUT input)
 			(do 
-				(return input.color)
+				(return input)
 			)
-		:SV_TARGET)
+		SV_TARGET))
 	)";
 
 	const char* base3dShadervs = R"(
-		(struct VS_INPUT
+		(struct VSINPUT
 			(vec4 position :POSITION)
 			(vec4 color :COLOR)
 			)
 
-		(struct VS_OUTPUT
-			(vec4 position :SV_POSITION)
+		(struct VSOUTPUT
+			(vec4 position :SVPOSITION)
 			(vec4 color :COLOR)
 			)
 
 	)";
 
-	SBLLexer lexer(R"(
-		(struct Test
-		(int a)
-		(float b)
-			)
-	)");
+	SBLLexer lexer(base3dShaderfs);
 	SBLParser sbl;
-	auto decl = sbl.parseStructDecl(lexer.parse().getList());
+	Node n = lexer.parse();
+	auto decl = sbl.parseStatement(n);
 	volatile int o = 0;
 	//const char* source = 
 	//R"((defstruct VSinput 

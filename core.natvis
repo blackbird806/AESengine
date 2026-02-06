@@ -11,8 +11,43 @@
 			</ArrayItems>
 		</Expand>
 	</Type>
+	
 	<Type Name="aes::String">
 	    <DisplayString>{buffer.buffer,[buffer.size_]}</DisplayString>
 		<StringView>buffer.buffer,[buffer.size_]</StringView>
 	</Type>
+
+	<!-- SList Visualization -->
+	<Type Name="aes::SList&lt;*&gt;">
+		<DisplayString>SList[{first}]</DisplayString>
+		<Expand HideRawView="true">
+			<CustomListItems>
+				<Variable Name="node" InitialValue="first" />
+				<Variable Name="index" InitialValue="0" />
+				<Loop>
+					<If Condition="node == nullptr">
+						<Break />
+					</If>
+					<Item Name="[{index}]">node->data</Item>
+					<Exec>node = node->next</Exec>
+					<Exec>index++</Exec>
+				</Loop>
+			</CustomListItems>
+		</Expand>
+	</Type>
+
+	<!-- HashMap Visualization -->
+	<Type Name="aes::HashMap&lt;*,*,*&gt;">
+		<DisplayString>HashMap[size={size_}]</DisplayString>
+		<Expand HideRawView="true">
+			<Item Name="[size]">size_</Item>
+			<Item Name="[buckets]">buckets</Item>
+		</Expand>
+	</Type>
+	
+	<!-- Pair Visualization -->
+	<Type Name="aes::Pair&lt;*,*&gt;">
+		<DisplayString>({first}, {second})</DisplayString>
+	</Type>
+
 </AutoVisualizer>

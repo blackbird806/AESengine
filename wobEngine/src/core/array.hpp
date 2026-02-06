@@ -19,6 +19,7 @@ namespace aes
 		public:
 
 		using Iterator_t = T*;
+		using ConstIterator_t = T const*;
 
 		constexpr Array() noexcept
 			: alloc(getContextAllocator()), buffer(nullptr), size_(0), capacity_(0)
@@ -34,7 +35,7 @@ namespace aes
 
 		template<std::ranges::input_range Range>
 		constexpr Array(IAllocator& allocator, Range const& range) noexcept
-			: alloc(&allocator)
+			: alloc(&allocator), buffer(nullptr), size_(0), capacity_(0)
 		{
 			insert(begin(), range);
 		}
@@ -152,6 +153,8 @@ namespace aes
 		template<std::ranges::input_range Range>
 		constexpr void insert(Iterator_t pos, Range&& range) noexcept
 		{
+			AES_BOUNDS_CHECK(pos < end());
+			AES_BOUNDS_CHECK(pos > begin());
 			uint32_t const rangeSize = std::ranges::size(range);
 			uint32_t const newSize = size_ + rangeSize;
 
@@ -188,10 +191,10 @@ namespace aes
 			// insert range after pos
 			for (auto&& e : range)
 			{
-				new (&workBuffer[ipos++]) T(std::forward<T>(e));
+				new (&workBuffer[ipos++]) T(std::move(e));
 			}
 
-			if (newSize > capacity_)
+			if (workBuffer != buffer)
 			{
 				alloc->deallocate(buffer);
 			}
@@ -227,8 +230,11 @@ namespace aes
 		constexpr uint32_t capacity() const noexcept { return capacity_; }
 		constexpr bool empty() const noexcept { return size_ == 0; }
 
-		constexpr Iterator_t begin() const noexcept { return buffer; }
-		constexpr Iterator_t end() const noexcept { return buffer ? buffer + size_ : nullptr; }
+		constexpr Iterator_t begin() noexcept { return buffer; }
+		constexpr Iterator_t end() noexcept { return buffer ? buffer + size_ : nullptr; }
+
+		constexpr ConstIterator_t begin() const noexcept { return buffer; }
+		constexpr ConstIterator_t end() const noexcept { return buffer ? buffer + size_ : nullptr; }
 
 		constexpr T const& front() const noexcept { AES_BOUNDS_CHECK(size_ > 0); return buffer[0]; }
 		constexpr T const& back() const noexcept { AES_BOUNDS_CHECK(size_ > 0); return buffer[size_ - 1]; }
@@ -252,6 +258,7 @@ namespace aes
 			{
 				alloc->deallocate(buffer);
 				buffer = nullptr;
+				capacity_ = 0;
 				return;
 			}
 
