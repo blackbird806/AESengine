@@ -57,8 +57,8 @@ public:
 			aes::FragmentShaderDescription fragmentShaderDescription;
 			String shaderPath = getEngineShaderPath();
 			shaderPath.append("/HLSL/draw3d.fs");
-			fragmentShaderDescription.source = readFile(shaderPath.c_str());
-			fragmentShaderDescription.multisampleMode = MultisampleMode::X4;
+			fragmentShaderDescription.source = readFile(shaderPath);
+			fragmentShaderDescription.multisampleMode = MultisampleMode::None;
 			geoFragmentShader = device.createFragmentShader(fragmentShaderDescription).value();
 
 			AES_LOG("fragment shader created");
@@ -67,7 +67,7 @@ public:
 			aes::VertexShaderDescription vertexShaderDescription;
 			String shaderPath = getEngineShaderPath();
 			shaderPath.append("/HLSL/draw3d.vs");
-			vertexShaderDescription.source = readFile(shaderPath.c_str());
+			vertexShaderDescription.source = readFile(shaderPath);
 			vertexShaderDescription.verticesStride = sizeof(aes::Vertex);
 
 			aes::VertexInputLayout vertexInputLayout[2];
@@ -111,12 +111,8 @@ public:
 
 		{
 			CameraBuffer cameraBuffer;
-			cameraBuffer.proj = mat4::makePerspectiveProjectionMat(90.0f, 16.0f / 9.0f, 0.01f, 1.0f);
-			//cameraBuffer.proj = mat4::makePerspectiveProjectionMatD3D(16, 9, 0.1, 100);
-			//cameraBuffer.proj = mat4::makeOrthoProjectionMatD3D(16, 9, 0.1, 100);
-			cameraBuffer.view = mat4::makeLookAtMatrix(vec3(0, 0, 0), vec3(0, 1, 0), vec3(1, 0, 0), vec3(0, 0, 1));
-			//cameraBuffer.proj = mat4::identity();
-			//cameraBuffer.view = mat4::identity();
+			cameraBuffer.proj = mat4::makePerspectiveProjectionMatD3D(90.0f, 1.0f, 0.01f, 100.0f);
+			cameraBuffer.view = mat4::makeLookAtMatrixD3D(vec3(0, 0, 3), vec3(0, 1, 0), vec3(1, 0, 0), vec3(0, 0, 1));
 
 			aes::BufferDescription uniformBufferDesc;
 			uniformBufferDesc.bindFlags = aes::BindFlagBits::UniformBuffer;
@@ -148,10 +144,10 @@ public:
 	{
 		static mat4 model = mat4::translationMat(vec3(0, 0, 0));
 
-		mat4 tr = mat4::translationMat(vec3(0, 0, 0.0 * deltaTime));
-		tr.transpose();
+		mat4 tr = mat4::translationMat(vec3(0, 0, -0.5 * deltaTime));
+		//tr.transpose();
 
-		model = model * tr * mat4::rotateYMat(1 * deltaTime);
+		model = model * mat4::rotateYMat(1 * deltaTime);
 
 		void* mappedBuffer = device.mapBuffer(modelBuffer);
 			memcpy(mappedBuffer, &model, sizeof(model));

@@ -218,16 +218,37 @@ namespace aes
 			return matrix;
 		}
 
-		static mat4x4 makePerspectiveProjectionMatD3D(float Sw, float Sh, float near_, float far_)
+		static mat4x4 makePerspectiveProjectionMatD3D(float fovY, float aspect, float nearZ, float farZ)
 		{
-			mat4x4 matrix;
-			matrix[0, 0] = (2 * near_) / Sw;
-			matrix[1, 1] = (2 * near_) / Sh;
-			matrix[2, 2] = far_ / (far_ - near_);
-			matrix[3, 2] = 1;
-			matrix[2, 3] = (-far_ * near_) / (far_ - near_);
-			return matrix;
+			float Height = cos(fovY * 0.5f) / sin(fovY * 0.5f);
+			float Width = Height / aspect;
+			float fRange = farZ / (farZ - nearZ);
+
+			mat4x4 m;
+
+			m[0, 0] = Width;
+			m[1, 0] = 0.0f;
+			m[2, 0] = 0.0f;
+			m[3, 0] = 0.0f;
+
+			m[0, 1] = 0.0f;
+			m[1, 1] = Height;
+			m[2, 1] = 0.0f;
+			m[3, 1] = 0.0f;
+
+			m[0, 2] = 0.0f;
+			m[1, 2] = 0.0f;
+			m[2, 2] = fRange;
+			m[3, 2] = 1.0f;
+
+			m[0, 3] = 0.0f;
+			m[1, 3] = 0.0f;
+			m[2, 3] = -fRange * nearZ;
+			m[3, 3] = 0.0f;
+
+			return m;
 		}
+
 
 		static mat4x4 makeOrthoProjectionMatD3D(float Sw, float Sh, float near_, float far_)
 		{
@@ -246,18 +267,29 @@ namespace aes
 			mat4x4 lookMtr = mat4x4::identity();
 
 			lookMtr[0, 0] = right.x;
-			lookMtr[1, 0] = right.y;
-			lookMtr[2, 0] = right.z;
+			lookMtr[0, 1] = right.y;
+			lookMtr[0, 2] = right.z;
 
-			lookMtr[0, 1] = up.x;
+			lookMtr[1, 0] = up.x;
 			lookMtr[1, 1] = up.y;
-			lookMtr[2, 1] = up.z;
+			lookMtr[1, 2] = up.z;
 
-			lookMtr[0, 2] = front.x;
-			lookMtr[1, 2] = front.y;
-			lookMtr[2, 2] = front.z;
+			lookMtr[2, 0] = -front.x;
+			lookMtr[2, 1] = -front.y;
+			lookMtr[2, 2] = -front.z;
 
-			return lookMtr * posMtr;
+			lookMtr[3, 0] = -right.dot(pos);
+			lookMtr[3, 1] = -up.dot(pos);
+			lookMtr[3, 2] = front.dot(pos);
+
+			return lookMtr;
+		}
+
+		static mat4x4 makeLookAtMatrixD3D(vec3 pos, vec3 up, vec3 right, vec3 front)
+		{
+			mat4x4 m = makeLookAtMatrix(pos, up, right, front);
+			m.transpose();
+			return m;
 		}
 
 		mat4x4 operator*(mat4x4 const& r) const

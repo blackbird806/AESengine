@@ -116,7 +116,7 @@ void SBLParser::reportError(String&& errorMsg)
 {
 	Error err;
 	err.msg = std::move(errorMsg);
-	errorHandler.ErrorStack.push(std::move(err));
+	errorHandler.errorStack.push(std::move(err));
 	AES_ASSERT(false);
 }
 
@@ -151,6 +151,20 @@ StructDecl SBLParser::parseStructDecl(List& data)
 	return struct_;
 }
 
+static bool isVarDecl(List& list)
+{
+	if (list.nodes.empty())
+	{
+		return false;
+	}
+	if (list.nodes[0].type == NodeType::Atom && 
+		list.nodes[0].getAtom().src == "var"sv)
+	{
+		return true;
+	}
+	return false;
+}
+
 /*
 * <vardecl> ::= (var type name)
 */
@@ -166,7 +180,7 @@ VarDecl SBLParser::parseVarDecl(List& data)
 	var.type = getTypeFromString(data.nodes[1].getAtom().src);
 	if (data.nodes.size() > 3)
 	{
-		var.initExp = data.nodes[3];
+		//var.initExp = data.nodes[3];
 	}
 
 	if (var.type == Type::Struct)
@@ -197,9 +211,16 @@ FuncDef SBLParser::parseFuncDef(List& data)
 
 	for (int i = 3; i < data.nodes.size(); i++)
 	{
-		// todo try parse var, if fail parse compound
-
-		func.args.push(parseVarDecl(data.nodes[i].getList()));
+		List& currentList = data.nodes[i].getList();
+		if (isVarDecl(currentList))
+		{
+			func.args.push(parseVarDecl(currentList));
+		}
+		else
+		{
+			func.body = parseCompoundStatement(data.nodes[i].getList());
+			break;
+		}
 	}
 	functions.add(func.name, func);
 	return func;
@@ -212,49 +233,57 @@ Statement SBLParser::parseStatement(Node& exp)
 
 	}
 
-	Statement data;
+	Statement stmt;
 
 	List& lst = exp.getList();
 	if (lst.nodes.size() < 2)
 	{
 		notEnoughArgError(lst.nodes.size(), 2);
-		return data;
+		return stmt;
 	}
 
 	Atom& firstAtom = lst.nodes[0].getAtom();
 
 	if (firstAtom.src == "do"sv)
 	{
-		data.type = StatementType::Compound;
-		data.data = parseCompoundStatement(lst);
+		stmt.type = StatementType::Compound;
+		stmt.data = parseCompoundStatement(lst);
 	}
 	else if (firstAtom.src == "if"sv)
 	{
-		data.type = StatementType::If;
-		data.data = parseIfStatement(lst);
+		stmt.type = StatementType::If;
+		stmt.data = parseIfStatement(lst);
+	}
+	else if (firstAtom.src == "while"sv)
+	{
+		stmt.type = StatementType::While;
+		stmt.data = parseWhileStatement(lst);
 	}
 	else if (firstAtom.src == "var"sv)
 	{
-		data.type = StatementType::VarDecl;
-		data.data = parseVarDecl(lst);
+		stmt.type = StatementType::VarDecl;
+		stmt.data = parseVarDecl(lst);
 	}
 	else if (firstAtom.src == "struct"sv)
 	{
-		data.type = StatementType::StructDecl;
-		data.data = parseStructDecl(lst);
+		stmt.type = StatementType::StructDecl;
+		stmt.data = parseStructDecl(lst);
 	}
 	else if (firstAtom.src == "fn"sv)
 	{
-		data.type = StatementType::FunDef;
-		data.data = parseFuncDef(lst);
+		stmt.type = StatementType::FunDef;
+		stmt.data = parseFuncDef(lst);
 	}
 
-	return data;
+	return stmt;
 }
 
 CompoundStatement SBLParser::parseCompoundStatement(List& lst)
 {
 	CompoundStatement compound;
+
+	if (lst.nodes.size() <= 1)
+		return compound;
 
 	std::span<Node> nodes(&lst.nodes[1], lst.nodes.size() - 1);
 	for (auto& elem : nodes)
@@ -276,7 +305,22 @@ IfStatement SBLParser::parseIfStatement(List& lst)
 	}
 	stmt.condition = lst.nodes[1];
 	stmt.body = parseCompoundStatement(lst.nodes[2].getList());
-	stmt.elseBody = parseCompoundStatement(lst.nodes[3].getList());
+	if (lst.nodes.size() > 3)
+		stmt.elseBody = parseCompoundStatement(lst.nodes[3].getList());
+	return stmt;
+}
+
+WhileStatement SBLParser::parseWhileStatement(List& lst)
+{
+	WhileStatement stmt;
+
+	if (lst.nodes.size() < 3)
+	{
+		notEnoughArgError(lst.nodes.size(), 3);
+		return stmt;
+	}
+	stmt.condition = lst.nodes[1];
+	stmt.body = parseCompoundStatement(lst.nodes[2].getList());
 	return stmt;
 }
 

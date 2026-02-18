@@ -38,19 +38,6 @@ int main()
 	)
 	)";
 
-	const char* base3dShadervs = R"(
-		(struct VSINPUT
-			(vec4 position :POSITION)
-			(vec4 color :COLOR)
-			)
-
-		(struct VSOUTPUT
-			(vec4 position :SVPOSITION)
-			(vec4 color :COLOR)
-			)
-
-	)";
-
 	SBLLexer lexer(base3dShaderfs);
 	SBLParser sbl;
 	Node n = lexer.parse();

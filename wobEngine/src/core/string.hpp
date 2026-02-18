@@ -3,7 +3,6 @@
 
 #include <cstring>
 #include <compare>
-#include <math.h>
 #include <string_view>
 
 #include "array.hpp"
@@ -233,6 +232,11 @@ namespace aes
 		constexpr Iterator_t end() noexcept
 		{
 			return buffer.end() - 1;
+		}
+
+		operator std::string_view() const
+		{
+			return std::string_view(buffer.data(), size());
 		}
 
 	private:

@@ -79,11 +79,25 @@ namespace aes::sbl
 		Size
 	};
 
+	// TODO expression types
+
+	enum class PrimaryType
+	{
+		Literal,
+		Identifier
+	};
+
+	struct PrimaryExp
+	{
+		PrimaryType type;
+		Atom atom;
+	};
+
 	struct VarDecl
 	{
 		String name;
 		Type type;
-		Node initExp;
+		PrimaryExp initExp;
 	};
 
 	struct StructDecl
@@ -114,6 +128,12 @@ namespace aes::sbl
 		CompoundStatement elseBody;
 	};
 
+	struct WhileStatement
+	{
+		Node condition;
+		CompoundStatement body;
+	};
+
 	enum class StatementType
 	{
 		Compound,
@@ -129,22 +149,10 @@ namespace aes::sbl
 		StatementType type;
 		std::variant<CompoundStatement, 
 					IfStatement, 
+					WhileStatement,
 					VarDecl, 
 					StructDecl, 
 					FuncDef> data;
-	};
-
-
-	enum class PrimaryType
-	{
-		Literal,
-		Identifier
-	};
-
-	struct PrimaryExp
-	{
-		PrimaryType type;
-		Atom atom;
 	};
 
 	struct Symbol
@@ -155,15 +163,15 @@ namespace aes::sbl
 		SourceLoc definedAt;
 	};
 
-	class TypeEnvironment
+	class Environment
 	{
 		HashMap<String, Symbol> variables;
 		HashMap<String, StructDecl> structs;
 		HashMap<String, FuncDef> functions;
-		TypeEnvironment* parent = nullptr;  // For nested scopes
+		Environment* parent = nullptr;  // For nested scopes
 
 	public:
-		TypeEnvironment(TypeEnvironment* p = nullptr) : parent(p) {}
+		Environment(Environment* p = nullptr) : parent(p) {}
 
 		void define(const String& name, Type type, bool mutable_ = true) 
 		{
@@ -187,8 +195,8 @@ namespace aes::sbl
 
 		}
 
-		TypeEnvironment enterScope() {
-			return TypeEnvironment(this);
+		Environment enterScope() {
+			return Environment(this);
 		}
 	};
 
@@ -201,7 +209,7 @@ namespace aes::sbl
 
 		struct ErrorHandler
 		{
-			Array<Error> ErrorStack;
+			Array<Error> errorStack;
 		};
 
 		Node code;
@@ -217,12 +225,13 @@ namespace aes::sbl
 		Statement parseStatement(Node& exp);
 		CompoundStatement parseCompoundStatement(List& lst);
 		IfStatement parseIfStatement(List& lst);
-
-		HashMap<String, StructDecl> structs;
-		HashMap<String, FuncDef> functions;
+		WhileStatement parseWhileStatement(List& lst);
 
 		static constexpr const char* getPrimitiveTypeName(Type type);
 		Type getTypeFromString(std::string_view str);
+
+		HashMap<String, StructDecl> structs;
+		HashMap<String, FuncDef> functions;
 	};
 
 }

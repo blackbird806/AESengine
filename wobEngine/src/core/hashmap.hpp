@@ -105,9 +105,8 @@ namespace aes
 			{
 				if (pred(*c))
 				{
-					// Link around the node being removed
 					Node* nodeToDelete = *c;
-					*c = nodeToDelete->next;  // Update the pointer to skip this node
+					*c = nodeToDelete->next;
 
 					deleteNode(nodeToDelete);
 					return;

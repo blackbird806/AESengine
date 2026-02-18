@@ -7,17 +7,10 @@
 #include "core/coreMacros.hpp"
 #include "core/dragon4.hpp"
 
-//TODO
-#define AES_FMT_CONSTEXPR inline
+#define AES_FMT_CONSTEXPR_OR_INLINE inline
 
 namespace aes
 {
-	template<typename T>
-	constexpr T&& forward(std::remove_reference_t<T>& t)
-	{
-		return static_cast<T&&>(t);
-	}
-
 	// idk how to name this
 	template<typename T>
 	concept FmtCharPtrT = std::same_as<std::remove_cvref_t<T>, char*>;
@@ -117,15 +110,27 @@ namespace aes
 	{
 		for (size_t i = 0; i < n; i++)
 		{
-			*ptr = 0;
+			ptr[i] = 0;
 		}
 	}
 
 	template <typename T>
-	AES_FMT_CONSTEXPR void stringifyToBuff(T v, char* buff)
+	AES_FMT_CONSTEXPR_OR_INLINE void stringifyToBuff(T v, char* buff)
 	{
 		// TODO we shouldn't define this one to trigger link time error when using non supported format
 		// rn format is still wip so we keep this to allow compilation
+	}
+	
+	template <>
+	constexpr void stringifyToBuff(int64_t v, char* buff) 
+	{
+		itoa(v, buff); 
+	}
+
+	template <>
+	constexpr void stringifyToBuff(uint64_t v, char* buff) 
+	{
+		itoa(v, buff); 
 	}
 
 	template <>
@@ -141,13 +146,13 @@ namespace aes
 	}
 
 	template <>
-	AES_FMT_CONSTEXPR void stringifyToBuff(float v, char* buff)
+	AES_FMT_CONSTEXPR_OR_INLINE void stringifyToBuff(float v, char* buff)
 	{
 		d4::PrintFloat32(buff, 64, v, d4::tPrintFloatFormat::PrintFloatFormat_Positional, -1);
 	}
 
 	template <>
-	AES_FMT_CONSTEXPR void stringifyToBuff(double v, char* buff)
+	AES_FMT_CONSTEXPR_OR_INLINE void stringifyToBuff(double v, char* buff)
 	{
 		d4::PrintFloat64(buff, 64, v, d4::tPrintFloatFormat::PrintFloatFormat_Positional, -1);
 	}
@@ -175,7 +180,7 @@ namespace aes
 	}
 
 	template <typename T>
-	AES_FMT_CONSTEXPR uint32_t charsNeededForT(T v)
+	AES_FMT_CONSTEXPR_OR_INLINE uint32_t charsNeededForT(T v)
 	{
 		return 0;
 	}
@@ -195,13 +200,13 @@ namespace aes
 	template <>
 	constexpr uint32_t charsNeededForT(float v)
 	{
-		return 0;
+		return 32;
 	}
 
 	template <>
 	constexpr uint32_t charsNeededForT(double v)
 	{
-		return 0;
+		return 32;
 	}
 
 	template <>
@@ -252,7 +257,7 @@ namespace aes
 	};
 
 	template<typename T>
-	AES_FMT_CONSTEXPR String formatArg(T arg)
+	AES_FMT_CONSTEXPR_OR_INLINE String formatArg(T arg)
 	{
 		char buff[64];
 		zeroMemory_fmtinternal(buff, sizeof(buff));
@@ -262,8 +267,10 @@ namespace aes
 	}
 
 	template<>
-	AES_FMT_CONSTEXPR String formatArg(char* arg)
+	AES_FMT_CONSTEXPR_OR_INLINE String formatArg(char* arg)
 	{
+		if (!arg)
+			return String();
 		String str;
 		str.resizeNoInit(charsNeededForT(arg));
 		stringifyToBuff(arg, str.data());
@@ -271,7 +278,7 @@ namespace aes
 	}
 
 	template<>
-	AES_FMT_CONSTEXPR String formatArg(const char* arg)
+	AES_FMT_CONSTEXPR_OR_INLINE String formatArg(const char* arg)
 	{
 		String str;
 		str.resizeNoInit(charsNeededForT(arg));
@@ -280,19 +287,21 @@ namespace aes
 	}
 
 	template<typename ...Args>
-	AES_FMT_CONSTEXPR String format(std::string_view fmt, Args&&... args)
+	AES_FMT_CONSTEXPR_OR_INLINE String format(std::string_view fmt, Args&&... args)
 	{
 		// maybe use static array here to avoid alloc ?
 		FormatedArgs formatedArgs;
 		formatedArgs.args.reserve(sizeof...(args));
 	
 		// format each arg in parameter pack
-		// TODO perfect forwarding
-		(formatedArgs.args.push(formatArg(args)), ...);
+		(..., formatedArgs.args.push(formatArg(std::forward<Args>(args))));
 
 		String str;
 		bool isInfmt = false;
 		int nformatedArg = 0;
+		uint32_t totalSize = 0;
+		int argIndex = 0;
+
 		for (int i = 0; i < fmt.size(); i++)
 		{
 			if (fmt[i] == '{')
