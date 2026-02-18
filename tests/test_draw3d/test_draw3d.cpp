@@ -17,6 +17,8 @@ using namespace aes;
 
 class TestDraw3dApp : public Engine
 {
+public:
+
 	RHIDevice device;
 	RHISwapchain swapchain;
 
@@ -24,8 +26,8 @@ class TestDraw3dApp : public Engine
 	RHIVertexShader geoVertexShader;
 	RHIBuffer geoVertexBuffer, geoIndexBuffer;
 	RHIBuffer viewProjBuffer, modelBuffer;
+	CameraBuffer cameraBuffer;
 
-public:
 
 	TestDraw3dApp(InitInfo const& info) : Engine(info)
 	{
@@ -42,12 +44,30 @@ public:
 		device.setCullMode(CullMode::None);
 		device.setDrawPrimitiveMode(DrawPrimitiveType::TrianglesFill);
 
+		static TestDraw3dApp* gApp = this;
+
+		mainWindow->setResizeCallback([](uint w, uint h) {
+			SwapchainDescription swDesc = {};
+			swDesc.count = 2;
+			swDesc.width = w;
+			swDesc.height = h;
+			swDesc.multisampleMode = MultisampleMode::None;
+			swDesc.window = gApp->mainWindow->getHandle();
+			swDesc.format = RHIFormat::R8G8B8A8_Uint;
+			swDesc.depthFormat = RHIFormat::D24_S8_Uint;
+			gApp->swapchain = gApp->device.createSwapchain(swDesc).value();
+			gApp->cameraBuffer.proj = mat4::makePerspectiveProjectionMatD3D(60 * degToRad, float(w) / float(h), 0.01f, 100.0f);
+			void* mappedProjBuffer = gApp->device.mapBuffer(gApp->viewProjBuffer);
+			memcpy(mappedProjBuffer, &gApp->cameraBuffer, sizeof(gApp->cameraBuffer));
+			gApp->device.unmapBuffer(gApp->viewProjBuffer);
+			});
+
 		{
 			SwapchainDescription swDesc = {};
 			swDesc.count = 2;
 			swDesc.width = 960;
 			swDesc.height = 544;
-			swDesc.multisampleMode = MultisampleMode::X4;
+			swDesc.multisampleMode = MultisampleMode::None;
 			swDesc.window = mainWindow->getHandle();
 			swDesc.format = RHIFormat::R8G8B8A8_Uint;
 			swDesc.depthFormat = RHIFormat::D24_S8_Uint;
@@ -110,8 +130,7 @@ public:
 		}
 
 		{
-			CameraBuffer cameraBuffer;
-			cameraBuffer.proj = mat4::makePerspectiveProjectionMatD3D(90.0f, 1.0f, 0.01f, 100.0f);
+			cameraBuffer.proj = mat4::makePerspectiveProjectionMatD3D(60 * degToRad, 960.0/544.0, 0.01f, 100.0f);
 			cameraBuffer.view = mat4::makeLookAtMatrixD3D(vec3(0, 0, 3), vec3(0, 1, 0), vec3(1, 0, 0), vec3(0, 0, 1));
 
 			aes::BufferDescription uniformBufferDesc;
@@ -144,10 +163,12 @@ public:
 	{
 		static mat4 model = mat4::translationMat(vec3(0, 0, 0));
 
-		mat4 tr = mat4::translationMat(vec3(0, 0, -0.5 * deltaTime));
-		//tr.transpose();
-
-		model = model * mat4::rotateYMat(1 * deltaTime);
+		mat4 tr = mat4::translationMat(vec3(0, 0, -2 * deltaTime));
+		tr.transpose();
+		//model = model * tr;
+		mat4 rot = mat4::rotateYMat(1 * deltaTime);
+		rot.transpose();
+		model = model * rot;
 
 		void* mappedBuffer = device.mapBuffer(modelBuffer);
 			memcpy(mappedBuffer, &model, sizeof(model));
