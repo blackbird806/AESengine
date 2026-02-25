@@ -12,23 +12,23 @@
 #include "renderer/RHI/RHIBuffer.hpp"
 #include "renderer/RHI/RHIRenderTarget.hpp"
 #include "renderer/RHI/RHIShader.hpp"
+#include "renderer/graphicsPipeline.hpp"
 
 using namespace aes;
 
-class TestDraw3dApp : public Engine
+class TestPipelineApp : public Engine
 {
 public:
 
 	RHIDevice device;
 	RHISwapchain swapchain;
 
-	RHIFragmentShader geoFragmentShader;
-	RHIVertexShader geoVertexShader;
 	RHIBuffer geoVertexBuffer, geoIndexBuffer;
-	RHIBuffer viewProjBuffer, modelBuffer;
 	CameraBuffer cameraBuffer;
 
-	TestDraw3dApp(InitInfo const& info) : Engine(info)
+	GraphicsPipeline graphicsPipeline;
+
+	TestPipelineApp(InitInfo const& info) : Engine(info)
 	{
 		AES_LOG("[TEST] DRAW3D");
 	}
@@ -43,7 +43,7 @@ public:
 		device.setCullMode(CullMode::Clockwise);
 		device.setDrawPrimitiveMode(DrawPrimitiveType::TrianglesFill);
 
-		static TestDraw3dApp* gApp = this;
+		static TestPipelineApp* gApp = this;
 
 		mainWindow->setResizeCallback([](uint w, uint h) {
 			SwapchainDescription swDesc = {};
@@ -56,10 +56,8 @@ public:
 			swDesc.depthFormat = RHIFormat::D24_S8_Uint;
 			gApp->swapchain = gApp->device.createSwapchain(swDesc).value();
 			gApp->cameraBuffer.proj = mat4::makePerspectiveProjectionMatD3D(60 * degToRad, float(w) / float(h), 0.01f, 100.0f);
-			void* mappedProjBuffer = gApp->device.mapBuffer(gApp->viewProjBuffer);
-			memcpy(mappedProjBuffer, &gApp->cameraBuffer, sizeof(gApp->cameraBuffer));
-			gApp->device.unmapBuffer(gApp->viewProjBuffer);
-			});
+			gApp->graphicsPipeline.setVertexUniform("camera", gApp->cameraBuffer);
+		});
 
 		{
 			SwapchainDescription swDesc = {};
@@ -72,20 +70,23 @@ public:
 			swapchain = device.createSwapchain(swDesc).value();
 		}
 		{
-			aes::FragmentShaderDescription fragmentShaderDescription;
-			String shaderPath = getEngineShaderPath();
-			shaderPath.append("/HLSL/draw3d.fs");
-			fragmentShaderDescription.source = readFile(shaderPath);
-			fragmentShaderDescription.multisampleMode = MultisampleMode::None;
-			geoFragmentShader = device.createFragmentShader(fragmentShaderDescription).value();
+			VertexType vtype;
+			VertexComponent pos;
+			pos.name = "pos";
+			pos.Type = VertexComponentType::Vec4;
+			vtype.components.push(pos);
 
-			AES_LOG("fragment shader created");
-		}
-		{
+			VertexComponent col;
+			col.name = "color";
+			col.Type = VertexComponentType::Vec4;
+			vtype.components.push(col);
+
+			graphicsPipeline.init(&device);
+
 			aes::VertexShaderDescription vertexShaderDescription;
-			String shaderPath = getEngineShaderPath();
-			shaderPath.append("/HLSL/draw3d.vs");
-			vertexShaderDescription.source = readFile(shaderPath);
+			String vertexShaderPath = getEngineShaderPath();
+			vertexShaderPath.append("/HLSL/draw3d.vs");
+			vertexShaderDescription.source = readFile(vertexShaderPath);
 			vertexShaderDescription.verticesStride = sizeof(aes::Vertex);
 
 			aes::VertexInputLayout vertexInputLayout[2];
@@ -100,10 +101,16 @@ public:
 			vertexInputLayout[1].format = aes::RHIFormat::R32G32B32A32_Float;
 
 			vertexShaderDescription.verticesLayout = vertexInputLayout;
+			graphicsPipeline.buildVertexShader(vertexShaderDescription, vtype);
 
-			geoVertexShader = device.createVertexShader(vertexShaderDescription).value();
+			aes::FragmentShaderDescription fragmentShaderDescription;
+			String fragmentShaderPath = getEngineShaderPath();
+			fragmentShaderPath.append("/HLSL/draw3d.fs");
+			fragmentShaderDescription.source = readFile(fragmentShaderPath);
+			fragmentShaderDescription.multisampleMode = MultisampleMode::None;
+			graphicsPipeline.buildFragmentShader(fragmentShaderDescription, vtype);
 
-			AES_LOG("vertex shader created");
+			AES_LOG("graphics pipeline created");
 		}
 		{
 			Array<Vertex> vertexBufferData = getCubeVertices();
@@ -138,7 +145,7 @@ public:
 			uniformBufferDesc.sizeInBytes = sizeof(CameraBuffer);
 			uniformBufferDesc.initialData = &cameraBuffer;
 
-			viewProjBuffer = device.createBuffer(uniformBufferDesc).value();
+			graphicsPipeline.registerVertexUniform("camera", uniformBufferDesc, 0);
 		}
 
 		{
@@ -151,8 +158,12 @@ public:
 			uniformBufferDesc.sizeInBytes = sizeof(mat4);
 			uniformBufferDesc.initialData = &model;
 
-			modelBuffer = device.createBuffer(uniformBufferDesc).value();
+			graphicsPipeline.registerVertexUniform("model", uniformBufferDesc, 1);
 		}
+
+		graphicsPipeline.bind();
+		device.setVertexBuffer(geoVertexBuffer, sizeof(Vertex));
+		device.setIndexBuffer(geoIndexBuffer, IndexTypeFormat::Uint32);
 	}
 
 	int frontBufferIndex = 0, backBufferIndex = 0;
@@ -168,9 +179,8 @@ public:
 		rot.transpose();
 		model = model * rot;
 
-		void* mappedBuffer = device.mapBuffer(modelBuffer);
-			memcpy(mappedBuffer, &model, sizeof(model));
-		device.unmapBuffer(modelBuffer);
+		graphicsPipeline.setVertexUniform("model", model);
+
 	}
 
 	void draw() override
@@ -178,13 +188,6 @@ public:
 		device.clearSwapchain(swapchain);
 
 		// draw
-		device.setVertexBuffer(geoVertexBuffer, sizeof(Vertex));
-		device.setIndexBuffer(geoIndexBuffer, IndexTypeFormat::Uint32);
-		device.setVertexShader(geoVertexShader);
-		device.setFragmentShader(geoFragmentShader);
-
-		device.bindVertexUniformBuffer(viewProjBuffer, 0);
-		device.bindVertexUniformBuffer(modelBuffer, 1);
 		
 		device.beginRenderPass(swapchain);
 		device.drawIndexed(std::size(cubeIndices));
@@ -200,7 +203,7 @@ public:
 int main()
 {
 	AES_START_PROFILE_SESSION("test draw3d startup");
-	TestDraw3dApp app({
+	TestPipelineApp app({
 		.appName = "aes draw3d test"
 		});
 	app.init();

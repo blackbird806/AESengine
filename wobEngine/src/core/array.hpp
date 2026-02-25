@@ -6,6 +6,7 @@
 #include "allocator.hpp"
 #include <utility>
 #include <concepts>
+#include <ranges>
 
 namespace aes
 {

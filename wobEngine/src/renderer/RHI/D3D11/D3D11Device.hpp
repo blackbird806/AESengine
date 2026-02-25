@@ -43,7 +43,7 @@ namespace aes
 
 		// cmds
 		// return null if failed
-		void* mapBuffer(RHIBuffer const& buffer);
+		[[nodiscard]] void* mapBuffer(RHIBuffer const& buffer);
 		Result<void> unmapBuffer(RHIBuffer const& buffer);
 		Result<void> copyBuffer(RHIBuffer const& from, RHIBuffer& to);
 

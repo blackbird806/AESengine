@@ -1,6 +1,8 @@
 #ifndef AES_HASHMAP_HPP
 #define AES_HASHMAP_HPP
 
+#include <concepts>
+
 #include "aes.hpp"
 #include "context.hpp"
 #include "array.hpp"
@@ -248,7 +250,7 @@ namespace aes
 			newBuckets.resize(newBucketCount);
 			for (auto& [k, v] : *this)
 			{
-				add(newBuckets, k, v);
+				add(newBuckets, std::move(k), std::move(v));
 			}
 			buckets = std::move(newBuckets);
 		}
@@ -258,7 +260,7 @@ namespace aes
 			rehash(buckets.size() * 2);
 		}
 
-		constexpr void add(K const& key, V const& value)
+		constexpr void add(K const& key, V const& value) requires std::copy_constructible<V> && std::copy_constructible<K>
 		{
 			add(buckets, key, value);
 			size_++;
@@ -283,7 +285,7 @@ namespace aes
 			size_--;
 		}
 
-		bool tryFind(K const& key, V& value) const
+		bool tryFind(K const& key, V& value) const requires std::copy_constructible<V>&& std::copy_constructible<K>
 		{
 			Bucket_t bucket;
 			auto const result = getKeyItAndBucketIndex(key);
@@ -344,9 +346,9 @@ namespace aes
 			buckets[index].add(std::move(pair));
 		}
 
-		static constexpr void add(Array<Bucket_t>& buckets, K const& key, V const& value)
+		static constexpr void add(Array<Bucket_t>& buckets, K const& key, V const& value) requires std::copy_constructible<V> && std::copy_constructible<K>
 		{
-			auto pair = Pair<K, V>{ key, value };
+			Pair<K, V> pair{ key, value };
 			auto const hash = Hash_t{}(pair.first);
 			uint32_t const index = hash % buckets.size();
 			buckets[index].add(std::move(pair));
