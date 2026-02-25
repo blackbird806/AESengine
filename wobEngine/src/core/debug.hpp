@@ -10,15 +10,15 @@
 // also we want filters, warning level and more ....
 // maybe take inspiration from spd log ?
 #ifdef __vita__
-#define AES_LOG(msg, ...) ::aes::Logger::instance().log(aes::format("info : " msg "\n" __VA_OPT__(,) __VA_ARGS__).c_str())
+#define AES_LOG(msg, ...) ::aes::Logger::instance().log(aes::format("info: " msg "\n" __VA_OPT__(,) __VA_ARGS__).c_str())
 #define AES_LOG_RAW(msg, ...) ::aes::Logger::instance().log(aes::format(msg "\n" __VA_OPT__(,) __VA_ARGS__).c_str())
-#define AES_WARN(msg, ...) ::aes::Logger::instance().log(aes::format("warn : " msg "\n" __VA_OPT__(,) __VA_ARGS__).c_str())
-#define AES_LOG_ERROR(msg, ...) ::aes::Logger::instance().log(aes::format("error : " msg "\n" __VA_OPT__(,) __VA_ARGS__).c_str())
+#define AES_WARN(msg, ...) ::aes::Logger::instance().log(aes::format("warn: " msg "\n" __VA_OPT__(,) __VA_ARGS__).c_str())
+#define AES_LOG_ERROR(msg, ...) ::aes::Logger::instance().log(aes::format("error: " msg "\n" __VA_OPT__(,) __VA_ARGS__).c_str())
 #else
-#define AES_LOG(msg, ...) ::aes::Logger::instance().log(aes::format("info : " msg "\n", __VA_ARGS__).c_str())
+#define AES_LOG(msg, ...) ::aes::Logger::instance().log(aes::format("info: " msg "\n", __VA_ARGS__).c_str())
 #define AES_LOG_RAW(msg, ...) ::aes::Logger::instance().log(aes::format(msg "\n", __VA_ARGS__).c_str())
-#define AES_WARN(msg, ...) ::aes::Logger::instance().log(aes::format("warn : " msg "\n", __VA_ARGS__).c_str())
-#define AES_LOG_ERROR(msg, ...) ::aes::Logger::instance().log(aes::format("error : " __FUNCTION__ " : " AES_STRINGIFY(__LINE__) ": " msg "\n", __VA_ARGS__).c_str())
+#define AES_WARN(msg, ...) ::aes::Logger::instance().log(aes::format("warn: " msg "\n", __VA_ARGS__).c_str())
+#define AES_LOG_ERROR(msg, ...) ::aes::Logger::instance().log(aes::format("error: " __FUNCTION__ " : " AES_STRINGIFY(__LINE__) ": " msg "\n", __VA_ARGS__).c_str())
 #endif
 
 #define AES_CHECKR(r) if (!r) { AES_LOG_ERROR("{}", r.error()); return r; };

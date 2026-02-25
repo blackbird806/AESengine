@@ -261,10 +261,12 @@ namespace aes
 			return matrix;
 		}
 
-		static mat4x4 makeLookAtMatrix(vec3 pos, vec3 up, vec3 right, vec3 front)
+		static mat4x4 makeLookAtMatrix(vec3 pos, vec3 up, vec3 front)
 		{
 			mat4x4 const posMtr = translationMat(-pos);
 			mat4x4 lookMtr = mat4x4::identity();
+
+			vec3 const right = vec3::cross(up, front).getNormalized();
 
 			lookMtr[0, 0] = right.x;
 			lookMtr[0, 1] = right.y;
@@ -285,9 +287,9 @@ namespace aes
 			return lookMtr;
 		}
 
-		static mat4x4 makeLookAtMatrixD3D(vec3 pos, vec3 up, vec3 right, vec3 front)
+		static mat4x4 makeLookAtMatrixD3D(vec3 pos, vec3 up, vec3 front)
 		{
-			mat4x4 m = makeLookAtMatrix(pos, up, right, front);
+			mat4x4 m = makeLookAtMatrix(pos, up, front);
 			m.transpose();
 			return m;
 		}
@@ -329,6 +331,18 @@ namespace aes
 	};
 
 	using mat4 = mat4x4;
+
+	inline vec4 operator*(mat4 mat, vec4 vec)
+	{
+		vec4 r;
+
+		r[0] = vec[0] * mat[0, 0] + vec[1] * mat[0, 1] + vec[2] * mat[0, 2] + vec[3] * mat[0, 3];
+		r[1] = vec[0] * mat[1, 0] + vec[1] * mat[1, 1] + vec[2] * mat[1, 2] + vec[3] * mat[1, 3];
+		r[2] = vec[0] * mat[2, 0] + vec[1] * mat[2, 1] + vec[2] * mat[2, 2] + vec[3] * mat[2, 3];
+		r[3] = vec[0] * mat[3, 0] + vec[1] * mat[3, 1] + vec[2] * mat[3, 2] + vec[3] * mat[3, 3];
+
+		return r;
+	}
 
 }
 

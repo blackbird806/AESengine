@@ -69,6 +69,30 @@ namespace aes
 			return *this;
 		}
 
+		constexpr vec3& operator*=(vec3 v) noexcept
+		{
+			x *= v.x;
+			y *= v.y;
+			z *= v.z;
+			return *this;
+		}
+		
+		constexpr vec3& operator+=(vec3 v) noexcept
+		{
+			x += v.x;
+			y += v.y;
+			z += v.z;
+			return *this;
+		}
+
+		constexpr vec3& operator-=(vec3 v) noexcept
+		{
+			x -= v.x;
+			y -= v.y;
+			z -= v.z;
+			return *this;
+		}
+
 		constexpr vec3& operator/=(float v) noexcept
 		{
 			x /= v;
@@ -77,9 +101,28 @@ namespace aes
 			return *this;
 		}
 
+		static constexpr float dot(vec3 lhs, vec3 rhs) noexcept
+		{
+			return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
+		}
+
 		constexpr float dot(vec3 rhs) const noexcept
 		{
-			return x * rhs.x + y * rhs.y + z * rhs.z;
+			return dot(*this, rhs);
+		}
+
+		static constexpr vec3 cross(vec3 lhs, vec3 rhs) noexcept
+		{
+			vec3 r;
+			r.x = (lhs.y * rhs.z) - (lhs.z * rhs.y);
+			r.y = -((lhs.x * rhs.z) - (lhs.z * rhs.x));
+			r.z = (lhs.x - rhs.y) - (lhs.y * rhs.x);
+			return r;
+		}
+
+		constexpr vec3 cross(vec3 rhs) const noexcept
+		{
+			return cross(*this, rhs);
 		}
 
 		constexpr float sqrLength() const noexcept

@@ -14,7 +14,7 @@ Key aes::windowsToAESKey(int winKey)
 	case 0x26: return Key::Up;
 	case 0x27: return Key::Right;
 	case 0x28: return Key::Down;
-	case 0x29: return Key::Left;
+	case 0x25: return Key::Left;
 	case 0x41: return Key::A;
 	case 0x44: return Key::D;
 	case 0x45: return Key::E;

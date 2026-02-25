@@ -13,6 +13,8 @@
 #include "renderer/RHI/RHIRenderTarget.hpp"
 #include "renderer/RHI/RHIShader.hpp"
 #include "renderer/graphicsPipeline.hpp"
+#include <iostream>
+#include <cmath>
 
 using namespace aes;
 
@@ -27,6 +29,10 @@ public:
 	CameraBuffer cameraBuffer;
 
 	GraphicsPipeline graphicsPipeline;
+	vec3 camPos{0, 0, 3};
+	vec3 front{0, 0, 1};
+	vec3 up{ 0, 1, 0 };
+	float camSpeed = 3;
 
 	TestPipelineApp(InitInfo const& info) : Engine(info)
 	{
@@ -136,7 +142,7 @@ public:
 
 		{
 			cameraBuffer.proj = mat4::makePerspectiveProjectionMatD3D(60 * degToRad, 960.0/544.0, 0.01f, 100.0f);
-			cameraBuffer.view = mat4::makeLookAtMatrixD3D(vec3(0, 0, 3), vec3(0, 1, 0), vec3(1, 0, 0), vec3(0, 0, 1));
+			cameraBuffer.view = mat4::makeLookAtMatrixD3D(camPos, vec3(0, 1, 0), vec3(0, 0, 1));
 
 			aes::BufferDescription uniformBufferDesc;
 			uniformBufferDesc.bindFlags = aes::BindFlagBits::UniformBuffer;
@@ -167,9 +173,62 @@ public:
 	}
 
 	int frontBufferIndex = 0, backBufferIndex = 0;
+	float yaw = M_PI/2;
+	float pitch = 0.0f;
 
 	void update(float deltaTime) override
 	{
+		if (isKeyDown(Key::W))
+		{
+			camPos -= front * camSpeed * deltaTime;
+		}
+		if (isKeyDown(Key::S))
+		{
+			camPos += front * camSpeed * deltaTime;
+		}
+		if (isKeyDown(Key::A))
+		{
+			camPos -= vec3::cross(up, front) * camSpeed * deltaTime;
+		}
+		if (isKeyDown(Key::D))
+		{
+			camPos += vec3::cross(up, front) * camSpeed * deltaTime;
+		}
+		if (isKeyDown(Key::E))
+		{
+			camPos.y += camSpeed * deltaTime;
+		}
+		if (isKeyDown(Key::Q))
+		{
+			camPos.y -= camSpeed * deltaTime;
+		}
+		if (isKeyDown(Key::Right))
+		{
+			yaw += camSpeed * deltaTime;
+		}
+		if (isKeyDown(Key::Left))
+		{
+			yaw -= camSpeed * deltaTime;
+		}
+		if (isKeyDown(Key::Up))
+		{
+			pitch += camSpeed * deltaTime;
+		}
+		if (isKeyDown(Key::Down))
+		{
+			pitch -= camSpeed * deltaTime;
+		}
+
+		front.x = cos(yaw) * cos(pitch);
+		front.y = sin(pitch);
+		front.z = sin(yaw) * cos(pitch);
+		front.normalize();
+
+		vec3 right = vec3::cross(front, vec3(0, 1, 0));  
+		right.normalize();
+		up = vec3::cross(front, right);
+		up.normalize();
+
 		static mat4 model = mat4::translationMat(vec3(0, 0, 0));
 
 		mat4 tr = mat4::translationMat(vec3(0, 0, -2 * deltaTime));
@@ -181,6 +240,9 @@ public:
 
 		graphicsPipeline.setVertexUniform("model", model);
 
+		cameraBuffer.view = mat4::makeLookAtMatrixD3D(camPos, up, front);
+		graphicsPipeline.setVertexUniform("camera", cameraBuffer);
+		AES_LOG("cam pos x:{} y:{} z:{}", camPos.x, camPos.y, camPos.z);
 	}
 
 	void draw() override
@@ -202,6 +264,8 @@ public:
 
 int main()
 {
+	auto streamSink = aes::makeUnique<aes::StreamSink>(std::cout);
+	aes::Logger::instance().addSink(streamSink.get());
 	AES_START_PROFILE_SESSION("test draw3d startup");
 	TestPipelineApp app({
 		.appName = "aes draw3d test"
