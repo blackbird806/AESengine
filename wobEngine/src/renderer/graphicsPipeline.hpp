@@ -71,6 +71,9 @@ namespace aes
 		RHIDevice* device;
 		VertexType vertexTypeVS;
 		VertexType vertexTypeFS;
+		
+		// let's give the pipeline ownership of it's resources, for now it's simpler 
+		// maybe later update this if needed
 		RHIVertexShader vertexShader;
 		RHIFragmentShader fragmentShader;
 
@@ -78,5 +81,5 @@ namespace aes
 		Array<UniformBindPoint> fragmentUniformBuffers;
 	};
 }
-
+ 
 #endif

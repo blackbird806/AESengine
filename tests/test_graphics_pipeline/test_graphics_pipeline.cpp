@@ -15,6 +15,7 @@
 #include "renderer/graphicsPipeline.hpp"
 #include <iostream>
 #include <cmath>
+#include <directxmath.h>
 
 using namespace aes;
 
@@ -29,7 +30,7 @@ public:
 	CameraBuffer cameraBuffer;
 
 	GraphicsPipeline graphicsPipeline;
-	vec3 camPos{0, 0, 3};
+	vec3 camPos{0, 0, -3};
 	vec3 front{0, 0, 1};
 	vec3 up{ 0, 1, 0 };
 	float camSpeed = 3;
@@ -139,10 +140,10 @@ public:
 
 			geoIndexBuffer = device.createBuffer(geoIndexBufferDesc).value();
 		}
-
 		{
 			cameraBuffer.proj = mat4::makePerspectiveProjectionMatD3D(60 * degToRad, 960.0/544.0, 0.01f, 100.0f);
-			cameraBuffer.view = mat4::makeLookAtMatrixD3D(camPos, vec3(0, 1, 0), vec3(0, 0, 1));
+
+			cameraBuffer.view = mat4::makeLookAtMatrixLHD3D(camPos, vec3(0, 1, 0), vec3(0, 0, 1));
 
 			aes::BufferDescription uniformBufferDesc;
 			uniformBufferDesc.bindFlags = aes::BindFlagBits::UniformBuffer;
@@ -180,11 +181,11 @@ public:
 	{
 		if (isKeyDown(Key::W))
 		{
-			camPos -= front * camSpeed * deltaTime;
+			camPos += front * camSpeed * deltaTime;
 		}
 		if (isKeyDown(Key::S))
 		{
-			camPos += front * camSpeed * deltaTime;
+			camPos -= front * camSpeed * deltaTime;
 		}
 		if (isKeyDown(Key::A))
 		{
@@ -204,11 +205,11 @@ public:
 		}
 		if (isKeyDown(Key::Right))
 		{
-			yaw += camSpeed * deltaTime;
+			yaw -= camSpeed * deltaTime;
 		}
 		if (isKeyDown(Key::Left))
 		{
-			yaw -= camSpeed * deltaTime;
+			yaw += camSpeed * deltaTime;
 		}
 		if (isKeyDown(Key::Up))
 		{
@@ -224,33 +225,36 @@ public:
 		front.z = sin(yaw) * cos(pitch);
 		front.normalize();
 
-		vec3 right = vec3::cross(front, vec3(0, 1, 0));  
-		right.normalize();
-		up = vec3::cross(front, right);
-		up.normalize();
+		//vec3 right = vec3::cross(front, vec3(0, 1, 0));  
+		//right.normalize();
+		//up = vec3::cross(front, right);
+		//up.normalize();
 
-		static mat4 model = mat4::translationMat(vec3(0, 0, 0));
+		//vec4 front4 = mat4::rotateXYZMat(yaw, pitch,0) * vec4(front.x, front.y, front.z, 1);
+		vec4 front4 = mat4::rotateYMat(yaw) * vec4(front.x, front.y, front.z, 1);
 
-		mat4 tr = mat4::translationMat(vec3(0, 0, -2 * deltaTime));
+		vec4 up4 = mat4::rotateXYZMat(0, pitch, yaw) * vec4(up.x, up.y, up.z, 1);
+
+		static mat4 model = mat4::identity();// = mat4::translationMat(vec3(0, 0, 0));
+		mat4 tr = mat4::translationMat(vec3(0, 0, 2 * deltaTime));
 		tr.transpose();
 		//model = model * tr;
 		mat4 rot = mat4::rotateYMat(1 * deltaTime);
 		rot.transpose();
-		model = model * rot;
+		model = model;// *rot;
 
 		graphicsPipeline.setVertexUniform("model", model);
 
-		cameraBuffer.view = mat4::makeLookAtMatrixD3D(camPos, up, front);
+		cameraBuffer.view = mat4::makeLookAtMatrixLHD3D(camPos, up/*vec3(up4.x, up.y, up4.z)*/,front/*vec3(front4.x, front4.y, front4.z)*/);		
 		graphicsPipeline.setVertexUniform("camera", cameraBuffer);
-		AES_LOG("cam pos x:{} y:{} z:{}", camPos.x, camPos.y, camPos.z);
+		AES_LOG("cam front x:{} y:{} z:{}", front.x, front.y, front.z);
 	}
 
 	void draw() override
 	{
 		device.clearSwapchain(swapchain);
-
-		// draw
 		
+		// draw
 		device.beginRenderPass(swapchain);
 		device.drawIndexed(std::size(cubeIndices));
 		device.endRenderPass();

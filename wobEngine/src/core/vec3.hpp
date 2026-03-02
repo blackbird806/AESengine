@@ -115,8 +115,8 @@ namespace aes
 		{
 			vec3 r;
 			r.x = (lhs.y * rhs.z) - (lhs.z * rhs.y);
-			r.y = -((lhs.x * rhs.z) - (lhs.z * rhs.x));
-			r.z = (lhs.x - rhs.y) - (lhs.y * rhs.x);
+			r.y = (lhs.z * rhs.x) - (lhs.x * rhs.z);
+			r.z = (lhs.x * rhs.y) - (lhs.y * rhs.x);
 			return r;
 		}
 

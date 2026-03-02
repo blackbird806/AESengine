@@ -46,6 +46,7 @@ namespace aes
 		[[nodiscard]] void* mapBuffer(RHIBuffer const& buffer);
 		Result<void> unmapBuffer(RHIBuffer const& buffer);
 		Result<void> copyBuffer(RHIBuffer const& from, RHIBuffer& to);
+		Result<void> copyTexture(RHITexture const& from, RHITexture& to);
 
 		// d3d11 specifics
 		Result<D3D11BlendState> createBlendState(BlendInfo const& desc);

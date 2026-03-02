@@ -399,6 +399,13 @@ Result<void> aes::D3D11Device::copyBuffer(RHIBuffer const& from, RHIBuffer& to)
 	return {};
 }
 
+Result<void> aes::D3D11Device::copyTexture(RHITexture const& from, RHITexture& to)
+{
+	AES_PROFILE_FUNCTION();
+	deviceContext->CopyResource(to.texture, from.texture);
+	return Result<void>();
+}
+
 Result<RHITexture> aes::D3D11Device::createTexture(TextureDescription const& info)
 {
 	AES_PROFILE_FUNCTION();

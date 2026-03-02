@@ -21,7 +21,7 @@ namespace aes
 							0, 1);
 		}
 
-		decltype(auto) operator[](this auto& self, unsigned i)
+		constexpr decltype(auto) operator[](this auto& self, unsigned i)
 		{
 			return self.data[i];
 		}
@@ -37,24 +37,23 @@ namespace aes
 
 	struct mat3x3
 	{
-		static mat3x3 identity() noexcept
+		static constexpr mat3x3 identity() noexcept
 		{
 			mat3x3 m;
-			memset(&m, 0, sizeof(m));
 			m.data[0] = 1;
 			m.data[4] = 1;
 			m.data[8] = 1;
 			return m;
 		}
 
-		mat3x3() noexcept
+		constexpr mat3x3() noexcept
 		{
 			v[0] = vec3();
 			v[1] = vec3();
 			v[2] = vec3();
 		}
 
-		mat3x3(mat3x3 const& rhs) noexcept
+		constexpr mat3x3(mat3x3 const& rhs) noexcept
 		{
 			v[0] = rhs.v[0];
 			v[1] = rhs.v[1];
@@ -101,10 +100,9 @@ namespace aes
 
 	struct mat4x4
 	{
-		static mat4x4 identity() noexcept
+		static constexpr mat4x4 identity() noexcept
 		{
 			mat4x4 m;
-			memset(&m, 0, sizeof(m));
 			m.data[0] = 1;
 			m.data[5] = 1;
 			m.data[10] = 1;
@@ -112,7 +110,7 @@ namespace aes
 			return m;
 		}
 
-		mat4x4() noexcept
+		constexpr mat4x4() noexcept
 		{
 			v[0] = vec4();
 			v[1] = vec4();
@@ -120,7 +118,7 @@ namespace aes
 			v[3] = vec4();
 		}
 
-		mat4x4(mat4x4 const& rhs) noexcept
+		constexpr mat4x4(mat4x4 const& rhs) noexcept
 		{
 			v[0] = rhs.v[0];
 			v[1] = rhs.v[1];
@@ -128,7 +126,7 @@ namespace aes
 			v[3] = rhs.v[3];
 		}
 
-		void transpose()
+		constexpr void transpose()
 		{
 			mat4x4& self = *this;
 			mat4x4 result;
@@ -142,17 +140,18 @@ namespace aes
 			self = result;
 		}
 
-		decltype(auto) operator[](this auto& self, unsigned i)
+		constexpr decltype(auto) operator[](this auto& self, unsigned i)
 		{
 			return self.data[i];
 		}
 
-		decltype(auto) operator[](this auto& self, unsigned i, unsigned j)
+		constexpr decltype(auto) operator[](this auto& self, unsigned i, unsigned j)
 		{
+			// @review
 			return self.data[i * 4 + j];
 		}
 
-		static mat4x4 translationMat(vec3 v)
+		static constexpr mat4x4 translationMat(vec3 v)
 		{
 			mat4x4 result = mat4x4::identity();
 			result[3, 0] = v.x;
@@ -191,7 +190,12 @@ namespace aes
 			return result;
 		}
 
-		static mat4x4 scaleMat(vec3 s)
+		static mat4x4 rotateXYZMat(float x, float y, float z)
+		{
+			return rotateZMat(z) * rotateXMat(y) * rotateYMat(x);
+		}
+
+		static constexpr mat4x4 scaleMat(vec3 s)
 		{
 			mat4x4 result = mat4x4::identity();
 			result[0] = s.x;
@@ -249,8 +253,7 @@ namespace aes
 			return m;
 		}
 
-
-		static mat4x4 makeOrthoProjectionMatD3D(float Sw, float Sh, float near_, float far_)
+		static constexpr mat4x4 makeOrthoProjectionMatD3D(float Sw, float Sh, float near_, float far_)
 		{
 			mat4x4 matrix;
 			matrix[0, 0] = 2 / Sw;
@@ -261,40 +264,41 @@ namespace aes
 			return matrix;
 		}
 
-		static mat4x4 makeLookAtMatrix(vec3 pos, vec3 up, vec3 front)
+		static mat4x4 makeLookAtMatrixLH(vec3 pos, vec3 up, vec3 front)
 		{
-			mat4x4 const posMtr = translationMat(-pos);
 			mat4x4 lookMtr = mat4x4::identity();
-
+			
+			front.normalize();
 			vec3 const right = vec3::cross(up, front).getNormalized();
+			vec3 const u = vec3::cross(front, right).getNormalized();
 
-			lookMtr[0, 0] = right.x;
-			lookMtr[0, 1] = right.y;
-			lookMtr[0, 2] = right.z;
+			lookMtr[0] = right.x;
+			lookMtr[4] = right.y;
+			lookMtr[8] = right.z;
 
-			lookMtr[1, 0] = up.x;
-			lookMtr[1, 1] = up.y;
-			lookMtr[1, 2] = up.z;
+			lookMtr[1] = u.x;
+			lookMtr[5] = u.y;
+			lookMtr[9] = u.z;
 
-			lookMtr[2, 0] = -front.x;
-			lookMtr[2, 1] = -front.y;
-			lookMtr[2, 2] = -front.z;
+			lookMtr[2] = front.x;
+			lookMtr[6] = front.y;
+			lookMtr[10] = front.z;
 
-			lookMtr[3, 0] = -right.dot(pos);
-			lookMtr[3, 1] = -up.dot(pos);
-			lookMtr[3, 2] = front.dot(pos);
+			lookMtr[12] = right.dot(-pos);
+			lookMtr[13] = u.dot(-pos);
+			lookMtr[14] = front.dot(-pos);
 
 			return lookMtr;
 		}
 
-		static mat4x4 makeLookAtMatrixD3D(vec3 pos, vec3 up, vec3 front)
+		static mat4x4 makeLookAtMatrixLHD3D(vec3 pos, vec3 up, vec3 front)
 		{
-			mat4x4 m = makeLookAtMatrix(pos, up, front);
+			mat4x4 m = makeLookAtMatrixLH(pos, up, front);
 			m.transpose();
 			return m;
 		}
 
-		mat4x4 operator*(mat4x4 const& r) const
+		constexpr mat4x4 operator*(mat4x4 const& r) const
 		{
 			mat4x4 result;
 			mat4x4 const& s = *this;
@@ -332,7 +336,7 @@ namespace aes
 
 	using mat4 = mat4x4;
 
-	inline vec4 operator*(mat4 mat, vec4 vec)
+	constexpr vec4 operator*(mat4 mat, vec4 vec)
 	{
 		vec4 r;
 
