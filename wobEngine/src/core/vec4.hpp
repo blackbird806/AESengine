@@ -2,6 +2,7 @@
 #define AES_VEC4_HPP
 
 #include "aes.hpp"
+#include "vec3.hpp"
 
 namespace aes
 {
@@ -9,6 +10,11 @@ namespace aes
 	{
 		constexpr vec4() noexcept : x(0), y(0), z(0), w(0)
 		{
+		}
+
+		constexpr vec4(vec3 const& v) noexcept : x(v.x), y(v.y), z(v.z), w(0)
+		{
+
 		}
 
 		constexpr vec4(vec4 const& v) noexcept : x(v.x), y(v.y), z(v.z), w(v.w)
@@ -34,13 +40,13 @@ namespace aes
 
 		constexpr float operator[](uint i) const noexcept
 		{
-			AES_ASSERT(i < 4);
+			AES_BOUNDS_CHECK(i < 4);
 			return data[i];
 		}
 
 		constexpr float& operator[](uint i) noexcept
 		{
-			AES_ASSERT(i < 4);
+			AES_BOUNDS_CHECK(i < 4);
 			return data[i];
 		}
 

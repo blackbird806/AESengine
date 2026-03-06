@@ -30,13 +30,13 @@ namespace aes
 
 		constexpr float operator[](uint i) const noexcept
 		{
-			AES_ASSERT(i < 3);
+			AES_BOUNDS_CHECK(i < 3);
 			return data[i];
 		}
 
 		constexpr float& operator[](uint i) noexcept
 		{
-			AES_ASSERT(i < 3);
+			AES_BOUNDS_CHECK(i < 3);
 			return data[i];
 		}
 

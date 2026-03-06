@@ -20,10 +20,10 @@ Result<void> Draw2d::init(RHIDevice& dev)
 		vertexInputLayout[0].offset = 0;
 		vertexInputLayout[0].format = RHIFormat::R32G32_Float;
 
-		vertexInputLayout[1].semantic = SemanticType::Color;
-		vertexInputLayout[1].parameterName = "aColor";
-		vertexInputLayout[1].offset = sizeof(vec4);
-		vertexInputLayout[1].format = RHIFormat::R32G32B32A32_Float;
+		//vertexInputLayout[1].semantic = SemanticType::Color;
+		//vertexInputLayout[1].parameterName = "aColor";
+		//vertexInputLayout[1].offset = sizeof(vec4);
+		//vertexInputLayout[1].format = RHIFormat::R32G32B32A32_Float;
 
 		vertexInputLayout[1].semantic = SemanticType::TexCoord;
 		vertexInputLayout[1].parameterName = "aTexcoord";

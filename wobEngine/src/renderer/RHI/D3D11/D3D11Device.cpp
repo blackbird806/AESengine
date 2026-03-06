@@ -714,16 +714,19 @@ void D3D11Device::drawIndexed(uint indexCount, uint indexOffset)
 
 void D3D11Device::beginRenderPass(RHIRenderTarget& rt)
 {
+	AES_PROFILE_FUNCTION();
 	deviceContext->OMSetRenderTargets(1, &rt.renderTargetView, nullptr);
 }
 
 void D3D11Device::beginRenderPass(RHISwapchain& sc)
 {
+	AES_PROFILE_FUNCTION();
 	deviceContext->OMSetRenderTargets(1, &sc.rtview, sc.depthStencilView);
 }
 
 void D3D11Device::endRenderPass()
 {
+	AES_PROFILE_FUNCTION();
 }
 
 void D3D11Device::setCullMode(CullMode mode)

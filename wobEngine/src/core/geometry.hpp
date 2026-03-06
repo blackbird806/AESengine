@@ -95,6 +95,17 @@ namespace aes {
 		float size;
 	};
 
+	struct Cube
+	{
+		vec3 pos;
+		float halfSize;
+	};
+
+	struct Triangle3D
+	{
+		vec3 a, b, c;
+	};
+
 	struct Plane
 	{
 		float dist;

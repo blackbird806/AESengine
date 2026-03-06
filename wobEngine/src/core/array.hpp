@@ -151,6 +151,16 @@ namespace aes
 			new (&buffer[size_++]) T(std::move(e));
 		}
 
+		template<typename ...Args>
+		constexpr void emplace(Args&&... args)
+		{
+			if (size_ == capacity_)
+			{
+				grow();
+			}
+			new (&buffer[size_++]) T(std::forward<Args>(args)...);
+		}
+
 		template<std::ranges::input_range Range>
 		constexpr void insert(Iterator_t pos, Range&& range) noexcept
 		{

@@ -47,7 +47,7 @@ public:
 
 		// create device
 		device.init();
-		device.setCullMode(CullMode::Clockwise);
+		device.setCullMode(CullMode::CounterClockwise);
 		device.setDrawPrimitiveMode(DrawPrimitiveType::TrianglesFill);
 
 		static TestPipelineApp* gApp = this;

@@ -2,7 +2,6 @@
 #define AES_MODEL_HPP
 
 #include <span>
-#include "core/vec3.hpp"
 #include "core/vec4.hpp"
 #include "core/matrix.hpp"
 #include "core/array.hpp"
@@ -15,45 +14,8 @@
  */
 namespace aes
 {
-	constexpr uint32_t cubeIndices[] = {
-		//Top
-		2, 7, 6,
-		3, 7, 2,
-
-		////Bottom
-		0, 4, 5,
-		0, 5, 1,
-
-		////Left
-		0, 2, 6,
-		0, 6, 4,
-
-		////Right
-		1, 7, 3,
-		1, 5, 7,
-
-		//Front
-		2, 0, 1,
-		2, 1, 3,
-
-		////Back
-		4, 6, 7,
-		4, 7, 5
-	};
-
-	inline vec3 cubeVerticesPos[] = {
-		{ -1, -1,  1.0f },
-		{ 1, -1,  1.0f },
-		{ -1,  1,  1.0f },
-		{ 1,  1,  1.0f },
-		{ -1, -1, -1.0f },
-		{ 1, -1, -1.0f },
-		{ -1,  1, -1.0f },
-		{ 1,  1, -1.0f }
-	};
-
-	Array<Vertex> getCubeVertices();
-	Array<Vertex> getCubeVertices(vec4 const&);
+	[[deprecated("use simpleMeshes instead")]] Array<Vertex> getCubeVertices();
+	[[deprecated("use simpleMeshes instead")]] Array<Vertex> getCubeVertices(vec4 const&);
 	
 	class Model
 	{

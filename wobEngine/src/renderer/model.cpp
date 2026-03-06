@@ -2,6 +2,7 @@
 #include "core/debug.hpp"
 #include "core/utility.hpp"
 #include "RHI/RHIRenderContext.hpp"
+#include "simpleMeshes.hpp"
 
 using namespace aes;
 
@@ -85,7 +86,7 @@ Result<Model> aes::createCube(vec4 const& col)
 	AES_PROFILE_FUNCTION();
 
 	Model cube;
-	auto const result = cube.init(getCubeVertices(col), cubeIndices);
+	auto const result = cube.init(getCubeVertices(col), sm::cubeIndices);
 	if (!result)
 		return { AESError{ result.error() } };
 	return { std::move(cube) };
