@@ -16,7 +16,7 @@ public:
 	RHIDevice device;
 	RHITexture checkboard;
 	FontRessource defaultFont;
-	Draw2d draw2d;
+	Draw2D draw2d;
 	ImguiContext imgui;
 
 	TestImguiApp(InitInfo const& info) : Engine(info)

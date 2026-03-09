@@ -168,3 +168,15 @@ D3D11_CULL_MODE aes::rhiCullModeToApi(CullMode cullMode)
 	AES_UNREACHABLE();
 }
 
+D3D11_INPUT_CLASSIFICATION aes::rhiVertexInputClassificationToApi(VertexInputClassification classification)
+{
+	switch (classification)
+	{
+	case VertexInputClassification::PerVertex:
+		return D3D11_INPUT_PER_VERTEX_DATA;
+	case VertexInputClassification::PerInstance:
+		return D3D11_INPUT_PER_INSTANCE_DATA;
+	}
+	AES_UNREACHABLE();
+}
+

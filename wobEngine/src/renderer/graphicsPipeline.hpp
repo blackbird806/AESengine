@@ -9,25 +9,6 @@
 
 namespace aes
 {
-	enum class VertexComponentType
-	{
-		Float,
-		Vec2,
-		Vec3,
-		Vec4
-	};
-
-	struct VertexComponent
-	{
-		VertexComponentType Type;
-		String name;
-	};
-
-	struct VertexType
-	{
-		Array<VertexComponent> components;
-	};
-
 	// @TODO rework, we may want to hide the individual binding of shaders and buffers to the RHI and only bind a graphics pipeline instead
 	// this should facilitate the vulkan port, simplify the user code and will be less error prone
 	class GraphicsPipeline
@@ -38,8 +19,8 @@ namespace aes
 
 		void bind();
 		
-		void buildFragmentShader(FragmentShaderDescription const& desc, VertexType const& vtype);
-		void buildVertexShader(VertexShaderDescription const& desc, VertexType const& vtype);
+		void buildFragmentShader(FragmentShaderDescription const& desc);
+		void buildVertexShader(VertexShaderDescription const& desc);
 
 		void registerVertexUniform(String const& name, BufferDescription bufferDesc, uint bindPoint);
 		void setVertexUniform(String const& name, void* data, uint32_t size);
@@ -69,9 +50,9 @@ namespace aes
 	private:
 
 		RHIDevice* device;
-		VertexType vertexTypeVS;
-		VertexType vertexTypeFS;
 		
+		VertexShaderDescription vertexShaderDesc;
+
 		// let's give the pipeline ownership of it's resources, for now it's simpler 
 		// maybe later update this if needed
 		RHIVertexShader vertexShader;

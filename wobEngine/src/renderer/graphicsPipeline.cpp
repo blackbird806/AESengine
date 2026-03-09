@@ -27,16 +27,15 @@ void GraphicsPipeline::bind()
 	}
 }
 
-void GraphicsPipeline::buildFragmentShader(FragmentShaderDescription const& desc, VertexType const& vtype)
+void GraphicsPipeline::buildFragmentShader(FragmentShaderDescription const& desc)
 {
 	fragmentShader = std::move(device->createFragmentShader(desc).value());
-	vertexTypeFS = vtype;
 }
 
-void GraphicsPipeline::buildVertexShader(VertexShaderDescription const& desc, VertexType const& vtype)
+void GraphicsPipeline::buildVertexShader(VertexShaderDescription const& desc)
 {
+	vertexShaderDesc = desc;
 	vertexShader = std::move(device->createVertexShader(desc).value());
-	vertexTypeVS = vtype;
 }
 
 void GraphicsPipeline::registerVertexUniform(String const& name, BufferDescription bufferDesc, uint slot)

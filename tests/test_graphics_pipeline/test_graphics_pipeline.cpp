@@ -15,7 +15,7 @@
 #include "renderer/graphicsPipeline.hpp"
 #include <iostream>
 #include <cmath>
-#include <directxmath.h>
+#include "renderer/simpleMeshes.hpp"
 
 using namespace aes;
 
@@ -77,17 +77,6 @@ public:
 			swapchain = device.createSwapchain(swDesc).value();
 		}
 		{
-			VertexType vtype;
-			VertexComponent pos;
-			pos.name = "pos";
-			pos.Type = VertexComponentType::Vec4;
-			vtype.components.push(pos);
-
-			VertexComponent col;
-			col.name = "color";
-			col.Type = VertexComponentType::Vec4;
-			vtype.components.push(col);
-
 			graphicsPipeline.init(&device);
 
 			aes::VertexShaderDescription vertexShaderDescription;
@@ -96,26 +85,30 @@ public:
 			vertexShaderDescription.source = readFile(vertexShaderPath);
 			vertexShaderDescription.verticesStride = sizeof(aes::Vertex);
 
-			aes::VertexInputLayout vertexInputLayout[2];
-			vertexInputLayout[0].parameterName = "aPosition";
-			vertexInputLayout[0].semantic = aes::SemanticType::Position;
-			vertexInputLayout[0].offset = 0;
-			vertexInputLayout[0].format = aes::RHIFormat::R32G32B32A32_Float;
+			vertexShaderDescription.verticesLayout.resize(2);
 
-			vertexInputLayout[1].parameterName = "aColor";
-			vertexInputLayout[1].semantic = aes::SemanticType::Color;
-			vertexInputLayout[1].offset = sizeof(aes::vec4);
-			vertexInputLayout[1].format = aes::RHIFormat::R32G32B32A32_Float;
+			vertexShaderDescription.verticesLayout[0].vertexBufferIndex = 0;
+			vertexShaderDescription.verticesLayout[0].parameterName = "aPosition";
+			vertexShaderDescription.verticesLayout[0].semantic = aes::SemanticType::Position;
+			vertexShaderDescription.verticesLayout[0].offset = 0;
+			vertexShaderDescription.verticesLayout[0].format = aes::RHIFormat::R32G32B32A32_Float;
+			vertexShaderDescription.verticesLayout[0].classification = VertexInputClassification::PerVertex;
 
-			vertexShaderDescription.verticesLayout = vertexInputLayout;
-			graphicsPipeline.buildVertexShader(vertexShaderDescription, vtype);
+			vertexShaderDescription.verticesLayout[1].vertexBufferIndex = 0;
+			vertexShaderDescription.verticesLayout[1].parameterName = "aColor";
+			vertexShaderDescription.verticesLayout[1].semantic = aes::SemanticType::Color;
+			vertexShaderDescription.verticesLayout[1].offset = sizeof(aes::vec4);
+			vertexShaderDescription.verticesLayout[1].format = aes::RHIFormat::R32G32B32A32_Float;
+			vertexShaderDescription.verticesLayout[1].classification = VertexInputClassification::PerVertex;
+
+			graphicsPipeline.buildVertexShader(vertexShaderDescription);
 
 			aes::FragmentShaderDescription fragmentShaderDescription;
 			String fragmentShaderPath = getEngineShaderPath();
 			fragmentShaderPath.append("/HLSL/draw3d.fs");
 			fragmentShaderDescription.source = readFile(fragmentShaderPath);
 			fragmentShaderDescription.multisampleMode = MultisampleMode::None;
-			graphicsPipeline.buildFragmentShader(fragmentShaderDescription, vtype);
+			graphicsPipeline.buildFragmentShader(fragmentShaderDescription);
 
 			AES_LOG("graphics pipeline created");
 		}
@@ -135,8 +128,8 @@ public:
 			geoIndexBufferDesc.bindFlags = aes::BindFlagBits::IndexBuffer;
 			geoIndexBufferDesc.cpuAccessFlags = aes::CPUAccessFlagBits::None;
 			geoIndexBufferDesc.usage = aes::MemoryUsage::Immutable;
-			geoIndexBufferDesc.sizeInBytes = sizeof(cubeIndices);
-			geoIndexBufferDesc.initialData = (void*)cubeIndices;
+			geoIndexBufferDesc.sizeInBytes = sizeof(sm::cubeIndices);
+			geoIndexBufferDesc.initialData = (void*)sm::cubeIndices;
 
 			geoIndexBuffer = device.createBuffer(geoIndexBufferDesc).value();
 		}
@@ -169,7 +162,7 @@ public:
 		}
 
 		graphicsPipeline.bind();
-		device.setVertexBuffer(geoVertexBuffer, sizeof(Vertex));
+		device.setVertexBuffer(geoVertexBuffer, 0, sizeof(Vertex));
 		device.setIndexBuffer(geoIndexBuffer, IndexTypeFormat::Uint32);
 	}
 
@@ -256,7 +249,7 @@ public:
 		
 		// draw
 		device.beginRenderPass(swapchain);
-		device.drawIndexed(std::size(cubeIndices));
+		device.drawIndexed(std::size(sm::cubeIndices));
 		device.endRenderPass();
 
 		device.swapBuffers(swapchain);

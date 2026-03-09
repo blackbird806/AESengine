@@ -6,7 +6,7 @@
 
 using namespace aes;
 
-Result<void> Draw2d::init(RHIDevice& dev)
+Result<void> Draw2D::init(RHIDevice& dev)
 {
 	AES_PROFILE_FUNCTION();
 
@@ -14,30 +14,34 @@ Result<void> Draw2d::init(RHIDevice& dev)
 
 	// init shaders
 	{
-		VertexInputLayout vertexInputLayout[2];
-		vertexInputLayout[0].semantic = SemanticType::Position;
-		vertexInputLayout[0].parameterName = "aPosition";
-		vertexInputLayout[0].offset = 0;
-		vertexInputLayout[0].format = RHIFormat::R32G32_Float;
-
-		//vertexInputLayout[1].semantic = SemanticType::Color;
-		//vertexInputLayout[1].parameterName = "aColor";
-		//vertexInputLayout[1].offset = sizeof(vec4);
-		//vertexInputLayout[1].format = RHIFormat::R32G32B32A32_Float;
-
-		vertexInputLayout[1].semantic = SemanticType::TexCoord;
-		vertexInputLayout[1].parameterName = "aTexcoord";
-		vertexInputLayout[1].offset = sizeof(vec2);
-		vertexInputLayout[1].format = RHIFormat::R32G32_Float;
-
 		VertexShaderDescription vertexShaderDescription;
+		vertexShaderDescription.verticesLayout.resize(2);
+
+		vertexShaderDescription.verticesLayout[0].semantic = SemanticType::Position;
+		vertexShaderDescription.verticesLayout[0].parameterName = "aPosition";
+		vertexShaderDescription.verticesLayout[0].offset = 0;
+		vertexShaderDescription.verticesLayout[0].format = RHIFormat::R32G32_Float;
+		vertexShaderDescription.verticesLayout[0].vertexBufferIndex = 0;
+		vertexShaderDescription.verticesLayout[0].classification = VertexInputClassification::PerVertex;
+
+		//vertexShaderDescription.verticesLayout[1].semantic = SemanticType::Color;
+		//vertexShaderDescription.verticesLayout[1].parameterName = "aColor";
+		//vertexShaderDescription.verticesLayout[1].offset = sizeof(vec4);
+		//vertexShaderDescription.verticesLayout[1].format = RHIFormat::R32G32B32A32_Float;
+
+		vertexShaderDescription.verticesLayout[1].semantic = SemanticType::TexCoord;
+		vertexShaderDescription.verticesLayout[1].parameterName = "aTexcoord";
+		vertexShaderDescription.verticesLayout[1].offset = sizeof(vec2);
+		vertexShaderDescription.verticesLayout[1].format = RHIFormat::R32G32_Float;
+		vertexShaderDescription.verticesLayout[1].vertexBufferIndex = 0;
+		vertexShaderDescription.verticesLayout[1].classification = VertexInputClassification::PerVertex;
+
 #ifdef __vita__
 		auto const source_vs = readFileBin("app0:assets/shaders/vita/texture2d_vs.gxp");
 		vertexShaderDescription.source = source_vs.data();
 #else
 		vertexShaderDescription.source = readFile("assets/shaders/HLSL/texture2d.vs");
 #endif
-		vertexShaderDescription.verticesLayout = vertexInputLayout;
 		vertexShaderDescription.verticesStride = sizeof(TextureVertex);
 
 		auto result = device->createVertexShader(vertexShaderDescription);
@@ -107,30 +111,30 @@ Result<void> Draw2d::init(RHIDevice& dev)
 	return {};
 }
 
-void Draw2d::setColor(Color color)
+void Draw2D::setColor(Color color)
 {
 	AES_PROFILE_FUNCTION();
 	currentState.color = color;
 }
 
-void Draw2d::setMatrix(mat3 const& mat)
+void Draw2D::setMatrix(mat3 const& mat)
 {
 	AES_PROFILE_FUNCTION();
 	currentState.transformationMatrix = mat;
 }
 
-void Draw2d::pushState()
+void Draw2D::pushState()
 {
 	statesStack.push(currentState);
 }
 
-void Draw2d::popState()
+void Draw2D::popState()
 {
 	currentState = statesStack.back();
 	statesStack.pop();
 }
 
-void Draw2d::drawLine(Line2D const& line)
+void Draw2D::drawLine(Line2D const& line)
 {
 	AES_PROFILE_FUNCTION();
 	commands.push(Command{ DrawCommandType::Line, currentState.color });
@@ -142,14 +146,14 @@ void Draw2d::drawLine(Line2D const& line)
 	offset += 2;
 }
 
-void Draw2d::drawPoint(vec2 p, float size)
+void Draw2D::drawPoint(vec2 p, float size)
 {
 	AES_PROFILE_FUNCTION();
 	drawLine({ {p.x - size, p.y}, {p.x + size, p.y} });
 	drawLine({ {p.x, p.y - size}, {p.x, p.y + size} });
 }
 
-void Draw2d::drawFillRect(Rect const& rect)
+void Draw2D::drawFillRect(Rect const& rect)
 {
 	AES_PROFILE_FUNCTION();
 	commands.push(Command{ DrawCommandType::FillRect, currentState.color });
@@ -169,7 +173,7 @@ void Draw2d::drawFillRect(Rect const& rect)
 	offset += 4;
 }
 
-void Draw2d::drawRect(Rect const& rect)
+void Draw2D::drawRect(Rect const& rect)
 {
 	AES_PROFILE_FUNCTION();
 	RectBounds const b = rect.getBounds();
@@ -179,7 +183,7 @@ void Draw2d::drawRect(Rect const& rect)
 	drawLine({ b.minR, b.topR });
 }
 
-void Draw2d::drawImage(RHITexture& texture, Rect const& rect)
+void Draw2D::drawImage(RHITexture& texture, Rect const& rect)
 {
 	AES_PROFILE_FUNCTION();
 
@@ -199,7 +203,7 @@ void Draw2d::drawImage(RHITexture& texture, Rect const& rect)
 }
 
 // check https://github.com/ocornut/imgui/blob/master/imgui_draw.cpp#L3542
-void Draw2d::drawText(FontRessource& font, std::string_view str, vec2 pos)
+void Draw2D::drawText(FontRessource& font, std::string_view str, vec2 pos)
 {
 	AES_PROFILE_FUNCTION();
 
@@ -253,7 +257,7 @@ void Draw2d::drawText(FontRessource& font, std::string_view str, vec2 pos)
 	}
 }
 
-void Draw2d::executeDrawCommands()
+void Draw2D::executeDrawCommands()
 {
 	AES_PROFILE_FUNCTION();
 
@@ -274,7 +278,7 @@ void Draw2d::executeDrawCommands()
 	device->setVertexShader(vertexShader);
 	device->setFragmentShader(fragmentShader);
 
-	device->setVertexBuffer(vertexBuffer, sizeof(TextureVertex));
+	device->setVertexBuffer(vertexBuffer, 0, sizeof(TextureVertex));
 	device->setIndexBuffer(indexBuffer, IndexTypeFormat::Uint16);
 
 	for (auto const& cmd : commands)
@@ -309,7 +313,7 @@ void Draw2d::executeDrawCommands()
 
 // @Review
 
-Result<void> Draw2d::ensureVertexBufferCapacity(size_t sizeInBytes)
+Result<void> Draw2D::ensureVertexBufferCapacity(size_t sizeInBytes)
 {
 	AES_PROFILE_FUNCTION();
 
@@ -323,7 +327,7 @@ Result<void> Draw2d::ensureVertexBufferCapacity(size_t sizeInBytes)
 	return device->ensureBufferCapacity(vertexBuffer, vertexBufferDesc);
 }
 
-Result<void> Draw2d::ensureIndexBufferCapacity(size_t sizeInBytes)
+Result<void> Draw2D::ensureIndexBufferCapacity(size_t sizeInBytes)
 {
 	AES_PROFILE_FUNCTION();
 

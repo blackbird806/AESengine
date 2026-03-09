@@ -18,6 +18,7 @@ namespace aes
 	D3D11_FILTER rhiTextureFilterToApi(TextureFilter filter);
 	D3D11_TEXTURE_ADDRESS_MODE rhiTextureAddressModeToApi(TextureAddressMode adressMode);
 	D3D11_CULL_MODE rhiCullModeToApi(CullMode cullMode);
+	D3D11_INPUT_CLASSIFICATION rhiVertexInputClassificationToApi(VertexInputClassification classification);
 }
 
 #endif

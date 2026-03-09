@@ -82,7 +82,7 @@ size_t GxmBuffer::getSize() const
 Result<void> GxmBuffer::copyTo(GxmBuffer& dest)
 {
 	AES_ASSERT(dest.isValid());
-	AES_ASSERT(dest.size >= size);
+	AES_ASSERT(dest.size <= size);
 
 	memcpy(dest.buffer, buffer, size);
 

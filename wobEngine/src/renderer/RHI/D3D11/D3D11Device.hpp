@@ -75,7 +75,7 @@ namespace aes
 		void setFragmentShader(RHIFragmentShader& fs);
 		void setVertexShader(RHIVertexShader& vs);
 
-		Result<void> setVertexBuffer(RHIBuffer& buffer, uint stride, uint offset = 0);
+		Result<void> setVertexBuffer(RHIBuffer& buffer, uint32_t bufferIndex, uint stride, uint offset = 0);
 		Result<void> setIndexBuffer(RHIBuffer& buffer, IndexTypeFormat typeFormat, uint offset = 0);
 
 		// resources binding

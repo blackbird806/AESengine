@@ -175,6 +175,12 @@ namespace aes
 		D24_S8_Uint,
 	};
 
+	enum class VertexInputClassification
+	{
+		PerVertex,
+		PerInstance
+	};
+
 	constexpr uint getFormatSize(RHIFormat format)
 	{
 		switch(format)
@@ -197,6 +203,8 @@ namespace aes
 		const char* parameterName;	// used only by gxm
 		RHIFormat format;
 		uint32_t offset;
+		VertexInputClassification classification;
+		uint32_t vertexBufferIndex;
 	};
 
 	struct ShaderDescription
@@ -207,7 +215,7 @@ namespace aes
 
 	struct VertexShaderDescription : ShaderDescription
 	{
-		std::span<VertexInputLayout> verticesLayout;
+		Array<VertexInputLayout> verticesLayout;
 		uint32_t verticesStride = 0;
 	};
 

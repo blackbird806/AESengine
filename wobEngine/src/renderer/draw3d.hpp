@@ -23,7 +23,8 @@ namespace aes
 		void drawPlane(Plane plane);
 
 	private:
-
+		Result<void> ensureVertexBufferCapacity(size_t sizeInBytes);
+		Result<void> ensureIndexBufferCapacity(size_t sizeInBytes);
 		struct State
 		{
 			Color color = Color::Blue;
@@ -42,14 +43,14 @@ namespace aes
 			mat4 model;
 		};
 
-		State& currentState();
-		State& modifyState();
-
 		RHIDevice* device;
 		GraphicsPipeline pipeline;
-		uint32_t currentStateIdx;
 		Array<Command> commands;
+		State currentState;
 		Array<State> states;
+
+		RHIBuffer vertexBuffer;
+		RHIBuffer indexBuffer;
 	};
 }
 

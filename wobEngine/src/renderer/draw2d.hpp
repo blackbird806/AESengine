@@ -24,7 +24,7 @@ namespace aes
 	/*
 	 * Batch 2D renderer inspired by Blah and SDL2
 	 */
-	class Draw2d
+	class Draw2D
 	{
 	public:
 

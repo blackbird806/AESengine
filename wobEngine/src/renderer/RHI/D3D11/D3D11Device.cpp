@@ -504,10 +504,18 @@ Result<RHIVertexShader> D3D11Device::createVertexShader(VertexShaderDescription 
 		polygonLayout[i].SemanticName = getSemanticName(layout.semantic);
 		polygonLayout[i].SemanticIndex = 0;
 		polygonLayout[i].Format = rhiFormatToApi(layout.format);
-		polygonLayout[i].InputSlot = 0;
+		polygonLayout[i].InputSlot = layout.vertexBufferIndex;
 		polygonLayout[i].AlignedByteOffset = layout.offset;
-		polygonLayout[i].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-		polygonLayout[i].InstanceDataStepRate = 0;
+		polygonLayout[i].InputSlotClass = rhiVertexInputClassificationToApi(layout.classification);
+		if (polygonLayout[i].InputSlotClass == D3D11_INPUT_PER_INSTANCE_DATA)
+		{
+			// this doesn't seems to be modifiable in gxm
+			polygonLayout[i].InstanceDataStepRate = 1;
+		}
+		else
+		{
+			polygonLayout[i].InstanceDataStepRate = 0;
+		}
 		i++;
 	}
 
@@ -791,11 +799,11 @@ void D3D11Device::setVertexShader(RHIVertexShader& vs)
 	deviceContext->VSSetShader(vs.getHandle(), nullptr, 0);
 }
 
-Result<void> D3D11Device::setVertexBuffer(RHIBuffer& buffer, uint stride, uint offset)
+Result<void> D3D11Device::setVertexBuffer(RHIBuffer& buffer, uint32_t bufferIndex, uint stride, uint offset)
 {
 	AES_PROFILE_FUNCTION();
 	ID3D11Buffer* handle = buffer.getHandle();
-	deviceContext->IASetVertexBuffers(0, 1, &handle, &stride, &offset);
+	deviceContext->IASetVertexBuffers(bufferIndex, 1, &handle, &stride, &offset);
 	return {};
 }
 

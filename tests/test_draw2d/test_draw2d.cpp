@@ -12,7 +12,7 @@ class TestDraw2dApp : public Engine
 public:
 
 	RHIDevice device;
-	aes::Draw2d draw2d;
+	aes::Draw2D draw2d;
 
 	TestDraw2dApp(InitInfo const& info) : Engine(info)
 	{
