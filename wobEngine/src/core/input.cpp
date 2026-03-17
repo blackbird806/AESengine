@@ -1,8 +1,8 @@
 #include "input.hpp"
 
-using namespace aes;
+using namespace wob;
 
-Key aes::windowsToAESKey(int winKey)
+Key wob::windowsToAESKey(int winKey)
 {
 	// https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
 	switch (winKey)

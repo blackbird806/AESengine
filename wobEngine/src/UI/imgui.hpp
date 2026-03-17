@@ -1,9 +1,8 @@
-#ifndef AES_IMGUI_HPP
-#define AES_IMGUI_HPP
+#ifndef WOB_IMGUI_HPP
+#define WOB_IMGUI_HPP
 
-#include "core/aes.hpp"
+#include "core/wob.hpp"
 #include "core/color.hpp"
-#include "core/allocator.hpp"
 #include "core/array.hpp"
 #include "core/geometry.hpp"
 #include <variant>
@@ -12,7 +11,7 @@
  * AES Object Oriented ImGui implementation, heavly inspired by Dear ImGui and microUI
  */
 
-namespace aes
+namespace wob
 {
 	using ImGuiId = int;
 	constexpr ImGuiId invalidId = -1;

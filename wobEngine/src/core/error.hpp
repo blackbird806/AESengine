@@ -1,13 +1,13 @@
-#ifndef AES_ERROR_HPP
-#define AES_ERROR_HPP
+#ifndef WOB_ERROR_HPP
+#define WOB_ERROR_HPP
 
 #include <variant>
 #include <utility>
 
-#include "aes.hpp"
+#include "wob.hpp"
 #include "errorCodes.hpp"
 
-namespace aes {
+namespace wob {
 	/**
 	 * Error class Inspired by rust and Boost leaf
 	 * However returning error sucks, we may want to go back to exceptions in the future
@@ -43,25 +43,25 @@ namespace aes {
 
 		ValueType const& value() const& noexcept
 		{
-			AES_ASSERT(this->operator bool());
+			WOB_ASSERT(this->operator bool());
 			return std::get<ValueType>(value_);
 		}
 
 		ValueType& value() & noexcept
 		{
-			AES_ASSERT(this->operator bool());
+			WOB_ASSERT(this->operator bool());
 			return std::get<ValueType>(value_);
 		}
 
 		ValueType const&& value() const&& noexcept
 		{
-			AES_ASSERT(this->operator bool());
+			WOB_ASSERT(this->operator bool());
 			return std::move(std::get<ValueType>(value_));
 		}
 
 		ValueType&& value() && noexcept
 		{
-			AES_ASSERT(this->operator bool());
+			WOB_ASSERT(this->operator bool());
 			return std::move(std::get<ValueType>(value_));
 		}
 
@@ -77,7 +77,7 @@ namespace aes {
 
 		ErrorCodeType error() const noexcept
 		{
-			AES_ASSERT(!this->operator bool());
+			WOB_ASSERT(!this->operator bool());
 			return std::get<ErrorCodeType>(value_);
 		}
 
@@ -109,7 +109,7 @@ namespace aes {
 
 		ErrorCodeType error() const noexcept
 		{
-			AES_ASSERT(!this->operator bool());
+			WOB_ASSERT(!this->operator bool());
 			return std::get<ErrorCodeType>(value_);
 		}
 
@@ -134,7 +134,7 @@ namespace aes {
 			CASE(BlendStateCreationFailed)
 		}
 #undef CASE
-		AES_UNREACHABLE();
+		WOB_UNREACHABLE();
 	}
 
 	//inline std::ostream& operator<<(std::ostream& stream, AESError err)

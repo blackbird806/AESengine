@@ -1,33 +1,33 @@
 #include <cstdlib>
 
-#include "aes.hpp"
+#include "wob.hpp"
 #include "allocator.hpp"
 #include "profiler.hpp"
 #include "utility.hpp"
 #include "context.hpp"
 #include <cstdio>
 
-#ifdef AES_ENABLE_PROFILING
+#ifdef WOB_ENABLE_PROFILING
 
-#define AES_PROFILE_MEMORY_ALLOC(ptr, size) ::aes::MemoryProfiler::instance().profileAlloc(ptr, size)
-#define AES_PROFILE_MEMORY_DEALLOC(ptr) ::aes::MemoryProfiler::instance().profileDealloc(ptr)
+#define WOB_PROFILE_MEMORY_ALLOC(ptr, size) ::aes::MemoryProfiler::instance().profileAlloc(ptr, size)
+#define WOB_PROFILE_MEMORY_DEALLOC(ptr) ::aes::MemoryProfiler::instance().profileDealloc(ptr)
 
 #else
 
-#define AES_PROFILE_MEMORY_ALLOC(ptr, size) 
-#define AES_PROFILE_MEMORY_DEALLOC(ptr)
+#define WOB_PROFILE_MEMORY_ALLOC(ptr, size) 
+#define WOB_PROFILE_MEMORY_DEALLOC(ptr)
 
 #endif
 
-using namespace aes;
+using namespace wob;
 
-aes::Mallocator aes::mallocator{};
-aes::AllocatorProfiler aes::profilerAlloc{aes::mallocator};
+wob::Mallocator wob::mallocator{};
+wob::AllocatorProfiler wob::profilerAlloc{wob::mallocator};
 
 // https://stackoverflow.com/questions/53922209/how-to-invoke-aligned-new-delete-properly
 static void* alignedAlloc(size_t size, size_t al) noexcept
 {
-	AES_ASSERT_NOLOG(size % al == 0);
+	WOB_ASSERT_NOLOG(size % al == 0);
 #if _MSC_VER
 	// msvc doesn't support c11 aligned_alloc
 	return _aligned_malloc(size, al);
@@ -69,8 +69,8 @@ StackAllocator::~StackAllocator()
 
 void* StackAllocator::allocate(size_t size, size_t alignement)
 {
-	AES_ASSERT_NOLOG(isPowerOf2(alignement));
-	auto const alignedOffset = aes::align(offset, alignement);
+	WOB_ASSERT_NOLOG(isPowerOf2(alignement));
+	auto const alignedOffset = wob::align(offset, alignement);
 	
 	if (alignedOffset + size > totalSize)
 		return nullptr;
@@ -80,14 +80,14 @@ void* StackAllocator::allocate(size_t size, size_t alignement)
 	return reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(start) + alignedOffset);
 }
 
-void aes::StackAllocator::deallocate(void* ptr)
+void wob::StackAllocator::deallocate(void* ptr)
 {
-	AES_UNUSED(ptr);
+	WOB_UNUSED(ptr);
 }
 
 void StackAllocator::deallocateFromMarker(size_t marker)
 {
-	AES_ASSERT_NOLOG(marker < offset);
+	WOB_ASSERT_NOLOG(marker < offset);
 	offset = marker;
 }
 
@@ -118,11 +118,11 @@ void AllocatorProfiler::deallocate(void* ptr)
 	if (ptr != nullptr)
 	{
 		allocationCount--;
-		AES_ASSERT_NOLOG(allocationCount >= 0);
+		WOB_ASSERT_NOLOG(allocationCount >= 0);
 	}
 }
 
-IAllocator* aes::getContextAllocator() noexcept
+IAllocator* wob::getContextAllocator() noexcept
 {
     return context.allocator;
 }

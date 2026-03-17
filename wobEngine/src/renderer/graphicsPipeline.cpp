@@ -4,7 +4,7 @@
 #include <ranges>
 #include <algorithm>
 
-using namespace aes;
+using namespace wob;
 
 void GraphicsPipeline::init(RHIDevice* device_)
 {
@@ -54,13 +54,13 @@ void GraphicsPipeline::setVertexUniform(String const& name, void* data, uint32_t
 	device->unmapBuffer(bufferIt->buffer);
 }
 
-void aes::GraphicsPipeline::registerFragmentUniform(String const& name, BufferDescription bufferDesc, uint slot)
+void wob::GraphicsPipeline::registerFragmentUniform(String const& name, BufferDescription bufferDesc, uint slot)
 {
 	auto bufferVal = device->createBuffer(bufferDesc);
 	fragmentUniformBuffers.push(UniformBindPoint{ name, std::move(bufferVal.value()), slot });
 }
 
-void aes::GraphicsPipeline::setFragmentUniform(String const& name, void* data, uint32_t size)
+void wob::GraphicsPipeline::setFragmentUniform(String const& name, void* data, uint32_t size)
 {
 	auto bufferIt = std::ranges::find_if(fragmentUniformBuffers, [name](auto const& e) {
 		return e.name == name;
@@ -68,4 +68,9 @@ void aes::GraphicsPipeline::setFragmentUniform(String const& name, void* data, u
 	void* bufferData = device->mapBuffer(bufferIt->buffer);
 	memcpy(bufferData, data, size);
 	device->unmapBuffer(bufferIt->buffer);
+}
+
+const VertexShaderDescription& wob::GraphicsPipeline::getVertexShaderDesc()
+{
+	return vertexShaderDesc;
 }

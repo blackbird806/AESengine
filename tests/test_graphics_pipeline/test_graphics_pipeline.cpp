@@ -12,12 +12,13 @@
 #include "renderer/RHI/RHIBuffer.hpp"
 #include "renderer/RHI/RHIRenderTarget.hpp"
 #include "renderer/RHI/RHIShader.hpp"
+#include "renderer/RHI/RHISwapchain.hpp"
 #include "renderer/graphicsPipeline.hpp"
 #include <iostream>
 #include <cmath>
 #include "renderer/simpleMeshes.hpp"
 
-using namespace aes;
+using namespace wob;
 
 class TestPipelineApp : public Engine
 {
@@ -37,13 +38,13 @@ public:
 
 	TestPipelineApp(InitInfo const& info) : Engine(info)
 	{
-		AES_LOG("[TEST] DRAW3D");
+		WOB_LOG("[TEST] DRAW3D");
 	}
 
 	void start() override
 	{
 		initializeGraphicsAPI();
-		AES_LOG("graphics api initialized");
+		WOB_LOG("graphics api initialized");
 
 		// create device
 		device.init();
@@ -79,55 +80,55 @@ public:
 		{
 			graphicsPipeline.init(&device);
 
-			aes::VertexShaderDescription vertexShaderDescription;
+			wob::VertexShaderDescription vertexShaderDescription;
 			String vertexShaderPath = getEngineShaderPath();
 			vertexShaderPath.append("/HLSL/draw3d.vs");
 			vertexShaderDescription.source = readFile(vertexShaderPath);
-			vertexShaderDescription.verticesStride = sizeof(aes::Vertex);
+			vertexShaderDescription.verticesStride = sizeof(wob::Vertex);
 
 			vertexShaderDescription.verticesLayout.resize(2);
 
 			vertexShaderDescription.verticesLayout[0].vertexBufferIndex = 0;
 			vertexShaderDescription.verticesLayout[0].parameterName = "aPosition";
-			vertexShaderDescription.verticesLayout[0].semantic = aes::SemanticType::Position;
+			vertexShaderDescription.verticesLayout[0].semantic = wob::SemanticType::Position;
 			vertexShaderDescription.verticesLayout[0].offset = 0;
-			vertexShaderDescription.verticesLayout[0].format = aes::RHIFormat::R32G32B32A32_Float;
+			vertexShaderDescription.verticesLayout[0].format = wob::RHIFormat::R32G32B32A32_Float;
 			vertexShaderDescription.verticesLayout[0].classification = VertexInputClassification::PerVertex;
 
 			vertexShaderDescription.verticesLayout[1].vertexBufferIndex = 0;
 			vertexShaderDescription.verticesLayout[1].parameterName = "aColor";
-			vertexShaderDescription.verticesLayout[1].semantic = aes::SemanticType::Color;
-			vertexShaderDescription.verticesLayout[1].offset = sizeof(aes::vec4);
-			vertexShaderDescription.verticesLayout[1].format = aes::RHIFormat::R32G32B32A32_Float;
+			vertexShaderDescription.verticesLayout[1].semantic = wob::SemanticType::Color;
+			vertexShaderDescription.verticesLayout[1].offset = sizeof(wob::vec4);
+			vertexShaderDescription.verticesLayout[1].format = wob::RHIFormat::R32G32B32A32_Float;
 			vertexShaderDescription.verticesLayout[1].classification = VertexInputClassification::PerVertex;
 
 			graphicsPipeline.buildVertexShader(vertexShaderDescription);
 
-			aes::FragmentShaderDescription fragmentShaderDescription;
+			wob::FragmentShaderDescription fragmentShaderDescription;
 			String fragmentShaderPath = getEngineShaderPath();
 			fragmentShaderPath.append("/HLSL/draw3d.fs");
 			fragmentShaderDescription.source = readFile(fragmentShaderPath);
 			fragmentShaderDescription.multisampleMode = MultisampleMode::None;
 			graphicsPipeline.buildFragmentShader(fragmentShaderDescription);
 
-			AES_LOG("graphics pipeline created");
+			WOB_LOG("graphics pipeline created");
 		}
 		{
 			Array<Vertex> vertexBufferData = getCubeVertices();
-			aes::BufferDescription geoVertexBufferDesc;
-			geoVertexBufferDesc.bindFlags = aes::BindFlagBits::VertexBuffer;
-			geoVertexBufferDesc.cpuAccessFlags = aes::CPUAccessFlagBits::None;
-			geoVertexBufferDesc.usage = aes::MemoryUsage::Immutable;
+			wob::BufferDescription geoVertexBufferDesc;
+			geoVertexBufferDesc.bindFlags = wob::BindFlagBits::VertexBuffer;
+			geoVertexBufferDesc.cpuAccessFlags = wob::CPUAccessFlagBits::None;
+			geoVertexBufferDesc.usage = wob::MemoryUsage::Immutable;
 			geoVertexBufferDesc.sizeInBytes = vertexBufferData.size() * sizeof(Vertex);
 			geoVertexBufferDesc.initialData = vertexBufferData.data();
 
 			geoVertexBuffer = device.createBuffer(geoVertexBufferDesc).value();
 		}
 		{
-			aes::BufferDescription geoIndexBufferDesc;
-			geoIndexBufferDesc.bindFlags = aes::BindFlagBits::IndexBuffer;
-			geoIndexBufferDesc.cpuAccessFlags = aes::CPUAccessFlagBits::None;
-			geoIndexBufferDesc.usage = aes::MemoryUsage::Immutable;
+			wob::BufferDescription geoIndexBufferDesc;
+			geoIndexBufferDesc.bindFlags = wob::BindFlagBits::IndexBuffer;
+			geoIndexBufferDesc.cpuAccessFlags = wob::CPUAccessFlagBits::None;
+			geoIndexBufferDesc.usage = wob::MemoryUsage::Immutable;
 			geoIndexBufferDesc.sizeInBytes = sizeof(sm::cubeIndices);
 			geoIndexBufferDesc.initialData = (void*)sm::cubeIndices;
 
@@ -138,10 +139,10 @@ public:
 
 			cameraBuffer.view = mat4::makeLookAtMatrixLHD3D(camPos, vec3(0, 1, 0), vec3(0, 0, 1));
 
-			aes::BufferDescription uniformBufferDesc;
-			uniformBufferDesc.bindFlags = aes::BindFlagBits::UniformBuffer;
-			uniformBufferDesc.usage = aes::MemoryUsage::Dynamic;
-			uniformBufferDesc.cpuAccessFlags = aes::CPUAccessFlagBits::Write;
+			wob::BufferDescription uniformBufferDesc;
+			uniformBufferDesc.bindFlags = wob::BindFlagBits::UniformBuffer;
+			uniformBufferDesc.usage = wob::MemoryUsage::Dynamic;
+			uniformBufferDesc.cpuAccessFlags = wob::CPUAccessFlagBits::Write;
 			uniformBufferDesc.sizeInBytes = sizeof(CameraBuffer);
 			uniformBufferDesc.initialData = &cameraBuffer;
 
@@ -151,10 +152,10 @@ public:
 		{
 			mat4 model = mat4::identity();
 
-			aes::BufferDescription uniformBufferDesc;
-			uniformBufferDesc.bindFlags = aes::BindFlagBits::UniformBuffer;
-			uniformBufferDesc.usage = aes::MemoryUsage::Dynamic;
-			uniformBufferDesc.cpuAccessFlags = aes::CPUAccessFlagBits::Write;
+			wob::BufferDescription uniformBufferDesc;
+			uniformBufferDesc.bindFlags = wob::BindFlagBits::UniformBuffer;
+			uniformBufferDesc.usage = wob::MemoryUsage::Dynamic;
+			uniformBufferDesc.cpuAccessFlags = wob::CPUAccessFlagBits::Write;
 			uniformBufferDesc.sizeInBytes = sizeof(mat4);
 			uniformBufferDesc.initialData = &model;
 
@@ -162,8 +163,8 @@ public:
 		}
 
 		graphicsPipeline.bind();
-		device.setVertexBuffer(geoVertexBuffer, 0, sizeof(Vertex));
-		device.setIndexBuffer(geoIndexBuffer, IndexTypeFormat::Uint32);
+		device.bindVertexBuffer(geoVertexBuffer, 0, sizeof(Vertex));
+		device.bindIndexBuffer(geoIndexBuffer, IndexTypeFormat::Uint32);
 	}
 
 	int frontBufferIndex = 0, backBufferIndex = 0;
@@ -240,7 +241,7 @@ public:
 
 		cameraBuffer.view = mat4::makeLookAtMatrixLHD3D(camPos, up/*vec3(up4.x, up.y, up4.z)*/,front/*vec3(front4.x, front4.y, front4.z)*/);		
 		graphicsPipeline.setVertexUniform("camera", cameraBuffer);
-		AES_LOG("cam front x:{} y:{} z:{}", front.x, front.y, front.z);
+		WOB_LOG("cam front x:{} y:{} z:{}", front.x, front.y, front.z);
 	}
 
 	void draw() override
@@ -261,19 +262,19 @@ public:
 
 int main()
 {
-	auto streamSink = aes::makeUnique<aes::StreamSink>(std::cout);
-	aes::Logger::instance().addSink(streamSink.get());
-	AES_START_PROFILE_SESSION("test draw3d startup");
+	auto streamSink = wob::makeUnique<wob::StreamSink>(std::cout);
+	wob::Logger::instance().addSink(streamSink.get());
+	WOB_START_PROFILE_SESSION("test draw3d startup");
 	TestPipelineApp app({
 		.appName = "aes draw3d test"
 		});
 	app.init();
-	auto startupSession = AES_STOP_PROFILE_SESSION();
+	auto startupSession = WOB_STOP_PROFILE_SESSION();
 	printf("init time: %f", startupSession.elapsedSessionTime);
 
-	//AES_START_PROFILE_SESSION("test draw3d running");
+	//WOB_START_PROFILE_SESSION("test draw3d running");
 	app.run();
-	//auto runningSession = AES_STOP_PROFILE_SESSION();
+	//auto runningSession = WOB_STOP_PROFILE_SESSION();
 
 	return 0;
 }

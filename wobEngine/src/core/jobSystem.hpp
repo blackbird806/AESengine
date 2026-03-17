@@ -1,7 +1,6 @@
-#ifndef AES_JOBSYSTEM_HPP
-#define AES_JOBSYSTEM_HPP
+#ifndef WOB_JOBSYSTEM_HPP
+#define WOB_JOBSYSTEM_HPP
 
-#include "aes.hpp"
 #include "array.hpp"
 #include "allocator.hpp"
 #include "utility.hpp"
@@ -17,7 +16,7 @@
  * A simple and dumb jobsystem originally implemented for a school exercice
  * will be redesigned in the engine
  */
-namespace aes
+namespace wob
 {
 	struct Job
 	{
@@ -88,7 +87,7 @@ namespace aes
 			{
 				if (sync.try_lock())
 				{
-					AES_SCOPE(sync.unlock());
+					WOB_SCOPE(sync.unlock());
 					if (jobs.empty())
 						return;
 				}

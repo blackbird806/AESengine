@@ -1,12 +1,12 @@
-#ifndef AES_D3D11TEXTURE_HPP
-#define AES_D3D11TEXTURE_HPP
+#ifndef WOB_D3D11TEXTURE_HPP
+#define WOB_D3D11TEXTURE_HPP
 
 #include <d3d11.h>
 
 #include "core/error.hpp"
 #include "renderer/RHI/RHIElements.hpp"
 
-namespace aes
+namespace wob
 {
 	class D3D11Texture
 	{

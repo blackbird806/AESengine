@@ -1,5 +1,5 @@
-#ifndef AES_FORMAT_HPP
-#define AES_FORMAT_HPP
+#ifndef WOB_FORMAT_HPP
+#define WOB_FORMAT_HPP
 
 #include <string_view>
 #include "string.hpp"
@@ -7,9 +7,9 @@
 #include "core/coreMacros.hpp"
 #include "core/dragon4.hpp"
 
-#define AES_FMT_CONSTEXPR_OR_INLINE inline
+#define WOB_FMT_CONSTEXPR_OR_INLINE inline
 
-namespace aes
+namespace wob
 {
 	// idk how to name this
 	template<typename T>
@@ -37,7 +37,7 @@ namespace aes
 		if (base < 2 || base > 32)
 			return;
 		
-		auto n = aes::abs(value);
+		auto n = wob::abs(value);
 
 		int i = 0;
 		while (n)
@@ -101,7 +101,7 @@ namespace aes
 	}
 
 	// assume that dst have enough space for src
-	constexpr void strcpy_fmtinternal(char* AES_RESTRICT(dst), const char* AES_RESTRICT(src)) noexcept
+	constexpr void strcpy_fmtinternal(char* WOB_RESTRICT(dst), const char* WOB_RESTRICT(src)) noexcept
 	{
 		while (*dst++ = *src++) {}
 	}
@@ -115,7 +115,7 @@ namespace aes
 	}
 
 	template <typename T>
-	AES_FMT_CONSTEXPR_OR_INLINE void stringifyToBuff(T v, char* buff)
+	WOB_FMT_CONSTEXPR_OR_INLINE void stringifyToBuff(T v, char* buff)
 	{
 		// TODO we shouldn't define this one to trigger link time error when using non supported format
 		// rn format is still wip so we keep this to allow compilation
@@ -146,13 +146,13 @@ namespace aes
 	}
 
 	template <>
-	AES_FMT_CONSTEXPR_OR_INLINE void stringifyToBuff(float v, char* buff)
+	WOB_FMT_CONSTEXPR_OR_INLINE void stringifyToBuff(float v, char* buff)
 	{
 		d4::PrintFloat32(buff, 64, v, d4::tPrintFloatFormat::PrintFloatFormat_Positional, -1);
 	}
 
 	template <>
-	AES_FMT_CONSTEXPR_OR_INLINE void stringifyToBuff(double v, char* buff)
+	WOB_FMT_CONSTEXPR_OR_INLINE void stringifyToBuff(double v, char* buff)
 	{
 		d4::PrintFloat64(buff, 64, v, d4::tPrintFloatFormat::PrintFloatFormat_Positional, -1);
 	}
@@ -180,7 +180,7 @@ namespace aes
 	}
 
 	template <typename T>
-	AES_FMT_CONSTEXPR_OR_INLINE uint32_t charsNeededForT(T v)
+	WOB_FMT_CONSTEXPR_OR_INLINE uint32_t charsNeededForT(T v)
 	{
 		return 0;
 	}
@@ -257,7 +257,7 @@ namespace aes
 	};
 
 	template<typename T>
-	AES_FMT_CONSTEXPR_OR_INLINE String formatArg(T arg)
+	WOB_FMT_CONSTEXPR_OR_INLINE String formatArg(T arg)
 	{
 		char buff[64];
 		zeroMemory_fmtinternal(buff, sizeof(buff));
@@ -267,7 +267,7 @@ namespace aes
 	}
 
 	template<>
-	AES_FMT_CONSTEXPR_OR_INLINE String formatArg(char* arg)
+	WOB_FMT_CONSTEXPR_OR_INLINE String formatArg(char* arg)
 	{
 		if (!arg)
 			return String();
@@ -278,7 +278,7 @@ namespace aes
 	}
 
 	template<>
-	AES_FMT_CONSTEXPR_OR_INLINE String formatArg(const char* arg)
+	WOB_FMT_CONSTEXPR_OR_INLINE String formatArg(const char* arg)
 	{
 		String str;
 		str.resizeNoInit(charsNeededForT(arg));
@@ -287,7 +287,7 @@ namespace aes
 	}
 
 	template<typename ...Args>
-	AES_FMT_CONSTEXPR_OR_INLINE String format(std::string_view fmt, Args&&... args)
+	WOB_FMT_CONSTEXPR_OR_INLINE String format(std::string_view fmt, Args&&... args)
 	{
 		// maybe use static array here to avoid alloc ?
 		FormatedArgs formatedArgs;
@@ -317,7 +317,7 @@ namespace aes
 				// TODO parse fmt
 
 				// TODO true error handling
-				AES_ASSERT_NOLOG(nformatedArg < formatedArgs.args.size());
+				WOB_ASSERT_NOLOG(nformatedArg < formatedArgs.args.size());
 				str.append(formatedArgs.args[nformatedArg++]);
 			}
 			else

@@ -1,9 +1,9 @@
-#include "core/aes.hpp"
+#include "core/wob.hpp"
 #include "renderer/RHI/D3D11/D3D11Buffer.hpp"
 
 #include "D3D11Elements.hpp"
 
-using namespace aes;
+using namespace wob;
 
 D3D11Buffer::D3D11Buffer(D3D11Buffer&& rhs) noexcept
 	: apiBuffer(rhs.apiBuffer), size(size = rhs.size)

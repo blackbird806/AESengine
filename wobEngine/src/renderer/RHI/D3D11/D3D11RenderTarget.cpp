@@ -3,19 +3,19 @@
 #include <d3d11.h>
 #include <dxgi.h>
 
-using namespace aes;
+using namespace wob;
 
 void D3D11RenderTarget::destroy()
 {
 	if (renderTargetTexture != nullptr)
 	{
-		AES_ASSERT(renderTargetView != nullptr);
+		WOB_ASSERT(renderTargetView != nullptr);
 		renderTargetView->Release();
 		renderTargetTexture->Release();
 	}
 }
 
-aes::D3D11RenderTarget::D3D11RenderTarget(D3D11RenderTarget&& rhs) noexcept
+wob::D3D11RenderTarget::D3D11RenderTarget(D3D11RenderTarget&& rhs) noexcept
 {
 	*this = std::move(rhs);
 }
@@ -25,7 +25,7 @@ D3D11RenderTarget::~D3D11RenderTarget()
 	destroy();
 }
 
-D3D11RenderTarget& aes::D3D11RenderTarget::operator=(D3D11RenderTarget&& rhs) noexcept
+D3D11RenderTarget& wob::D3D11RenderTarget::operator=(D3D11RenderTarget&& rhs) noexcept
 {
 	destroy();
 	renderTargetTexture = rhs.renderTargetTexture;

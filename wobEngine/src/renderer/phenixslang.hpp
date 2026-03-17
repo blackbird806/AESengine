@@ -1,7 +1,7 @@
-#ifndef AES_PHENIXSLANG_HPP
-#define AES_PHENIXSLANG_HPP
+#ifndef WOB_PHENIXSLANG_HPP
+#define WOB_PHENIXSLANG_HPP
 
-#include "core/aes.hpp"
+#include "core/wob.hpp"
 #include "core/array.hpp"
 #include "core/uniquePtr.hpp"
 #include "core/string.hpp"
@@ -12,7 +12,7 @@
 
 #include <cctype>
 
-namespace aes::phenix
+namespace wob::phenix
 {
 	// front
 	struct Atom
@@ -55,19 +55,19 @@ namespace aes::phenix
 
 		std::string_view getAtomValue()
 		{
-			AES_ASSERT(type == Type::Atom);
+			WOB_ASSERT(type == Type::Atom);
 			return atom.value;
 		}
 
 		Sexp* car()
 		{
-			AES_ASSERT(type == Type::Pair);
+			WOB_ASSERT(type == Type::Pair);
 			return pair.car;
 		}
 
 		Sexp* cdr()
 		{
-			AES_ASSERT(type == Type::Pair);
+			WOB_ASSERT(type == Type::Pair);
 			return pair.cdr;
 		}
 
@@ -322,7 +322,7 @@ namespace aes::phenix
 
 	AttributeType stringToAttributeType(std::string_view str)
 	{
-		AES_ASSERT(!str.empty());
+		WOB_ASSERT(!str.empty());
 
 		if (str.size() == 5)
 			return AttributeType::Color;
@@ -383,7 +383,7 @@ namespace aes::phenix
 
 		Sexp* popListElem()
 		{
-			AES_ASSERT(isPair());
+			WOB_ASSERT(isPair());
 			Sexp* val = current->pair.car;
 			moveNext();
 			return val;
@@ -401,7 +401,7 @@ namespace aes::phenix
 
 		bool matchListElem(std::string_view value)
 		{
-			AES_ASSERT(isPair());
+			WOB_ASSERT(isPair());
 			bool const val = current->car()->type == Sexp::Type::Atom && current->car()->getAtomValue() == value;
 			if (val)
 				moveNext();
@@ -442,7 +442,7 @@ namespace aes::phenix
 				while (walker.current != nullptr)
 				{
 					Sexp* memberDecl = walker.popListElem();
-					AES_ASSERT(memberDecl->type == Sexp::Type::Pair);
+					WOB_ASSERT(memberDecl->type == Sexp::Type::Pair);
 					SexpWalker memberDeclWalker(memberDecl);
 					auto const memberType = memberDeclWalker.popListElem()->getAtomValue();
 					auto const memberName = memberDeclWalker.popListElem()->getAtomValue();

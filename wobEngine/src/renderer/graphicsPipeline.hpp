@@ -7,7 +7,7 @@
 #include "renderer/RHI/RHIBuffer.hpp"
 #include "renderer/RHI/RHIShader.hpp"
 
-namespace aes
+namespace wob
 {
 	// @TODO rework, we may want to hide the individual binding of shaders and buffers to the RHI and only bind a graphics pipeline instead
 	// this should facilitate the vulkan port, simplify the user code and will be less error prone
@@ -46,6 +46,8 @@ namespace aes
 			RHIBuffer buffer;
 			uint slot;
 		};
+
+		const VertexShaderDescription& getVertexShaderDesc();
 
 	private:
 

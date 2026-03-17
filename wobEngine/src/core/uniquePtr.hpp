@@ -1,11 +1,11 @@
-#ifndef AES_UNIQUE_PTR_HPP
-#define AES_UNIQUE_PTR_HPP
+#ifndef WOB_UNIQUE_PTR_HPP
+#define WOB_UNIQUE_PTR_HPP
 
 #include <concepts>
 #include "allocator.hpp"
 #include "context.hpp"
 
-namespace aes
+namespace wob
 {
 	template<class T, class U = T>
 	constexpr T exchange(T& obj, U&& new_value) noexcept

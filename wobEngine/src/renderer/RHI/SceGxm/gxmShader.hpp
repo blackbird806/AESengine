@@ -7,7 +7,7 @@
 #include <vitasdk.h>
 #include <vector>
 
-namespace aes
+namespace wob
 {
 	class GxmShader
 	{

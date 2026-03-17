@@ -23,11 +23,11 @@
 ******************************************************************************/
 
 #include "dragon4.hpp"
-#include "aes.hpp"
+#include "wob.hpp"
 #include <string.h>
 #include <math.h>
 
-using namespace aes::d4;
+using namespace wob::d4;
 
 //******************************************************************************
 // Get the log base 2 of a 32-bit unsigned integer.
@@ -784,7 +784,7 @@ static void BigInt_ShiftLeft(tBigInt* pResult, tU32 shift)
 //    Burger and Dybvig
 //    http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.72.4656&rep=rep1&type=pdf
 //******************************************************************************
-tU32 aes::d4::Dragon4
+tU32 wob::d4::Dragon4
 (
     const tU64          mantissa,           // value significand
     const tS32          exponent,           // value exponent in base 2
@@ -1575,7 +1575,7 @@ static tU32 PrintInfNan(tC8* pOutBuffer, tU32 bufferSize, tU64 mantissa, tU32 ma
 // The output string is always NUL terminated and the string length (not
 // including the NUL) is returned.
 //******************************************************************************
-tU32 aes::d4::PrintFloat32
+tU32 wob::d4::PrintFloat32
 (
     tC8* pOutBuffer,     // buffer to output into
     tU32                bufferSize,     // size of pOutBuffer
@@ -1691,7 +1691,7 @@ tU32 aes::d4::PrintFloat32
 // The output string is always NUL terminated and the string length (not
 // including the NUL) is returned.
 //******************************************************************************
-tU32 aes::d4::PrintFloat64
+tU32 wob::d4::PrintFloat64
 (
     tC8* pOutBuffer,     // buffer to output into
     tU32                bufferSize,     // size of pOutBuffer

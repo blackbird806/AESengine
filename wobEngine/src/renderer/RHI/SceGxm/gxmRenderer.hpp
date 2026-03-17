@@ -1,5 +1,5 @@
-#ifndef AES_GXMRENDERER_HPP
-#define AES_GXMRENDERER_HPP
+#ifndef WOB_GXMRENDERER_HPP
+#define WOB_GXMRENDERER_HPP
 
 #include "core/window.hpp"
 #include "renderer/RHI/RHIElements.hpp"
@@ -14,7 +14,7 @@
 #include "gxmCompatibilty.h"
 #include "gxmMemory.hpp"
 
-namespace aes
+namespace wob
 {
 	auto constexpr vita_display_width = 960;
 	auto constexpr vita_display_height = 544;

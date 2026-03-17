@@ -1,10 +1,10 @@
 #include "D3D11Shader.hpp"
 
 #include "D3D11Elements.hpp"
-#include "core/aes.hpp"
+#include "core/wob.hpp"
 #include "core/debug.hpp"
 
-using namespace aes;
+using namespace wob;
 
 D3D11Shader::D3D11Shader(D3D11Shader&& rhs) noexcept : reflector(rhs.reflector)
 {
@@ -20,7 +20,7 @@ D3D11Shader& D3D11Shader::operator=(D3D11Shader&& rhs) noexcept
 
 //std::vector<UniformBufferReflectionInfo> D3D11Shader::getUniformBufferInfos() const
 //{
-//	AES_PROFILE_FUNCTION();
+//	WOB_PROFILE_FUNCTION();
 //
 //	D3D11_SHADER_DESC shaderDesc;
 //	reflector->GetDesc(&shaderDesc);
@@ -40,7 +40,7 @@ D3D11Shader& D3D11Shader::operator=(D3D11Shader&& rhs) noexcept
 //	return bufferInfos;
 //}
 
-void aes::D3D11Shader::destroy()
+void wob::D3D11Shader::destroy()
 {
 	if (reflector)
 		reflector->Release();
@@ -54,7 +54,7 @@ D3D11Shader::~D3D11Shader() noexcept
 D3D11VertexShader::D3D11VertexShader(D3D11VertexShader&& rhs) noexcept : D3D11Shader(std::move(rhs)),
 	vertexShader(rhs.vertexShader), layout(rhs.layout)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	rhs.vertexShader = nullptr;
 	rhs.layout = nullptr;
@@ -62,7 +62,7 @@ D3D11VertexShader::D3D11VertexShader(D3D11VertexShader&& rhs) noexcept : D3D11Sh
 
 D3D11VertexShader& D3D11VertexShader::operator=(D3D11VertexShader&& rhs) noexcept
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	D3D11Shader::operator=(std::move(rhs));
 
 	vertexShader = rhs.vertexShader;
@@ -72,9 +72,9 @@ D3D11VertexShader& D3D11VertexShader::operator=(D3D11VertexShader&& rhs) noexcep
 	return *this;
 }
 
-void aes::D3D11VertexShader::destroy()
+void wob::D3D11VertexShader::destroy()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	D3D11Shader::destroy();
 	if (vertexShader) // if shader is valid so is layout and reflector
 	{
@@ -95,22 +95,22 @@ ID3D11InputLayout* D3D11VertexShader::getInputLayout()
 
 D3D11FragmentShader::D3D11FragmentShader(D3D11FragmentShader&& rhs) noexcept : D3D11Shader(std::move(rhs)), pixelShader(rhs.pixelShader)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	rhs.pixelShader = nullptr;
 }
 
 D3D11FragmentShader& D3D11FragmentShader::operator=(D3D11FragmentShader&& rhs) noexcept
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	D3D11Shader::operator=(std::move(rhs));
 	pixelShader = rhs.pixelShader;
 	rhs.pixelShader = nullptr;
 	return *this;
 }
 
-void aes::D3D11FragmentShader::destroy()
+void wob::D3D11FragmentShader::destroy()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	D3D11Shader::destroy();
 
 	if (pixelShader)

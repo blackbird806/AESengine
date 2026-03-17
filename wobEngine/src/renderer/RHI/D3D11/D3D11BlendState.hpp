@@ -1,12 +1,12 @@
-#ifndef AES_D3D11BLENDSTATE_HPP
-#define AES_D3D11BLENDSTATE_HPP
+#ifndef WOB_D3D11BLENDSTATE_HPP
+#define WOB_D3D11BLENDSTATE_HPP
 
 #include <d3d11.h>
 
 #include "core/error.hpp"
 #include "renderer/RHI/RHIElements.hpp"
 
-namespace aes
+namespace wob
 {
 	// blend stated is proper to d3d11 so no RHI interface here
 	// for a platform independent blend, you must specify it in the fragment shader (this is a constraint from GXM)

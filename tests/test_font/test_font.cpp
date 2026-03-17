@@ -5,7 +5,7 @@
 #include "renderer/textureUtility.hpp"
 #include "renderer/fontRenderer.hpp"
 
-using namespace aes;
+using namespace wob;
 
 const char* fontPath = "../../../../wobEngine/assets/fonts/";
 
@@ -17,7 +17,7 @@ public:
 
 	TestFontApp(InitInfo const& info) : Engine(info)
 	{
-		AES_LOG("[TEST] FONTS");
+		WOB_LOG("[TEST] FONTS");
 	}
 
 	void start() override
@@ -31,7 +31,7 @@ public:
 			auto fontResult = createFontRessource(params);
 
 			//if (!fontResult)
-			//	AES_FATAL_ERROR("font creation failed");
+			//	WOB_FATAL_ERROR("font creation failed");
 
 			//defaultFont = std::move(fontResult.value());
 		}
@@ -64,15 +64,15 @@ public:
 
 int main()
 {
-	AES_START_PROFILE_SESSION("test font startup");
+	WOB_START_PROFILE_SESSION("test font startup");
 	TestFontApp app({
 		.appName = "aes font test"
 	});
 	app.init();
-	auto startupSession = AES_STOP_PROFILE_SESSION();
+	auto startupSession = WOB_STOP_PROFILE_SESSION();
 
-	AES_START_PROFILE_SESSION("test font running");
+	WOB_START_PROFILE_SESSION("test font running");
 	//app.run();
-	auto runningSession = AES_STOP_PROFILE_SESSION();
+	auto runningSession = WOB_STOP_PROFILE_SESSION();
 	return 0;
 }

@@ -1,11 +1,11 @@
-#ifndef AES_VERTEX_HPP
-#define AES_VERTEX_HPP
+#ifndef WOB_VERTEX_HPP
+#define WOB_VERTEX_HPP
 
 #include "core/vec3.hpp"
 #include "core/vec4.hpp"
 #include "core/matrix.hpp"
 
-namespace aes {
+namespace wob {
 
 	struct ModelBuffer
 	{

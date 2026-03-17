@@ -1,14 +1,14 @@
-#ifndef AES_D3D11RENDERTARGET_HPP
-#define AES_D3D11RENDERTARGET_HPP
+#ifndef WOB_D3D11RENDERTARGET_HPP
+#define WOB_D3D11RENDERTARGET_HPP
 
-#include "core/aes.hpp"
+#include "core/wob.hpp"
 #include "core/error.hpp"
 #include "renderer/RHI/RHIElements.hpp"
 
 struct ID3D11Texture2D;
 struct ID3D11RenderTargetView;
 
-namespace aes
+namespace wob
 {
 	class D3D11RenderTarget
 	{

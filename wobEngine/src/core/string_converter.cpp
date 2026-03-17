@@ -1,13 +1,13 @@
 #include "string_converter.hpp"
 
-#include "aes.hpp"
+#include "wob.hpp"
 #include "debug.hpp"
 
 #include <clocale>
 #include <cwchar>
 #include <string>
 
-std::wstring aes::to_wstring(std::string_view in)
+std::wstring wob::to_wstring(std::string_view in)
 {
 	std::wstring out{};
 	out.reserve(in.length());
@@ -17,7 +17,7 @@ std::wstring aes::to_wstring(std::string_view in)
 	mbstate_t state{};
 	wchar_t wc;
 	while (size_t len = mbrtowc(&wc, ptr, end - ptr, &state)) {
-		AES_ASSERT(len != static_cast<size_t>(-1)); // bad encoding
+		WOB_ASSERT(len != static_cast<size_t>(-1)); // bad encoding
 		if (len == static_cast<size_t>(-2)) // valid but incomplete
 			break;                         // nothing to do more
 		out.push_back(wc);
@@ -26,7 +26,7 @@ std::wstring aes::to_wstring(std::string_view in)
 	return out;
 }
 
-std::string aes::to_string(std::wstring_view in)
+std::string wob::to_string(std::wstring_view in)
 {
 	std::string out{};
 	out.reserve(MB_CUR_MAX * in.length());

@@ -1,7 +1,7 @@
 #ifndef AES_GXMDEVICE_HPP
 #define AES_GXMDEVICE_HPP
 
-#include "core/aes.hpp"
+#include "core/wob.hpp"
 #include "core/error.hpp"
 #include "renderer/RHI/RHIElements.hpp"
 #include "gxmShader.hpp"
@@ -14,7 +14,7 @@
 #include <psp2/gxm.h>
 #include "gxmCompatibilty.h"
 
-namespace aes
+namespace wob
 {
 	inline SceGxmShaderPatcher* gxmShaderPatcher = nullptr;
 
@@ -77,8 +77,8 @@ namespace aes
 		void setFragmentShader(RHIFragmentShader& fs);
 		void setVertexShader(RHIVertexShader& vs);
 
-		Result<void> setVertexBuffer(RHIBuffer& buffer, uint stride, uint offset = 0);
-		Result<void> setIndexBuffer(RHIBuffer& buffer, IndexTypeFormat typeFormat, uint offset = 0);
+		Result<void> bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset = 0);
+		Result<void> bindIndexBuffer(RHIBuffer& buffer, IndexTypeFormat typeFormat, uint offset = 0);
 
 		// resources binding
 

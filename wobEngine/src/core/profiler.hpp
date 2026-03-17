@@ -1,31 +1,31 @@
-#ifndef AES_PROFILER_HPP
-#define AES_PROFILER_HPP
+#ifndef WOB_PROFILER_HPP
+#define WOB_PROFILER_HPP
 
 #include "macro_helpers.hpp"
 #include <cstdint>
 
-#ifdef AES_ENABLE_PROFILINGs
+#ifdef WOB_ENABLE_PROFILINGs
 
-#define AES_PROFILE_FUNCTION() ::aes::ProfileScope AES_CONCAT(aes_internal_profile_func_, __COUNTER__)(__FUNCTION__);
-#define AES_PROFILE_SCOPE(name) ::aes::ProfileScope AES_CONCAT(aes_internal_profile_func_, __COUNTER__)(name); 
+#define WOB_PROFILE_FUNCTION() ::aes::ProfileScope WOB_CONCAT(WOB_internal_profile_func_, __COUNTER__)(__FUNCTION__);
+#define WOB_PROFILE_SCOPE(name) ::aes::ProfileScope WOB_CONCAT(WOB_internal_profile_func_, __COUNTER__)(name); 
 
-#define AES_PROFILE_FRAME()
-#define AES_PROFILE_FRAMEN(name)
+#define WOB_PROFILE_FRAME()
+#define WOB_PROFILE_FRAMEN(name)
 
 #else
 
-#define AES_PROFILE_FUNCTION()
-#define AES_PROFILE_SCOPE(name) 
+#define WOB_PROFILE_FUNCTION()
+#define WOB_PROFILE_SCOPE(name) 
 
-#define AES_PROFILE_FRAME()
-#define AES_PROFILE_FRAMEN(name)
+#define WOB_PROFILE_FRAME()
+#define WOB_PROFILE_FRAMEN(name)
 
 #endif
 
-#define AES_START_PROFILE_SESSION(name) ::aes::startInstrumentorSession(name)
-#define AES_STOP_PROFILE_SESSION() ::aes::endInstrumentorSession()
+#define WOB_START_PROFILE_SESSION(name) ::wob::startInstrumentorSession(name)
+#define WOB_STOP_PROFILE_SESSION() ::wob::endInstrumentorSession()
 
-namespace aes
+namespace wob
 {
 	using ProfileTime_t = double;
 

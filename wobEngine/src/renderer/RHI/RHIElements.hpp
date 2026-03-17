@@ -1,5 +1,5 @@
-#ifndef AES_RHIELEMENTS_HPP
-#define AES_RHIELEMENTS_HPP
+#ifndef WOB_RHIELEMENTS_HPP
+#define WOB_RHIELEMENTS_HPP
 
 #include <cstddef>
 #include <cstdint>
@@ -7,11 +7,11 @@
 #include <optional>
 #include <variant>
 
-#include "core/aes.hpp"
+#include "core/wob.hpp"
 #include "core/string.hpp"
 #include "core/utility.hpp"
 
-namespace aes
+namespace wob
 {
 	enum class CPUAccessFlagBits : uint8_t
 	{
@@ -129,7 +129,7 @@ namespace aes
 			case SemanticType::Color: return "COLOR";
 			case SemanticType::TexCoord: return "TEXCOORD";
 		}
-		AES_UNREACHABLE();
+		WOB_UNREACHABLE();
 	}
 
 	struct BlendInfo
@@ -193,7 +193,7 @@ namespace aes
 		case RHIFormat::R32G32B32A32_Float: return 16;
 		case RHIFormat::D24_S8_Uint: return 4;
 		}
-		AES_UNREACHABLE();
+		WOB_UNREACHABLE();
 	}
 
 	struct VertexInputLayout

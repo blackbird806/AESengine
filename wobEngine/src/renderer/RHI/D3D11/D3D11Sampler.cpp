@@ -1,7 +1,7 @@
 #include "D3D11Sampler.hpp"
 #include "D3D11Elements.hpp"
 
-using namespace aes;
+using namespace wob;
 
 D3D11Sampler::D3D11Sampler(D3D11Sampler&& rhs) noexcept
 {

@@ -1,7 +1,7 @@
 #include "D3D11BlendState.hpp"
 #include "D3D11Elements.hpp"
 
-using namespace aes;
+using namespace wob;
 
 D3D11BlendState::D3D11BlendState(D3D11BlendState&& rhs) noexcept : blendState(rhs.blendState)
 {

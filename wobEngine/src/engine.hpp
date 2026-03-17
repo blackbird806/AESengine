@@ -1,14 +1,14 @@
-#ifndef AES_ENGINE_HPP
-#define AES_ENGINE_HPP
+#ifndef WOB_ENGINE_HPP
+#define WOB_ENGINE_HPP
 
-#include "core/aes.hpp"
+#include "core/wob.hpp"
 #include "core/debug.hpp"
 #include "core/window.hpp"
 #include "core/array.hpp"
 #include "core/uniquePtr.hpp"
 #include "renderer/RHI/RHIRenderContext.hpp"
 
-namespace aes {
+namespace wob {
 
 	class Engine
 	{

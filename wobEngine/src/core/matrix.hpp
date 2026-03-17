@@ -1,11 +1,11 @@
-#ifndef AES_MATRIX_HPP
-#define AES_MATRIX_HPP
+#ifndef WOB_MATRIX_HPP
+#define WOB_MATRIX_HPP
 
 #include "vec2.hpp"
 #include "vec3.hpp"
 #include "vec4.hpp"
 
-namespace aes
+namespace wob
 {
 	struct mat2x2
 	{

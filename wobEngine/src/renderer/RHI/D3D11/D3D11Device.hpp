@@ -1,5 +1,5 @@
-#ifndef AES_D3D11DEVICE_HPP
-#define AES_D3D11DEVICE_HPP
+#ifndef WOB_D3D11DEVICE_HPP
+#define WOB_D3D11DEVICE_HPP
 
 #include "core/error.hpp"
 #include "renderer/RHI/RHIElements.hpp"
@@ -13,7 +13,7 @@
 
 struct IDXGIFactory;
 
-namespace aes
+namespace wob
 {
 
 	void initializeGraphicsAPI();
@@ -75,8 +75,8 @@ namespace aes
 		void setFragmentShader(RHIFragmentShader& fs);
 		void setVertexShader(RHIVertexShader& vs);
 
-		Result<void> setVertexBuffer(RHIBuffer& buffer, uint32_t bufferIndex, uint stride, uint offset = 0);
-		Result<void> setIndexBuffer(RHIBuffer& buffer, IndexTypeFormat typeFormat, uint offset = 0);
+		Result<void> bindVertexBuffer(RHIBuffer& buffer, uint32_t bufferIndex, uint stride, uint offset = 0);
+		Result<void> bindIndexBuffer(RHIBuffer& buffer, IndexTypeFormat typeFormat, uint offset = 0);
 
 		// resources binding
 
@@ -96,7 +96,7 @@ namespace aes
 		D3D11_RASTERIZER_DESC rasterStateDesc = {};
 		ID3D11RasterizerState* rasterState = nullptr;
 
-#ifdef AES_DEBUG
+#ifdef WOB_DEBUG
 		ID3D11Debug* debugInterface = nullptr;
 #endif
 	};

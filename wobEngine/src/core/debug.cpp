@@ -1,5 +1,5 @@
 #include "debug.hpp"
-#include "aes.hpp"
+#include "wob.hpp"
 #include "context.hpp"
 #include "format.hpp"
 #include <iostream>
@@ -8,7 +8,7 @@
 #include "psvDebugScreen/debugScreen.h"
 #endif
 
-using namespace aes;
+using namespace wob;
 
 Logger::Logger() noexcept : sinkCount(0)
 {
@@ -22,8 +22,8 @@ Logger& Logger::instance() noexcept
 
 void Logger::addSink(Sink* sink) noexcept
 {
-	AES_ASSERT(sink);
-	AES_ASSERT(sinkCount < std::size(sinks));
+	WOB_ASSERT(sink);
+	WOB_ASSERT(sinkCount < std::size(sinks));
 	sinks[sinkCount++] = sink;
 }
 

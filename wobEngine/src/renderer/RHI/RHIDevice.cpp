@@ -1,6 +1,6 @@
 #include "RHIDevice.hpp"
 
-using namespace aes;
+using namespace wob;
 
 Result<void> RHIDevice::setBufferData(RHIBuffer const& buffer, void* data, size_t size)
 {
@@ -10,7 +10,7 @@ Result<void> RHIDevice::setBufferData(RHIBuffer const& buffer, void* data, size_
 	}
 	else
 	{
-		AES_LOG_ERROR("failed to map unform buffer");
+		WOB_LOG_ERROR("failed to map unform buffer");
 		return { AESError{ AESError::GPUBufferMappingFailed } };
 	}
 	return unmapBuffer(buffer);
@@ -18,7 +18,7 @@ Result<void> RHIDevice::setBufferData(RHIBuffer const& buffer, void* data, size_
 
 Result<void> RHIDevice::reallocBuffer(RHIBuffer& buffer, BufferDescription const& reallocDesc)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	
 	RHIBuffer newBuffer;
 	auto err = createBuffer(reallocDesc);
@@ -38,7 +38,7 @@ Result<void> RHIDevice::reallocBuffer(RHIBuffer& buffer, BufferDescription const
 
 Result<void> RHIDevice::ensureBufferCapacity(RHIBuffer& buffer, BufferDescription const& reallocDesc)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	if (buffer.isValid() && buffer.getSize() >= reallocDesc.sizeInBytes)
 		return {};

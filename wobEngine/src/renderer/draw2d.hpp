@@ -1,5 +1,5 @@
-#ifndef AES_DRAW2D_HPP
-#define AES_DRAW2D_HPP
+#ifndef WOB_DRAW2D_HPP
+#define WOB_DRAW2D_HPP
 
 #include <string_view>
 
@@ -17,7 +17,7 @@
 #include "core/vec2.hpp"
 #include "core/matrix.hpp"
 
-namespace aes
+namespace wob
 {
 	struct FontRessource;
 

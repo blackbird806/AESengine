@@ -6,7 +6,7 @@
 #include "core/array.hpp"
 #include "core/hashmap.hpp"
 
-namespace aes::sbl 
+namespace wob::sbl 
 {
 	struct SourceLoc
 	{
@@ -176,7 +176,7 @@ namespace aes::sbl
 		void define(const String& name, Type type, bool mutable_ = true) 
 		{
 			if (variables.exist(name)) {
-				AES_ASSERT(false);
+				WOB_ASSERT(false);
 			}
 			variables[name] = { name, type, mutable_ };
 		}
@@ -191,7 +191,7 @@ namespace aes::sbl
 
 			if (parent) 
 				return parent->lookup(name);
-			AES_ASSERT(false);
+			WOB_ASSERT(false);
 
 		}
 

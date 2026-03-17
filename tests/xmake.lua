@@ -1,6 +1,6 @@
 
 
-add_defines("AES_UNITTESTS")
+add_defines("WOB_UNITTESTS")
 for _, filedir in ipairs(os.dirs("*")) do
 	target(filedir)
 		set_kind(binary)

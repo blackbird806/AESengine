@@ -1,10 +1,10 @@
-#ifndef AES_VEC4_HPP
-#define AES_VEC4_HPP
+#ifndef WOB_VEC4_HPP
+#define WOB_VEC4_HPP
 
-#include "aes.hpp"
+#include "wob.hpp"
 #include "vec3.hpp"
 
-namespace aes
+namespace wob
 {
 	struct vec4
 	{
@@ -40,13 +40,13 @@ namespace aes
 
 		constexpr float operator[](uint i) const noexcept
 		{
-			AES_BOUNDS_CHECK(i < 4);
+			WOB_BOUNDS_CHECK(i < 4);
 			return data[i];
 		}
 
 		constexpr float& operator[](uint i) noexcept
 		{
-			AES_BOUNDS_CHECK(i < 4);
+			WOB_BOUNDS_CHECK(i < 4);
 			return data[i];
 		}
 

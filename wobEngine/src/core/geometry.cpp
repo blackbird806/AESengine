@@ -2,20 +2,20 @@
 
 #include <algorithm>
 #include <cfloat>
-#include "aes.hpp"
+#include "wob.hpp"
 #include "renderer/RHI/RHI.hpp"
 
-using namespace aes;
+using namespace wob;
 
-bool aes::pointInRect(vec2 p, Rect const& r)
+bool wob::pointInRect(vec2 p, Rect const& r)
 {
 	return p.x > r.min.x && p.x < r.max.x&&
 		p.y > r.min.y && p.y < r.max.y;
 }
 
-std::array<vec3, 8> aes::AABB::getVertices() const
+std::array<vec3, 8> wob::AABB::getVertices() const
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	return std::array<vec3, 8>
 		{ min, max,
@@ -28,9 +28,9 @@ std::array<vec3, 8> aes::AABB::getVertices() const
 		};
 }
 
-bool aes::AABB_AABBIntersect(AABB const& a, AABB const& b)
+bool wob::AABB_AABBIntersect(AABB const& a, AABB const& b)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	return	(a.min.x <= b.max.x && a.max.x >= b.min.x) &&
 			(a.min.y <= b.max.y && a.max.y >= b.min.y) &&
@@ -38,9 +38,9 @@ bool aes::AABB_AABBIntersect(AABB const& a, AABB const& b)
 }
 
 // https://tavianator.com/2011/ray_box.html
-bool aes::ray_AABBIntersect(Ray const& ray, AABB const& box)
+bool wob::ray_AABBIntersect(Ray const& ray, AABB const& box)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	vec3 const invRayDir = 1.0f / ray.dir;
 	
@@ -65,9 +65,9 @@ bool aes::ray_AABBIntersect(Ray const& ray, AABB const& box)
 	return tmax >= std::max(0.0f, tmin);
 }
 
-bool aes::ray_PlaneIntersect(Ray const& r, Plane const& plane)
+bool wob::ray_PlaneIntersect(Ray const& r, Plane const& plane)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	// assuming vectors are all normalized
 	float const d = -plane.dir.dot(r.dir);
@@ -85,9 +85,9 @@ bool aes::ray_PlaneIntersect(Ray const& r, Plane const& plane)
 	return false;
 }
 
-aes::PointPlanePlacement aes::classifyPointToPlane(Plane const& plane, vec3 const& pt)
+wob::PointPlanePlacement wob::classifyPointToPlane(Plane const& plane, vec3 const& pt)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	float constexpr planeThicknessEpsilon = 0.01f;
 	// Compute signed distance of point from plane
@@ -103,11 +103,11 @@ aes::PointPlanePlacement aes::classifyPointToPlane(Plane const& plane, vec3 cons
 // http://www8.cs.umu.se/kurser/5DV051/HT12/lab/plane_extraction.pdf
 // normal is inside the frustum
 // @Review normalize dir ?
-static aes::Frustum extractFrustumD3D(mat4 const& m)
+static wob::Frustum extractFrustumD3D(mat4 const& m)
 {
-	aes::Frustum f;
+	wob::Frustum f;
 
-	AES_NOT_IMPLEMENTED();
+	WOB_NOT_IMPLEMENTED();
 
 	// Left clipping plane
 	//f.left.dir.x = m[1][4] + m[1][1];
@@ -148,22 +148,22 @@ static aes::Frustum extractFrustumD3D(mat4 const& m)
 	return f;
 }
 
-aes::Frustum aes::Frustum::createFromPerspective(mat4 const& m)
+wob::Frustum wob::Frustum::createFromPerspective(mat4 const& m)
 {
-#ifdef AES_GRAPHIC_API_D3D11
+#ifdef WOB_GRAPHIC_API_D3D11
 	return extractFrustumD3D(m);
-#elif defined(AES_GRAPHIC_API_GXM)
-	AES_ASSERT(false);
+#elif defined(WOB_GRAPHIC_API_GXM)
+	WOB_ASSERT(false);
 #endif
 }
 
 // @Performance naive implementation
-bool aes::frustum_AABBIntersect(Frustum const& f, AABB const& b)
+bool wob::frustum_AABBIntersect(Frustum const& f, AABB const& b)
 {
 	return false;
 }
 
-bool aes::frustum_PlaneIntersect(Frustum const& f, Plane const& b)
+bool wob::frustum_PlaneIntersect(Frustum const& f, Plane const& b)
 {
 	return false;
 }

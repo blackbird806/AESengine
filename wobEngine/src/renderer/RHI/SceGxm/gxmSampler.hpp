@@ -1,11 +1,11 @@
-#ifndef AES_GXMSAMPLER_HPP
-#define AES_GXMSAMPLER_HPP
+#ifndef WOB_GXMSAMPLER_HPP
+#define WOB_GXMSAMPLER_HPP
 
 #include "core/error.hpp"
 #include "renderer/RHI/RHIElements.hpp"
 #include <psp2/gxm.h>
 
-namespace aes
+namespace wob
 {
 	class GxmSampler
 	{

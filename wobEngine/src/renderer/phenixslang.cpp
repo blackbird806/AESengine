@@ -1,7 +1,7 @@
 #include "phenixslang.hpp"
 
-using namespace aes;
-using namespace aes::phenix;
+using namespace wob;
+using namespace wob::phenix;
 
 static String evalASTNode(ASTNode* node);
 
@@ -35,7 +35,7 @@ static String evalASTNode(LiteralNode* lit)
 	case TType::Vec4:
 		return format("float4({}f, {}f, {}f, {}f)", lit->v4.x, lit->v4.y, lit->v4.z, lit->v4.w);
 	}
-	AES_UNREACHABLE();
+	WOB_UNREACHABLE();
 }
 
 static String evalASTNode(CompoundStatementNode* data)
@@ -97,7 +97,7 @@ static String evalASTNode(ASTNode* node)
 	case ASTNodeType::BinOp:
 		return evalASTNode((BinaryOpNode*)node);
 	}
-	AES_UNREACHABLE();
+	WOB_UNREACHABLE();
 }
 
 static const char* getHLSLTypeName(Type const& type)
@@ -125,7 +125,7 @@ static const char* getHLSLTypeName(Type const& type)
 	default:
 		return "undefined";
 	}
-	AES_UNREACHABLE();
+	WOB_UNREACHABLE();
 }
 
 
@@ -140,10 +140,10 @@ static const char* getHLSLAttributeName(AttributeType type)
 
 	return "undefined";
 	}
-	AES_UNREACHABLE();
+	WOB_UNREACHABLE();
 }
 
-String aes::phenix::compileToHLSL(ShaderProgram const& program)
+String wob::phenix::compileToHLSL(ShaderProgram const& program)
 {
 	String out;
 	for (auto const& str : program.structDecl)

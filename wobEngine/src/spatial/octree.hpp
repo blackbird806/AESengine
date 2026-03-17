@@ -1,14 +1,14 @@
-#ifndef AES_OCTREE_HPP
-#define AES_OCTREE_HPP
+#ifndef WOB_OCTREE_HPP
+#define WOB_OCTREE_HPP
 
 #include <vector>
 #include <span>
 #include <unordered_map>
 
-#include "core/aes.hpp"
+#include "core/wob.hpp"
 #include "core/geometry.hpp"
 
-namespace aes
+namespace wob
 {
 	/*
 	 * LinearOctree implementation, originally written for a school exercice.

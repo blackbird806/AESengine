@@ -1,5 +1,5 @@
-#ifndef AES_DRAGON4_HPP
-#define AES_DRAGON4_HPP
+#ifndef WOB_DRAGON4_HPP
+#define WOB_DRAGON4_HPP
 
 #include <cstdint>
 #include <cstddef>
@@ -32,9 +32,9 @@
 ******************************************************************************/
 
 // Assertion macro
-#define RJ_ASSERT(condition) AES_ASSERT(condition)
+#define RJ_ASSERT(condition) WOB_ASSERT(condition)
 
-namespace aes::d4
+namespace wob::d4
 {
     // Boolean types
     typedef bool        tB;

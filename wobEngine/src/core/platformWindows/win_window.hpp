@@ -1,11 +1,11 @@
-#ifndef AES_WIN_WINDOW_HPP
-#define AES_WIN_WINDOW_HPP
+#ifndef WOB_WIN_WINDOW_HPP
+#define WOB_WIN_WINDOW_HPP
 
-#include "core/aes.hpp"
+#include "core/wob.hpp"
 #include "core/os.hpp"
 #include "core/window.hpp"
 
-namespace aes {
+namespace wob {
 
 	class Win_Window final : public Window
 	{

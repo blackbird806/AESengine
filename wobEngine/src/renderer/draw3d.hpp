@@ -7,7 +7,7 @@
 #include "core/color.hpp"
 #include "core/matrix.hpp"
 
-namespace aes
+namespace wob
 {
 	class Draw3D
 	{
@@ -21,10 +21,14 @@ namespace aes
 		void drawLine(Line3D line);
 		void drawTriangle(Triangle3D tri);
 		void drawPlane(Plane plane);
+		
+		void executeDrawCommands();
+
+		static constexpr int32_t vertexBufferSize = 64_kb;
+		static constexpr int32_t indexBufferSize = 32_kb;
 
 	private:
-		Result<void> ensureVertexBufferCapacity(size_t sizeInBytes);
-		Result<void> ensureIndexBufferCapacity(size_t sizeInBytes);
+
 		struct State
 		{
 			Color color = Color::Blue;

@@ -1,5 +1,5 @@
-#ifndef AES_STRING_HPP
-#define AES_STRING_HPP
+#ifndef WOB_STRING_HPP
+#define WOB_STRING_HPP
 
 #include <cstring>
 #include <compare>
@@ -9,11 +9,11 @@
 #include "hash.hpp"
 #include "coreMacros.hpp"
 
-namespace aes
+namespace wob
 {
 	constexpr size_t strlen(const char* start)
 	{
-		AES_ASSERT_NOLOG(start);
+		WOB_ASSERT_NOLOG(start);
 
 		const char* end = start;
 		while (*end != '\0')
@@ -21,7 +21,7 @@ namespace aes
 		return end - start;
 	}
 
-	constexpr void strcpy(char* AES_RESTRICT(dst), const char* AES_RESTRICT(src)) noexcept
+	constexpr void strcpy(char* WOB_RESTRICT(dst), const char* WOB_RESTRICT(src)) noexcept
 	{
 		while (*dst++ = *src++) {}
 	}
@@ -39,15 +39,15 @@ namespace aes
 
 		constexpr String(const Char_t* cstr) noexcept
 		{
-			AES_ASSERT_NOLOG(cstr);
+			WOB_ASSERT_NOLOG(cstr);
 
-			buffer.resize(aes::strlen(cstr) + 1);
-			aes::strcpy(buffer.data(), cstr);
+			buffer.resize(wob::strlen(cstr) + 1);
+			wob::strcpy(buffer.data(), cstr);
 		}
 
 		/*constexpr*/ String(const Char_t* cstr, uint32_t count) noexcept
 		{
-			AES_ASSERT_NOLOG(cstr);
+			WOB_ASSERT_NOLOG(cstr);
 
 			buffer.resize(count);
 			// @review
@@ -189,7 +189,7 @@ namespace aes
 
 		/*constexpr*/ void append(const Char_t* rhs) noexcept
 		{
-			AES_ASSERT_NOLOG(rhs);
+			WOB_ASSERT_NOLOG(rhs);
 			size_t const rhslen = strlen(rhs);
 			if (rhslen == 0) // string is empty
 				return;
@@ -218,7 +218,7 @@ namespace aes
 
 		/*constexpr*/ void append(const Char_t* rhs, uint32_t count) noexcept
 		{
-			AES_ASSERT_NOLOG(rhs);
+			WOB_ASSERT_NOLOG(rhs);
 			
 			resize(buffer.capacity() + count);
 			memcpy(&buffer[size()], rhs, count);

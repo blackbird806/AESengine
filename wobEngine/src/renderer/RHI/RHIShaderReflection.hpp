@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace aes
+namespace wob
 {
 	struct UniformBufferReflectionInfo
 	{

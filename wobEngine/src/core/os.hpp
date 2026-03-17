@@ -1,5 +1,5 @@
-#ifndef AES_OS_HPP
-#define AES_OS_HPP
+#ifndef WOB_OS_HPP
+#define WOB_OS_HPP
 
 #ifdef _WIN32
 

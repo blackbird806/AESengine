@@ -1,5 +1,5 @@
-#ifndef AES_D3D11BUFFER_HPP
-#define AES_D3D11BUFFER_HPP
+#ifndef WOB_D3D11BUFFER_HPP
+#define WOB_D3D11BUFFER_HPP
 
 #include <d3d11.h>
 
@@ -7,7 +7,7 @@
 #include "core/error.hpp"
 
 struct ID3D11Buffer;
-namespace aes
+namespace wob
 {
 	class D3D11Buffer
 	{

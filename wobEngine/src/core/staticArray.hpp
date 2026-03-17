@@ -1,11 +1,11 @@
-#ifndef AES_STATIC_ARRAY_HPP
-#define AES_STATIC_ARRAY_HPP
+#ifndef WOB_STATIC_ARRAY_HPP
+#define WOB_STATIC_ARRAY_HPP
 
-#include "aes.hpp"
+#include "wob.hpp"
 #include <utility>
 #include <concepts>
 
-namespace aes
+namespace wob
 {
 	template<typename T, size_t capacity_>
 	class StaticArray
@@ -127,19 +127,19 @@ namespace aes
 
 		constexpr void pop() noexcept
 		{
-			AES_BOUNDS_CHECK(size_ > 0);
+			WOB_BOUNDS_CHECK(size_ > 0);
 			buffer[--size_].~T();
 		}
 
 		constexpr T const& operator[](uint32_t i) const noexcept
 		{
-			AES_BOUNDS_CHECK(i < size_);
+			WOB_BOUNDS_CHECK(i < size_);
 			return buffer[i];
 		}
 
 		constexpr T& operator[](uint32_t i) noexcept
 		{
-			AES_BOUNDS_CHECK(i < size_);
+			WOB_BOUNDS_CHECK(i < size_);
 			return buffer[i];
 		}
 
@@ -150,11 +150,11 @@ namespace aes
 		constexpr Iterator_t begin() const noexcept { return buffer; }
 		constexpr Iterator_t end() const noexcept { return buffer ? buffer + size_ : nullptr; }
 
-		constexpr T const& front() const noexcept { AES_BOUNDS_CHECK(size_ > 0); return buffer[0]; }
-		constexpr T const& back() const noexcept { AES_BOUNDS_CHECK(size_ > 0); return buffer[size_ - 1]; }
+		constexpr T const& front() const noexcept { WOB_BOUNDS_CHECK(size_ > 0); return buffer[0]; }
+		constexpr T const& back() const noexcept { WOB_BOUNDS_CHECK(size_ > 0); return buffer[size_ - 1]; }
 
-		constexpr T& front() noexcept { AES_BOUNDS_CHECK(size_ > 0); return buffer[0]; }
-		constexpr T& back() noexcept { AES_BOUNDS_CHECK(size_ > 0); return buffer[size_ - 1]; }
+		constexpr T& front() noexcept { WOB_BOUNDS_CHECK(size_ > 0); return buffer[0]; }
+		constexpr T& back() noexcept { WOB_BOUNDS_CHECK(size_ > 0); return buffer[size_ - 1]; }
 
 		constexpr T const* data() const noexcept { return buffer; }
 		constexpr T* data() noexcept { return buffer; }

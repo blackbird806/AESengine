@@ -1,10 +1,10 @@
-#ifndef AES_INPUT_HPP
-#define AES_INPUT_HPP
+#ifndef WOB_INPUT_HPP
+#define WOB_INPUT_HPP
 
 /*
  * PC inputs 
  * */
-namespace aes
+namespace wob
 {
 	enum class Key
 	{

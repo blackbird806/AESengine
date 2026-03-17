@@ -1,5 +1,5 @@
-#ifndef AES_QUAT_HPP
-#define AES_QUAT_HPP
+#ifndef WOB_QUAT_HPP
+#define WOB_QUAT_HPP
 
 struct quat
 {

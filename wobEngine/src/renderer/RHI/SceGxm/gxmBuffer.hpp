@@ -1,11 +1,11 @@
-#ifndef AES_GXMBUFFER_HPP
-#define AES_GXMBUFFER_HPP
+#ifndef WOB_GXMBUFFER_HPP
+#define WOB_GXMBUFFER_HPP
 
 #include "renderer/RHI/RHIElements.hpp"
 #include "core/error.hpp"
 #include <psp2/gxm.h>
 
-namespace aes
+namespace wob
 {
 	class GxmBuffer
 	{

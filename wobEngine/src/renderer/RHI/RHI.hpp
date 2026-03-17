@@ -1,12 +1,12 @@
-#ifndef AES_RHI_HPP
-#define AES_RHI_HPP
+#ifndef WOB_RHI_HPP
+#define WOB_RHI_HPP
 
-#include "core/aes.hpp"
+#include "core/wob.hpp"
 
 #ifdef _WIN32
-	#define AES_GRAPHIC_API_D3D11
+	#define WOB_GRAPHIC_API_D3D11
 #elif defined(__vita__)
-	#define AES_GRAPHIC_API_GXM
+	#define WOB_GRAPHIC_API_GXM
 #endif
 
 #endif

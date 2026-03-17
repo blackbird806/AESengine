@@ -1,10 +1,10 @@
-#ifndef AES_CONTEXT_HPP
-#define AES_CONTEXT_HPP
+#ifndef WOB_CONTEXT_HPP
+#define WOB_CONTEXT_HPP
 
 #include "allocator.hpp"
 #include "debug.hpp"
 
-namespace aes
+namespace wob
 {
 	struct Context
 	{

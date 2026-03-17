@@ -1,10 +1,10 @@
-#ifndef AES_REFCOUNTED_HPP
-#define AES_REFCOUNTED_HPP
+#ifndef WOB_REFCOUNTED_HPP
+#define WOB_REFCOUNTED_HPP
 
-#include "core/aes.hpp"
+#include "core/wob.hpp"
 #include "core/allocator.hpp"
 
-namespace aes
+namespace wob
 {
 	template<typename T>
 	concept Destructible = requires(T a)

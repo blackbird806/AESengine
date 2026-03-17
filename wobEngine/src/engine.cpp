@@ -9,7 +9,7 @@
 
 #include <chrono>
 
-using namespace aes;
+using namespace wob;
 
 Engine::Engine(InitInfo const& info) :
 #ifdef _WIN32
@@ -25,12 +25,12 @@ Engine::Engine(InitInfo const& info) :
 Engine::~Engine()
 {
 	mainWindow->close();
-	AES_LOG("engine destroyed");
+	WOB_LOG("engine destroyed");
 }
 
 void Engine::init()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	mainWindow->open();
 	keyStates.resize((int)Key::Max);
 	mainWindow->setKeyCallback({ [](InputAction action, int key, void* userData) {
@@ -55,20 +55,20 @@ void Engine::init()
 
 		}, this });
 
-	AES_LOG("engine initialized");
+	WOB_LOG("engine initialized");
 }
 
 void Engine::run()
 {
 	using namespace std::chrono;
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	float deltaTime = 0.0;
 
 	start();
 	while (!mainWindow->shouldClose())
 	{
-		AES_PROFILE_FRAME();
+		WOB_PROFILE_FRAME();
 		auto const start = std::chrono::high_resolution_clock::now();
 
 		mainWindow->pollEvents();
@@ -88,7 +88,7 @@ void Engine::run()
 
 const char* Engine::getEngineShaderPath() const
 {
-	return AES_DEFAULT_ENGINE_SHADER_PATH;
+	return WOB_DEFAULT_ENGINE_SHADER_PATH;
 }
 
 InputState Engine::getKeyState(Key k) noexcept

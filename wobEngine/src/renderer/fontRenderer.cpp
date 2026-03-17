@@ -7,7 +7,7 @@
 
 #include "core/color.hpp"
 
-using namespace aes;
+using namespace wob;
 
 std::optional<Glyph> FontRessource::getGlyph(char c) const
 {
@@ -20,15 +20,15 @@ std::optional<Glyph> FontRessource::getGlyph(char c) const
 	return {};
 }
 
-Result<FontRessource> aes::createFontRessource(FontParams const& params)
+Result<FontRessource> wob::createFontRessource(FontParams const& params)
 {
-	AES_PROFILE_FUNCTION();
-	AES_ASSERT(params.device);
+	WOB_PROFILE_FUNCTION();
+	WOB_ASSERT(params.device);
 
 	stbtt_fontinfo info;
 	if (stbtt_InitFont(&info, params.fontData.data(), 0) == 0)
 	{
-		AES_LOG_ERROR("failed to init default font");
+		WOB_LOG_ERROR("failed to init default font");
 		return { AESError::FontInitFailed };
 	}
 	FontRessource fontRessource;

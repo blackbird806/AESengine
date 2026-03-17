@@ -1,32 +1,33 @@
-#ifndef AES_ASSERT_HPP
-#define AES_ASSERT_HPP
+#ifndef WOB_ASSERT_HPP
+#define WOB_ASSERT_HPP
 
 #include <cstdlib>
 
-#define AES_ASSERT_NOLOG(x) AES_ASSERT_CORE(x) // legacy
+#define WOB_ASSERT_NOLOG(x) WOB_ASSERT_CORE(x) // legacy
 
-#ifdef AES_DEBUG
+#ifdef WOB_DEBUG
+#define WOB_DEBUG
 #ifdef _WIN32
-#define AES_DEBUG_BREAK() __debugbreak()
+#define WOB_DEBUG_BREAK() __debugbreak()
 #elif defined(__vita__)
-#define AES_DEBUG_BREAK() std::abort()
+#define WOB_DEBUG_BREAK() std::abort()
 #else
-#define AES_DEBUG_BREAK() __builtin_trap()
+#define WOB_DEBUG_BREAK() __builtin_trap()
 #endif
-#define AES_ASSERT(x) if (x) {} else { AES_LOG_ERROR("Assertion Failed : " #x); AES_DEBUG_BREAK(); }
-#define AES_ASSERTF(x, msg, ...) if (x) {} else { AES_LOG_ERROR("Assertion Failed : " #x " " msg, __VA_ARGS__); AES_DEBUG_BREAK(); }
-#define AES_ASSERT_CORE(x) if (x) {} else { AES_DEBUG_BREAK(); }
+#define WOB_ASSERT(x) if (x) {} else { WOB_LOG_ERROR("Assertion Failed : " #x); WOB_DEBUG_BREAK(); }
+#define WOB_ASSERTF(x, msg, ...) if (x) {} else { WOB_LOG_ERROR("Assertion Failed : " #x " " msg, __VA_ARGS__); WOB_DEBUG_BREAK(); }
+#define WOB_ASSERT_CORE(x) if (x) {} else { WOB_DEBUG_BREAK(); }
 #else
-#define AES_ASSERT(x) AES_ASSUME(x)
-#define AES_ASSERTF(x, msg, ...) AES_ASSUME(x)
-#define AES_DEBUG_BREAK()
-#define AES_ASSERT_CORE(x) AES_ASSUME(x)
+#define WOB_ASSERT(x) WOB_ASSUME(x)
+#define WOB_ASSERTF(x, msg, ...) WOB_ASSUME(x)
+#define WOB_DEBUG_BREAK()
+#define WOB_ASSERT_CORE(x) WOB_ASSUME(x)
 #endif
 
-#define AES_BOUNDS_CHECK(x) AES_ASSERT_NOLOG(x)
+#define WOB_BOUNDS_CHECK(x) WOB_ASSERT_NOLOG(x)
 
-#define AES_NOT_IMPLEMENTED() AES_DEBUG_BREAK()
+#define WOB_NOT_IMPLEMENTED() WOB_DEBUG_BREAK()
 
-#define AES_FATAL_ERROR(msg) {AES_LOG_ERROR(msg); AES_DEBUG_BREAK(); std::abort();}
+#define WOB_FATAL_ERROR(msg) {WOB_LOG_ERROR(msg); WOB_DEBUG_BREAK(); std::abort();}
 
 #endif

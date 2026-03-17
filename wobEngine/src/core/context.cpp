@@ -1,3 +1,3 @@
 #include "context.hpp"
 
-thread_local aes::Context aes::context{&aes::profilerAlloc};
+thread_local wob::Context wob::context{&wob::profilerAlloc};

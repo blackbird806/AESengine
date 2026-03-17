@@ -7,7 +7,7 @@
 #include <fmt/format.h>
 #include <tuple>
 
-namespace aes
+namespace wob
 {
 	template<typename T>
 	struct function_traits;
@@ -257,7 +257,7 @@ namespace aes
 }
 
 template<>
-struct fmt::formatter<aes::TypeInfo::Type>
+struct fmt::formatter<wob::TypeInfo::Type>
 {
 	template<typename ParseContext>
 	constexpr auto parse(ParseContext& ctx)
@@ -266,20 +266,20 @@ struct fmt::formatter<aes::TypeInfo::Type>
 	}
 
 	template<typename FormatContext>
-	auto format(aes::TypeInfo::Type const& type, FormatContext& ctx)
+	auto format(wob::TypeInfo::Type const& type, FormatContext& ctx)
 	{
 		return fmt::format_to(ctx.out(), "{}", to_string(type));
 	}
 };
 
-#define AES_REFLECT_BEGIN(className) static aes::ClassInfo& getTypeInfo() noexcept { \
-	static aes::ClassInfo clInfo = []() {\
+#define WOB_REFLECT_BEGIN(className) static wob::ClassInfo& getTypeInfo() noexcept { \
+	static wob::ClassInfo clInfo = []() {\
 	auto const clName = #className;\
-	std::vector<aes::Field> fields;\
-	std::vector<aes::MethodInfo> methods;
+	std::vector<wob::Field> fields;\
+	std::vector<wob::MethodInfo> methods;
 
-#define AES_REFLECT_FIELD(className, fieldname) fields.push_back({aes::getEnumType<decltype(fieldname)>(), #fieldname, offsetof(className, fieldname)}); \
+#define WOB_REFLECT_FIELD(className, fieldname) fields.push_back({wob::getEnumType<decltype(fieldname)>(), #fieldname, offsetof(className, fieldname)}); \
 
-#define AES_REFLECT_END() return aes::ClassInfo(clName, {}, fields, methods);}(); return clInfo;}
+#define WOB_REFLECT_END() return wob::ClassInfo(clName, {}, fields, methods);}(); return clInfo;}
 
 #endif

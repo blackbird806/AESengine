@@ -4,22 +4,22 @@
 #include "D3D11Elements.hpp"
 #include <vector>
 
-using namespace aes;
+using namespace wob;
 
 D3D11Renderer* D3D11Renderer::pinstance = nullptr;
 
 D3D11Renderer& D3D11Renderer::instance()
 {
-	AES_ASSERT(pinstance != nullptr);
+	WOB_ASSERT(pinstance != nullptr);
 	return *pinstance;
 }
 
 void D3D11Renderer::init(Window& window)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	/// @Review
-	AES_ASSERT(pinstance == nullptr);
+	WOB_ASSERT(pinstance == nullptr);
 	pinstance = this;
 	///
 	
@@ -32,7 +32,7 @@ void D3D11Renderer::init(Window& window)
 	HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("failed to create CreateDXGIFactory");
+		WOB_FATAL_ERROR("failed to create CreateDXGIFactory");
 	}
 
 	// Use the factory to create an adapter for the primary graphics interface (video card).
@@ -40,7 +40,7 @@ void D3D11Renderer::init(Window& window)
 	result = factory->EnumAdapters(0, &adapter);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("failed to create IDXGIAdapter");
+		WOB_FATAL_ERROR("failed to create IDXGIAdapter");
 	}
 
 	// Enumerate the primary adapter output (monitor).
@@ -48,7 +48,7 @@ void D3D11Renderer::init(Window& window)
 	result = adapter->EnumOutputs(0, &adapterOutput);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("failed to create IDXGIOutput");
+		WOB_FATAL_ERROR("failed to create IDXGIOutput");
 	}
 
 	// Get the number of modes that fit the DXGI_FORMAT_R8G8B8A8_UNORM display format for the adapter output (monitor).
@@ -56,7 +56,7 @@ void D3D11Renderer::init(Window& window)
 	result = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, nullptr);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("failed to get DisplayModeList");
+		WOB_FATAL_ERROR("failed to get DisplayModeList");
 	}
 
 	// Create a list to hold all the possible display modes for this monitor/video card combination.
@@ -66,7 +66,7 @@ void D3D11Renderer::init(Window& window)
 	result = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, displayModeList.data());
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("failed to get DisplayModeList");
+		WOB_FATAL_ERROR("failed to get DisplayModeList");
 	}
 
 	// Now go through all the display modes and find the one that matches the screen width and height.
@@ -91,7 +91,7 @@ void D3D11Renderer::init(Window& window)
 	result = adapter->GetDesc(&adapterDesc);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("failed getDesc");
+		WOB_FATAL_ERROR("failed getDesc");
 	}
 
 	// Store the dedicated video card memory in megabytes.
@@ -102,9 +102,9 @@ void D3D11Renderer::init(Window& window)
 	int const error = wcstombs_s(&stringLength, videoCardDescription, 128, adapterDesc.Description, 128);
 	if (error != 0)
 	{
-		AES_FATAL_ERROR("failed to convert videocardName");
+		WOB_FATAL_ERROR("failed to convert videocardName");
 	}
-	AES_LOG("graphic card : {}\nvideo memory : {} MB", videoCardDescription, videoCardMemory);
+	WOB_LOG("graphic card : {}\nvideo memory : {} MB", videoCardDescription, videoCardMemory);
 
 	// Release the adapter output.
 	adapterOutput->Release();
@@ -121,18 +121,18 @@ void D3D11Renderer::init(Window& window)
 	setupRasterizerState();
 	setupViewport();
 
-	AES_LOG("D3D11 renderer initialized");
+	WOB_LOG("D3D11 renderer initialized");
 }
 
 void D3D11Renderer::destroy()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
-	AES_ASSERT(rasterState != nullptr);
-	AES_ASSERT(renderTargetView != nullptr);
-	AES_ASSERT(deviceContext != nullptr);
-	AES_ASSERT(factory != nullptr);
-	AES_ASSERT(device != nullptr);
+	WOB_ASSERT(rasterState != nullptr);
+	WOB_ASSERT(renderTargetView != nullptr);
+	WOB_ASSERT(deviceContext != nullptr);
+	WOB_ASSERT(factory != nullptr);
+	WOB_ASSERT(device != nullptr);
 
 	rasterState->Release();
 	destroyDepthStencil();
@@ -145,62 +145,62 @@ void D3D11Renderer::destroy()
 
 void D3D11Renderer::bindVSUniformBuffer(RHIBuffer& buffer, uint slot)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	ID3D11Buffer* handle = buffer.getHandle();
 	deviceContext->VSSetConstantBuffers(slot, 1, &handle);
 }
 
 void D3D11Renderer::bindFSUniformBuffer(RHIBuffer& buffer, uint slot)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	ID3D11Buffer* handle = buffer.getHandle();
 	deviceContext->PSSetConstantBuffers(slot, 1, &handle);
 }
 
 void D3D11Renderer::setVertexSampler(RHISampler& sampler, uint index)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	ID3D11SamplerState* samplerStates[] = { sampler.getSamplerState() };
 	deviceContext->VSSetSamplers(index, 1, samplerStates);
 }
 
 void D3D11Renderer::setFragmentSampler(RHISampler& sampler, uint index)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	ID3D11SamplerState* samplerStates[] = { sampler.getSamplerState() };
 	deviceContext->PSSetSamplers(index, 1, samplerStates);
 }
 
 void D3D11Renderer::bindVertexTexture(RHITexture& tex, uint index)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	ID3D11ShaderResourceView* res[] = { tex.getResourceView() };
 	deviceContext->VSSetShaderResources(index, 1, res);
 }
 
 void D3D11Renderer::bindFragmentTexture(RHITexture& tex, uint index)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	ID3D11ShaderResourceView* res[] = { tex.getResourceView() };
 	deviceContext->PSSetShaderResources(index, 1, res);
 }
 
 void D3D11Renderer::bindVertexBuffer(RHIBuffer& buffer, uint stride, uint offset)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	ID3D11Buffer* handle = buffer.getHandle();
 	deviceContext->IASetVertexBuffers(0, 1, &handle, &stride, &offset);
 }
 
 void D3D11Renderer::bindIndexBuffer(RHIBuffer& buffer, IndexTypeFormat typeFormat, uint offset)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	deviceContext->IASetIndexBuffer(buffer.getHandle(), rhiTypeFormatToApi(typeFormat), offset);
 }
 
 void D3D11Renderer::setFragmentShader(RHIFragmentShader& fs)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	if (fs.blendState.getHandle() != nullptr)
 		setBlendState(fs.blendState);
 	deviceContext->PSSetShader(fs.getHandle(), nullptr, 0);
@@ -208,20 +208,20 @@ void D3D11Renderer::setFragmentShader(RHIFragmentShader& fs)
 
 void D3D11Renderer::setVertexShader(RHIVertexShader& vs)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	deviceContext->IASetInputLayout(vs.getInputLayout());
 	deviceContext->VSSetShader(vs.getHandle(), nullptr, 0);
 }
 
 void D3D11Renderer::setDrawPrimitiveMode(DrawPrimitiveType mode)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	deviceContext->IASetPrimitiveTopology(rhiPrimitiveTypeToApi(mode));
 }
 
 void D3D11Renderer::setBlendState(D3D11BlendState& blendState)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	deviceContext->OMSetBlendState(blendState.getHandle(), nullptr, 0xffffffff);
 }
 
@@ -237,13 +237,13 @@ ID3D11DeviceContext* D3D11Renderer::getDeviceContext()
 
 void D3D11Renderer::drawIndexed(uint indexCount, uint indexOffset)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	deviceContext->DrawIndexed(indexCount, indexOffset, 0);
 }
 
 void D3D11Renderer::startFrame()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	float color[4];
 
@@ -262,7 +262,7 @@ void D3D11Renderer::startFrame()
 
 void D3D11Renderer::endFrame()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	// Present the back buffer to the screen since rendering is complete.
 	if (vsyncEnabled)
@@ -280,12 +280,12 @@ void D3D11Renderer::endFrame()
 //https://seanmiddleditch.com/direct3d-11-debug-api-tricks/
 void D3D11Renderer::createDevice()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	
 	// Set the feature level to DirectX 11.
 	D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_1;
 	auto result = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
-#ifdef AES_DEBUG
+#ifdef WOB_DEBUG
 		D3D11_CREATE_DEVICE_DEBUG,
 #else
 		0,
@@ -293,21 +293,21 @@ void D3D11Renderer::createDevice()
 		&featureLevel, 1, D3D11_SDK_VERSION, &device, nullptr, &deviceContext);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("failed to create D3D11 device");
+		WOB_FATAL_ERROR("failed to create D3D11 device");
 	}
 	
-#ifdef AES_DEBUG
+#ifdef WOB_DEBUG
 	result = device->QueryInterface(IID_PPV_ARGS(&debugInterface));
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("failed to query debug interface");
+		WOB_FATAL_ERROR("failed to query debug interface");
 	}
 #endif
 }
 
 void D3D11Renderer::createSwapchain()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	uint screenWidth, screenHeight;
 	renderWindow->getScreenSize(screenWidth, screenHeight);
@@ -327,7 +327,7 @@ void D3D11Renderer::createSwapchain()
 	// Set the refresh rate of the back buffer.
 	if (vsyncEnabled)
 	{
-		AES_NOT_IMPLEMENTED();
+		WOB_NOT_IMPLEMENTED();
 		//swapChainDesc.BufferDesc.RefreshRate.Numerator = numerator;
 		//swapChainDesc.BufferDesc.RefreshRate.Denominator = denominator;
 	}
@@ -359,30 +359,30 @@ void D3D11Renderer::createSwapchain()
 
 	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH; // allow full-screen switching
 
-	AES_ASSERT(factory);
+	WOB_ASSERT(factory);
 	HRESULT result = factory->CreateSwapChain(device, &swapChainDesc, &swapChain);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("D3D11CreateDeviceAndSwapChain failed");
+		WOB_FATAL_ERROR("D3D11CreateDeviceAndSwapChain failed");
 	}
 }
 
 void D3D11Renderer::createRenderTarget()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	// Get the pointer to the back buffer.
 	ID3D11Texture2D* backBufferPtr;
 	HRESULT result = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID*>(&backBufferPtr));
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("swapChain->GetBuffer failed");
+		WOB_FATAL_ERROR("swapChain->GetBuffer failed");
 	}
 	
 	result = device->CreateRenderTargetView(backBufferPtr, nullptr, &renderTargetView);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("device->CreateRenderTargetView failed");
+		WOB_FATAL_ERROR("device->CreateRenderTargetView failed");
 	}
 
 	backBufferPtr->Release();
@@ -391,7 +391,7 @@ void D3D11Renderer::createRenderTarget()
 
 void D3D11Renderer::createDepthStencil()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	uint screenWidth, screenHeight;
 	renderWindow->getScreenSize(screenWidth, screenHeight);
@@ -413,7 +413,7 @@ void D3D11Renderer::createDepthStencil()
 	auto result = device->CreateTexture2D(&depthBufferDesc, nullptr, &depthStencilBuffer);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("device depthStencilBuffer failed");
+		WOB_FATAL_ERROR("device depthStencilBuffer failed");
 	}
 
 	// Initialize the description of the stencil state.
@@ -440,7 +440,7 @@ void D3D11Renderer::createDepthStencil()
 	result = device->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("device->CreateDepthStencilState failed");
+		WOB_FATAL_ERROR("device->CreateDepthStencilState failed");
 	}
 
 	deviceContext->OMSetDepthStencilState(depthStencilState, 1);
@@ -453,7 +453,7 @@ void D3D11Renderer::createDepthStencil()
 	result = device->CreateDepthStencilView(depthStencilBuffer, &depthStencilViewDesc, &depthStencilView);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("device->CreateDepthStencilView failed");
+		WOB_FATAL_ERROR("device->CreateDepthStencilView failed");
 	}
 
 	deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
@@ -461,7 +461,7 @@ void D3D11Renderer::createDepthStencil()
 
 void D3D11Renderer::setupRasterizerState()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	D3D11_RASTERIZER_DESC rasterDesc;
 	rasterDesc.AntialiasedLineEnable = false;
@@ -478,14 +478,14 @@ void D3D11Renderer::setupRasterizerState()
 	HRESULT const result = device->CreateRasterizerState(&rasterDesc, &rasterState);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("device->rasterState failed");
+		WOB_FATAL_ERROR("device->rasterState failed");
 	}
 	deviceContext->RSSetState(rasterState);
 }
 
 void D3D11Renderer::setupViewport()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	uint screenWidth, screenHeight;
 	renderWindow->getScreenSize(screenWidth, screenHeight);
@@ -504,7 +504,7 @@ void D3D11Renderer::setupViewport()
 
 void D3D11Renderer::resizeRender()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	destroyDepthStencil();
 	destroyRenderTarget();
@@ -518,9 +518,9 @@ void D3D11Renderer::resizeRender()
 
 void D3D11Renderer::destroySwapchain()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
-	AES_ASSERT(swapChain != nullptr);
+	WOB_ASSERT(swapChain != nullptr);
 	// Before shutting down set to windowed mode or when you release the swap chain it will throw an exception.
 	swapChain->SetFullscreenState(false, nullptr);
 	swapChain->Release();
@@ -529,11 +529,11 @@ void D3D11Renderer::destroySwapchain()
 
 void D3D11Renderer::destroyDepthStencil()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
-	AES_ASSERT(depthStencilView != nullptr);
-	AES_ASSERT(depthStencilState != nullptr);
-	AES_ASSERT(depthStencilBuffer != nullptr);
+	WOB_ASSERT(depthStencilView != nullptr);
+	WOB_ASSERT(depthStencilState != nullptr);
+	WOB_ASSERT(depthStencilBuffer != nullptr);
 	depthStencilView->Release();
 	depthStencilState->Release();
 	depthStencilBuffer->Release();
@@ -544,8 +544,8 @@ void D3D11Renderer::destroyDepthStencil()
 
 void D3D11Renderer::destroyRenderTarget()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
-	AES_ASSERT(renderTargetView);
+	WOB_ASSERT(renderTargetView);
 	renderTargetView->Release();
 }

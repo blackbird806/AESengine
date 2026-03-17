@@ -1,5 +1,5 @@
-#ifndef AES_ARRAY_HPP
-#define AES_ARRAY_HPP
+#ifndef WOB_ARRAY_HPP
+#define WOB_ARRAY_HPP
 
 #include "coreMacros.hpp"
 #include "assert.hpp"
@@ -8,7 +8,7 @@
 #include <concepts>
 #include <ranges>
 
-namespace aes
+namespace wob
 {
 	/*
 	 * Generic Array class similar to std vector
@@ -84,7 +84,7 @@ namespace aes
 			capacity_ = rhs.capacity_;
 
 			rhs.buffer = nullptr;
-		#ifdef AES_DEBUG
+		#ifdef WOB_DEBUG
 			rhs.size_ = 0;
 			rhs.capacity_ = 0;
 		#endif
@@ -164,8 +164,8 @@ namespace aes
 		template<std::ranges::input_range Range>
 		constexpr void insert(Iterator_t pos, Range&& range) noexcept
 		{
-			AES_BOUNDS_CHECK(pos <= end());
-			AES_BOUNDS_CHECK(pos >= begin());
+			WOB_BOUNDS_CHECK(pos <= end());
+			WOB_BOUNDS_CHECK(pos >= begin());
 			uint32_t const rangeSize = std::ranges::size(range);
 			uint32_t const newSize = size_ + rangeSize;
 			uint32_t const ipos = pos - begin();
@@ -216,19 +216,19 @@ namespace aes
 
 		constexpr void pop() noexcept
 		{
-			AES_BOUNDS_CHECK(size_ > 0);
+			WOB_BOUNDS_CHECK(size_ > 0);
 			buffer[--size_].~T();
 		}
 
 		constexpr T const& operator[](uint32_t i) const noexcept
 		{
-			AES_BOUNDS_CHECK(i < size_);
+			WOB_BOUNDS_CHECK(i < size_);
 			return buffer[i];
 		}
 
 		constexpr T& operator[](uint32_t i) noexcept
 		{
-			AES_BOUNDS_CHECK(i < size_);
+			WOB_BOUNDS_CHECK(i < size_);
 			return buffer[i];
 		}
 
@@ -242,14 +242,14 @@ namespace aes
 		constexpr ConstIterator_t begin() const noexcept { return buffer; }
 		constexpr ConstIterator_t end() const noexcept { return buffer + size_; }
 
-		constexpr T const& front() const noexcept { AES_BOUNDS_CHECK(size_ > 0); return buffer[0]; }
-		constexpr T const& back() const noexcept { AES_BOUNDS_CHECK(size_ > 0); return buffer[size_ - 1]; }
+		constexpr T const& front() const noexcept { WOB_BOUNDS_CHECK(size_ > 0); return buffer[0]; }
+		constexpr T const& back() const noexcept { WOB_BOUNDS_CHECK(size_ > 0); return buffer[size_ - 1]; }
 
 		// return first element of the array
-		constexpr T& front() noexcept { AES_BOUNDS_CHECK(size_ > 0); return buffer[0]; }
+		constexpr T& front() noexcept { WOB_BOUNDS_CHECK(size_ > 0); return buffer[0]; }
 
 		// returnlast element of the array
-		constexpr T& back() noexcept { AES_BOUNDS_CHECK(size_ > 0); return buffer[size_ - 1]; }
+		constexpr T& back() noexcept { WOB_BOUNDS_CHECK(size_ > 0); return buffer[size_ - 1]; }
 
 		constexpr T const* data() const noexcept { return buffer; }
 		constexpr T* data() noexcept { return buffer; }

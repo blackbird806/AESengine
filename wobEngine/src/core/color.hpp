@@ -1,11 +1,11 @@
-#ifndef AES_COLOR_HPP
-#define AES_COLOR_HPP
+#ifndef WOB_COLOR_HPP
+#define WOB_COLOR_HPP
 
 #include <cstdint>
 
 #include "vec4.hpp"
 
-namespace aes
+namespace wob
 {
 	// Inspired by Color class of lumix engine
 	// @Review

@@ -1,11 +1,11 @@
-#ifndef AES_D3D11SAMPLER_HPP
-#define AES_D3D11SAMPLER_HPP
+#ifndef WOB_D3D11SAMPLER_HPP
+#define WOB_D3D11SAMPLER_HPP
 
 #include "core/error.hpp"
 #include "renderer/RHI/RHIElements.hpp"
 #include "D3D11BlendState.hpp"
 
-namespace aes
+namespace wob
 {
 	class D3D11Sampler
 	{

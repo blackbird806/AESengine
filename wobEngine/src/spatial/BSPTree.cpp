@@ -1,7 +1,7 @@
 #include "BSPTree.hpp"
 #include <ranges>
 
-using namespace aes;
+using namespace wob;
 
 namespace 
 {
@@ -15,7 +15,7 @@ namespace
 
 	ObjectPlanePlacement classifyObjectToPlane(BSPTree::Object const& obj, Plane const& plane)
 	{
-		AES_PROFILE_FUNCTION();
+		WOB_PROFILE_FUNCTION();
 		// Loop over all polygon vertices and count how many vertices
 		// lie in front of and how many lie behind of the thickened plane
 		int numInFront = 0, numBehind = 0;
@@ -53,7 +53,7 @@ namespace
 	// @Review how do we get a good plane from aabb ?
 	Plane getPlaneFromAABB(AABB const& aabb)
 	{
-		AES_PROFILE_FUNCTION();
+		WOB_PROFILE_FUNCTION();
 
 		return Plane{ aabb.center().length(),
 			vec3{aabb.max.x - aabb.min.x, aabb.min.y, aabb.min.z}.getNormalized()};
@@ -61,7 +61,7 @@ namespace
 	
 	Plane pickSplittingPlane(std::span<BSPTree::Object> objects)
 	{
-		AES_PROFILE_FUNCTION();
+		WOB_PROFILE_FUNCTION();
 		// Blend factor for optimizing for balance or splits (should be tweaked)
 		const float K = 0.8f;
 		// Variables for tracking best splitting plane seen so far
@@ -92,7 +92,7 @@ namespace
 					case ObjectPlanePlacement::Straddling:
 						numStraddling++;
 						break;
-					default: AES_UNREACHABLE();
+					default: WOB_UNREACHABLE();
 				}
 			}
 			// Compute score as a weighted combination (based on K, with K in range
@@ -109,7 +109,7 @@ namespace
 
 void BSPTree::Leaf::testAllCollisions(void(*callback)(void* userData)) const
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	for (auto const& objA : objects)
 	{
 		for (auto const& objB : objects)
@@ -128,7 +128,7 @@ void BSPTree::Leaf::testAllCollisions(void(*callback)(void* userData)) const
 
 void* BSPTree::Leaf::raycast(Ray const& r) const
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	for (auto const& obj : objects)
 	{
@@ -143,8 +143,8 @@ void* BSPTree::Leaf::raycast(Ray const& r) const
 
 void BSPTree::Node::testAllCollisions(void(*callback)(void* userData)) const
 {
-	AES_PROFILE_FUNCTION();
-	AES_ASSERT(callback);
+	WOB_PROFILE_FUNCTION();
+	WOB_ASSERT(callback);
 
 	if (front)
 		front->testAllCollisions(callback);
@@ -154,7 +154,7 @@ void BSPTree::Node::testAllCollisions(void(*callback)(void* userData)) const
 
 void* BSPTree::Node::raycast(Ray const& r) const
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	BSPElement* relativeFront = front.get();
 	BSPElement* relativeBack = back.get();
@@ -175,7 +175,7 @@ void* BSPTree::Node::raycast(Ray const& r) const
 
 UniquePtr<BSPTree::BSPElement> BSPTree::build(IAllocator& allocator, std::span<Object> objects, uint depth)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	if (objects.empty())
 		return nullptr;
 
@@ -201,7 +201,7 @@ UniquePtr<BSPTree::BSPElement> BSPTree::build(IAllocator& allocator, std::span<O
 			frontList.push(o);
 			backList.push(o);
 			break;
-		default: AES_UNREACHABLE();
+		default: WOB_UNREACHABLE();
 		}
 	}
 	

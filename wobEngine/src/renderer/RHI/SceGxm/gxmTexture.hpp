@@ -1,11 +1,11 @@
-#ifndef AES_GXMTEXTURE_HPP
-#define AES_GXMTEXTURE_HPP
+#ifndef WOB_GXMTEXTURE_HPP
+#define WOB_GXMTEXTURE_HPP
 
 #include "renderer/RHI/RHIElements.hpp"
 #include "core/error.hpp"
 #include <psp2/gxm.h>
 
-namespace aes
+namespace wob
 {
 	class GxmTexture
 	{

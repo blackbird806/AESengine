@@ -2,13 +2,13 @@
 #define BSPTREE_HPP
 
 #include <span>
-#include "core/aes.hpp"
+#include "core/wob.hpp"
 #include "core/geometry.hpp"
 #include "core/uniquePtr.hpp"
 #include "core/array.hpp"
 #include "core/jobSystem.hpp"
 
-namespace aes
+namespace wob
 {
 	// References:
 	// Realtime collision detection ch8 p356

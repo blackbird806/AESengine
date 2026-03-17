@@ -1,17 +1,17 @@
-#ifndef AES_UTILITY_HPP
-#define AES_UTILITY_HPP
+#ifndef WOB_UTILITY_HPP
+#define WOB_UTILITY_HPP
 
 #include <string_view>
 #include <vector>
 #include <string>
-#include "aes.hpp"
+#include "wob.hpp"
 #include "string.hpp"
 #include "macro_helpers.hpp"
 
-#define AES_SCOPE(code) ::aes::Scope AES_CONCAT(aes_scope_internal_, __COUNTER__) ([&](){code;});
-#define AES_ONCE(code) static short const AES_CONCAT(aes_once_internal_, __COUNTER__) = [&]() {code; return 0;}();
+#define WOB_SCOPE(code) ::wob::Scope WOB_CONCAT(WOB_scope_internal_, __COUNTER__) ([&](){code;});
+#define WOB_ONCE(code) static short const WOB_CONCAT(WOB_once_internal_, __COUNTER__) = [&]() {code; return 0;}();
 
-namespace aes {
+namespace wob {
 	
 	String readFile(std::string_view file);
 	std::vector<uint8_t> readFileBin(std::string_view file);
@@ -22,7 +22,7 @@ namespace aes {
 	constexpr uintptr_t align(uintptr_t x, uint32_t a)
 	{
 		uint32_t const mask = a - 1;
-		AES_ASSERT((a & mask) == 0);
+		WOB_ASSERT((a & mask) == 0);
 		return (x + mask) & ~mask;
 	}
 

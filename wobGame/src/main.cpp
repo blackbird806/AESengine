@@ -1,19 +1,19 @@
 #include <iostream>
 #include <fstream>
-#include "core/aes.hpp"
+#include "core/wob.hpp"
 #include "core/debug.hpp"
 #include "core/uniquePtr.hpp"
 
 #include "renderer/phenixslang.hpp"
 #include "lang/sbl.hpp"
 
-using namespace aes;
-using namespace aes::sbl;
+using namespace wob;
+using namespace wob::sbl;
 
 int main()
 {
-	auto streamSink = aes::makeUnique<aes::StreamSink>(std::cout);
-	aes::Logger::instance().addSink(streamSink.get());
+	auto streamSink = wob::makeUnique<wob::StreamSink>(std::cout);
+	wob::Logger::instance().addSink(streamSink.get());
 #ifdef __vita__
 	//auto debugScreenSink = aes::makeUnique<aes::PsvDebugScreenSink>(file);
 	//aes::Logger::instance().addSink(debugScreenSink.get());
@@ -97,7 +97,7 @@ int main()
 	//phenix::ShaderProgram program{ fnDefs, bufferDecl };
 
 	//String generated = phenix::compileToHLSL(program);
-	//AES_LOG("code generated\n{}", generated.c_str());
+	//WOB_LOG("code generated\n{}", generated.c_str());
 	
 	return 0;
 }

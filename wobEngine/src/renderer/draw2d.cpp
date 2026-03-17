@@ -4,11 +4,11 @@
 #include "RHI/RHIRenderContext.hpp"
 #include "fontRenderer.hpp"
 
-using namespace aes;
+using namespace wob;
 
 Result<void> Draw2D::init(RHIDevice& dev)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	device = &dev;
 
@@ -107,19 +107,19 @@ Result<void> Draw2D::init(RHIDevice& dev)
 	ensureVertexBufferCapacity(200 * sizeof(TextureVertex));
 	ensureIndexBufferCapacity(400 * sizeof(Index_t));
 
-	AES_LOG("draw2d initialized");
+	WOB_LOG("draw2d initialized");
 	return {};
 }
 
 void Draw2D::setColor(Color color)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	currentState.color = color;
 }
 
 void Draw2D::setMatrix(mat3 const& mat)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	currentState.transformationMatrix = mat;
 }
 
@@ -136,7 +136,7 @@ void Draw2D::popState()
 
 void Draw2D::drawLine(Line2D const& line)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	commands.push(Command{ DrawCommandType::Line, currentState.color });
 	vec4 const col = currentState.color.toVec4();
 	vertices.push({ line.p1, col });
@@ -148,14 +148,14 @@ void Draw2D::drawLine(Line2D const& line)
 
 void Draw2D::drawPoint(vec2 p, float size)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	drawLine({ {p.x - size, p.y}, {p.x + size, p.y} });
 	drawLine({ {p.x, p.y - size}, {p.x, p.y + size} });
 }
 
 void Draw2D::drawFillRect(Rect const& rect)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	commands.push(Command{ DrawCommandType::FillRect, currentState.color });
 
 	RectBounds const bounds = rect.getBounds();
@@ -175,7 +175,7 @@ void Draw2D::drawFillRect(Rect const& rect)
 
 void Draw2D::drawRect(Rect const& rect)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	RectBounds const b = rect.getBounds();
 	drawLine({ b.minL, b.minR });
 	drawLine({ b.minL, b.topL });
@@ -185,7 +185,7 @@ void Draw2D::drawRect(Rect const& rect)
 
 void Draw2D::drawImage(RHITexture& texture, Rect const& rect)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	commands.push(Command{ DrawCommandType::Image, currentState, &texture });
 
@@ -205,7 +205,7 @@ void Draw2D::drawImage(RHITexture& texture, Rect const& rect)
 // check https://github.com/ocornut/imgui/blob/master/imgui_draw.cpp#L3542
 void Draw2D::drawText(FontRessource& font, std::string_view str, vec2 pos)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	vec2 p = pos;
 	for (uint i = 0; i < str.size(); i++)
@@ -259,7 +259,7 @@ void Draw2D::drawText(FontRessource& font, std::string_view str, vec2 pos)
 
 void Draw2D::executeDrawCommands()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	offset = 0;
 
@@ -278,8 +278,8 @@ void Draw2D::executeDrawCommands()
 	device->setVertexShader(vertexShader);
 	device->setFragmentShader(fragmentShader);
 
-	device->setVertexBuffer(vertexBuffer, 0, sizeof(TextureVertex));
-	device->setIndexBuffer(indexBuffer, IndexTypeFormat::Uint16);
+	device->bindVertexBuffer(vertexBuffer, 0, sizeof(TextureVertex));
+	device->bindIndexBuffer(indexBuffer, IndexTypeFormat::Uint16);
 
 	for (auto const& cmd : commands)
 	{
@@ -315,7 +315,7 @@ void Draw2D::executeDrawCommands()
 
 Result<void> Draw2D::ensureVertexBufferCapacity(size_t sizeInBytes)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	// reallocate buffers
 	BufferDescription vertexBufferDesc{};
@@ -329,7 +329,7 @@ Result<void> Draw2D::ensureVertexBufferCapacity(size_t sizeInBytes)
 
 Result<void> Draw2D::ensureIndexBufferCapacity(size_t sizeInBytes)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	// reallocate buffers
 	BufferDescription indexBufferDesc{};

@@ -1,9 +1,9 @@
-#ifndef AES_VEC3_HPP
-#define AES_VEC3_HPP
+#ifndef WOB_VEC3_HPP
+#define WOB_VEC3_HPP
 
-#include "aes.hpp"
+#include "wob.hpp"
 
-namespace aes
+namespace wob
 {
 	struct vec3
 	{
@@ -30,13 +30,13 @@ namespace aes
 
 		constexpr float operator[](uint i) const noexcept
 		{
-			AES_BOUNDS_CHECK(i < 3);
+			WOB_BOUNDS_CHECK(i < 3);
 			return data[i];
 		}
 
 		constexpr float& operator[](uint i) noexcept
 		{
-			AES_BOUNDS_CHECK(i < 3);
+			WOB_BOUNDS_CHECK(i < 3);
 			return data[i];
 		}
 

@@ -1,8 +1,8 @@
-#ifndef AES_ERROR_CODES
-#define AES_ERROR_CODES
+#ifndef WOB_ERROR_CODES
+#define WOB_ERROR_CODES
 
 #include <cstdint>
-namespace aes {
+namespace wob {
 
 	using UnderlyingError_t = int32_t;
 

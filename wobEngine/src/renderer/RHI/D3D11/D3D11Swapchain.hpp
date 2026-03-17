@@ -1,5 +1,5 @@
-#ifndef AES_D3D11SWAPCHAIN_HPP
-#define AES_D3D11SWAPCHAIN_HPP
+#ifndef WOB_D3D11SWAPCHAIN_HPP
+#define WOB_D3D11SWAPCHAIN_HPP
 
 #include "D3D11RenderTarget.hpp"
 
@@ -8,7 +8,7 @@ struct ID3D11Texture2D;
 struct ID3D11RenderTargetView;
 struct ID3D11DepthStencilView;
 
-namespace aes
+namespace wob
 {
 	class D3D11Swapchain
 	{

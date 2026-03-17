@@ -8,7 +8,7 @@
 #include "renderer/textureUtility.hpp"
 #include "UI/imgui.hpp"
 
-using namespace aes;
+using namespace wob;
 
 class TestImguiApp : public Engine
 {
@@ -21,7 +21,7 @@ public:
 
 	TestImguiApp(InitInfo const& info) : Engine(info)
 	{
-		AES_LOG("[TEST] IMGUI");
+		WOB_LOG("[TEST] IMGUI");
 	}
 
 	void start() override
@@ -36,13 +36,13 @@ public:
 			auto fontResult = createFontRessource(params);
 
 			if (!fontResult)
-				AES_FATAL_ERROR("font creation failed");
+				WOB_FATAL_ERROR("font creation failed");
 
 			defaultFont = std::move(fontResult.value());
 		}
 
 		if (!draw2d.init(device))
-			AES_FATAL_ERROR("draw2d creation failed");
+			WOB_FATAL_ERROR("draw2d creation failed");
 	}
 
 	void update(float deltaTime) override
@@ -57,7 +57,7 @@ public:
 		InputData indata;
 		indata.cursorPressed = isKeyPressed(Key::LClick);
 		indata.cursorDown = isKeyDown(Key::LClick);
-		indata.cursorPos = aes::vec2(((float)mx / wx - 0.5) * 2, ((float)my / wy - 0.5) * 2);
+		indata.cursorPos = wob::vec2(((float)mx / wx - 0.5) * 2, ((float)my / wy - 0.5) * 2);
 		imgui.updateInputData(indata);
 
 		imgui.beginFrame();
@@ -71,12 +71,12 @@ public:
 		imgui.label("hello world");
 		if (imgui.button("button 1"))
 		{
-			AES_LOG("Button 1 pressed");
+			WOB_LOG("Button 1 pressed");
 		}
 		static float f = 0.0f;
 		if (imgui.sliderFloat("slider", f))
 		{
-			AES_LOG("Slider val {}", f);
+			WOB_LOG("Slider val {}", f);
 		}
 		//imgui.label(fmt::format("f {}", f));
 		imgui.endWindow();
@@ -113,16 +113,16 @@ public:
 
 int main()
 {
-	AES_START_PROFILE_SESSION("test imgui startup");
+	WOB_START_PROFILE_SESSION("test imgui startup");
 	TestImguiApp app({
 		.appName = "aes imgui test"
 		});
 	app.init();
-	auto startupSession = AES_STOP_PROFILE_SESSION();
+	auto startupSession = WOB_STOP_PROFILE_SESSION();
 
-	AES_START_PROFILE_SESSION("test imgui running");
+	WOB_START_PROFILE_SESSION("test imgui running");
 	app.run();
-	auto runningSession = AES_STOP_PROFILE_SESSION();
+	auto runningSession = WOB_STOP_PROFILE_SESSION();
 
 	return 0;
 }

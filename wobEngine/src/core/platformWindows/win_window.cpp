@@ -8,10 +8,10 @@
 
 #include "core/maths.hpp"
 
-#define AES_CLASSNAME L"AES_CLASS"
-#define WINDOW_HANDLE_PROP_NAME L"AES_WinHandle"
+#define WOB_CLASSNAME L"WOB_CLASS"
+#define WINDOW_HANDLE_PROP_NAME L"WOB_WinHandle"
 
-using namespace aes;
+using namespace wob;
 
 LRESULT Win_Window::windowProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -115,7 +115,7 @@ LRESULT Win_Window::windowProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPa
 		// With 0x020A as documented in https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-mousewheel everything works properly
 		case 0x020A: // WM_MOUSEWHEEL
 			{
-				if (self->mouseWheelMoveCallback) self->mouseWheelMoveCallback(aes::sign(GET_WHEEL_DELTA_WPARAM(wParam)));
+				if (self->mouseWheelMoveCallback) self->mouseWheelMoveCallback(wob::sign(GET_WHEEL_DELTA_WPARAM(wParam)));
 				break;
 			}
 		case WM_SIZE:
@@ -135,7 +135,7 @@ LRESULT Win_Window::windowProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPa
 				self->width = 0;
 				self->height = 0;
 			}
-			AES_LOG("Window resize : {} x {}", self->width, self->height);
+			WOB_LOG("Window resize : {} x {}", self->width, self->height);
 
 			// do not call callback onMinimize
 			if (self->resizeCallback && self->width > 0 && self->height > 0)
@@ -154,9 +154,9 @@ LRESULT Win_Window::windowProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPa
 
 Win_Window::Win_Window(const char* name)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	
-	AES_ASSERT(name);
+	WOB_ASSERT(name);
 
 	std::wstring const windowName = to_wstring(std::string(name));
 
@@ -167,7 +167,7 @@ Win_Window::Win_Window(const char* name)
 	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.lpfnWndProc = winPRoc;
 	wc.hInstance = hInstance;
-	wc.lpszClassName = AES_CLASSNAME;
+	wc.lpszClassName = WOB_CLASSNAME;
 	wc.style = CS_HREDRAW | CS_VREDRAW;
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
@@ -176,7 +176,7 @@ Win_Window::Win_Window(const char* name)
 	
 	handle = CreateWindowEx(
 		0,                          // Optional window styles.
-		AES_CLASSNAME,				// Window class
+		WOB_CLASSNAME,				// Window class
 		windowName.c_str(),			// Window text
 		WS_OVERLAPPEDWINDOW,        // Window style
 
@@ -190,7 +190,7 @@ Win_Window::Win_Window(const char* name)
 	);
 
 	SetPropW(handle, WINDOW_HANDLE_PROP_NAME, this);
-	AES_ASSERT(handle != NULL);
+	WOB_ASSERT(handle != NULL);
 	
 	RECT rect;
 	if (GetClientRect(handle, &rect))
@@ -203,7 +203,7 @@ Win_Window::Win_Window(const char* name)
 		width = 0;
 		height = 0;
 	}
-	AES_LOG("Window size : {} x {}", width, height);
+	WOB_LOG("Window size : {} x {}", width, height);
 }
 
 Win_Window::~Win_Window()
@@ -233,7 +233,7 @@ void Win_Window::setVisible(bool visible)
 
 void Win_Window::pollEvents()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	MSG msg;
 	ZeroMemory(&msg, sizeof(MSG));
 	if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))

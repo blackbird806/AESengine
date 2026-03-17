@@ -1,10 +1,10 @@
-#ifndef AES_D3D11ELEMENTS_HPP
-#define AES_D3D11ELEMENTS_HPP
+#ifndef WOB_D3D11ELEMENTS_HPP
+#define WOB_D3D11ELEMENTS_HPP
 
 #include <d3d11.h>
 #include "renderer/RHI/RHIElements.hpp"
 
-namespace aes
+namespace wob
 {
 	DXGI_FORMAT rhiTypeFormatToApi(IndexTypeFormat format);
 	DXGI_FORMAT rhiFormatToApi(RHIFormat format);

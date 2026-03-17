@@ -5,7 +5,7 @@
 
 // collection of hard coded vertices/indices for simple geometry
 
-namespace aes::sm
+namespace wob::sm
 {
 	constexpr uint32_t cubeIndices[] = {
 		//Top

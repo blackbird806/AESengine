@@ -1,12 +1,12 @@
-#ifndef AES_MATH_HPP
-#define AES_MATH_HPP
+#ifndef WOB_MATH_HPP
+#define WOB_MATH_HPP
 
 #include <cstdint>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-namespace aes {
+namespace wob {
 	
 	template <typename T> constexpr int sign(T val) noexcept {
 		return (T(0) < val) - (val < T(0));

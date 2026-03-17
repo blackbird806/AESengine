@@ -1,14 +1,29 @@
 #include "draw3d.hpp"
+#include "RHI/RHIDevice.hpp"
 
-using namespace aes;
+using namespace wob;
 
-void Draw3D::init(RHIDevice& device)
+void Draw3D::init(RHIDevice& device_)
 {
-	pipeline.init(&device);
+	WOB_PROFILE_FUNCTION();
+
+	device = &device_;
+	pipeline.init(device);
 	states.emplace();
 
-	//ensureVertexBufferCapacity(4096 * sizeof(TextureVertex));
-	//ensureIndexBufferCapacity(8192 * sizeof(Index_t));
+	BufferDescription vertexBufferDesc{};
+	vertexBufferDesc.bindFlags = BindFlagBits::VertexBuffer;
+	vertexBufferDesc.usage = MemoryUsage::Dynamic;
+	vertexBufferDesc.cpuAccessFlags = CPUAccessFlagBits::Write;
+	vertexBufferDesc.sizeInBytes = vertexBufferSize;
+	vertexBuffer = device->createBuffer(vertexBufferDesc).value();
+
+	BufferDescription indexBufferDesc{};
+	indexBufferDesc.bindFlags = BindFlagBits::IndexBuffer;
+	indexBufferDesc.usage = MemoryUsage::Dynamic;
+	indexBufferDesc.cpuAccessFlags = CPUAccessFlagBits::Write;
+	indexBufferDesc.sizeInBytes = vertexBufferSize;
+	indexBuffer = device->createBuffer(indexBufferDesc).value();
 }
 
 void Draw3D::setColor(Color col)
@@ -31,32 +46,12 @@ void Draw3D::drawLine(Line3D line)
 
 }
 
-Result<void> Draw3D::ensureVertexBufferCapacity(size_t sizeInBytes)
+void Draw3D::executeDrawCommands()
 {
-	AES_PROFILE_FUNCTION();
-
-	// reallocate buffers
-	BufferDescription vertexBufferDesc{};
-	vertexBufferDesc.bindFlags = BindFlagBits::VertexBuffer;
-	vertexBufferDesc.usage = MemoryUsage::Dynamic;
-	vertexBufferDesc.cpuAccessFlags = CPUAccessFlagBits::Write;
-	vertexBufferDesc.sizeInBytes = sizeInBytes;
-
-	return device->ensureBufferCapacity(vertexBuffer, vertexBufferDesc);
+	device->bindVertexBuffer(vertexBuffer, 0, pipeline.getVertexShaderDesc().verticesStride);
+	device->bindIndexBuffer(indexBuffer, IndexTypeFormat::Uint16);
+	pipeline.bind();
 }
 
-Result<void> Draw3D::ensureIndexBufferCapacity(size_t sizeInBytes)
-{
-	AES_PROFILE_FUNCTION();
-
-	// reallocate buffers
-	BufferDescription indexBufferDesc{};
-	indexBufferDesc.bindFlags = BindFlagBits::IndexBuffer;
-	indexBufferDesc.usage = MemoryUsage::Dynamic;
-	indexBufferDesc.cpuAccessFlags = CPUAccessFlagBits::Write;
-	indexBufferDesc.sizeInBytes = sizeInBytes;
-
-	return device->ensureBufferCapacity(indexBuffer, indexBufferDesc);
-}
 
 

@@ -1,5 +1,5 @@
-#ifndef AES_D3D11SHADER_HPP
-#define AES_D3D11SHADER_HPP
+#ifndef WOB_D3D11SHADER_HPP
+#define WOB_D3D11SHADER_HPP
 
 #include <d3d11.h>
 #include <d3d11shader.h>
@@ -7,7 +7,7 @@
 #include "renderer/RHI/RHIShaderReflection.hpp"
 #include "D3D11BlendState.hpp"
 
-namespace aes {
+namespace wob {
 	
 	struct FragmentShaderDescription;
 	struct VertexShaderDescription;

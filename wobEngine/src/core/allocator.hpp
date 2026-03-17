@@ -1,10 +1,10 @@
-#ifndef AES_ALLOCATOR_HPP
-#define AES_ALLOCATOR_HPP
+#ifndef WOB_ALLOCATOR_HPP
+#define WOB_ALLOCATOR_HPP
 #include <cstdint>
 #include <utility>
 
 using size_t = std::size_t;
-namespace aes
+namespace wob
 {
 
 	constexpr unsigned long long operator "" _kb(unsigned long long p)

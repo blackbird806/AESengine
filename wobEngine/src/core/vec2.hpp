@@ -1,9 +1,9 @@
-#ifndef AES_VEC2_HPP
-#define AES_VEC2_HPP
+#ifndef WOB_VEC2_HPP
+#define WOB_VEC2_HPP
 
-#include "aes.hpp"
+#include "wob.hpp"
 
-namespace aes
+namespace wob
 {
 	struct vec2
 	{
@@ -26,13 +26,13 @@ namespace aes
 
 		constexpr float operator[](uint i) const noexcept
 		{
-			AES_ASSERT(i < 2);
+			WOB_ASSERT(i < 2);
 			return data[i];
 		}
 
 		constexpr float& operator[](uint i) noexcept
 		{
-			AES_ASSERT(i < 2);
+			WOB_ASSERT(i < 2);
 			return data[i];
 		}
 

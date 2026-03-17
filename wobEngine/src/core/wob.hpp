@@ -1,5 +1,5 @@
-#ifndef AES_HPP
-#define AES_HPP
+#ifndef WOB_HPP
+#define WOB_HPP
 
 #include <cstdlib>
 

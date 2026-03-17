@@ -3,14 +3,14 @@
 #include <sstream>
 #include <fstream>
 
-aes::String aes::readFile(std::string_view file)
+wob::String wob::readFile(std::string_view file)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	std::ifstream t(file.data(), std::ios::binary | std::ios::ate);
 	if (!t.is_open())
 	{
-		AES_FATAL_ERROR();
+		WOB_FATAL_ERROR();
 	}
 	int const size = t.tellg();
 	String buffer;
@@ -21,15 +21,15 @@ aes::String aes::readFile(std::string_view file)
 	return buffer;
 }
 
-std::vector<uint8_t> aes::readFileBin(std::string_view file)
+std::vector<uint8_t> wob::readFileBin(std::string_view file)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	std::ifstream input(file.data(), std::ios::binary);
 	return std::vector<uint8_t>(std::istreambuf_iterator<char>(input), {});
 }
 
-std::vector<std::string> aes::split(std::string_view a, char sep)
+std::vector<std::string> wob::split(std::string_view a, char sep)
 {
 	size_t s = 0;
 	std::vector<std::string> result;

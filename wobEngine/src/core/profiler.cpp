@@ -1,14 +1,14 @@
 #include "profiler.hpp"
 
 #include <chrono>
-#include "aes.hpp"
+#include "wob.hpp"
 #include "hashmap.hpp"
 
-using namespace aes;
+using namespace wob;
 
-aes::ProfileScope* aes::ProfileScope::last = nullptr;
+wob::ProfileScope* wob::ProfileScope::last = nullptr;
 
-namespace aes
+namespace wob
 {
 	class Instrumentor
 	{

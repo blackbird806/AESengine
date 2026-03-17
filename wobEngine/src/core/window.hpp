@@ -1,11 +1,11 @@
-#ifndef AES_WINDOW_HPP
-#define AES_WINDOW_HPP
+#ifndef WOB_WINDOW_HPP
+#define WOB_WINDOW_HPP
 
-#include "aes.hpp"
+#include "wob.hpp"
 #include "input.hpp"
 #include <utility>
 
-namespace aes {
+namespace wob {
 
 	template<typename F>
 	struct ContextCallback
@@ -18,7 +18,7 @@ namespace aes {
 		template<typename ...Args>
 		auto operator()(Args&&... args)
 		{
-			AES_ASSERT(fn);
+			WOB_ASSERT(fn);
 			return fn(std::forward<Args>(args)..., userData);
 		}
 

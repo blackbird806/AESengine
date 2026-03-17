@@ -1,7 +1,7 @@
-#ifndef AES_D3D11RENDERER_HPP
-#define AES_D3D11RENDERER_HPP
+#ifndef WOB_D3D11RENDERER_HPP
+#define WOB_D3D11RENDERER_HPP
 
-#include "core/aes.hpp"
+#include "core/wob.hpp"
 #include "core/window.hpp"
 #include "renderer/RHI/RHIElements.hpp"
 
@@ -14,7 +14,7 @@
 #include "renderer/RHI/RHIElements.hpp"
 #include "D3D11BlendState.hpp"
 
-namespace aes {
+namespace wob {
 
 	class D3D11Renderer
 	{

@@ -1,9 +1,9 @@
-#ifndef AES_HASH_HPP
-#define AES_HASH_HPP
+#ifndef WOB_HASH_HPP
+#define WOB_HASH_HPP
 
 #include <cstdint>
 
-namespace aes
+namespace wob
 {
 	template<typename T>
 	struct Hash
@@ -56,4 +56,4 @@ namespace aes
 	};
 }
 
-#endif // !AES_HASH_HPP
+#endif // !WOB_HASH_HPP

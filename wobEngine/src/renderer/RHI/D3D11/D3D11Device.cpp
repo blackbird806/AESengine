@@ -6,25 +6,25 @@
 #include <dxgi.h>
 #include <d3dcompiler.h>
 
-using namespace aes;
+using namespace wob;
 
-void aes::initializeGraphicsAPI()
+void wob::initializeGraphicsAPI()
 {
 }
 
-void aes::terminateGraphicsAPI()
+void wob::terminateGraphicsAPI()
 {
 }
 
 Result<void> D3D11Device::init()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	// Create a DirectX graphics interface factory.
 	HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("failed to create CreateDXGIFactory");
+		WOB_FATAL_ERROR("failed to create CreateDXGIFactory");
 	}
 
 	// Use the factory to create an adapter for the primary graphics interface (video card).
@@ -32,7 +32,7 @@ Result<void> D3D11Device::init()
 	result = factory->EnumAdapters(0, &adapter);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("failed to create IDXGIAdapter");
+		WOB_FATAL_ERROR("failed to create IDXGIAdapter");
 	}
 
 	// Enumerate the primary adapter output (monitor).
@@ -40,7 +40,7 @@ Result<void> D3D11Device::init()
 	result = adapter->EnumOutputs(0, &adapterOutput);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("failed to create IDXGIOutput");
+		WOB_FATAL_ERROR("failed to create IDXGIOutput");
 	}
 
 	// Get the number of modes that fit the DXGI_FORMAT_R8G8B8A8_UNORM display format for the adapter output (monitor).
@@ -48,7 +48,7 @@ Result<void> D3D11Device::init()
 	result = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, nullptr);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("failed to get DisplayModeList");
+		WOB_FATAL_ERROR("failed to get DisplayModeList");
 	}
 
 	// Create a list to hold all the possible display modes for this monitor/video card combination.
@@ -59,7 +59,7 @@ Result<void> D3D11Device::init()
 	result = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, displayModeList.data());
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("failed to get DisplayModeList");
+		WOB_FATAL_ERROR("failed to get DisplayModeList");
 	}
 
 	// Get the adapter (video card) description.
@@ -67,7 +67,7 @@ Result<void> D3D11Device::init()
 	result = adapter->GetDesc(&adapterDesc);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("failed getDesc");
+		WOB_FATAL_ERROR("failed getDesc");
 	}
 
 	// Store the dedicated video card memory in megabytes.
@@ -79,9 +79,9 @@ Result<void> D3D11Device::init()
 	int const error = wcstombs_s(&stringLength, videoCardDescription, 128, adapterDesc.Description, 128);
 	if (error != 0)
 	{
-		AES_FATAL_ERROR("failed to convert videocardName");
+		WOB_FATAL_ERROR("failed to convert videocardName");
 	}
-	AES_LOG("graphic card : {}\nvideo memory : {} MB", videoCardDescription, videoCardMemory);
+	WOB_LOG("graphic card : {}\nvideo memory : {} MB", videoCardDescription, videoCardMemory);
 
 	// Release the adapter output.
 	adapterOutput->Release();
@@ -94,7 +94,7 @@ Result<void> D3D11Device::init()
 	// Set the feature level to DirectX 11.
 	D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_1;
 	result = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
-#ifdef AES_DEBUG
+#ifdef WOB_DEBUG
 		D3D11_CREATE_DEVICE_DEBUG,
 #else
 		0,
@@ -102,14 +102,14 @@ Result<void> D3D11Device::init()
 		& featureLevel, 1, D3D11_SDK_VERSION, &device, nullptr, &deviceContext);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("failed to create D3D11 device");
+		WOB_FATAL_ERROR("failed to create D3D11 device");
 	}
 
-#ifdef AES_DEBUG
+#ifdef WOB_DEBUG
 	result = device->QueryInterface(IID_PPV_ARGS(&debugInterface));
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("failed to query debug interface");
+		WOB_FATAL_ERROR("failed to query debug interface");
 	}
 #endif
 
@@ -119,13 +119,13 @@ Result<void> D3D11Device::init()
 
 void D3D11Device::destroy()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
-	AES_ASSERT(deviceContext != nullptr);
-	AES_ASSERT(factory != nullptr);
-	AES_ASSERT(device != nullptr);
-#ifdef AES_DEBUG
-	AES_ASSERT(debugInterface != nullptr);
+	WOB_ASSERT(deviceContext != nullptr);
+	WOB_ASSERT(factory != nullptr);
+	WOB_ASSERT(device != nullptr);
+#ifdef WOB_DEBUG
+	WOB_ASSERT(debugInterface != nullptr);
 #endif
 
 	deviceContext->Release();
@@ -135,7 +135,7 @@ void D3D11Device::destroy()
 	device = nullptr;
 	factory = nullptr;
 	deviceContext = nullptr;
-#ifdef AES_DEBUG
+#ifdef WOB_DEBUG
 	debugInterface->Release();
 	debugInterface = nullptr;
 #endif
@@ -143,7 +143,7 @@ void D3D11Device::destroy()
 
 Result<RHISwapchain> D3D11Device::createSwapchain(SwapchainDescription const& desc)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	RHISwapchain sc;
 	DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
@@ -158,7 +158,7 @@ Result<RHISwapchain> D3D11Device::createSwapchain(SwapchainDescription const& de
 	// Set the refresh rate of the back buffer.
 	//if (vsyncEnabled)
 	//{
-	//	AES_NOT_IMPLEMENTED();
+	//	WOB_NOT_IMPLEMENTED();
 	//	//swapChainDesc.BufferDesc.RefreshRate.Numerator = numerator;
 	//	//swapChainDesc.BufferDesc.RefreshRate.Denominator = denominator;
 	//}
@@ -197,23 +197,23 @@ Result<RHISwapchain> D3D11Device::createSwapchain(SwapchainDescription const& de
 
 	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH; // allow full-screen switching
 
-	AES_ASSERT(factory);
+	WOB_ASSERT(factory);
 	HRESULT result = factory->CreateSwapChain(device, &swapChainDesc, &sc.swapchain);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("D3D11CreateDeviceAndSwapChain failed");
+		WOB_FATAL_ERROR("D3D11CreateDeviceAndSwapChain failed");
 	}
 
 	result = sc.swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID*>(&sc.rt));
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("swapChain->GetBuffer failed");
+		WOB_FATAL_ERROR("swapChain->GetBuffer failed");
 	}
 
 	result = device->CreateRenderTargetView(sc.rt, nullptr, &sc.rtview);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("device->CreateRenderTargetView failed");
+		WOB_FATAL_ERROR("device->CreateRenderTargetView failed");
 	}
 
 	D3D11_TEXTURE2D_DESC depthBufferDesc = {};
@@ -246,7 +246,7 @@ Result<RHISwapchain> D3D11Device::createSwapchain(SwapchainDescription const& de
 	result = device->CreateTexture2D(&depthBufferDesc, nullptr, &sc.depthStencilBuffer);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("device depthStencilBuffer failed");
+		WOB_FATAL_ERROR("device depthStencilBuffer failed");
 	}
 
 	// Initialize the description of the stencil state.
@@ -273,7 +273,7 @@ Result<RHISwapchain> D3D11Device::createSwapchain(SwapchainDescription const& de
 	result = device->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("device->CreateDepthStencilState failed");
+		WOB_FATAL_ERROR("device->CreateDepthStencilState failed");
 	}
 
 	deviceContext->OMSetDepthStencilState(depthStencilState, 1);
@@ -286,7 +286,7 @@ Result<RHISwapchain> D3D11Device::createSwapchain(SwapchainDescription const& de
 	result = device->CreateDepthStencilView(sc.depthStencilBuffer, &depthStencilViewDesc, &sc.depthStencilView);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("device->CreateDepthStencilView failed");
+		WOB_FATAL_ERROR("device->CreateDepthStencilView failed");
 	}
 
 	// where should I put this ?
@@ -305,7 +305,7 @@ Result<RHISwapchain> D3D11Device::createSwapchain(SwapchainDescription const& de
 
 Result<RHIRenderTarget> D3D11Device::createRenderTarget(RenderTargetDescription const& desc)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	RHIRenderTarget rt;
 
@@ -338,13 +338,13 @@ Result<RHIRenderTarget> D3D11Device::createRenderTarget(RenderTargetDescription 
 	auto result = device->CreateTexture2D(&textureDesc, NULL, &rt.renderTargetTexture);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("device->CreateTexture2D failed");
+		WOB_FATAL_ERROR("device->CreateTexture2D failed");
 	}
 
 	result = device->CreateRenderTargetView(rt.renderTargetTexture, &renderTargetViewDesc, &rt.renderTargetView);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("device->CreateRenderTargetView failed");
+		WOB_FATAL_ERROR("device->CreateRenderTargetView failed");
 	}
 
 	return {std::move(rt)};
@@ -352,10 +352,10 @@ Result<RHIRenderTarget> D3D11Device::createRenderTarget(RenderTargetDescription 
 
 Result<RHIBuffer> D3D11Device::createBuffer(BufferDescription const& desc)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	validateBufferDescription(desc);
-	//AES_ASSERT(desc.sizeInBytes % 16 == 0); // D3D11 buffers size must be a multiple of 16
+	//WOB_ASSERT(desc.sizeInBytes % 16 == 0); // D3D11 buffers size must be a multiple of 16
 	RHIBuffer buffer;
 
 	buffer.size = desc.sizeInBytes;
@@ -384,31 +384,31 @@ Result<RHIBuffer> D3D11Device::createBuffer(BufferDescription const& desc)
 
 	if (FAILED(result))
 	{
-		AES_LOG_ERROR("Failed to create GPU buffer");
+		WOB_LOG_ERROR("Failed to create GPU buffer");
 		return { AESError::GPUBufferCreationFailed };
 	}
 
 	return { std::move(buffer) };
 }
 
-Result<void> aes::D3D11Device::copyBuffer(RHIBuffer const& from, RHIBuffer& to)
+Result<void> wob::D3D11Device::copyBuffer(RHIBuffer const& from, RHIBuffer& to)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	deviceContext->CopyResource(to.apiBuffer, from.apiBuffer);
 	return {};
 }
 
-Result<void> aes::D3D11Device::copyTexture(RHITexture const& from, RHITexture& to)
+Result<void> wob::D3D11Device::copyTexture(RHITexture const& from, RHITexture& to)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	deviceContext->CopyResource(to.texture, from.texture);
 	return Result<void>();
 }
 
-Result<RHITexture> aes::D3D11Device::createTexture(TextureDescription const& info)
+Result<RHITexture> wob::D3D11Device::createTexture(TextureDescription const& info)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	validateTextureDescription(info);
 	
@@ -442,7 +442,7 @@ Result<RHITexture> aes::D3D11Device::createTexture(TextureDescription const& inf
 
 	if (FAILED(err))
 	{
-		AES_LOG_ERROR("D3D11 CreateTexture2D failed, err: {}", err);
+		WOB_LOG_ERROR("D3D11 CreateTexture2D failed, err: {}", err);
 		return { AESError::GPUTextureCreationFailed };
 	}
 
@@ -457,7 +457,7 @@ Result<RHITexture> aes::D3D11Device::createTexture(TextureDescription const& inf
 	err = device->CreateShaderResourceView(tex.texture, &srvDesc, &tex.textureView);
 	if (FAILED(err))
 	{
-		AES_LOG_ERROR("D3D11 CreateShaderResourceView failed !");
+		WOB_LOG_ERROR("D3D11 CreateShaderResourceView failed !");
 		return { AESError::GPUTextureCreationFailed };
 	}
 	deviceContext->GenerateMips(tex.textureView);
@@ -467,22 +467,22 @@ Result<RHITexture> aes::D3D11Device::createTexture(TextureDescription const& inf
 
 Result<RHIVertexShader> D3D11Device::createVertexShader(VertexShaderDescription const& desc)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	RHIVertexShader vert;
 
 	ID3DBlob* errorMessage = nullptr;
 	ID3DBlob* vertexShaderBuffer = nullptr;
 
-	if (!std::holds_alternative<aes::String>(desc.source))
+	if (!std::holds_alternative<wob::String>(desc.source))
 	{
-		AES_NOT_IMPLEMENTED();
+		WOB_NOT_IMPLEMENTED();
 	}
-	auto const& source = std::get<aes::String>(desc.source);
+	auto const& source = std::get<wob::String>(desc.source);
 	auto result = D3DCompile(source.data(), sizeof(char) * source.size(), "vertexShader", nullptr, nullptr, "main", "vs_5_0", 0, 0, &vertexShaderBuffer, &errorMessage);
 	if (FAILED(result))
 	{
-		AES_LOG_ERROR("failed to compile vertex shader : {}", (char*)errorMessage->GetBufferPointer());
+		WOB_LOG_ERROR("failed to compile vertex shader : {}", (char*)errorMessage->GetBufferPointer());
 		return { AESError::ShaderCompilationFailed };
 	}
 
@@ -490,7 +490,7 @@ Result<RHIVertexShader> D3D11Device::createVertexShader(VertexShaderDescription 
 	result = device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), nullptr, &vert.vertexShader);
 	if (FAILED(result))
 	{
-		AES_LOG_ERROR("failed to create vertex shader");
+		WOB_LOG_ERROR("failed to create vertex shader");
 		return { AESError::ShaderCreationFailed };
 	}
 
@@ -523,7 +523,7 @@ Result<RHIVertexShader> D3D11Device::createVertexShader(VertexShaderDescription 
 	result = device->CreateInputLayout(polygonLayout.data(), std::size(polygonLayout), vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &vert.layout);
 	if (FAILED(result))
 	{
-		AES_LOG_ERROR("failed to create InputLayout");
+		WOB_LOG_ERROR("failed to create InputLayout");
 		return { AESError::ShaderCreationFailed };
 	}
 
@@ -534,30 +534,30 @@ Result<RHIVertexShader> D3D11Device::createVertexShader(VertexShaderDescription 
 
 Result<RHIFragmentShader> D3D11Device::createFragmentShader(FragmentShaderDescription const& desc)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	RHIFragmentShader frag;
 
 	ID3DBlob* errorMessage = nullptr;
 	ID3DBlob* pixelShaderBuffer = nullptr;
 
-	if (!std::holds_alternative<aes::String>(desc.source))
+	if (!std::holds_alternative<wob::String>(desc.source))
 	{
-		AES_NOT_IMPLEMENTED();
+		WOB_NOT_IMPLEMENTED();
 	}
 
-	auto const& source = std::get<aes::String>(desc.source);
+	auto const& source = std::get<wob::String>(desc.source);
 	HRESULT result = D3DCompile(source.data(), sizeof(char) * source.size(), "pixelShader", nullptr, nullptr, "main", "ps_5_0", 0, 0, &pixelShaderBuffer, &errorMessage);
 	if (FAILED(result))
 	{
-		AES_LOG_ERROR("failed to compile pixed shader : {}", (char*)errorMessage->GetBufferPointer());
+		WOB_LOG_ERROR("failed to compile pixed shader : {}", (char*)errorMessage->GetBufferPointer());
 		return { AESError::ShaderCompilationFailed };
 	}
 
 	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), nullptr, &frag.pixelShader);
 	if (FAILED(result))
 	{
-		AES_LOG_ERROR("failed to create pixel shader");
+		WOB_LOG_ERROR("failed to create pixel shader");
 		return { AESError::ShaderCreationFailed };
 	}
 
@@ -565,7 +565,7 @@ Result<RHIFragmentShader> D3D11Device::createFragmentShader(FragmentShaderDescri
 	pixelShaderBuffer->Release();
 	if (FAILED(result))
 	{
-		AES_LOG_ERROR("D3DReflect error failed to reflect shader");
+		WOB_LOG_ERROR("D3DReflect error failed to reflect shader");
 	}
 
 	if (desc.blendInfo)
@@ -582,7 +582,7 @@ Result<RHIFragmentShader> D3D11Device::createFragmentShader(FragmentShaderDescri
 
 Result<RHISampler> D3D11Device::createSampler(SamplerDescription const& desc)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	RHISampler sampler;
 
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -618,7 +618,7 @@ void* D3D11Device::mapBuffer(RHIBuffer const& buffer)
 	return mappedResource.pData;
 }
 
-Result<void> aes::D3D11Device::unmapBuffer(RHIBuffer const& buffer)
+Result<void> wob::D3D11Device::unmapBuffer(RHIBuffer const& buffer)
 {
 	deviceContext->Unmap(buffer.apiBuffer, 0);
 	return {};
@@ -626,7 +626,7 @@ Result<void> aes::D3D11Device::unmapBuffer(RHIBuffer const& buffer)
 
 Result<D3D11BlendState> D3D11Device::createBlendState(BlendInfo const& info)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	D3D11BlendState blend;
 
 	D3D11_BLEND_DESC blendDesc = {};
@@ -643,7 +643,7 @@ Result<D3D11BlendState> D3D11Device::createBlendState(BlendInfo const& info)
 	auto err = device->CreateBlendState(&blendDesc, &blend.blendState);
 	if (FAILED(err))
 	{
-		AES_LOG_ERROR("failed to create D3D11 Blendstate");
+		WOB_LOG_ERROR("failed to create D3D11 Blendstate");
 		return { AESError::BlendStateCreationFailed };
 	}
 
@@ -652,7 +652,7 @@ Result<D3D11BlendState> D3D11Device::createBlendState(BlendInfo const& info)
 
 void D3D11Device::clearRenderTarget(RHIRenderTarget& rt)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	float color[4];
 	color[0] = 0.0f;
@@ -678,7 +678,7 @@ void D3D11Device::clearSwapchain(RHISwapchain& swp)
 
 void D3D11Device::swapBuffers(RHISwapchain const& sc)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	sc.swapchain->Present(0, 0);
 }
 
@@ -707,7 +707,7 @@ D3D11Device& D3D11Device::operator=(D3D11Device&& rhs) noexcept
 	rhs.factory = nullptr;
 	rhs.deviceContext = nullptr;
 
-#ifdef AES_DEBUG
+#ifdef WOB_DEBUG
 	debugInterface = rhs.debugInterface;
 	rhs.debugInterface = nullptr;
 #endif
@@ -716,43 +716,43 @@ D3D11Device& D3D11Device::operator=(D3D11Device&& rhs) noexcept
 
 void D3D11Device::drawIndexed(uint indexCount, uint indexOffset)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	deviceContext->DrawIndexed(indexCount, indexOffset, 0);
 }
 
 void D3D11Device::beginRenderPass(RHIRenderTarget& rt)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	deviceContext->OMSetRenderTargets(1, &rt.renderTargetView, nullptr);
 }
 
 void D3D11Device::beginRenderPass(RHISwapchain& sc)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	deviceContext->OMSetRenderTargets(1, &sc.rtview, sc.depthStencilView);
 }
 
 void D3D11Device::endRenderPass()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 }
 
 void D3D11Device::setCullMode(CullMode mode)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	rasterStateDesc.CullMode = rhiCullModeToApi(mode);
 	setRasterizerState();
 }
 
 void D3D11Device::setDrawPrimitiveMode(DrawPrimitiveType mode)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	deviceContext->IASetPrimitiveTopology(rhiPrimitiveTypeToApi(mode));
 }
 
 void D3D11Device::setRasterizerState()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	rasterStateDesc.AntialiasedLineEnable = false;
 	rasterStateDesc.DepthBias = 0;
 	rasterStateDesc.DepthBiasClamp = 0.0f;
@@ -765,14 +765,14 @@ void D3D11Device::setRasterizerState()
 	HRESULT const result = device->CreateRasterizerState(&rasterStateDesc, &rasterState);
 	if (FAILED(result))
 	{
-		AES_FATAL_ERROR("Failed to create RasterizerState !");
+		WOB_FATAL_ERROR("Failed to create RasterizerState !");
 	}
 	deviceContext->RSSetState(rasterState);
 }
 
 Result<void> D3D11Device::bindFragmentSampler(RHISampler& sampler, uint slot)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	ID3D11SamplerState* samplerStates[] = { sampler.getSamplerState() };
 	deviceContext->PSSetSamplers(slot, 1, samplerStates);
 	return {};
@@ -780,13 +780,13 @@ Result<void> D3D11Device::bindFragmentSampler(RHISampler& sampler, uint slot)
 
 void D3D11Device::setBlendState(D3D11BlendState& blendState)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	deviceContext->OMSetBlendState(blendState.getHandle(), nullptr, 0xffffffff);
 }
 
 void D3D11Device::setFragmentShader(RHIFragmentShader& fs)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	if (fs.blendState.getHandle() != nullptr)
 		setBlendState(fs.blendState);
 	deviceContext->PSSetShader(fs.getHandle(), nullptr, 0);
@@ -794,43 +794,43 @@ void D3D11Device::setFragmentShader(RHIFragmentShader& fs)
 
 void D3D11Device::setVertexShader(RHIVertexShader& vs)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	deviceContext->IASetInputLayout(vs.getInputLayout());
 	deviceContext->VSSetShader(vs.getHandle(), nullptr, 0);
 }
 
-Result<void> D3D11Device::setVertexBuffer(RHIBuffer& buffer, uint32_t bufferIndex, uint stride, uint offset)
+Result<void> D3D11Device::bindVertexBuffer(RHIBuffer& buffer, uint32_t bufferIndex, uint stride, uint offset)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	ID3D11Buffer* handle = buffer.getHandle();
 	deviceContext->IASetVertexBuffers(bufferIndex, 1, &handle, &stride, &offset);
 	return {};
 }
 
-Result<void> D3D11Device::setIndexBuffer(RHIBuffer& buffer, IndexTypeFormat typeFormat, uint offset)
+Result<void> D3D11Device::bindIndexBuffer(RHIBuffer& buffer, IndexTypeFormat typeFormat, uint offset)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	deviceContext->IASetIndexBuffer(buffer.getHandle(), rhiTypeFormatToApi(typeFormat), offset);
 	return {};
 }
 
 Result<void> D3D11Device::bindFragmentUniformBuffer(RHIBuffer& buffer, uint slot)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	deviceContext->PSSetConstantBuffers(slot, 1, &buffer.apiBuffer);
 	return{};
 }
 
 Result<void> D3D11Device::bindVertexUniformBuffer(RHIBuffer& buffer, uint slot)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	deviceContext->VSSetConstantBuffers(slot, 1, &buffer.apiBuffer);
 	return{};
 }
 
 Result<void> D3D11Device::bindFragmentTexture(RHITexture& texture, uint slot)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	ID3D11ShaderResourceView* res[] = { texture.getResourceView() };
 	deviceContext->PSSetShaderResources(slot, 1, res);
 	return {};
@@ -838,7 +838,7 @@ Result<void> D3D11Device::bindFragmentTexture(RHITexture& texture, uint slot)
 
 Result<void> D3D11Device::bindVertexTexture(RHITexture& texture, uint slot)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	ID3D11ShaderResourceView* res[] = { texture.getResourceView() };
 	deviceContext->VSSetShaderResources(slot, 1, res);
 	return {};
@@ -846,7 +846,7 @@ Result<void> D3D11Device::bindVertexTexture(RHITexture& texture, uint slot)
 
 Result<void> D3D11Device::bindVertexSampler(RHISampler& sampler, uint slot)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	ID3D11SamplerState* samplerStates[] = { sampler.getSamplerState() };
 	deviceContext->VSSetSamplers(slot, 1, samplerStates);
 	return {};

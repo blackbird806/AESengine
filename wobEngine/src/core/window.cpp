@@ -1,7 +1,7 @@
 #include "window.hpp"
-#include "aes.hpp"
+#include "wob.hpp"
 
-using namespace aes;
+using namespace wob;
 
 void Window::setResizeCallback(ResizeCallbackT func)
 {
@@ -25,14 +25,14 @@ void Window::setMouseWheelMoveCallback(MouseWheelMoveCallbackT func)
 
 void Window::getMousePosition(int& mouseX_, int& mouseY_) const
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	mouseX_ = mouseX;
 	mouseY_ = mouseY;
 }
 
 void Window::getScreenSize(uint& sizeX, uint& sizeY) const
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	sizeX = width;
 	sizeY = height;
 }

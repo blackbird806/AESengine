@@ -1,5 +1,5 @@
-#ifndef AES_FONTRENDERER_HPP
-#define AES_FONTRENDERER_HPP
+#ifndef WOB_FONTRENDERER_HPP
+#define WOB_FONTRENDERER_HPP
 
 #include "renderer/RHI/RHITexture.hpp"
 #include "renderer/RHI/RHIBuffer.hpp"
@@ -12,7 +12,7 @@
 // Font system RHI complient
 // We want simple and efficient bitmap based font rendering
 
-namespace aes
+namespace wob
 {
 	struct Glyph
 	{

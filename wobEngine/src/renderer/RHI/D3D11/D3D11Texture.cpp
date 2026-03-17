@@ -3,7 +3,7 @@
 #include "renderer/RHI/D3D11/D3D11renderer.hpp"
 #include "renderer/RHI/D3D11/D3D11Elements.hpp"
 
-using namespace aes;
+using namespace wob;
 
 D3D11Texture::D3D11Texture(D3D11Texture&& rhs) noexcept :
 	texture(rhs.texture), textureView(rhs.textureView)

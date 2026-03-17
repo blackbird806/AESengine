@@ -12,19 +12,19 @@ add_rules("plugin.vsxmake.autoupdate")
 add_rules("mode.debug", "mode.release")
 
 -- default paths
-add_defines("AES_DEFAULT_ENGINE_SHADER_PATH=" .. "R\"(" .. path.translate("$(scriptdir)/wobEngine/assets/shaders/)\""))
+add_defines("WOB_DEFAULT_ENGINE_SHADER_PATH=" .. "R\"(" .. path.translate("$(scriptdir)/wobEngine/assets/shaders/)\""))
 
 if is_plat("vita") then
 	set_toolchains("vita")
 end
 
 if is_mode("debug") then
-	add_defines("_DEBUG", "AES_DEBUG")
+	add_defines("_DEBUG", "WOB_DEBUG")
 	set_symbols("debug")
 	set_optimize("none")
 	set_warnings("all")
 elseif is_mode("release") then
-	add_defines("NDEBUG", "AES_RELEASE")
+	add_defines("NDEBUG", "WOB_RELEASE")
 --	set_optimize("faster")
 end
 
@@ -50,12 +50,12 @@ target("wobEngine")
 		add_files("wobEngine/src/core/platformWindows/*.cpp")
 		add_headerfiles("wobEngine/src/renderer/RHI/D3D11/*.hpp")
 		add_headerfiles("wobEngine/src/core/platformWindows/*.hpp")
-		add_defines("UNICODE", "_UNICODE", "AES_GRAPHIC_API_D3D11")
+		add_defines("UNICODE", "_UNICODE", "WOB_GRAPHIC_API_D3D11")
 		add_links("d3d11", "dxgi", "d3dcompiler", "dxguid", "Dwmapi")
 	elseif is_plat("vita") then
 		add_files("wobEngine/src/renderer/RHI/SceGxm/*.cpp")
 		add_headerfiles("wobEngine/src/renderer/RHI/SceGxm/*.hpp")
-		add_defines("AES_GRAPHIC_API_GXM")
+		add_defines("WOB_GRAPHIC_API_GXM")
 	end
 
 includes("tests/xmake.lua")

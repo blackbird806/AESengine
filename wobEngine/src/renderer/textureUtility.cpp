@@ -1,9 +1,9 @@
 #include "textureUtility.hpp"
 #include <cmath>
 
-void aes::buildCheckboard(std::span<Color> data, uint width, uint height, Color c1, Color c2, float segmentSize)
+void wob::buildCheckboard(std::span<Color> data, uint width, uint height, Color c1, Color c2, float segmentSize)
 {
-	AES_ASSERT(data.size() >= width * height);
+	WOB_ASSERT(data.size() >= width * height);
 
 	uint const segmentSizeX = std::round(width * segmentSize);
 	uint const segmentSizeY = std::round(height * segmentSize);

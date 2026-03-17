@@ -1,5 +1,5 @@
-#ifndef AES_MODEL_HPP
-#define AES_MODEL_HPP
+#ifndef WOB_MODEL_HPP
+#define WOB_MODEL_HPP
 
 #include <span>
 #include "core/vec4.hpp"
@@ -12,7 +12,7 @@
 /*
  * Simple and dumb model RHI compliant
  */
-namespace aes
+namespace wob
 {
 	[[deprecated("use simpleMeshes instead")]] Array<Vertex> getCubeVertices();
 	[[deprecated("use simpleMeshes instead")]] Array<Vertex> getCubeVertices(vec4 const&);

@@ -3,7 +3,7 @@
 #include <core/format.hpp>
 #include <span>
 
-using namespace aes::sbl;
+using namespace wob::sbl;
 using namespace std::literals;
 
 void SBLLexer::skipWhite()
@@ -20,15 +20,15 @@ void SBLLexer::skipWhite()
 
 void SBLLexer::consume(char e)
 {
-	AES_ASSERT(peek() == e); // TODO real error handling
+	WOB_ASSERT(peek() == e); // TODO real error handling
 	c++;
 }
 
 char SBLLexer::peek()
 {
 	skipWhite();
-	AES_BOUNDS_CHECK(c >= 0);
-	AES_BOUNDS_CHECK(c < source.size());
+	WOB_BOUNDS_CHECK(c >= 0);
+	WOB_BOUNDS_CHECK(c < source.size());
 	return source[c];
 }
 
@@ -72,7 +72,7 @@ Atom SBLLexer::parseAtom()
 	int const wordLen = c - wordStart;
 	Atom atom;
 	atom.src = std::string_view(&source[wordStart], wordLen);
-	AES_ASSERT(!atom.src.empty());
+	WOB_ASSERT(!atom.src.empty());
 	atom.loc = getCurrentLoc();
 	return atom;
 }
@@ -117,7 +117,7 @@ void SBLParser::reportError(String&& errorMsg)
 	Error err;
 	err.msg = std::move(errorMsg);
 	errorHandler.errorStack.push(std::move(err));
-	AES_ASSERT(false);
+	WOB_ASSERT(false);
 }
 
 void SBLParser::notEnoughArgError(uint current, uint expected)

@@ -1,10 +1,10 @@
 #include "D3D11Elements.hpp"
 
-#include "core/aes.hpp"
+#include "core/wob.hpp"
 
-using namespace aes;
+using namespace wob;
 
-DXGI_FORMAT aes::rhiTypeFormatToApi(IndexTypeFormat format)
+DXGI_FORMAT wob::rhiTypeFormatToApi(IndexTypeFormat format)
 {
 	switch (format)
 	{
@@ -14,10 +14,10 @@ DXGI_FORMAT aes::rhiTypeFormatToApi(IndexTypeFormat format)
 			return DXGI_FORMAT_R16_UINT;
 		default:;
 	}
-	AES_UNREACHABLE();
+	WOB_UNREACHABLE();
 }
 
-DXGI_FORMAT aes::rhiFormatToApi(RHIFormat format)
+DXGI_FORMAT wob::rhiFormatToApi(RHIFormat format)
 {
 	switch (format)
 	{
@@ -40,10 +40,10 @@ DXGI_FORMAT aes::rhiFormatToApi(RHIFormat format)
 		//		return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 		default: ;
 	}
-	AES_UNREACHABLE();
+	WOB_UNREACHABLE();
 }
 
-D3D11_USAGE aes::rhiMemoryUsageToApi(MemoryUsage u)
+D3D11_USAGE wob::rhiMemoryUsageToApi(MemoryUsage u)
 {
 	switch (u)
 	{
@@ -52,10 +52,10 @@ D3D11_USAGE aes::rhiMemoryUsageToApi(MemoryUsage u)
 		case MemoryUsage::Dynamic: return D3D11_USAGE_DYNAMIC;
 		case MemoryUsage::Staging: return D3D11_USAGE_STAGING;
 	}
-	AES_UNREACHABLE();
+	WOB_UNREACHABLE();
 }
 
-D3D11_BIND_FLAG aes::rhiBufferBindFlagsToApi(BindFlags flags)
+D3D11_BIND_FLAG wob::rhiBufferBindFlagsToApi(BindFlags flags)
 {
 	int32_t result = {};
 	
@@ -71,7 +71,7 @@ D3D11_BIND_FLAG aes::rhiBufferBindFlagsToApi(BindFlags flags)
 	return static_cast<D3D11_BIND_FLAG>(result);
 }
 
-D3D_PRIMITIVE_TOPOLOGY aes::rhiPrimitiveTypeToApi(DrawPrimitiveType primitiveMode)
+D3D_PRIMITIVE_TOPOLOGY wob::rhiPrimitiveTypeToApi(DrawPrimitiveType primitiveMode)
 {
 	switch (primitiveMode)
 	{
@@ -86,11 +86,11 @@ D3D_PRIMITIVE_TOPOLOGY aes::rhiPrimitiveTypeToApi(DrawPrimitiveType primitiveMod
 		case DrawPrimitiveType::Points:
 			return D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
 	}
-	AES_UNREACHABLE();
+	WOB_UNREACHABLE();
 }
 
 // @Review
-UINT aes::rhiCPUAccessFlagsToApi(CPUAccessFlags flags)
+UINT wob::rhiCPUAccessFlagsToApi(CPUAccessFlags flags)
 {
 	UINT result = 0;
 	if (flags & CPUAccessFlagBits::Read)
@@ -100,7 +100,7 @@ UINT aes::rhiCPUAccessFlagsToApi(CPUAccessFlags flags)
 	return result;
 }
 
-D3D11_BLEND_OP aes::rhiBlendOpToApi(BlendOp op)
+D3D11_BLEND_OP wob::rhiBlendOpToApi(BlendOp op)
 {
 	switch (op)
 	{
@@ -109,10 +109,10 @@ D3D11_BLEND_OP aes::rhiBlendOpToApi(BlendOp op)
 		case BlendOp::Add:
 			return D3D11_BLEND_OP_ADD;
 	}
-	AES_UNREACHABLE();
+	WOB_UNREACHABLE();
 }
 
-D3D11_BLEND aes::rhiBlendFactorToApi(BlendFactor blend)
+D3D11_BLEND wob::rhiBlendFactorToApi(BlendFactor blend)
 {
 	switch (blend)
 	{
@@ -127,10 +127,10 @@ D3D11_BLEND aes::rhiBlendFactorToApi(BlendFactor blend)
 		case BlendFactor::OneMinusSrcAlpha: return D3D11_BLEND_INV_SRC_ALPHA;
 		case BlendFactor::OneMinusDstAlpha: return D3D11_BLEND_INV_DEST_ALPHA;
 	}
-	AES_UNREACHABLE();
+	WOB_UNREACHABLE();
 }
 
-D3D11_FILTER aes::rhiTextureFilterToApi(TextureFilter filter)
+D3D11_FILTER wob::rhiTextureFilterToApi(TextureFilter filter)
 {
 	switch(filter)
 	{
@@ -139,10 +139,10 @@ D3D11_FILTER aes::rhiTextureFilterToApi(TextureFilter filter)
 		case TextureFilter::Linear:
 			return D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	}
-	AES_UNREACHABLE();
+	WOB_UNREACHABLE();
 }
 
-D3D11_TEXTURE_ADDRESS_MODE aes::rhiTextureAddressModeToApi(TextureAddressMode adressMode)
+D3D11_TEXTURE_ADDRESS_MODE wob::rhiTextureAddressModeToApi(TextureAddressMode adressMode)
 {
 	switch(adressMode)
 	{
@@ -153,10 +153,10 @@ D3D11_TEXTURE_ADDRESS_MODE aes::rhiTextureAddressModeToApi(TextureAddressMode ad
 		case TextureAddressMode::Clamp:
 			return D3D11_TEXTURE_ADDRESS_CLAMP;
 	}
-	AES_UNREACHABLE();
+	WOB_UNREACHABLE();
 }
 
-D3D11_CULL_MODE aes::rhiCullModeToApi(CullMode cullMode)
+D3D11_CULL_MODE wob::rhiCullModeToApi(CullMode cullMode)
 {
 	// I'm really not sure if GXM match 1/1 D3D on this case
 	switch (cullMode)
@@ -165,10 +165,10 @@ D3D11_CULL_MODE aes::rhiCullModeToApi(CullMode cullMode)
 	case CullMode::CounterClockwise: return D3D11_CULL_BACK;
 	case CullMode::None: return D3D11_CULL_NONE;
 	}
-	AES_UNREACHABLE();
+	WOB_UNREACHABLE();
 }
 
-D3D11_INPUT_CLASSIFICATION aes::rhiVertexInputClassificationToApi(VertexInputClassification classification)
+D3D11_INPUT_CLASSIFICATION wob::rhiVertexInputClassificationToApi(VertexInputClassification classification)
 {
 	switch (classification)
 	{
@@ -177,6 +177,6 @@ D3D11_INPUT_CLASSIFICATION aes::rhiVertexInputClassificationToApi(VertexInputCla
 	case VertexInputClassification::PerInstance:
 		return D3D11_INPUT_PER_INSTANCE_DATA;
 	}
-	AES_UNREACHABLE();
+	WOB_UNREACHABLE();
 }
 

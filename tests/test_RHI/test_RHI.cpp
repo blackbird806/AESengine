@@ -17,13 +17,13 @@
 
 #include "renderer/RHI/RefCounted.hpp"
 
-using namespace aes;
+using namespace wob;
 
 struct vert
 {
-	aes::vec2 pos;
-	aes::vec4 col;
-	aes::vec2 uv;
+	wob::vec2 pos;
+	wob::vec4 col;
+	wob::vec2 uv;
 };
 
 const char* shaderPath = "../../../../wobEngine/assets/shaders/HLSL/";
@@ -46,20 +46,20 @@ public:
 
 	TestRHIApp()
 	{
-		AES_LOG("[TEST] RHI");
+		WOB_LOG("[TEST] RHI");
 		HashMap<String, int> map(16);
 		map.add(String("hello"), 2);
 		map.add(String("world"), 15);
 		map.add(String("pistav"), 12);
 		map["hello"] = 16;
 
-		AES_ASSERT(map.size() == 3);
+		WOB_ASSERT(map.size() == 3);
 		map.remove(String("hello"));
-		AES_ASSERT(map.size() == 2);
+		WOB_ASSERT(map.size() == 2);
 
 		int out = 0;
 		bool b = map.tryFind(String("Hello"), out);
-		AES_ASSERT(b == false);
+		WOB_ASSERT(b == false);
 
 #ifdef _WIN32
 		window = makeUnique<Win_Window>("aes engine");
@@ -67,14 +67,14 @@ public:
 		window = makeUnique<EmptyWindow>();
 #endif
 		initializeGraphicsAPI();
-		AES_LOG("graphics api initialized");
+		WOB_LOG("graphics api initialized");
 
 		// create device
 		device.init();
 		device.setCullMode(CullMode::None);
 		device.setDrawPrimitiveMode(DrawPrimitiveType::TrianglesFill);
 
-		AES_LOG("device created successfully");
+		WOB_LOG("device created successfully");
 
 		{
 			SwapchainDescription swDesc = {};
@@ -103,7 +103,7 @@ public:
 			vertexShaderDescription.verticesLayout = vertexInputLayout;
 			clearVertexShader = device.createVertexShader(vertexShaderDescription).value();
 
-			AES_LOG("clear vertex shader created");
+			WOB_LOG("clear vertex shader created");
 		}
 		{
 			aes::FragmentShaderDescription fragmentShaderDescription{};
@@ -114,71 +114,71 @@ public:
 
 			clearFragmentShader = device.createFragmentShader(fragmentShaderDescription).value();
 
-			AES_LOG("clear fragment shader created");
+			WOB_LOG("clear fragment shader created");
 		}
 #endif
 
 		{
-			aes::vec2 tri[] = {
+			wob::vec2 tri[] = {
 				{-1.0f, -1.0f},
 				{3.0f, -1.0f},
 				{-1.0f, 3.0f},
 			};
 
-			aes::BufferDescription vertexBufferDesc = {};
-			vertexBufferDesc.sizeInBytes = sizeof(aes::vec2) * 3;
-			vertexBufferDesc.bindFlags = aes::BindFlagBits::VertexBuffer;
+			wob::BufferDescription vertexBufferDesc = {};
+			vertexBufferDesc.sizeInBytes = sizeof(wob::vec2) * 3;
+			vertexBufferDesc.bindFlags = wob::BindFlagBits::VertexBuffer;
 			vertexBufferDesc.cpuAccessFlags = CPUAccessFlagBits::None;
 			vertexBufferDesc.usage = MemoryUsage::Immutable;
 			vertexBufferDesc.initialData = tri;
 
 			clearVertexBuffer = device.createBuffer(vertexBufferDesc).value();
-			AES_LOG("clear vertex buffer created");
+			WOB_LOG("clear vertex buffer created");
 		}
 		{
 			uint16_t indices[] = {0, 1, 2};
 
-			aes::BufferDescription indexBufferDesc = {};
+			wob::BufferDescription indexBufferDesc = {};
 			indexBufferDesc.sizeInBytes = sizeof(uint16_t) * 3;
-			indexBufferDesc.bindFlags = aes::BindFlagBits::IndexBuffer;
+			indexBufferDesc.bindFlags = wob::BindFlagBits::IndexBuffer;
 			indexBufferDesc.cpuAccessFlags = CPUAccessFlagBits::None;
 			indexBufferDesc.usage = MemoryUsage::Immutable;
 			indexBufferDesc.initialData = indices;
 
 			clearIndexBuffer = device.createBuffer(indexBufferDesc).value();
-			AES_LOG("clear index buffer created");
+			WOB_LOG("clear index buffer created");
 		}
 		// geometry init
 		{
-			aes::VertexShaderDescription vertexShaderDescription;
+			wob::VertexShaderDescription vertexShaderDescription;
 #ifdef __vita__
 			static auto const geoShaderData_vs = aes::readFileBin("app0:assets/shaders/vita/basic2d_vs.gxp");
 			vertexShaderDescription.source = geoShaderData_vs.data();
 #else
 			String path(shaderPath);
 			path.append("draw2d.vs");
-			vertexShaderDescription.source = aes::readFile(path.c_str());
+			vertexShaderDescription.source = wob::readFile(path.c_str());
 #endif
-			vertexShaderDescription.verticesStride = sizeof(aes::vec2);
-			aes::VertexInputLayout vertexInputLayout[2];
+			vertexShaderDescription.verticesStride = sizeof(wob::vec2);
+			wob::VertexInputLayout vertexInputLayout[2];
 			vertexInputLayout[0].parameterName = "aPosition";
-			vertexInputLayout[0].semantic = aes::SemanticType::Position;
+			vertexInputLayout[0].semantic = wob::SemanticType::Position;
 			vertexInputLayout[0].offset = 0;
-			vertexInputLayout[0].format = aes::RHIFormat::R32G32_Float;
+			vertexInputLayout[0].format = wob::RHIFormat::R32G32_Float;
 
 			vertexInputLayout[1].parameterName = "aColor";
-			vertexInputLayout[1].semantic = aes::SemanticType::Color;
-			vertexInputLayout[1].offset = sizeof(aes::vec2);
-			vertexInputLayout[1].format = aes::RHIFormat::R32G32B32A32_Float;
+			vertexInputLayout[1].semantic = wob::SemanticType::Color;
+			vertexInputLayout[1].offset = sizeof(wob::vec2);
+			vertexInputLayout[1].format = wob::RHIFormat::R32G32B32A32_Float;
 
 			vertexShaderDescription.verticesLayout = vertexInputLayout;
 
 			geoVertexShader = device.createVertexShader(vertexShaderDescription).value();
 
-			AES_LOG("geometry vertex shader created");
+			WOB_LOG("geometry vertex shader created");
 		}
 		{
-			aes::FragmentShaderDescription fragmentShaderDescription;
+			wob::FragmentShaderDescription fragmentShaderDescription;
 #ifdef __vita__
 			// shader binary source must be keep into memory
 			static auto const geoShaderData_fs = aes::readFileBin("app0:assets/shaders/vita/basic2d_fs.gxp");
@@ -187,13 +187,13 @@ public:
 #else
 			String path(shaderPath);
 			path.append("draw2d.fs");
-			fragmentShaderDescription.source = aes::readFile(path.c_str());
+			fragmentShaderDescription.source = wob::readFile(path.c_str());
 #endif
 			fragmentShaderDescription.multisampleMode = MultisampleMode::None;
 
 			geoFragmentShader = device.createFragmentShader(fragmentShaderDescription).value();
 
-			AES_LOG("geometry fragment shader created");
+			WOB_LOG("geometry fragment shader created");
 		}
 		{
 			vert tri[] = {
@@ -202,28 +202,28 @@ public:
 				{{0.25f, 0.5f},  {0.0f, 0.0f, 1.0f, 1.0f},  {0.0f, 0.0f}},
 			};
 
-			aes::BufferDescription vertexBufferDesc = {};
+			wob::BufferDescription vertexBufferDesc = {};
 			vertexBufferDesc.sizeInBytes = sizeof(vert) * 3;
-			vertexBufferDesc.bindFlags = aes::BindFlagBits::VertexBuffer;
+			vertexBufferDesc.bindFlags = wob::BindFlagBits::VertexBuffer;
 			vertexBufferDesc.cpuAccessFlags = CPUAccessFlagBits::Write;
 			vertexBufferDesc.usage = MemoryUsage::Dynamic;
 			vertexBufferDesc.initialData = tri;
 
 			geoVertexBuffer = device.createBuffer(vertexBufferDesc).value();
-			AES_LOG("geoVertexBuffer created");
+			WOB_LOG("geoVertexBuffer created");
 		}
 		{
 			uint16_t indices[] = {0, 1, 2};
 
-			aes::BufferDescription indexBufferDesc = {};
+			wob::BufferDescription indexBufferDesc = {};
 			indexBufferDesc.sizeInBytes = sizeof(uint16_t) * 3;
-			indexBufferDesc.bindFlags = aes::BindFlagBits::IndexBuffer;
+			indexBufferDesc.bindFlags = wob::BindFlagBits::IndexBuffer;
 			indexBufferDesc.cpuAccessFlags = CPUAccessFlagBits::None;
 			indexBufferDesc.usage = MemoryUsage::Immutable;
 			indexBufferDesc.initialData = indices;
 
 			geoIndexBuffer = device.createBuffer(indexBufferDesc).value();
-			AES_LOG("indexBufferDesc created");
+			WOB_LOG("indexBufferDesc created");
 		}
 		{
 			float matrix[16];
@@ -233,15 +233,15 @@ public:
 			matrix[10] = 1;
 			matrix[15] = 1;
 
-			aes::BufferDescription uniformBufferDesc = {};
+			wob::BufferDescription uniformBufferDesc = {};
 			uniformBufferDesc.sizeInBytes = sizeof(matrix);
-			uniformBufferDesc.bindFlags = aes::BindFlagBits::UniformBuffer;
+			uniformBufferDesc.bindFlags = wob::BindFlagBits::UniformBuffer;
 			uniformBufferDesc.cpuAccessFlags = CPUAccessFlagBits::None;
 			uniformBufferDesc.usage = MemoryUsage::Immutable;
 			uniformBufferDesc.initialData = matrix;
 
 			viewProjBuffer = device.createBuffer(uniformBufferDesc).value();
-			AES_LOG("uniform buffer created");
+			WOB_LOG("uniform buffer created");
 			device.bindVertexUniformBuffer(viewProjBuffer, 0);
 		}
 
@@ -279,15 +279,15 @@ public:
 		}
 		else
 		{
-			AES_FATAL_ERROR("Failed to map geoVertexBuffer !");
+			WOB_FATAL_ERROR("Failed to map geoVertexBuffer !");
 		}
 		
 		// clear
 		device.clearSwapchain(swapchain);
 
 		// draw
-		device.setVertexBuffer(geoVertexBuffer, sizeof(vert));
-		device.setIndexBuffer(geoIndexBuffer, IndexTypeFormat::Uint16);
+		device.bindVertexBuffer(geoVertexBuffer, sizeof(vert));
+		device.bindIndexBuffer(geoIndexBuffer, IndexTypeFormat::Uint16);
 		device.setVertexShader(geoVertexShader);
 		device.setFragmentShader(geoFragmentShader);
 		
@@ -315,12 +315,12 @@ public:
 
 int main()
 {
-	AES_START_PROFILE_SESSION("test RHI startup");
+	WOB_START_PROFILE_SESSION("test RHI startup");
 	TestRHIApp app;
-	auto startupSession = AES_STOP_PROFILE_SESSION();
-	AES_LOG("Draw start");
+	auto startupSession = WOB_STOP_PROFILE_SESSION();
+	WOB_LOG("Draw start");
 	app.loop();
-	AES_START_PROFILE_SESSION("test RHI running");
-	auto runningSession = AES_STOP_PROFILE_SESSION();
+	WOB_START_PROFILE_SESSION("test RHI running");
+	auto runningSession = WOB_STOP_PROFILE_SESSION();
 	return 0;
 }

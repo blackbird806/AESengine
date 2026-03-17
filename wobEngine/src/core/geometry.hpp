@@ -1,5 +1,5 @@
-#ifndef AES_GEOMETRY_HPP
-#define AES_GEOMETRY_HPP
+#ifndef WOB_GEOMETRY_HPP
+#define WOB_GEOMETRY_HPP
 
 #include <array>
 #include "core/vec2.hpp"
@@ -14,7 +14,7 @@
  * Geometry structs and collisions funcs
  */
 
-namespace aes {
+namespace wob {
 
 	struct Line2D
 	{

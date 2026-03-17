@@ -1,13 +1,13 @@
 #ifndef AES_GXMRENDERTARGET_HPP
 #define AES_GXMRENDERTARGET_HPP
 
-#include "core/aes.hpp"
+#include "core/wob.hpp"
 #include "core/error.hpp"
 #include "renderer/RHI/RHIElements.hpp"
 #include <psp2/gxm.h>
 #include "gxmCompatibilty.h"
 
-namespace aes
+namespace wob
 {
 	class GxmRenderTarget
 	{

@@ -1,45 +1,45 @@
-#ifndef AES_SIMD_HPP
-#define AES_SIMD_HPP
+#ifndef WOB_SIMD_HPP
+#define WOB_SIMD_HPP
 
-#ifdef AES_ENABLE_SIMD
+#ifdef WOB_ENABLE_SIMD
 
 	#if defined(__vita__)
-		#define AES_NEON
+		#define WOB_NEON
 		#include <arm_neon.h>
 		namespace aes
 		{
 			using r128_t = __n128;
 		}
 	#else
-		#define AES_SSE	
-		#define AES_SSE2
-		#define AES_SSE3
-		#define AES_SSSE3
-		#define AES_SSE4
-		#define AES_SSE4_1
-		#define AES_SSE4_2
-		#define AES_AVX	
-		#define AES_AVX2
-		//#define AES_AVX512
-		#define AES_FMA3
-		#define AES_FMA4
+		#define WOB_SSE	
+		#define WOB_SSE2
+		#define WOB_SSE3
+		#define WOB_SSSE3
+		#define WOB_SSE4
+		#define WOB_SSE4_1
+		#define WOB_SSE4_2
+		#define WOB_AVX	
+		#define WOB_AVX2
+		//#define WOB_AVX512
+		#define WOB_FMA3
+		#define WOB_FMA4
 
 		#include <mmintrin.h>
 		#include <emmintrin.h>
 		#include <xmmintrin.h>
-		#ifdef  AES_SSE3
+		#ifdef  WOB_SSE3
 			#include <pmmintrin.h>
 		#endif
-		#ifdef AES_SSSE3
+		#ifdef WOB_SSSE3
 			#include <tmmintrin.h>
 		#endif
-		#ifdef AES_SSE4_1
+		#ifdef WOB_SSE4_1
 			#include <smmintrin.h>
 		#endif
-		#ifdef AES_SSE4_2
+		#ifdef WOB_SSE4_2
 			#include <nmmintrin.h>
 		#endif
-		#if defined(AES_AVX) || defined(AES_AVX512)
+		#if defined(WOB_AVX) || defined(WOB_AVX512)
 			#include <immintrin.h>
 		#endif
 		namespace aes

@@ -1,15 +1,15 @@
-#ifndef AES_RHIDEVICE_HPP
-#define AES_RHIDEVICE_HPP
+#ifndef WOB_RHIDEVICE_HPP
+#define WOB_RHIDEVICE_HPP
 
 #include "renderer/RHI/RHI.hpp"
 
-#ifdef AES_GRAPHIC_API_D3D11
+#ifdef WOB_GRAPHIC_API_D3D11
 	#include "renderer/RHI/D3D11/D3D11Device.hpp"
-#elif defined(AES_GRAPHIC_API_GXM)
+#elif defined(WOB_GRAPHIC_API_GXM)
 	#include "renderer/RHI/SceGxm/gxmDevice.hpp"
 #endif
 
-namespace aes 
+namespace wob 
 {
 	class RHIDevice : public RHIDeviceBase
 	{

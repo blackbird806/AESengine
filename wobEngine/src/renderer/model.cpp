@@ -4,9 +4,9 @@
 #include "RHI/RHIRenderContext.hpp"
 #include "simpleMeshes.hpp"
 
-using namespace aes;
+using namespace wob;
 
-Array<Vertex> aes::getCubeVertices()
+Array<Vertex> wob::getCubeVertices()
 {
 	Array<Vertex> vertices;
 	vertices.resize(8);
@@ -38,7 +38,7 @@ Array<Vertex> aes::getCubeVertices()
 	return vertices;
 }
 
-Array<Vertex> aes::getCubeVertices(vec4 const& color)
+Array<Vertex> wob::getCubeVertices(vec4 const& color)
 {
 	Array<Vertex> vertices;
 	vertices.resize(8);
@@ -70,9 +70,9 @@ Array<Vertex> aes::getCubeVertices(vec4 const& color)
 	return vertices;
 }
 
-Result<Model> aes::createCube()
+Result<Model> wob::createCube()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	Model cube;
 	//auto const result = cube.init(getCubeVertices(), cubeIndices);
@@ -81,9 +81,9 @@ Result<Model> aes::createCube()
 	return { std::move(cube) };
 }
 
-Result<Model> aes::createCube(vec4 const& col)
+Result<Model> wob::createCube(vec4 const& col)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	Model cube;
 	auto const result = cube.init(getCubeVertices(col), sm::cubeIndices);
@@ -94,7 +94,7 @@ Result<Model> aes::createCube(vec4 const& col)
 
 Result<void> Model::init(std::span<Vertex const> vertices, std::span<uint32_t const> indices)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	vertexCount = vertices.size();
 	indexCount = indices.size();
@@ -136,7 +136,7 @@ Result<void> Model::init(std::span<Vertex const> vertices, std::span<uint32_t co
 
 void Model::draw()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	//modelBuffer.setDataFromPOD(glm::transpose(toWorld));
 

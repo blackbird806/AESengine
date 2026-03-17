@@ -2,7 +2,7 @@
 #include <d3d11.h>
 #include <utility>
 
-using namespace aes;
+using namespace wob;
 
 D3D11Swapchain::D3D11Swapchain(D3D11Swapchain&& rhs) noexcept
 {
