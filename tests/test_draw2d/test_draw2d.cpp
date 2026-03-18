@@ -21,6 +21,7 @@ public:
 
 	void start() override
 	{
+		initializeGraphicsAPI();
 		if (!draw2d.init(device))
 			WOB_FATAL_ERROR("draw2d creation failed");
 	}

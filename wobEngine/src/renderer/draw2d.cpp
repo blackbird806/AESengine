@@ -267,6 +267,8 @@ void Draw2D::executeDrawCommands()
 	ensureIndexBufferCapacity(indices.size() * sizeof(Index_t));
 	//vertexBuffer.setData(textureVertices.data(), textureVertices.size() * sizeof(TextureVertex));
 	//indexBuffer.setData(textureIndices.data(), textureIndices.size() * sizeof(Index_t));
+	device->setBufferData(vertexBuffer, vertices.data(), vertices.size() * sizeof(TextureVertex));
+	device->setBufferData(indexBuffer, indices.data(), indices.size() * sizeof(uint16_t));
 
 	uint colorIndicesOffset = 0;
 	uint textureIndicesOffset = 0;

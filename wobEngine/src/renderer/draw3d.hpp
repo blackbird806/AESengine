@@ -27,11 +27,20 @@ namespace wob
 		static constexpr int32_t vertexBufferSize = 64_kb;
 		static constexpr int32_t indexBufferSize = 32_kb;
 
+		GraphicsPipeline pipeline;
+
 	private:
+
+		struct Vertex
+		{
+			vec3 pos;
+			vec4 color;
+		};
 
 		struct State
 		{
 			Color color = Color::Blue;
+			mat4 model = mat4::identity();
 		};
 
 		enum class DrawType
@@ -44,14 +53,16 @@ namespace wob
 		{
 			DrawType type;
 			State state;
-			mat4 model;
 		};
 
 		RHIDevice* device;
-		GraphicsPipeline pipeline;
 		Array<Command> commands;
 		State currentState;
 		Array<State> states;
+
+		Array<Vertex> vertices;
+		Array<uint16_t> indices;
+		uint16_t indicesOffset = 0;
 
 		RHIBuffer vertexBuffer;
 		RHIBuffer indexBuffer;

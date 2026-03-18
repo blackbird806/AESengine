@@ -262,7 +262,7 @@ public:
 
 int main()
 {
-	auto streamSink = wob::makeUnique<wob::StreamSink>(std::cout);
+	auto streamSink = wob::makeUnique<wob::StreamSink>(std::cerr);
 	wob::Logger::instance().addSink(streamSink.get());
 	WOB_START_PROFILE_SESSION("test draw3d startup");
 	TestPipelineApp app({
