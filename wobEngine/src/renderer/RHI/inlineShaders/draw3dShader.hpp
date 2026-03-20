@@ -1,5 +1,5 @@
-#ifndef WOB_INLINESHADER_HPP
-#define WOB_INLINESHADER_HPP
+#ifndef WOB_INLINEDRAW3DSHADER_HPP
+#define WOB_INLINEDRAW3DSHADER_HPP
 
 #ifdef WOB_GRAPHIC_API_D3D11
 #include "renderer/RHI/D3D11/inlineShaders/D3D11draw3dShader.hpp"

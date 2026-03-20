@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
-	<Type Name="aes::Array&lt;*&gt;">
+	<!-- Array Visualization -->
+	<Type Name="wob::Array&lt;*&gt;">
 		<DisplayString>{{ size={size_}, ptr={buffer} }}</DisplayString>
 		<Expand>
 			<Item Name="[size]" ExcludeView="simple">size_</Item>
@@ -18,7 +19,7 @@
 	</Type>
 
 	<!-- SList Visualization -->
-	<Type Name="aes::SList&lt;*&gt;">
+	<Type Name="wob::SList&lt;*&gt;">
 		<DisplayString>SList[{first}]</DisplayString>
 		<Expand HideRawView="true">
 			<CustomListItems>
@@ -37,7 +38,7 @@
 	</Type>
 
 	<!-- HashMap Visualization -->
-	<Type Name="aes::HashMap&lt;*,*,*&gt;">
+	<Type Name="wob::HashMap&lt;*,*,*&gt;">
 		<DisplayString>HashMap[size={size_}]</DisplayString>
 		<Expand HideRawView="true">
 			<Item Name="[size]">size_</Item>
@@ -46,7 +47,7 @@
 	</Type>
 	
 	<!-- Pair Visualization -->
-	<Type Name="aes::Pair&lt;*,*&gt;">
+	<Type Name="wob::Pair&lt;*,*&gt;">
 		<DisplayString>({first}, {second})</DisplayString>
 	</Type>
 

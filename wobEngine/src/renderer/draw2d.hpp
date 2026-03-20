@@ -50,7 +50,7 @@ namespace wob
 		Result<void> ensureVertexBufferCapacity(size_t sizeInBytes);
 		Result<void> ensureIndexBufferCapacity(size_t sizeInBytes);
 
-		struct TextureVertex
+		struct Vertex
 		{
 			vec2 pos;
 			vec4 color;
@@ -88,7 +88,7 @@ namespace wob
 
 		Array<Command> commands;
 
-		Array<TextureVertex> vertices;
+		Array<Vertex> vertices;
 		Array<Index_t> indices;
 		Index_t offset = 0;
 

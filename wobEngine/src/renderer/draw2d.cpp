@@ -1,8 +1,8 @@
 #include "draw2d.hpp"
 
 #include "core/utility.hpp"
-#include "RHI/RHIRenderContext.hpp"
 #include "fontRenderer.hpp"
+#include "RHI/inlineShaders/draw2dShader.hpp"
 
 using namespace wob;
 
@@ -15,34 +15,36 @@ Result<void> Draw2D::init(RHIDevice& dev)
 	// init shaders
 	{
 		VertexShaderDescription vertexShaderDescription;
-		vertexShaderDescription.verticesLayout.resize(2);
+		vertexShaderDescription.verticesLayout.resize(3);
 
 		vertexShaderDescription.verticesLayout[0].semantic = SemanticType::Position;
-		vertexShaderDescription.verticesLayout[0].parameterName = "aPosition";
+		vertexShaderDescription.verticesLayout[0].parameterName = "position";
 		vertexShaderDescription.verticesLayout[0].offset = 0;
 		vertexShaderDescription.verticesLayout[0].format = RHIFormat::R32G32_Float;
 		vertexShaderDescription.verticesLayout[0].vertexBufferIndex = 0;
 		vertexShaderDescription.verticesLayout[0].classification = VertexInputClassification::PerVertex;
 
-		//vertexShaderDescription.verticesLayout[1].semantic = SemanticType::Color;
-		//vertexShaderDescription.verticesLayout[1].parameterName = "aColor";
-		//vertexShaderDescription.verticesLayout[1].offset = sizeof(vec4);
-		//vertexShaderDescription.verticesLayout[1].format = RHIFormat::R32G32B32A32_Float;
-
-		vertexShaderDescription.verticesLayout[1].semantic = SemanticType::TexCoord;
-		vertexShaderDescription.verticesLayout[1].parameterName = "aTexcoord";
+		vertexShaderDescription.verticesLayout[1].semantic = SemanticType::Color;
+		vertexShaderDescription.verticesLayout[1].parameterName = "color";
 		vertexShaderDescription.verticesLayout[1].offset = sizeof(vec2);
-		vertexShaderDescription.verticesLayout[1].format = RHIFormat::R32G32_Float;
+		vertexShaderDescription.verticesLayout[1].format = RHIFormat::R32G32B32A32_Float;
 		vertexShaderDescription.verticesLayout[1].vertexBufferIndex = 0;
 		vertexShaderDescription.verticesLayout[1].classification = VertexInputClassification::PerVertex;
+
+		vertexShaderDescription.verticesLayout[2].semantic = SemanticType::TexCoord;
+		vertexShaderDescription.verticesLayout[2].parameterName = "uv";
+		vertexShaderDescription.verticesLayout[2].offset = sizeof(vec2) + sizeof(vec4);
+		vertexShaderDescription.verticesLayout[2].format = RHIFormat::R32G32_Float;
+		vertexShaderDescription.verticesLayout[2].vertexBufferIndex = 0;
+		vertexShaderDescription.verticesLayout[2].classification = VertexInputClassification::PerVertex;
 
 #ifdef __vita__
 		auto const source_vs = readFileBin("app0:assets/shaders/vita/texture2d_vs.gxp");
 		vertexShaderDescription.source = source_vs.data();
 #else
-		vertexShaderDescription.source = readFile("assets/shaders/HLSL/texture2d.vs");
+		vertexShaderDescription.source = draw2dVSSource;
 #endif
-		vertexShaderDescription.verticesStride = sizeof(TextureVertex);
+		vertexShaderDescription.verticesStride = sizeof(Vertex);
 
 		auto result = device->createVertexShader(vertexShaderDescription);
 		if (!result)
@@ -65,7 +67,7 @@ Result<void> Draw2D::init(RHIDevice& dev)
 		fragmentShaderDescription.source = source_fs.data();
 		fragmentShaderDescription.gxpVertexProgram = textureVertexShader.getGxpShader();
 #else
-		fragmentShaderDescription.source = readFile("assets/shaders/HLSL/texture2d.fs");
+		fragmentShaderDescription.source = draw2dFSSource;
 		fragmentShaderDescription.blendInfo = blendInfo;
 #endif
 
@@ -104,7 +106,7 @@ Result<void> Draw2D::init(RHIDevice& dev)
 		viewProjBuffer = std::move(result.value());
 	}
 
-	ensureVertexBufferCapacity(200 * sizeof(TextureVertex));
+	ensureVertexBufferCapacity(200 * sizeof(Vertex));
 	ensureIndexBufferCapacity(400 * sizeof(Index_t));
 
 	WOB_LOG("draw2d initialized");
@@ -263,11 +265,11 @@ void Draw2D::executeDrawCommands()
 
 	offset = 0;
 
-	ensureVertexBufferCapacity(vertices.size() * sizeof(TextureVertex));
+	ensureVertexBufferCapacity(vertices.size() * sizeof(Vertex));
 	ensureIndexBufferCapacity(indices.size() * sizeof(Index_t));
 	//vertexBuffer.setData(textureVertices.data(), textureVertices.size() * sizeof(TextureVertex));
 	//indexBuffer.setData(textureIndices.data(), textureIndices.size() * sizeof(Index_t));
-	device->setBufferData(vertexBuffer, vertices.data(), vertices.size() * sizeof(TextureVertex));
+	device->setBufferData(vertexBuffer, vertices.data(), vertices.size() * sizeof(Vertex));
 	device->setBufferData(indexBuffer, indices.data(), indices.size() * sizeof(uint16_t));
 
 	uint colorIndicesOffset = 0;
@@ -280,7 +282,7 @@ void Draw2D::executeDrawCommands()
 	device->setVertexShader(vertexShader);
 	device->setFragmentShader(fragmentShader);
 
-	device->bindVertexBuffer(vertexBuffer, 0, sizeof(TextureVertex));
+	device->bindVertexBuffer(vertexBuffer, 0, sizeof(Vertex));
 	device->bindIndexBuffer(indexBuffer, IndexTypeFormat::Uint16);
 
 	for (auto const& cmd : commands)

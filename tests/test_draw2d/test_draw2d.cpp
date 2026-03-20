@@ -4,6 +4,7 @@
 #include "core/color.hpp"
 #include "core/vec2.hpp"
 #include "renderer/RHI/RHIDevice.hpp"
+#include <iostream>
 
 using namespace wob;
 
@@ -22,6 +23,7 @@ public:
 	void start() override
 	{
 		initializeGraphicsAPI();
+		device.init();
 		if (!draw2d.init(device))
 			WOB_FATAL_ERROR("draw2d creation failed");
 	}
@@ -46,6 +48,8 @@ public:
 
 int main()
 {
+	auto streamSink = wob::makeUnique<wob::StreamSink>(std::cerr);
+	wob::Logger::instance().addSink(streamSink.get());
 	//WOB_START_PROFILE_SESSION("test draw2d startup");
 	TestDraw2dApp app({
 		.appName = "aes draw2d test"

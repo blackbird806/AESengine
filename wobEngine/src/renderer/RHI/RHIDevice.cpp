@@ -20,11 +20,11 @@ Result<void> RHIDevice::reallocBuffer(RHIBuffer& buffer, BufferDescription const
 {
 	WOB_PROFILE_FUNCTION();
 	
-	RHIBuffer newBuffer;
 	auto err = createBuffer(reallocDesc);
 	if (!err)
 		return { err.error() };
 
+	RHIBuffer newBuffer  = std::move(err.value());
 	if (buffer.isValid())
 	{
 		auto copyErr = copyBuffer(buffer, newBuffer);
