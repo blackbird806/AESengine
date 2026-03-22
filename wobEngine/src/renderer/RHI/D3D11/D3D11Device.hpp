@@ -32,7 +32,7 @@ namespace wob
 		Result<void> init();
 		void destroy();
 
-		// resource creation
+		// resource creation / destruction
 		Result<RHISwapchain> createSwapchain(SwapchainDescription const& desc);
 		Result<RHIRenderTarget> createRenderTarget(RenderTargetDescription const& desc);
 		Result<RHIBuffer> createBuffer(BufferDescription const& desc);
@@ -40,6 +40,14 @@ namespace wob
 		Result<RHIVertexShader> createVertexShader(VertexShaderDescription const& desc);
 		Result<RHIFragmentShader> createFragmentShader(FragmentShaderDescription const& desc);
 		Result<RHISampler> createSampler(SamplerDescription const& desc);
+
+		void destroySwapchain(RHISwapchain& swapchain);
+		void destroyRenderTarget(RHIRenderTarget& renderTarget);
+		void destroyBuffer(RHIBuffer& buffer);
+		void destroyTexture(RHITexture& texture);
+		void destroyVertexShader(RHIVertexShader& vertexShader);
+		void destroyFragmentShader(RHIFragmentShader& fragmentShader);
+		void destroySampler(RHISampler& sampler);
 
 		// cmds
 		// return null if failed

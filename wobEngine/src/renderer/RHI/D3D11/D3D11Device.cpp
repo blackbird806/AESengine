@@ -607,6 +607,11 @@ Result<RHISampler> D3D11Device::createSampler(SamplerDescription const& desc)
 	return {std::move(sampler)};
 }
 
+void D3D11Device::destroySwapchain(RHISwapchain& swapchain)
+{
+
+}
+
 void* D3D11Device::mapBuffer(RHIBuffer const& buffer)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
