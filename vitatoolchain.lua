@@ -5,11 +5,11 @@ toolchain("vita")
 
 	--set_kind("cross")
     set_kind("standalone")
---  set_sdkdir("/usr/local/vitasdk")
+--	set_sdkdir("/usr/local/vitasdk")
 --	set_bindir("/usr/local/vitasdk/bin")
 	add_defines("__vita__")
 
-	use_vita_toolchain = false
+	use_vita_toolchain = true
 --	if use_vita_toolchain then
 --		set_toolset("cxx", "arm-vita-eabi-g++")
 --		set_toolset("ld", "arm-vita-eabi-g++")

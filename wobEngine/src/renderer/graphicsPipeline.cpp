@@ -1,8 +1,6 @@
 #include "graphicsPipeline.hpp"
 #include "core/string.hpp"
 #include "RHI/RHIElements.hpp"
-#include <ranges>
-#include <algorithm>
 
 using namespace wob;
 
@@ -29,19 +27,19 @@ void GraphicsPipeline::bind()
 
 void GraphicsPipeline::buildFragmentShader(FragmentShaderDescription const& desc)
 {
-	fragmentShader = std::move(device->createFragmentShader(desc).value());
+	fragmentShader = wob::move(device->createFragmentShader(desc).value());
 }
 
 void GraphicsPipeline::buildVertexShader(VertexShaderDescription const& desc)
 {
 	vertexShaderDesc = desc;
-	vertexShader = std::move(device->createVertexShader(desc).value());
+	vertexShader = wob::move(device->createVertexShader(desc).value());
 }
 
 void GraphicsPipeline::registerVertexUniform(String const& name, BufferDescription bufferDesc, uint slot)
 {
 	auto bufferVal = device->createBuffer(bufferDesc);
-	vertexUniformBuffers.push(UniformBindPoint{ name, std::move(bufferVal.value()), slot });
+	vertexUniformBuffers.push(UniformBindPoint{ name, wob::move(bufferVal.value()), slot });
 }
 
 void GraphicsPipeline::setVertexUniform(String const& name, void* data, uint32_t size)
@@ -57,7 +55,7 @@ void GraphicsPipeline::setVertexUniform(String const& name, void* data, uint32_t
 void wob::GraphicsPipeline::registerFragmentUniform(String const& name, BufferDescription bufferDesc, uint slot)
 {
 	auto bufferVal = device->createBuffer(bufferDesc);
-	fragmentUniformBuffers.push(UniformBindPoint{ name, std::move(bufferVal.value()), slot });
+	fragmentUniformBuffers.push(UniformBindPoint{ name, wob::move(bufferVal.value()), slot });
 }
 
 void wob::GraphicsPipeline::setFragmentUniform(String const& name, void* data, uint32_t size)

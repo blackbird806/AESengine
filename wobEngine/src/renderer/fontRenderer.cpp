@@ -93,5 +93,5 @@ Result<FontRessource> wob::createFontRessource(FontParams const& params)
 		desc.mipsLevel = 4;
 		fontRessource.texture = params.device->createTexture(desc).value();
 	}
-	return { std::move(fontRessource) };
+	return { wob::move(fontRessource) };
 }

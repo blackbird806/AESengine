@@ -4,8 +4,7 @@
 #include "coreMacros.hpp"
 #include "assert.hpp"
 #include "allocator.hpp"
-#include <utility>
-#include <concepts>
+#include "context.hpp"
 #include <ranges>
 
 namespace wob
@@ -48,7 +47,7 @@ namespace wob
 
 		constexpr Array(Array&& rhs) noexcept
 		{
-			*this = std::move(rhs);
+			*this = wob::move(rhs);
 		}
 
 		constexpr IAllocator* getAllocator() const noexcept
@@ -148,7 +147,7 @@ namespace wob
 			{
 				grow();
 			}
-			new (&buffer[size_++]) T(std::move(e));
+			new (&buffer[size_++]) T(wob::move(e));
 		}
 
 		template<typename ...Args>
@@ -158,7 +157,7 @@ namespace wob
 			{
 				grow();
 			}
-			new (&buffer[size_++]) T(std::forward<Args>(args)...);
+			new (&buffer[size_++]) T(wob::forward<Args>(args)...);
 		}
 
 		template<std::ranges::input_range Range>
@@ -185,7 +184,7 @@ namespace wob
 				// Move elements after insertion point (shifted by rangeSize)
 				for (uint32_t i = ipos; i < size_; i++)
 				{
-					new (&newBuffer[i + rangeSize]) T(std::move(buffer[i]));
+					new (&newBuffer[i + rangeSize]) T(wob::move(buffer[i]));
 				}
 				workBuffer = newBuffer;
 				alloc->deallocate(buffer);
@@ -194,7 +193,7 @@ namespace wob
 			{
 				for (uint32_t i = size_; i > ipos; i--)
 				{
-					new (&workBuffer[i + rangeSize - 1]) T(std::move(workBuffer[i - 1]));
+					new (&workBuffer[i + rangeSize - 1]) T(wob::move(workBuffer[i - 1]));
 				}
 			}
 
@@ -202,7 +201,7 @@ namespace wob
 			uint32_t insertIdx = ipos;
 			for (auto&& e : range)
 			{
-				new (&workBuffer[insertIdx++]) T(std::move(e));
+				new (&workBuffer[insertIdx++]) T(wob::move(e));
 			}
 
 			buffer = workBuffer;
@@ -211,7 +210,7 @@ namespace wob
 
 		constexpr void insert(Iterator_t pos, T&& val) noexcept
 		{
-			insert(pos, { std::forward<T>(val) });
+			insert(pos, { wob::forward<T>(val) });
 		}
 
 		constexpr void pop() noexcept
@@ -301,7 +300,7 @@ namespace wob
 		{
 			// @performance conditionaly use use memcpy (or memmove if reallocate is used) here ?
 			for (uint32_t i = 0; i < size_; i++)
-				new (&newBuffer[i]) T(std::move(buffer[i]));
+				new (&newBuffer[i]) T(wob::move(buffer[i]));
 		}
 
 		constexpr void grow() noexcept

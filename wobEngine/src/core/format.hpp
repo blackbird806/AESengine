@@ -294,7 +294,7 @@ namespace wob
 		formatedArgs.args.reserve(sizeof...(args));
 	
 		// format each arg in parameter pack
-		(..., formatedArgs.args.push(formatArg(std::forward<Args>(args))));
+		(..., formatedArgs.args.push(formatArg(wob::forward<Args>(args))));
 
 		String str;
 		bool isInfmt = false;

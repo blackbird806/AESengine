@@ -46,7 +46,7 @@ namespace wob
 		{
 			if (first == nullptr)
 			{
-				first = createNode(std::forward<T>(e));
+				first = createNode(wob::forward<T>(e));
 				return;
 			}
 
@@ -54,7 +54,7 @@ namespace wob
 			for (; c->next != nullptr; c = c->next)
 			{
 			}
-			c->next = createNode(std::forward<T>(e));
+			c->next = createNode(wob::forward<T>(e));
 		}
 
 		constexpr Iterator find(T const& e) const noexcept
@@ -138,7 +138,7 @@ namespace wob
 		Node* createNode(T&& e)
 		{
 			Node* n = new(allocator->allocate<Node>()) Node;
-			n->data = std::forward<T>(e);
+			n->data = wob::forward<T>(e);
 			n->next = nullptr;
 			return n;
 		}

@@ -68,7 +68,7 @@ namespace wob
 
 		}
 
-		constexpr String(String&& rhs) noexcept : buffer(std::move(rhs.buffer))
+		constexpr String(String&& rhs) noexcept : buffer(wob::move(rhs.buffer))
 		{
 
 		}
@@ -81,7 +81,7 @@ namespace wob
 
 		constexpr String& operator=(String&& rhs) noexcept
 		{
-			buffer = std::move(rhs.buffer);
+			buffer = wob::move(rhs.buffer);
 			return *this;
 		}
 
@@ -174,7 +174,7 @@ namespace wob
 		template<std::ranges::input_range Range>
 		constexpr void insert(Iterator_t pos, Range&& range) noexcept
 		{
-			buffer.insert(pos, std::forward<Range>(range));
+			buffer.insert(pos, wob::forward<Range>(range));
 			buffer.push('\0');
 		}
 

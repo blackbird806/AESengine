@@ -32,7 +32,7 @@ namespace wob
 		
 		struct Leaf final : BSPElement
 		{
-			Leaf(Array<Object>&& obj) : objects(std::move(obj))
+			Leaf(Array<Object>&& obj) : objects(wob::move(obj))
 			{
 				
 			}
@@ -47,7 +47,7 @@ namespace wob
 		struct Node final : BSPElement
 		{
 			Node(Plane const& p, UniquePtr<BSPElement> f, UniquePtr<BSPElement> b)
-				: plane(p), front(std::move(f)), back(std::move(b))
+				: plane(p), front(wob::move(f)), back(wob::move(b))
 			{
 				
 			}

@@ -38,7 +38,7 @@ public:
 			if (!fontResult)
 				WOB_FATAL_ERROR("font creation failed");
 
-			defaultFont = std::move(fontResult.value());
+			defaultFont = wob::move(fontResult.value());
 		}
 
 		if (!draw2d.init(device))

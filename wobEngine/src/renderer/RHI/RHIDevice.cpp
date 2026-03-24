@@ -24,14 +24,14 @@ Result<void> RHIDevice::reallocBuffer(RHIBuffer& buffer, BufferDescription const
 	if (!err)
 		return { err.error() };
 
-	RHIBuffer newBuffer  = wob::move(err.value());
+	RHIBuffer newBuffer  = std::move(err.value());
 	if (buffer.isValid())
 	{
 		auto copyErr = copyBuffer(buffer, newBuffer);
 		if (!copyErr)
 			return copyErr;
 	}
-	buffer = wob::move(newBuffer);
+	buffer = std::move(newBuffer);
 	
 	return {};
 }

@@ -457,9 +457,9 @@ namespace wob::phenix
 						memberDeclWalker.moveNext();
 					}
 
-					newStruct.members.push(std::move(newVar));
+					newStruct.members.push(wob::move(newVar));
 				}
-				shader.structDecl.push(std::move(newStruct));
+				shader.structDecl.push(wob::move(newStruct));
 			}
 		}
 		return shader;

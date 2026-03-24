@@ -10,8 +10,8 @@ namespace wob
 	template<class T, class U = T>
 	constexpr T exchange(T& obj, U&& new_value) noexcept
 	{
-		T old_value = std::move(obj);
-		obj = std::forward<U>(new_value);
+		T old_value = wob::move(obj);
+		obj = wob::forward<U>(new_value);
 		return old_value;
 	}
 
@@ -53,16 +53,16 @@ namespace wob
 
 		constexpr UniquePtr() noexcept : ptr(nullptr) {}
 		constexpr UniquePtr(T* p) noexcept : ptr(p) {}
-		constexpr UniquePtr(T* p, D&& d) noexcept : ptr(p), deleter(std::move(d)) {}
+		constexpr UniquePtr(T* p, D&& d) noexcept : ptr(p), deleter(wob::move(d)) {}
 		constexpr UniquePtr(std::nullptr_t) : ptr(nullptr) {}
 		UniquePtr(UniquePtr const&) = delete;
 
-		constexpr UniquePtr(UniquePtr&& rhs) noexcept : ptr(rhs.release()), deleter(std::move(rhs.deleter))
+		constexpr UniquePtr(UniquePtr&& rhs) noexcept : ptr(rhs.release()), deleter(wob::move(rhs.deleter))
 		{ }
 
 		template<typename T2, typename D2>
 		requires std::convertible_to<T2*, T*> && std::convertible_to<D2, D>
-		constexpr UniquePtr(UniquePtr<T2, D2>&& rhs) noexcept : ptr(rhs.release()), deleter(std::move(rhs.deleter))
+		constexpr UniquePtr(UniquePtr<T2, D2>&& rhs) noexcept : ptr(rhs.release()), deleter(wob::move(rhs.deleter))
 		{ }
 		
 		template<typename T2, typename D2>
@@ -77,7 +77,7 @@ namespace wob
 		constexpr UniquePtr& operator=(UniquePtr<T2, D2>&& rhs) noexcept
 		{
 			ptr = rhs.release();
-			deleter = std::move(rhs.deleter);
+			deleter = wob::move(rhs.deleter);
 			return *this;
 		}
 		
@@ -92,7 +92,7 @@ namespace wob
 		constexpr UniquePtr& operator=(UniquePtr&& rhs) noexcept
 		{
 			ptr = rhs.release();
-			deleter = std::move(rhs.deleter);
+			deleter = wob::move(rhs.deleter);
 			return *this;
 		}
 
@@ -153,6 +153,7 @@ namespace wob
 
 		[[nodiscard]] constexpr std::add_lvalue_reference_t<T> operator*() const noexcept
 		{
+			WOB_ASSERT(ptr != nullptr);
 			return *ptr;
 		}
 
@@ -171,13 +172,13 @@ namespace wob
 	{
 		void* ptr = alloc.allocate(sizeof(T), alignof(T));
 		AllocatorDelete<T> del(&alloc);
-		return UniquePtr<T, AllocatorDelete<T>>(::new(ptr) T(std::forward<Args>(args)...), std::move(del));
+		return UniquePtr<T, AllocatorDelete<T>>(::new(ptr) T(wob::forward<Args>(args)...), wob::move(del));
 	}
 
 	template<typename T, typename... Args>
 	auto makeUnique(Args&&... args) noexcept
 	{
-		return makeUnique<T, Args...>(*context.allocator, std::forward<Args>(args)...);
+		return makeUnique<T, Args...>(*context.allocator, wob::forward<Args>(args)...);
 	}
 }
 

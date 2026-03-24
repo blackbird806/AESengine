@@ -17,7 +17,7 @@ void D3D11RenderTarget::destroy()
 
 wob::D3D11RenderTarget::D3D11RenderTarget(D3D11RenderTarget&& rhs) noexcept
 {
-	*this = std::move(rhs);
+	*this = wob::move(rhs);
 }
 
 D3D11RenderTarget::~D3D11RenderTarget()

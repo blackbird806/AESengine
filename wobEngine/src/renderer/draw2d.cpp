@@ -49,7 +49,7 @@ Result<void> Draw2D::init(RHIDevice& dev)
 		auto result = device->createVertexShader(vertexShaderDescription);
 		if (!result)
 			return result.error();
-		vertexShader = std::move(result.value());
+		vertexShader = wob::move(result.value());
 
 	}
 	{
@@ -74,7 +74,7 @@ Result<void> Draw2D::init(RHIDevice& dev)
 		auto result = device->createFragmentShader(fragmentShaderDescription);
 		if (!result)
 			return result.error();
-		fragmentShader = std::move(result.value());
+		fragmentShader = wob::move(result.value());
 	}
 
 	// init default sampler
@@ -88,7 +88,7 @@ Result<void> Draw2D::init(RHIDevice& dev)
 		auto result = device->createSampler(samplerDesc);
 		if (!result)
 			return result.error();
-		sampler = std::move(result.value());
+		sampler = wob::move(result.value());
 	}
 
 	// init uniform buffer
@@ -103,7 +103,7 @@ Result<void> Draw2D::init(RHIDevice& dev)
 		auto result = device->createBuffer(bufferDesc);
 		if (!result)
 			return result.error();
-		viewProjBuffer = std::move(result.value());
+		viewProjBuffer = wob::move(result.value());
 	}
 
 	ensureVertexBufferCapacity(200 * sizeof(Vertex));

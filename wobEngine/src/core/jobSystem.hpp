@@ -77,7 +77,7 @@ namespace wob
 		std::shared_ptr<Job> run(F&& f)
 		{
 			std::unique_lock l(sync);
-			jobs.push(std::make_shared<Job>(std::move(f)));
+			jobs.push(std::make_shared<Job>(wob::move(f)));
 			return jobs.back();
 		}
 

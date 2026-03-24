@@ -6,7 +6,7 @@ using namespace wob;
 
 D3D11Swapchain::D3D11Swapchain(D3D11Swapchain&& rhs) noexcept
 {
-	*this = std::move(rhs);
+	*this = wob::move(rhs);
 }
 
 D3D11Swapchain& D3D11Swapchain::operator=(D3D11Swapchain&& rhs) noexcept

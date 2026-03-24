@@ -2,7 +2,8 @@
 #include "wob.hpp"
 #include "context.hpp"
 #include "format.hpp"
-#include <iostream>
+#include "utility.hpp"
+#include <cstdio>
 
 #ifdef __vita__
 #include "psvDebugScreen/debugScreen.h"
@@ -23,7 +24,7 @@ Logger& Logger::instance() noexcept
 void Logger::addSink(Sink* sink) noexcept
 {
 	WOB_ASSERT(sink);
-	WOB_ASSERT(sinkCount < std::size(sinks));
+	WOB_ASSERT(sinkCount < wob::size(sinks));
 	sinks[sinkCount++] = sink;
 }
 
@@ -36,19 +37,19 @@ void Logger::log(const char* message) noexcept
 	}
 }
 
-StreamSink::StreamSink(std::ostream& stream_) noexcept : stream(stream_)
+StreamSink::StreamSink(FILE* instream) noexcept : stream(instream)
 {
 	
 }
 
 void StreamSink::dispatch_log(const char* message) noexcept
 {
-	stream << message;
+	fputs(message, stream);
 }
 
 void StreamSink::flush() noexcept
 {
-	stream.flush();
+	fflush(stream);
 }
 
 #ifdef __vita__

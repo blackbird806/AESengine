@@ -19,7 +19,7 @@ namespace wob {
 		auto operator()(Args&&... args)
 		{
 			WOB_ASSERT(fn);
-			return fn(std::forward<Args>(args)..., userData);
+			return fn(wob::forward<Args>(args)..., userData);
 		}
 
 		F fn = nullptr;

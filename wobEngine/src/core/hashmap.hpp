@@ -96,9 +96,9 @@ namespace wob
 			newBuckets.resize(newBucketCount);
 			for (auto& [k, v] : *this)
 			{
-				add(newBuckets, std::move(k), std::move(v));
+				add(newBuckets, wob::move(k), wob::move(v));
 			}
-			buckets = std::move(newBuckets);
+			buckets = wob::move(newBuckets);
 		}
 
 		constexpr void rehash()
@@ -115,7 +115,7 @@ namespace wob
 
 		constexpr void add(K&& key, V&& value)
 		{
-			add(buckets, std::forward<K>(key), std::forward<V>(value));
+			add(buckets, wob::forward<K>(key), wob::forward<V>(value));
 			size_++;
 			rehashIfNecessary();
 		}
@@ -186,10 +186,10 @@ namespace wob
 
 		static constexpr void add(Array<Bucket_t>& buckets, K&& key, V&& value)
 		{
-			auto pair = Pair<K, V>{ std::forward<K>(key), std::forward<V>(value) };
+			auto pair = Pair<K, V>{ wob::forward<K>(key), wob::forward<V>(value) };
 			auto const hash = Hash_t{}(pair.first);
 			uint32_t const index = hash % buckets.size();
-			buckets[index].add(std::move(pair));
+			buckets[index].add(wob::move(pair));
 		}
 
 		static constexpr void add(Array<Bucket_t>& buckets, K const& key, V const& value) requires std::copy_constructible<V> && std::copy_constructible<K>
@@ -197,7 +197,7 @@ namespace wob
 			Pair<K, V> pair{ key, value };
 			auto const hash = Hash_t{}(pair.first);
 			uint32_t const index = hash % buckets.size();
-			buckets[index].add(std::move(pair));
+			buckets[index].add(wob::move(pair));
 		}
 
 		constexpr void rehashIfNecessary()

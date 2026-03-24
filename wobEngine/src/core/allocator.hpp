@@ -1,7 +1,7 @@
 #ifndef WOB_ALLOCATOR_HPP
 #define WOB_ALLOCATOR_HPP
 #include <cstdint>
-#include <utility>
+#include "utility.hpp"
 
 using size_t = std::size_t;
 namespace wob
@@ -35,7 +35,7 @@ namespace wob
 		[[nodiscard]] T* create(Args&&... args)
 		{
 			T* elem = static_cast<T*>(allocate<T>());
-			new (elem) T(std::forward<Args>(args)...);
+			new (elem) T(wob::forward<Args>(args)...);
 			return elem;
 		}
 

@@ -21,7 +21,7 @@ namespace wob {
 		using ValueType = T;
 		using ErrorCodeType = AESError;
 
-		Result(T&& val) noexcept : value_(std::forward<T>(val))
+		Result(T&& val) noexcept : value_(wob::forward<T>(val))
 		{
 
 		}
@@ -56,13 +56,13 @@ namespace wob {
 		ValueType const&& value() const&& noexcept
 		{
 			WOB_ASSERT(this->operator bool());
-			return std::move(std::get<ValueType>(value_));
+			return wob::move(std::get<ValueType>(value_));
 		}
 
 		ValueType&& value() && noexcept
 		{
 			WOB_ASSERT(this->operator bool());
-			return std::move(std::get<ValueType>(value_));
+			return wob::move(std::get<ValueType>(value_));
 		}
 
 		ValueType const* operator->() const noexcept

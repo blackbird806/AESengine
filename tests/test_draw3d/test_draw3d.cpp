@@ -4,7 +4,6 @@
 
 #include "core/matrix.hpp"
 #include "renderer/vertex.hpp"
-#include <iostream>
 
 using namespace wob;
 
@@ -161,7 +160,7 @@ public:
 
 int main()
 {
-	auto streamSink = wob::makeUnique<wob::StreamSink>(std::cerr);
+	auto streamSink = wob::makeUnique<wob::StreamSink>(stderr);
 	wob::Logger::instance().addSink(streamSink.get());
 	WOB_START_PROFILE_SESSION("test draw3d startup");
 	TestDraw3dApp app({

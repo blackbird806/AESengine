@@ -115,8 +115,8 @@ List& Node::getList()
 void SBLParser::reportError(String&& errorMsg)
 {
 	Error err;
-	err.msg = std::move(errorMsg);
-	errorHandler.errorStack.push(std::move(err));
+	err.msg = wob::move(errorMsg);
+	errorHandler.errorStack.push(wob::move(err));
 	WOB_ASSERT(false);
 }
 

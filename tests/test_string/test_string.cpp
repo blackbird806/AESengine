@@ -27,13 +27,13 @@ int main()
 		String strB(str);
 		WOB_ASSERT(str == strB);
 
-		String strC(std::move(str));
+		String strC(wob::move(str));
 		WOB_ASSERT(strC == strB);
 	}
 	{
 		String str("123");
 		String strB;
-		strB = std::move(str);
+		strB = wob::move(str);
 		WOB_ASSERT(strB == "123");
 		strB.clear();
 		WOB_ASSERT(strB.size() == 0);

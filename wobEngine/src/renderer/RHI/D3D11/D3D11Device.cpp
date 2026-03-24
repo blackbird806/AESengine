@@ -300,7 +300,7 @@ Result<RHISwapchain> D3D11Device::createSwapchain(SwapchainDescription const& de
 
 	deviceContext->RSSetViewports(1, &viewport);
 
-	return { std::move(sc) };
+	return { wob::move(sc) };
 }
 
 Result<RHIRenderTarget> D3D11Device::createRenderTarget(RenderTargetDescription const& desc)
@@ -347,7 +347,7 @@ Result<RHIRenderTarget> D3D11Device::createRenderTarget(RenderTargetDescription 
 		WOB_FATAL_ERROR("device->CreateRenderTargetView failed");
 	}
 
-	return {std::move(rt)};
+	return {wob::move(rt)};
 }
 
 Result<RHIBuffer> D3D11Device::createBuffer(BufferDescription const& desc)
@@ -388,7 +388,7 @@ Result<RHIBuffer> D3D11Device::createBuffer(BufferDescription const& desc)
 		return { AESError::GPUBufferCreationFailed };
 	}
 
-	return { std::move(buffer) };
+	return { wob::move(buffer) };
 }
 
 Result<void> wob::D3D11Device::copyBuffer(RHIBuffer const& from, RHIBuffer& to)
@@ -462,7 +462,7 @@ Result<RHITexture> wob::D3D11Device::createTexture(TextureDescription const& inf
 	}
 	deviceContext->GenerateMips(tex.textureView);
 
-	return {std::move(tex)};
+	return {wob::move(tex)};
 }
 
 Result<RHIVertexShader> D3D11Device::createVertexShader(VertexShaderDescription const& desc)
@@ -529,7 +529,7 @@ Result<RHIVertexShader> D3D11Device::createVertexShader(VertexShaderDescription 
 
 	vertexShaderBuffer->Release();
 
-	return {std::move(vert)};
+	return {wob::move(vert)};
 }
 
 Result<RHIFragmentShader> D3D11Device::createFragmentShader(FragmentShaderDescription const& desc)
@@ -574,10 +574,10 @@ Result<RHIFragmentShader> D3D11Device::createFragmentShader(FragmentShaderDescri
 		if (!resultBlend)
 			return { resultBlend.error() };
 
-		frag.blendState = std::move(resultBlend.value());
+		frag.blendState = wob::move(resultBlend.value());
 	}
 
-	return {std::move(frag)};
+	return {wob::move(frag)};
 }
 
 Result<RHISampler> D3D11Device::createSampler(SamplerDescription const& desc)
@@ -604,7 +604,7 @@ Result<RHISampler> D3D11Device::createSampler(SamplerDescription const& desc)
 	if (FAILED(result))
 		return { AESError::SamplerCreationFailed };
 
-	return {std::move(sampler)};
+	return {wob::move(sampler)};
 }
 
 void D3D11Device::destroySwapchain(RHISwapchain& swapchain)
@@ -652,7 +652,7 @@ Result<D3D11BlendState> D3D11Device::createBlendState(BlendInfo const& info)
 		return { AESError::BlendStateCreationFailed };
 	}
 
-	return {std::move(blend)};
+	return {wob::move(blend)};
 }
 
 void D3D11Device::clearRenderTarget(RHIRenderTarget& rt)
@@ -689,7 +689,7 @@ void D3D11Device::swapBuffers(RHISwapchain const& sc)
 
 D3D11Device::D3D11Device(D3D11Device&& rhs) noexcept
 {
-	*this = std::move(rhs);
+	*this = wob::move(rhs);
 }
 
 D3D11Device::~D3D11Device()

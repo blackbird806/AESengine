@@ -78,7 +78,7 @@ Result<Model> wob::createCube()
 	//auto const result = cube.init(getCubeVertices(), cubeIndices);
 	//if (!result)
 	//	return { AESError{ result.error() } };
-	return { std::move(cube) };
+	return { wob::move(cube) };
 }
 
 Result<Model> wob::createCube(vec4 const& col)
@@ -89,7 +89,7 @@ Result<Model> wob::createCube(vec4 const& col)
 	auto const result = cube.init(getCubeVertices(col), sm::cubeIndices);
 	if (!result)
 		return { AESError{ result.error() } };
-	return { std::move(cube) };
+	return { wob::move(cube) };
 }
 
 Result<void> Model::init(std::span<Vertex const> vertices, std::span<uint32_t const> indices)

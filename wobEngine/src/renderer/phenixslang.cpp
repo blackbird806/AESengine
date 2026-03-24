@@ -169,7 +169,7 @@ String wob::phenix::compileToHLSL(ShaderProgram const& program)
 			}
 			if (!attrs.empty())
 				out.append(" :");
-			out.append(std::move(attrs));
+			out.append(wob::move(attrs));
 			out.append(";\n");
 		}
 		out.append("}\n\n");

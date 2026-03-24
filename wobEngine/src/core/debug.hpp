@@ -1,7 +1,6 @@
 #ifndef WOB_DEBUG_HPP
 #define WOB_DEBUG_HPP
 
-#include <iosfwd>
 #include "macro_helpers.hpp"
 #include "format.hpp"
 
@@ -25,6 +24,7 @@
 #define WOB_CHECK(r) if (!r) { WOB_LOG_ERROR("{}", r.error()); };
 
 namespace wob {
+
 	/// The Sink interface is used to dispatch log message
 	/// a typical sink implementation will show the log message in the console or send it over network for remote debugging
 	class Sink
@@ -55,12 +55,12 @@ namespace wob {
 	class StreamSink final : public Sink
 	{
 	public:
-		explicit StreamSink(::std::ostream& stream) noexcept;
+		explicit StreamSink(FILE* instream) noexcept;
 
 		void dispatch_log(const char* message) noexcept override;
 		void flush() noexcept override;
 	private:
-		::std::ostream& stream;
+		FILE* stream;
 	};
 
 #ifdef __vita__

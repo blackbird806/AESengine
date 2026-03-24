@@ -33,7 +33,7 @@ namespace wob
 
 		constexpr StaticArray(StaticArray&& rhs) noexcept
 		{
-			*this = std::move(rhs);
+			*this = wob::move(rhs);
 		}
 
 		constexpr void copyFrom(StaticArray const& rhs) noexcept
@@ -89,7 +89,7 @@ namespace wob
 			if (size_ == capacity_)
 			{
 			}
-			new (&buffer[size_++]) T(std::move(e));
+			new (&buffer[size_++]) T(wob::move(e));
 		}
 
 		template<std::ranges::input_range Range>
@@ -108,13 +108,13 @@ namespace wob
 			// insert range after pos
 			for (auto&& e : range)
 			{
-				new (&workBuffer[ipos++]) T(std::forward<T>(e));
+				new (&workBuffer[ipos++]) T(wob::forward<T>(e));
 			}
 
 			// move next elements
 			for (uint32_t li = ipos - rangeSize; li < size_; li++)
 			{
-				new (&workBuffer[ipos++]) T(std::move(buffer[li]));
+				new (&workBuffer[ipos++]) T(wob::move(buffer[li]));
 			}
 			buffer = workBuffer;
 			size_ = newSize;
@@ -122,7 +122,7 @@ namespace wob
 
 		constexpr void insert(Iterator_t pos, T&& val) noexcept
 		{
-			insert(pos, { std::forward<T>(val) });
+			insert(pos, { wob::forward<T>(val) });
 		}
 
 		constexpr void pop() noexcept
@@ -178,7 +178,7 @@ namespace wob
 		{
 			// @performance conditionaly use use memcpy here ?
 			for (uint32_t i = 0; i < size_; i++)
-				new (&newBuffer[i]) T(std::move(buffer[i]));
+				new (&newBuffer[i]) T(wob::move(buffer[i]));
 		}
 
 	private:

@@ -51,7 +51,7 @@ D3D11Shader::~D3D11Shader() noexcept
 	destroy();
 }
 
-D3D11VertexShader::D3D11VertexShader(D3D11VertexShader&& rhs) noexcept : D3D11Shader(std::move(rhs)),
+D3D11VertexShader::D3D11VertexShader(D3D11VertexShader&& rhs) noexcept : D3D11Shader(wob::move(rhs)),
 	vertexShader(rhs.vertexShader), layout(rhs.layout)
 {
 	WOB_PROFILE_FUNCTION();
@@ -63,7 +63,7 @@ D3D11VertexShader::D3D11VertexShader(D3D11VertexShader&& rhs) noexcept : D3D11Sh
 D3D11VertexShader& D3D11VertexShader::operator=(D3D11VertexShader&& rhs) noexcept
 {
 	WOB_PROFILE_FUNCTION();
-	D3D11Shader::operator=(std::move(rhs));
+	D3D11Shader::operator=(wob::move(rhs));
 
 	vertexShader = rhs.vertexShader;
 	layout = rhs.layout;
@@ -93,7 +93,7 @@ ID3D11InputLayout* D3D11VertexShader::getInputLayout()
 	return layout;
 }
 
-D3D11FragmentShader::D3D11FragmentShader(D3D11FragmentShader&& rhs) noexcept : D3D11Shader(std::move(rhs)), pixelShader(rhs.pixelShader)
+D3D11FragmentShader::D3D11FragmentShader(D3D11FragmentShader&& rhs) noexcept : D3D11Shader(wob::move(rhs)), pixelShader(rhs.pixelShader)
 {
 	WOB_PROFILE_FUNCTION();
 	rhs.pixelShader = nullptr;
@@ -102,7 +102,7 @@ D3D11FragmentShader::D3D11FragmentShader(D3D11FragmentShader&& rhs) noexcept : D
 D3D11FragmentShader& D3D11FragmentShader::operator=(D3D11FragmentShader&& rhs) noexcept
 {
 	WOB_PROFILE_FUNCTION();
-	D3D11Shader::operator=(std::move(rhs));
+	D3D11Shader::operator=(wob::move(rhs));
 	pixelShader = rhs.pixelShader;
 	rhs.pixelShader = nullptr;
 	return *this;
