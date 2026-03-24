@@ -1,9 +1,10 @@
 #ifndef WOB_FORMAT_HPP
 #define WOB_FORMAT_HPP
 
-#include <string_view>
 #include "string.hpp"
+#include "stringView.hpp"
 #include "core/maths.hpp"
+#include "core/utility.hpp"
 #include "core/coreMacros.hpp"
 #include "core/dragon4.hpp"
 
@@ -18,7 +19,7 @@ namespace wob
 	constexpr void reverse(char* buffer, int i, int j) noexcept
 	{
 		while (i < j) {
-			std::swap(buffer[i++], buffer[j--]);
+			wob::swap(buffer[i++], buffer[j--]);
 		}
 	}
 
@@ -287,7 +288,7 @@ namespace wob
 	}
 
 	template<typename ...Args>
-	WOB_FMT_CONSTEXPR_OR_INLINE String format(std::string_view fmt, Args&&... args)
+	WOB_FMT_CONSTEXPR_OR_INLINE String format(StringView fmt, Args&&... args)
 	{
 		// maybe use static array here to avoid alloc ?
 		FormatedArgs formatedArgs;

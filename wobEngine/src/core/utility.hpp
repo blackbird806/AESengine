@@ -9,7 +9,40 @@
 #define WOB_ONCE(code) static short const WOB_CONCAT(WOB_once_internal_, __COUNTER__) = [&]() {code; return 0;}();
 
 namespace wob {
-	
+
+	using nullptr_t = decltype(nullptr);
+
+
+	template <class _Ty>
+	constexpr const _Ty& //
+		min(const _Ty& _Left _MSVC_LIFETIMEBOUND, const _Ty& _Right _MSVC_LIFETIMEBOUND)
+		noexcept(noexcept(_Right < _Left)) /* strengthened */ {
+		// return smaller of _Left and _Right
+		return _Right < _Left ? _Right : _Left;
+	}
+
+	template <class _Ty>
+	constexpr const _Ty& //
+		max(const _Ty& _Left _MSVC_LIFETIMEBOUND, const _Ty& _Right _MSVC_LIFETIMEBOUND)
+		noexcept(noexcept(_Right > _Left)) /* strengthened */ {
+		// return smaller of _Left and _Right
+		return _Right > _Left ? _Right : _Left;
+	}
+
+	struct Ordering {
+		int value; // -1, 0, 1
+
+		constexpr bool operator==(const Ordering&) const = default;
+
+		static const Ordering less;
+		static const Ordering equal;
+		static const Ordering greater;
+	};
+
+	inline constexpr Ordering Ordering::less{ -1 };
+	inline constexpr Ordering Ordering::equal{ 0 };
+	inline constexpr Ordering Ordering::greater{ 1 };
+
 	template <class _Ty>
 		struct remove_reference {
 		using type = _Ty;
@@ -28,6 +61,16 @@ namespace wob {
 		using _Const_thru_ref_type = const _Ty&&;
 	};
 
+	template <class _Container>
+		constexpr auto size(const _Container& _Cont) noexcept(noexcept(_Cont.size())) /* strengthened */
+		-> decltype(_Cont.size()) {
+		return _Cont.size();
+	}
+
+	template <class _Ty, size_t _Size>
+		constexpr size_t size(const _Ty(&)[_Size]) noexcept {
+		return _Size;
+	}
 
 	//String readFile(std::string_view file);
 	//std::vector<uint8_t> readFileBin(std::string_view file);
@@ -73,6 +116,40 @@ namespace wob {
 	constexpr size_t size(const _Ty(&)[_Size]) noexcept 
 	{
 		return _Size;
+	}
+
+	template <class _Container>
+		constexpr auto begin(_Container& _Cont) noexcept(noexcept(_Cont.begin())) /* strengthened */
+		-> decltype(_Cont.begin()) {
+		return _Cont.begin();
+	}
+
+	 template <class _Container>
+		 constexpr auto begin(const _Container& _Cont) noexcept(noexcept(_Cont.begin())) /* strengthened */
+		-> decltype(_Cont.begin()) {
+		return _Cont.begin();
+	}
+
+	 template <class _Container>
+		 constexpr auto end(_Container& _Cont) noexcept(noexcept(_Cont.end())) /* strengthened */
+		-> decltype(_Cont.end()) {
+		return _Cont.end();
+	}
+
+	 template <class _Container>
+		 constexpr auto end(const _Container& _Cont) noexcept(noexcept(_Cont.end())) /* strengthened */
+		-> decltype(_Cont.end()) {
+		return _Cont.end();
+	}
+
+	 template <class _Ty, size_t _Size>
+		 constexpr _Ty* begin(_Ty(&_Array)[_Size]) noexcept {
+		return _Array;
+	}
+
+	 template <class _Ty, size_t _Size>
+		 constexpr _Ty* end(_Ty(&_Array)[_Size]) noexcept {
+		return _Array + _Size;
 	}
 
 	template <class _Ty>

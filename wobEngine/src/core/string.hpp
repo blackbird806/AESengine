@@ -2,9 +2,8 @@
 #define WOB_STRING_HPP
 
 #include <cstring>
-#include <compare>
-#include <string_view>
 
+#include "stringView.hpp"
 #include "array.hpp"
 #include "hash.hpp"
 #include "coreMacros.hpp"
@@ -55,7 +54,7 @@ namespace wob
 			strncpy(buffer.data(), cstr, count);
 		}
 
-		/*constexpr*/ String(std::string_view str) noexcept
+		/*constexpr*/ String(StringView str) noexcept
 		{
 			buffer.resize(str.size() + 1);
 			// @review same
@@ -234,33 +233,33 @@ namespace wob
 			return buffer.end() - 1;
 		}
 
-		operator std::string_view() const
+		operator StringView() const
 		{
-			return std::string_view(buffer.data(), size());
+			return StringView(buffer.data(), size());
 		}
 
 	private:
 		Array<Char_t> buffer;
 	};
 
-	inline/*constexpr*/ std::strong_ordering operator<=>(String const& lhs, String const& rhs) noexcept
+	inline/*constexpr*/ wob::Ordering operator<=>(String const& lhs, String const& rhs) noexcept
 	{
-		return strcmp(lhs.data(), rhs.data()) <=> 0;
+		return wob::Ordering{ strcmp(lhs.data(), rhs.data()) };
 	}
 
-	inline/*constexpr*/ std::strong_ordering operator<=>(String const& lhs, String::Char_t const* rhs) noexcept
+	inline/*constexpr*/ wob::Ordering operator<=>(String const& lhs, String::Char_t const* rhs) noexcept
 	{
-		return strcmp(lhs.data(), rhs) <=> 0;
+		return wob::Ordering{ strcmp(lhs.data(), rhs) };
 	}
 
 	inline bool operator==(String const& lhs, String const& rhs) noexcept
 	{
-		return (lhs <=> rhs) == std::strong_ordering::equal;
+		return (lhs <=> rhs) == wob::Ordering::equal;
 	}
 
 	inline bool operator==(String const& lhs, String::Char_t const* rhs) noexcept
 	{
-		return (lhs <=> rhs) == std::strong_ordering::equal;
+		return (lhs <=> rhs) == wob::Ordering::equal;
 	}
 
 	template<>
@@ -273,11 +272,11 @@ namespace wob
 	};
 
 	template<>
-	struct Hash<std::string_view>
+	struct Hash<StringView>
 	{
-		uint64_t operator()(std::string_view str)
+		uint64_t operator()(StringView str)
 		{
-			return std::hash<std::string_view>()(str);
+			return Hash<const char*>{}(str.data(), str.size());
 		}
 	};
 }

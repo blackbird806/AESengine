@@ -19,7 +19,6 @@ namespace wob {
 		D3D11Shader() = default;
 		D3D11Shader(D3D11Shader&& rhs) noexcept;
 		D3D11Shader& operator=(D3D11Shader&& rhs) noexcept;
-		//std::vector<UniformBufferReflectionInfo> getUniformBufferInfos() const;
 		virtual void destroy();
 		virtual ~D3D11Shader() noexcept;
 

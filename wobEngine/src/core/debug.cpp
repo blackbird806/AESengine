@@ -13,7 +13,8 @@ using namespace wob;
 
 Logger::Logger() noexcept : sinkCount(0)
 {
-	std::fill(std::begin(sinks), std::end(sinks), nullptr);
+	for (auto& sink : sinks)
+		sink = nullptr;
 }
 
 Logger& Logger::instance() noexcept

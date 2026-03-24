@@ -3,9 +3,6 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <span>
-#include <optional>
-#include <variant>
 
 #include "core/wob.hpp"
 #include "core/string.hpp"
@@ -209,8 +206,8 @@ namespace wob
 
 	struct ShaderDescription
 	{
-		using Binary = uint8_t const*;
-		std::variant<String, Binary> source;
+		String sourceCode;
+		uint8_t const* sourceBinary;
 	};
 
 	struct VertexShaderDescription : ShaderDescription
@@ -222,7 +219,7 @@ namespace wob
 	struct FragmentShaderDescription : ShaderDescription
 	{
 		// because of gxm blend info is bound to the fragment shader
-		std::optional<BlendInfo> blendInfo;
+		BlendInfo* blendInfo = nullptr;
 		MultisampleMode multisampleMode; // used by gxm for shaderpatcher 
 
 		// TODO: clean this

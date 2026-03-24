@@ -10,7 +10,7 @@
 #ifdef _WIN32
 #define WOB_DEBUG_BREAK() __debugbreak()
 #elif defined(__vita__)
-#define WOB_DEBUG_BREAK() std::abort()
+#define WOB_DEBUG_BREAK() abort()
 #else
 #define WOB_DEBUG_BREAK() __builtin_trap()
 #endif
@@ -28,6 +28,6 @@
 
 #define WOB_NOT_IMPLEMENTED() WOB_DEBUG_BREAK()
 
-#define WOB_FATAL_ERROR(msg) {WOB_LOG_ERROR(msg); WOB_DEBUG_BREAK(); std::abort();}
+#define WOB_FATAL_ERROR(msg) {WOB_LOG_ERROR(msg); WOB_DEBUG_BREAK(); abort();}
 
 #endif

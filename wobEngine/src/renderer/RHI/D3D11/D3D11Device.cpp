@@ -3,6 +3,7 @@
 #include "D3D11shader.hpp"
 #include "renderer/RHI/RHIBuffer.hpp"
 #include "core/array.hpp"
+#include "core/utility.hpp"
 #include <dxgi.h>
 #include <d3dcompiler.h>
 
@@ -474,11 +475,7 @@ Result<RHIVertexShader> D3D11Device::createVertexShader(VertexShaderDescription 
 	ID3DBlob* errorMessage = nullptr;
 	ID3DBlob* vertexShaderBuffer = nullptr;
 
-	if (!std::holds_alternative<wob::String>(desc.source))
-	{
-		WOB_NOT_IMPLEMENTED();
-	}
-	auto const& source = std::get<wob::String>(desc.source);
+	auto const& source =desc.sourceCode;
 	auto result = D3DCompile(source.data(), sizeof(char) * source.size(), "vertexShader", nullptr, nullptr, "main", "vs_5_0", 0, 0, &vertexShaderBuffer, &errorMessage);
 	if (FAILED(result))
 	{
@@ -520,7 +517,7 @@ Result<RHIVertexShader> D3D11Device::createVertexShader(VertexShaderDescription 
 	}
 
 	// Create the vertex input layout.
-	result = device->CreateInputLayout(polygonLayout.data(), std::size(polygonLayout), vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &vert.layout);
+	result = device->CreateInputLayout(polygonLayout.data(), wob::size(polygonLayout), vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &vert.layout);
 	if (FAILED(result))
 	{
 		WOB_LOG_ERROR("failed to create InputLayout");
@@ -541,12 +538,7 @@ Result<RHIFragmentShader> D3D11Device::createFragmentShader(FragmentShaderDescri
 	ID3DBlob* errorMessage = nullptr;
 	ID3DBlob* pixelShaderBuffer = nullptr;
 
-	if (!std::holds_alternative<wob::String>(desc.source))
-	{
-		WOB_NOT_IMPLEMENTED();
-	}
-
-	auto const& source = std::get<wob::String>(desc.source);
+	auto const& source = desc.sourceCode;
 	HRESULT result = D3DCompile(source.data(), sizeof(char) * source.size(), "pixelShader", nullptr, nullptr, "main", "ps_5_0", 0, 0, &pixelShaderBuffer, &errorMessage);
 	if (FAILED(result))
 	{

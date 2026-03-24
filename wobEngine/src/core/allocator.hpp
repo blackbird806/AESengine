@@ -3,7 +3,7 @@
 #include <cstdint>
 #include "utility.hpp"
 
-using size_t = std::size_t;
+using size_t = unsigned long long;
 namespace wob
 {
 
