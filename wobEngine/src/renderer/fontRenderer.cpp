@@ -1,4 +1,5 @@
 #include "fontRenderer.hpp"
+#include "core/allocator.hpp"
 #include <ranges>
 #include <stb/stb_rect_pack.h>
 #include <stb/stb_truetype.h>
@@ -9,7 +10,7 @@
 
 using namespace wob;
 
-std::optional<Glyph> FontRessource::getGlyph(char c) const
+Glyph* FontRessource::getGlyph(char c) const
 {
 	auto const it = std::ranges::find_if(glyphs, [c](auto const& e)
 		{

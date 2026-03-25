@@ -13,6 +13,133 @@ namespace wob {
 	using nullptr_t = decltype(nullptr);
 
 	template <class _Ty>
+		struct remove_cv { // remove top-level const and volatile qualifiers
+		using type = _Ty;
+
+		template <template <class> class _Fn>
+		using _Apply = _Fn<_Ty>; // apply cv-qualifiers from the class template argument to _Fn<_Ty>
+	};
+
+	template <class _Ty>
+	struct remove_cv<const _Ty> {
+		using type = _Ty;
+
+		template <template <class> class _Fn>
+		using _Apply = const _Fn<_Ty>;
+	};
+
+	template <class _Ty>
+	struct remove_cv<volatile _Ty> {
+		using type = _Ty;
+
+		template <template <class> class _Fn>
+		using _Apply = volatile _Fn<_Ty>;
+	};
+
+	template <class _Ty>
+	struct remove_cv<const volatile _Ty> {
+		using type = _Ty;
+
+		template <template <class> class _Fn>
+		using _Apply = const volatile _Fn<_Ty>;
+	};
+
+	 template <class _Ty>
+		struct remove_reference {
+		using type = _Ty;
+		using _Const_thru_ref_type = const _Ty;
+	};
+
+	template <class _Ty>
+	struct remove_reference<_Ty&> {
+		using type = _Ty;
+		using _Const_thru_ref_type = const _Ty&;
+	};
+
+	template <class _Ty>
+	struct remove_reference<_Ty&&> {
+		using type = _Ty;
+		using _Const_thru_ref_type = const _Ty&&;
+	};
+
+	 template <class _Ty>
+		using remove_reference_t = typename remove_reference<_Ty>::type;
+
+	template <class _Ty>
+	using _Const_thru_ref = typename remove_reference<_Ty>::_Const_thru_ref_type;
+
+
+	template <class _Ty>
+	using remove_cv_t = typename remove_cv<_Ty>::type;
+
+	template <class _Ty>
+	using _Remove_cvref_t _MSVC_KNOWN_SEMANTICS = remove_cv_t<remove_reference_t<_Ty>>;
+
+	 template <class _Ty>
+		using remove_cvref_t = _Remove_cvref_t<_Ty>;
+
+	 template <class _Ty>
+		struct remove_cvref {
+		using type = remove_cvref_t<_Ty>;
+	};
+#ifdef __clang__
+		template <class _Ty1, class _Ty2>
+			constexpr bool is_same_v = __is_same(_Ty1, _Ty2);
+
+		template <class _Ty1, class _Ty2>
+			struct is_same : bool_constant<__is_same(_Ty1, _Ty2)> {};
+#else // ^^^ Clang / not Clang vvv
+		template <class, class>
+			constexpr bool is_same_v = false; // determine whether arguments are the same type
+		template <class _Ty>
+		constexpr bool is_same_v<_Ty, _Ty> = true;
+#endif
+		template <class _Ty1, class _Ty2>
+		concept _Same_impl = // Must be a distinct concept to provide symmetric subsumption for same_as
+#ifdef __clang__
+			__is_same(_Ty1, _Ty2);
+#else // ^^^ use intrinsic / no intrinsic vvv
+			is_same_v<_Ty1, _Ty2>;
+#endif // ^^^ no intrinsic ^^^
+
+		template <class _Ty, class... _Types>
+		constexpr bool _Is_any_of_v = // true if and only if _Ty is in _Types
+#if _HAS_CXX17
+		(is_same_v<_Ty, _Types> || ...);
+#else // ^^^ _HAS_CXX17 / !_HAS_CXX17 vvv
+			disjunction_v<is_same<_Ty, _Types>...>;
+#endif // ^^^ !_HAS_CXX17 ^^^
+
+		constexpr bool _Is_constant_evaluated() noexcept { // Internal function for any standard mode
+			return __builtin_is_constant_evaluated();
+		}
+
+#if _HAS_CXX20
+		constexpr bool is_constant_evaluated() noexcept {
+			return __builtin_is_constant_evaluated();
+		}
+#endif // _HAS_CXX20
+
+		template <class _Ty>
+			constexpr bool is_integral_v = _Is_any_of_v<remove_cv_t<_Ty>, bool, char, signed char, unsigned char, wchar_t,
+#ifdef __cpp_char8_t
+			char8_t,
+#endif // defined(__cpp_char8_t)
+			char16_t, char32_t, short, unsigned short, int, unsigned int, long, unsigned long, long long, unsigned long long>;
+
+		template <class _Ty1, class _Ty2>
+		concept same_as = _Same_impl<_Ty1, _Ty2>&& _Same_impl<_Ty2, _Ty1>;
+
+		 template <class _Ty>
+			concept integral = is_integral_v<_Ty>;
+
+		template <class _Ty>
+			concept signed_integral = integral<_Ty> && static_cast<_Ty>(-1) < static_cast<_Ty>(0);
+
+		template <class _Ty>
+			concept unsigned_integral = integral<_Ty> && !signed_integral<_Ty>;
+
+	template <class _Ty>
 	constexpr const _Ty& //
 		min(const _Ty& _Left _MSVC_LIFETIMEBOUND, const _Ty& _Right _MSVC_LIFETIMEBOUND)
 		noexcept(noexcept(_Right < _Left)) /* strengthened */ {
@@ -41,27 +168,6 @@ namespace wob {
 	inline constexpr Ordering Ordering::less{ -1 };
 	inline constexpr Ordering Ordering::equal{ 0 };
 	inline constexpr Ordering Ordering::greater{ 1 };
-
-	template <class _Ty>
-		struct remove_reference {
-		using type = _Ty;
-		using _Const_thru_ref_type = const _Ty;
-	};
-
-	template <class _Ty>
-	struct remove_reference<_Ty&> {
-		using type = _Ty;
-		using _Const_thru_ref_type = const _Ty&;
-	};
-
-	template <class _Ty>
-	struct remove_reference<_Ty&&> {
-		using type = _Ty;
-		using _Const_thru_ref_type = const _Ty&&;
-	};
-	
-	template <class _Ty>
-	using remove_reference_t = typename remove_reference<_Ty>::type;
 
 	template <class _Container>
 		constexpr auto size(const _Container& _Cont) noexcept(noexcept(_Cont.size())) /* strengthened */

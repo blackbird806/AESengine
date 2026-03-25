@@ -1,6 +1,7 @@
 #ifndef WOB_FORMAT_HPP
 #define WOB_FORMAT_HPP
 
+#include "wob.hpp"
 #include "string.hpp"
 #include "stringView.hpp"
 #include "core/maths.hpp"
@@ -14,7 +15,7 @@ namespace wob
 {
 	// idk how to name this
 	template<typename T>
-	concept FmtCharPtrT = std::same_as<std::remove_cvref_t<T>, char*>;
+	concept FmtCharPtrT = wob::same_as<wob::remove_cvref_t<T>, char*>;
 
 	constexpr void reverse(char* buffer, int i, int j) noexcept
 	{
@@ -31,7 +32,7 @@ namespace wob
 	template<typename T>
 	constexpr void itoa(auto value, char* buffer, int base = 10) noexcept;
 
-	template<std::signed_integral T>
+	template<wob::signed_integral T>
 	constexpr void itoa(T value, char* buffer, int base = 10) noexcept
 	{
 		// invalid entry
@@ -68,7 +69,7 @@ namespace wob
 		reverse(buffer, 0, i - 1);
 	}
 
-	template<std::unsigned_integral T>
+	template<wob::unsigned_integral T>
 	constexpr void itoa(T value, char* buffer, int base = 10) noexcept
 	{
 		// invalid entry

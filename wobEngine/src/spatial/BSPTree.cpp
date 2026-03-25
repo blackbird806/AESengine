@@ -59,7 +59,7 @@ namespace
 			vec3{aabb.max.x - aabb.min.x, aabb.min.y, aabb.min.z}.getNormalized()};
 	}
 	
-	Plane pickSplittingPlane(std::span<BSPTree::Object> objects)
+	Plane pickSplittingPlane(wob::ArrayView<BSPTree::Object> objects)
 	{
 		WOB_PROFILE_FUNCTION();
 		// Blend factor for optimizing for balance or splits (should be tweaked)
@@ -161,7 +161,7 @@ void* BSPTree::Node::raycast(Ray const& r) const
 
 	// if camera is behind plane swap front and back spaces
 	if (classifyPointToPlane(plane, r.start) == PointPlanePlacement::Back)
-		std::swap(relativeFront, relativeBack);
+		wob::swap(relativeFront, relativeBack);
 
 	void* const frontResult = relativeFront ? relativeFront->raycast(r) : nullptr;
 
@@ -173,7 +173,7 @@ void* BSPTree::Node::raycast(Ray const& r) const
 	return frontResult;
 }
 
-UniquePtr<BSPTree::BSPElement> BSPTree::build(IAllocator& allocator, std::span<Object> objects, uint depth)
+UniquePtr<BSPTree::BSPElement> BSPTree::build(IAllocator& allocator, wob::ArrayView<Object> objects, uint depth)
 {
 	WOB_PROFILE_FUNCTION();
 	if (objects.empty())
@@ -206,6 +206,6 @@ UniquePtr<BSPTree::BSPElement> BSPTree::build(IAllocator& allocator, std::span<O
 	}
 	
 	return makeUnique<Node>(allocator, splitPlane,
-		build(allocator, std::span(frontList.begin(), frontList.end()), depth + 1), 
-		build(allocator, std::span(backList.begin(), backList.end()), depth + 1));
+		build(allocator, wob::ArrayView(frontList.begin(), frontList.end()), depth + 1),
+		build(allocator, wob::ArrayView(backList.begin(), backList.end()), depth + 1));
 }

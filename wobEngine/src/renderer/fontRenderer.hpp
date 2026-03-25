@@ -6,6 +6,7 @@
 #include "renderer/RHI/RHISampler.hpp"
 #include "renderer/RHI/RHIDevice.hpp"
 #include "core/array.hpp"
+#include "core/arrayView.hpp"
 
 #include "core/vec2.hpp"
 
@@ -26,7 +27,7 @@ namespace wob
 
 	struct FontRessource
 	{
-		std::optional<Glyph> getGlyph(char c) const;
+		Glyph* getGlyph(char c) const;
 
 		RHITexture texture;
 		RHISampler sampler;
@@ -37,7 +38,7 @@ namespace wob
 	struct FontParams
 	{
 		RHIDevice* device;
-		std::span<uint8_t const> fontData;
+		ArrayView<uint8_t const> fontData;
 		float fontSize = 20;
 		int startUnicode = 32; // 32 => space
 		int numCharInRange = 127 - 32;

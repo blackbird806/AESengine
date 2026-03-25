@@ -1,4 +1,5 @@
 #include "RHIElements.hpp"
+#include "core/debug.hpp"
 
 void wob::validateVertexShaderDescription(VertexShaderDescription const& desc)
 {

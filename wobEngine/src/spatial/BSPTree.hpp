@@ -6,7 +6,7 @@
 #include "core/geometry.hpp"
 #include "core/uniquePtr.hpp"
 #include "core/array.hpp"
-#include "core/jobSystem.hpp"
+#include "core/arrayView.hpp"
 
 namespace wob
 {
@@ -64,7 +64,7 @@ namespace wob
 		static constexpr uint maxDepth = 16;
 		static constexpr uint minLeafSize = 2;
 		
-		static UniquePtr<BSPElement> build(IAllocator& allocator, std::span<Object> objects, uint depth = 0);
+		static UniquePtr<BSPElement> build(IAllocator& allocator, wob::ArrayView<Object> objects, uint depth = 0);
 	};
 }
 
