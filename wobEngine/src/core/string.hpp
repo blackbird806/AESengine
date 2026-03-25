@@ -276,7 +276,7 @@ namespace wob
 	{
 		uint64_t operator()(StringView str)
 		{
-			return Hash<const char*>{}(str.data(), str.size());
+			return Hash<const char*>{}(str.data(), str.end());
 		}
 	};
 }

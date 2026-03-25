@@ -80,6 +80,12 @@ namespace wob
 			buckets.resize(nBuckets);
 		}
 
+		constexpr void clear()
+		{
+			buckets.clear();
+			size_ = 0;
+		}
+
 		constexpr uint32_t size() const noexcept
 		{
 			return size_;

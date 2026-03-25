@@ -9,7 +9,7 @@ namespace wob
 	struct Context
 	{
 		IAllocator* allocator;
-		Logger logger;
+		wob::Logger logger;
 	};
 
 	extern thread_local Context context;

@@ -12,7 +12,6 @@ namespace wob {
 
 	using nullptr_t = decltype(nullptr);
 
-
 	template <class _Ty>
 	constexpr const _Ty& //
 		min(const _Ty& _Left _MSVC_LIFETIMEBOUND, const _Ty& _Right _MSVC_LIFETIMEBOUND)
@@ -60,6 +59,9 @@ namespace wob {
 		using type = _Ty;
 		using _Const_thru_ref_type = const _Ty&&;
 	};
+	
+	template <class _Ty>
+	using remove_reference_t = typename remove_reference<_Ty>::type;
 
 	template <class _Container>
 		constexpr auto size(const _Container& _Cont) noexcept(noexcept(_Cont.size())) /* strengthened */
@@ -71,6 +73,12 @@ namespace wob {
 		constexpr size_t size(const _Ty(&)[_Size]) noexcept {
 		return _Size;
 	}
+	
+	template <class>
+	constexpr bool is_lvalue_reference_v = false; // determine whether type argument is an lvalue reference
+
+	template <class _Ty>
+	constexpr bool is_lvalue_reference_v<_Ty&> = true;
 
 	//String readFile(std::string_view file);
 	//std::vector<uint8_t> readFileBin(std::string_view file);
@@ -103,19 +111,6 @@ namespace wob {
 	{
 		static_assert(!is_lvalue_reference_v<_Ty>, "bad forward call");
 		return static_cast<_Ty&&>(_Arg);
-	}
-
-	template <class _Container>
-	constexpr auto size(const _Container& _Cont) noexcept(noexcept(_Cont.size())) /* strengthened */
-		-> decltype(_Cont.size()) 
-	{
-		return _Cont.size();
-	}
-
-	template <class _Ty, size_t _Size>
-	constexpr size_t size(const _Ty(&)[_Size]) noexcept 
-	{
-		return _Size;
 	}
 
 	template <class _Container>
@@ -229,8 +224,15 @@ namespace wob {
 
 		constexpr explicit Flags(MaskType flags) : mask(flags) {}
 
-		// relational operators
-		constexpr auto operator<=>(Flags<BitType> const&) const = default;
+		constexpr auto operator==(Flags<BitType> const& rhs) const
+		{
+			return mask == rhs.mask;
+		}
+
+		constexpr auto operator!=(Flags<BitType> const& rhs) const
+		{
+			return mask != rhs.mask;
+		}
 
 		// logical operator
 		constexpr bool operator!() const

@@ -42,6 +42,17 @@ namespace wob
 		{
 		}
 
+		constexpr ~SList()
+		{
+			clear();
+		}
+
+		constexpr void clear()
+		{
+			while (first)
+				removeFront();
+		}
+
 		constexpr void add(T&& e) noexcept
 		{
 			if (first == nullptr)
@@ -92,6 +103,21 @@ namespace wob
 			auto const* tmp = it.n->next->next;
 			deleteNode(it.n->next);
 			it.n->next = tmp;
+		}
+
+		constexpr void removeFront() noexcept
+		{
+			WOB_CHECK(first != nullptr);
+			Node* second = first->next;
+			deleteNode(first);
+			if (second)
+			{
+				first = second;
+			}
+			else
+			{
+				first = nullptr;
+			}
 		}
 
 		template<typename Pred>

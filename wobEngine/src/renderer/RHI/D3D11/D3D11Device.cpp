@@ -475,7 +475,7 @@ Result<RHIVertexShader> D3D11Device::createVertexShader(VertexShaderDescription 
 	ID3DBlob* errorMessage = nullptr;
 	ID3DBlob* vertexShaderBuffer = nullptr;
 
-	auto const& source =desc.sourceCode;
+	auto const& source = desc.sourceCode;
 	auto result = D3DCompile(source.data(), sizeof(char) * source.size(), "vertexShader", nullptr, nullptr, "main", "vs_5_0", 0, 0, &vertexShaderBuffer, &errorMessage);
 	if (FAILED(result))
 	{

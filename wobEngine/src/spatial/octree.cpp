@@ -11,12 +11,12 @@ Octree::Node* Octree::build(vec3 const& center, float halfSize, int stopDepth, L
 	
 	if (stopDepth < 0)
 		return nullptr;
-
-	auto [it, inserted] = nodes.insert(std::make_pair(locCode, Node{ center, halfSize, locCode, {}, false }));
-	WOB_ASSERT(inserted);
+	
+	nodes.add(locCode, Node{ center, halfSize, locCode, {}, false });
+	auto& val = nodes[locCode];
 
 	if (stopDepth == 0)
-		it->second.isLeaf = true;
+		val.isLeaf = true;
 
 	// Recursively construct the eight children of the subtree 
 	float const step = halfSize * 0.5f;
@@ -29,7 +29,7 @@ Octree::Node* Octree::build(vec3 const& center, float halfSize, int stopDepth, L
 		build(center + offset, step, stopDepth - 1, getChildCode(locCode, i));
 	}
 
-	return &it->second;
+	return &val;
 }
 
 void Octree::clear()
@@ -60,12 +60,12 @@ void Octree::insertObject(Node& tree, Object const& obj)
 
 	if (!straddle && !tree.isLeaf) {
 		// Fully contained in existing child node; insert in that subtree
-		insertObject(nodes.at(getChildCode(tree.locCode, index)), obj);
+		insertObject(nodes[getChildCode(tree.locCode, index)], obj);
 	}
 	else {
 		// Straddling, or no child node to descend into, so
 		// link object into linked list at this node
-		tree.objects.push_back(obj);
+		tree.objects.push(obj);
 	}
 }
 
@@ -129,10 +129,10 @@ void Octree::testAllCollisionsRec(Node const& node, void(* callback)(void*), uin
 	// Recursively visit all existing children
 	for (uint i = 0; i < 8; i++)
 	{
-		auto const it = nodes.find(getChildCode(node.locCode, i));
-		if (it != nodes.end())
+		Node val;
+		if (nodes.tryFind(getChildCode(node.locCode, i), val))
 		{
-			testAllCollisionsRec(it->second, callback, depth, ancestorStack);
+			testAllCollisionsRec(val, callback, depth, ancestorStack);
 		}
 	}
 	depth--;
@@ -142,9 +142,9 @@ Octree::Node* Octree::root()
 {
 	WOB_PROFILE_FUNCTION();
 
-	auto const it = nodes.find(1);
-	if (it != nodes.end())
-		return &it->second;
+	Node val;
+	if (nodes.tryFind(1, val))
+		return &val;
 	return nullptr;
 }
 
@@ -152,8 +152,8 @@ Octree::Node const* Octree::root() const
 {
 	WOB_PROFILE_FUNCTION();
 
-	auto const it = nodes.find(1);
-	if (it != nodes.end())
-		return &it->second;
+	Node val;
+	if (nodes.tryFind(1, val))
+		return &val;
 	return nullptr;
 }

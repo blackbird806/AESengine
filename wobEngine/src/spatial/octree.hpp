@@ -1,12 +1,10 @@
 #ifndef WOB_OCTREE_HPP
 #define WOB_OCTREE_HPP
 
-#include <vector>
-#include <span>
-#include <unordered_map>
-
 #include "core/wob.hpp"
 #include "core/geometry.hpp"
+#include "core/array.hpp"
+#include "core/hashmap.hpp"
 
 namespace wob
 {
@@ -36,7 +34,7 @@ namespace wob
 			// insertion ~12.5% slower
 			// build ~16.9% faster
 			// testAllCollisions ~7% faster
-			std::vector<Object> objects;
+			Array<Object> objects;
 			bool isLeaf;
 		};
 
@@ -75,7 +73,7 @@ namespace wob
 		}
 		
 		// @Review try other node representations
-		std::unordered_map<LocCode_t, Node> nodes;
+		HashMap<LocCode_t, Node> nodes;
 	};
 }
 
