@@ -27,7 +27,7 @@ namespace wob
 
 	struct FontRessource
 	{
-		Glyph* getGlyph(char c) const;
+		Result<Glyph> getGlyph(char c) const;
 
 		RHITexture texture;
 		RHISampler sampler;

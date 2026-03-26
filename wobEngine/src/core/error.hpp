@@ -2,7 +2,6 @@
 #define WOB_ERROR_HPP
 
 #include <variant>
-#include <utility>
 
 #include "wob.hpp"
 #include "errorCodes.hpp"
@@ -136,12 +135,6 @@ namespace wob {
 #undef CASE
 		WOB_UNREACHABLE();
 	}
-
-	//inline std::ostream& operator<<(std::ostream& stream, AESError err)
-	//{
-	//	stream << to_string(err);
-	//	return stream;
-	//}
 }
 
 #endif

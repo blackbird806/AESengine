@@ -213,7 +213,7 @@ namespace wob {
 	}
 
 	template <class _Ty>
-	constexpr _Ty&& forward(remove_reference_t<_Ty>&& _Arg) noexcept \
+	constexpr _Ty&& forward(remove_reference_t<_Ty>&& _Arg) noexcept
 	{
 		static_assert(!is_lvalue_reference_v<_Ty>, "bad forward call");
 		return static_cast<_Ty&&>(_Arg);

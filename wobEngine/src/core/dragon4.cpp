@@ -23,9 +23,9 @@
 ******************************************************************************/
 
 #include "dragon4.hpp"
-#include "wob.hpp"
 #include <string.h>
 #include <math.h>
+#include <assert.h>
 
 using namespace wob::d4;
 

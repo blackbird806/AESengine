@@ -32,7 +32,7 @@
 ******************************************************************************/
 
 // Assertion macro
-#define RJ_ASSERT(condition) WOB_ASSERT(condition)
+#define RJ_ASSERT(condition) assert(condition)//WOB_ASSERT(condition)
 
 namespace wob::d4
 {

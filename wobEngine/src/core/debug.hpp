@@ -5,19 +5,23 @@
 #include <cstdio>
 
 // loging system should be completly revised
-// we may want to get rif of macros and use std::source_location
+// we may want to get rif of macros and use 
+// 
+// 
+// 
+// source_location
 // also we want filters, warning level and more ....
 // maybe take inspiration from spd log ?
 #ifdef __vita__
-	#define WOB_LOG(msg, ...) ::wob::Logger::instance().log(wob::format("info: " msg "\n" __VA_OPT__(,) __VA_ARGS__).c_str())
-	#define WOB_LOG_RAW(msg, ...) ::wob::Logger::instance().wob(aes::format(msg "\n" __VA_OPT__(,) __VA_ARGS__).c_str())
-	#define WOB_WARN(msg, ...) ::wob::Logger::instance().log(wob::format("warn: " msg "\n" __VA_OPT__(,) __VA_ARGS__).c_str())
-	#define WOB_LOG_ERROR(msg, ...) ::wob::Logger::instance().log(wob::format("error: " msg "\n" __VA_OPT__(,) __VA_ARGS__).c_str())
+	#define WOB_LOG(msg, ...) ::wob::Logger::instance().log(::wob::format("info: " msg "\n" __VA_OPT__(,) __VA_ARGS__).c_str())
+	#define WOB_LOG_RAW(msg, ...) ::wob::Logger::instance().wob(::wob::format(msg "\n" __VA_OPT__(,) __VA_ARGS__).c_str())
+	#define WOB_WARN(msg, ...) ::wob::Logger::instance().log(::wob::format("warn: " msg "\n" __VA_OPT__(,) __VA_ARGS__).c_str())
+	#define WOB_LOG_ERROR(msg, ...) ::wob::Logger::instance().log(::wob::format("error: " msg "\n" __VA_OPT__(,) __VA_ARGS__).c_str())
 #else
-	#define WOB_LOG(msg, ...) ::wob::Logger::instance().log(wob::format("info: " msg "\n", __VA_ARGS__).c_str())
-	#define WOB_LOG_RAW(msg, ...) ::wob::Logger::instance().log(wob::format(msg "\n", __VA_ARGS__).c_str())
-	#define WOB_WARN(msg, ...) ::wob::Logger::instance().log(wob::format("warn: " msg "\n", __VA_ARGS__).c_str())
-	#define WOB_LOG_ERROR(msg, ...) ::wob::Logger::instance().log(wob::format("error: " __FUNCTION__ " : " WOB_STRINGIFY(__LINE__) ": " msg "\n", __VA_ARGS__).c_str())
+	#define WOB_LOG(msg, ...) ::wob::Logger::instance().log(::wob::format("info: " msg "\n", __VA_ARGS__).c_str())
+	#define WOB_LOG_RAW(msg, ...) ::wob::Logger::instance().log(::wob::format(msg "\n", __VA_ARGS__).c_str())
+	#define WOB_WARN(msg, ...) ::wob::Logger::instance().log(::wob::format("warn: " msg "\n", __VA_ARGS__).c_str())
+	#define WOB_LOG_ERROR(msg, ...) ::wob::Logger::instance().log(::wob::format("error: " __FUNCTION__ " : " WOB_STRINGIFY(__LINE__) ": " msg "\n", __VA_ARGS__).c_str())
 #endif
 
 #define WOB_CHECKR(r) if (!r) { WOB_LOG_ERROR("{}", r.error()); return r; };

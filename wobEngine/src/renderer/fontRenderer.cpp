@@ -1,6 +1,5 @@
 #include "fontRenderer.hpp"
 #include "core/allocator.hpp"
-#include <ranges>
 #include <stb/stb_rect_pack.h>
 #include <stb/stb_truetype.h>
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -10,15 +9,17 @@
 
 using namespace wob;
 
-Glyph* FontRessource::getGlyph(char c) const
+Result<Glyph> FontRessource::getGlyph(char c) const
 {
-	auto const it = std::ranges::find_if(glyphs, [c](auto const& e)
+	for (auto const& glyph : glyphs)
+	{
+		if (glyph.c == c)
 		{
-			return c == e.c;
-		});
-	if (it != glyphs.end())
-		return *it;
-	return {};
+			return { glyph };
+		}
+	}
+
+	return { AESError::Undefined };
 }
 
 Result<FontRessource> wob::createFontRessource(FontParams const& params)

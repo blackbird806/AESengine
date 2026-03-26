@@ -5,7 +5,6 @@
 #include "assert.hpp"
 #include "allocator.hpp"
 #include "context.hpp"
-#include <ranges>
 
 namespace wob
 {
@@ -33,7 +32,7 @@ namespace wob
 			
 		}
 
-		template<std::ranges::input_range Range>
+		template<typename Range>
 		constexpr Array(IAllocator& allocator, Range const& range) noexcept
 			: alloc(&allocator), buffer(nullptr), size_(0), capacity_(0)
 		{
@@ -147,7 +146,7 @@ namespace wob
 			{
 				grow();
 			}
-			new (&buffer[size_++]) T(wob::move(e));
+			new (&buffer[size_++]) T(forward(e));
 		}
 
 		template<typename ...Args>
@@ -157,15 +156,16 @@ namespace wob
 			{
 				grow();
 			}
-			new (&buffer[size_++]) T(wob::forward<Args>(args)...);
+			new (&buffer[size_++]) T(forward<Args>(args)...);
 		}
 
-		template<std::ranges::input_range Range>
+		// @todo implement ranges concepts
+		template<typename Range>
 		constexpr void insert(Iterator_t pos, Range&& range) noexcept
 		{
 			WOB_BOUNDS_CHECK(pos <= end());
 			WOB_BOUNDS_CHECK(pos >= begin());
-			uint32_t const rangeSize = std::ranges::size(range);
+			uint32_t const rangeSize = wob::size(range);
 			uint32_t const newSize = size_ + rangeSize;
 			uint32_t const ipos = pos - begin();
 

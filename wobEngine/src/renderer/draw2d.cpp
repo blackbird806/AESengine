@@ -205,7 +205,7 @@ void Draw2D::drawImage(RHITexture& texture, Rect const& rect)
 }
 
 // check https://github.com/ocornut/imgui/blob/master/imgui_draw.cpp#L3542
-void Draw2D::drawText(FontRessource& font, std::string_view str, vec2 pos)
+void Draw2D::drawText(FontRessource& font, StringView str, vec2 pos)
 {
 	WOB_PROFILE_FUNCTION();
 
@@ -232,7 +232,8 @@ void Draw2D::drawText(FontRessource& font, std::string_view str, vec2 pos)
 		}
 
 		commands.push(Command{ DrawCommandType::Image, currentState, &font.texture });
-		auto const glyph = *font.getGlyph(c);
+
+		auto const glyph = font.getGlyph(c).value();
 		vec2 const gsize = { glyph.u[1] - glyph.u[0], glyph.v[1] - glyph.v[0] };
 
 		auto dp = p;
@@ -327,7 +328,7 @@ Result<void> Draw2D::ensureVertexBufferCapacity(size_t sizeInBytes)
 	vertexBufferDesc.usage = MemoryUsage::Dynamic;
 	vertexBufferDesc.cpuAccessFlags = CPUAccessFlagBits::Write;
 	vertexBufferDesc.sizeInBytes = sizeInBytes;
-
+	
 	return device->ensureBufferCapacity(vertexBuffer, vertexBufferDesc);
 }
 

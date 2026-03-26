@@ -170,7 +170,8 @@ namespace wob
 			buffer.clear();
 		}
 
-		template<std::ranges::input_range Range>
+		// todo range concepts
+		template<typename Range>
 		constexpr void insert(Iterator_t pos, Range&& range) noexcept
 		{
 			buffer.insert(pos, wob::forward<Range>(range));

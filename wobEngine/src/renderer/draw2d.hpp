@@ -1,8 +1,6 @@
 #ifndef WOB_DRAW2D_HPP
 #define WOB_DRAW2D_HPP
 
-#include <string_view>
-
 #include "core/error.hpp"
 #include "core/array.hpp"
 #include "RHI/RHIBuffer.hpp"
@@ -39,7 +37,7 @@ namespace wob
 		void drawFillRect(Rect const& rect);
 		void drawRect(Rect const& rect);
 		void drawImage(RHITexture& texture, Rect const& rect);
-		void drawText(FontRessource& font, std::string_view str, vec2 pos);
+		void drawText(FontRessource& font, StringView str, vec2 pos);
 
 		void executeDrawCommands();
 		

@@ -15,7 +15,7 @@ namespace wob
 		constexpr ArrayView(ArrayView const& rhs) noexcept : data_(rhs.data_), size_(rhs.size_) { }
 		constexpr ArrayView(T* str, size_t len) noexcept : data_(str), size_(len) { }
 		constexpr ArrayView(T* begin, T* end) noexcept : data_(begin), size_(end - begin) {}
-		constexpr ArrayView(std::nullptr_t) = delete;
+		constexpr ArrayView(wob::nullptr_t) = delete;
 
 		constexpr ArrayView& operator=(ArrayView const& view) noexcept = default;
 
