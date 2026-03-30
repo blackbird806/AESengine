@@ -5,8 +5,8 @@ void wob::buildCheckboard(Color* data, uint width, uint height, Color c1, Color 
 {
 	//WOB_ASSERT(data.size() >= width * height);
 
-	uint const segmentSizeX = std::round(width * segmentSize);
-	uint const segmentSizeY = std::round(height * segmentSize);
+	uint const segmentSizeX = roundf(width * segmentSize);
+	uint const segmentSizeY = roundf(height * segmentSize);
 
 	for (uint i = 0; i < width; i++)
 	{

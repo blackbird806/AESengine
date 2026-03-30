@@ -1,8 +1,8 @@
 #include "geometry.hpp"
 
-#include <algorithm>
 #include <cfloat>
 #include "wob.hpp"
+#include "core/utility.hpp"
 #include "renderer/RHI/RHI.hpp"
 
 using namespace wob;
@@ -13,11 +13,11 @@ bool wob::pointInRect(vec2 p, Rect const& r)
 		p.y > r.min.y && p.y < r.max.y;
 }
 
-std::array<vec3, 8> wob::AABB::getVertices() const
+StaticArray<vec3, 8> wob::AABB::getVertices() const
 {
 	WOB_PROFILE_FUNCTION();
 
-	return std::array<vec3, 8>
+	return StaticArray<vec3, 8>
 		{ min, max,
 		{ min.x, min.y, max.z },
 		{ min.x, max.y, max.z },
@@ -47,22 +47,22 @@ bool wob::ray_AABBIntersect(Ray const& ray, AABB const& box)
 	float const tx1 = (box.min.x - ray.start.x) * invRayDir.x;
 	float const tx2 = (box.max.x - ray.start.x) * invRayDir.x;
 
-	float tmin = std::min(tx1, tx2);
-	float tmax = std::max(tx1, tx2);
+	float tmin = wob::min(tx1, tx2);
+	float tmax = wob::max(tx1, tx2);
 
 	float const ty1 = (box.min.y - ray.start.y) * invRayDir.y;
 	float const ty2 = (box.max.y - ray.start.y) * invRayDir.y;
 
-	tmin = std::max(tmin, std::min(ty1, ty2));
-	tmax = std::min(tmax, std::max(ty1, ty2));
+	tmin = wob::max(tmin, wob::min(ty1, ty2));
+	tmax = wob::min(tmax, wob::max(ty1, ty2));
 
 	float const tz1 = (box.min.z - ray.start.z) * invRayDir.z;
 	float const tz2 = (box.max.z - ray.start.z) * invRayDir.z;
 
-	tmin = std::max(tmin, std::min(tz1, tz2));
-	tmax = std::min(tmax, std::max(tz1, tz2));
+	tmin = wob::max(tmin, wob::min(tz1, tz2));
+	tmax = wob::min(tmax, wob::max(tz1, tz2));
 
-	return tmax >= std::max(0.0f, tmin);
+	return tmax >= wob::max(0.0f, tmin);
 }
 
 bool wob::ray_PlaneIntersect(Ray const& r, Plane const& plane)

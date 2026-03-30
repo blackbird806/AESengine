@@ -1,8 +1,6 @@
 #ifndef WOB_ERROR_HPP
 #define WOB_ERROR_HPP
 
-#include <variant>
-
 #include "wob.hpp"
 #include "errorCodes.hpp"
 
@@ -20,48 +18,68 @@ namespace wob {
 		using ValueType = T;
 		using ErrorCodeType = AESError;
 
-		Result(T&& val) noexcept : value_(wob::forward<T>(val))
+		enum class TagType
+		{
+			Error, 
+			Value
+		};
+
+		Result(T&& val) noexcept : value_(wob::forward<T>(val)), tag(TagType::Value)
 		{
 
 		}
 
-		Result(T const& val) noexcept : value_(val)
+		Result(T const& val) noexcept : value_(val), tag(TagType::Value)
 		{
 
 		}
 
-		Result(AESError err) noexcept : value_(static_cast<ErrorCodeType>(err))
+		Result(AESError err) noexcept : value_(static_cast<ErrorCodeType>(err)), tag(TagType::Error)
 		{
+
+		}
+
+		~Result()
+		{
+			if (hasValue())
+			{
+				value_.~ValueType();
+			}
+		}
+
+		bool hasValue() const noexcept
+		{
+			return tag == TagType::Value;
 
 		}
 
 		operator bool() const noexcept
 		{
-			return std::holds_alternative<ValueType>(value_);
+			return hasValue;
 		}
 
 		ValueType const& value() const& noexcept
 		{
 			WOB_ASSERT(this->operator bool());
-			return std::get<ValueType>(value_);
+			return value_;
 		}
 
 		ValueType& value() & noexcept
 		{
 			WOB_ASSERT(this->operator bool());
-			return std::get<ValueType>(value_);
+			return value_;
 		}
 
 		ValueType const&& value() const&& noexcept
 		{
 			WOB_ASSERT(this->operator bool());
-			return wob::move(std::get<ValueType>(value_));
+			return value_;
 		}
 
 		ValueType&& value() && noexcept
 		{
 			WOB_ASSERT(this->operator bool());
-			return wob::move(std::get<ValueType>(value_));
+			return wob::move(value_);
 		}
 
 		ValueType const* operator->() const noexcept
@@ -77,11 +95,16 @@ namespace wob {
 		ErrorCodeType error() const noexcept
 		{
 			WOB_ASSERT(!this->operator bool());
-			return std::get<ErrorCodeType>(value_);
+			return error_;
 		}
 
+
 	private:
-		std::variant<ErrorCodeType, ValueType> value_;
+		TagType tag;
+		union {
+			ErrorCodeType error_,
+			ValueType value_
+		};
 	};
 
 	template<>
@@ -91,29 +114,37 @@ namespace wob {
 		using ValueType = void;
 		using ErrorCodeType = UnderlyingError_t;
 
-		Result() noexcept
+		enum class TagType
+		{
+			Error,
+			Valid
+		};
+
+
+		Result() noexcept : tag(TagType::Valid)
 		{
 
 		}
 
-		Result(AESError err) noexcept : value_(static_cast<ErrorCodeType>(err))
+		Result(AESError err) noexcept : error_(static_cast<ErrorCodeType>(err)), tag(TagType::Error)
 		{
 
 		}
 
 		operator bool() const noexcept
 		{
-			return std::holds_alternative<std::monostate>(value_);
+			return tag == TagType::Valid;
 		}
 
 		ErrorCodeType error() const noexcept
 		{
 			WOB_ASSERT(!this->operator bool());
-			return std::get<ErrorCodeType>(value_);
+			return error_;
 		}
 
 	private:
-		std::variant<std::monostate, ErrorCodeType> value_;
+		TagType tag;
+		ErrorCodeType error_;
 	};
 
 	inline const char* to_string(AESError err)

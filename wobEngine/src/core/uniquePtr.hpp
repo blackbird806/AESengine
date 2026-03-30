@@ -1,9 +1,9 @@
 #ifndef WOB_UNIQUE_PTR_HPP
 #define WOB_UNIQUE_PTR_HPP
 
-#include <concepts>
 #include "allocator.hpp"
 #include "context.hpp"
+#include "utility.hpp"
 
 namespace wob
 {
@@ -54,26 +54,26 @@ namespace wob
 		constexpr UniquePtr() noexcept : ptr(nullptr) {}
 		constexpr UniquePtr(T* p) noexcept : ptr(p) {}
 		constexpr UniquePtr(T* p, D&& d) noexcept : ptr(p), deleter(wob::move(d)) {}
-		constexpr UniquePtr(std::nullptr_t) : ptr(nullptr) {}
+		constexpr UniquePtr(wob::nullptr_t) : ptr(nullptr) {}
 		UniquePtr(UniquePtr const&) = delete;
 
 		constexpr UniquePtr(UniquePtr&& rhs) noexcept : ptr(rhs.release()), deleter(wob::move(rhs.deleter))
 		{ }
 
 		template<typename T2, typename D2>
-		requires std::convertible_to<T2*, T*> && std::convertible_to<D2, D>
+		requires wob::convertible_to<T2*, T*> && wob::convertible_to<D2, D>
 		constexpr UniquePtr(UniquePtr<T2, D2>&& rhs) noexcept : ptr(rhs.release()), deleter(wob::move(rhs.deleter))
 		{ }
 		
 		template<typename T2, typename D2>
-		requires std::convertible_to<T2*, T*>
+		requires wob::convertible_to<T2*, T*>
 		constexpr UniquePtr(UniquePtr<T2, D2>&& rhs) noexcept : ptr(rhs.release())
 		{ }
 		
 		UniquePtr& operator=(UniquePtr const&) = delete;
 
 		template<typename T2, typename D2>
-		requires std::convertible_to<T2*, T*> && std::convertible_to<D2, D>
+		requires wob::convertible_to<T2*, T*> && wob::convertible_to<D2, D>
 		constexpr UniquePtr& operator=(UniquePtr<T2, D2>&& rhs) noexcept
 		{
 			ptr = rhs.release();
@@ -82,7 +82,7 @@ namespace wob
 		}
 		
 		template<typename T2, typename D2>
-		requires std::convertible_to<T2*, T*>
+		requires wob::convertible_to<T2*, T*>
 		constexpr UniquePtr& operator=(UniquePtr<T2, D2>&& rhs) noexcept
 		{
 			ptr = rhs.release();
@@ -151,7 +151,7 @@ namespace wob
 			return ptr;
 		}
 
-		[[nodiscard]] constexpr std::add_lvalue_reference_t<T> operator*() const noexcept
+		[[nodiscard]] constexpr wob::add_lvalue_reference_t<T> operator*() const noexcept
 		{
 			WOB_ASSERT(ptr != nullptr);
 			return *ptr;

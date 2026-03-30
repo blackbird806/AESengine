@@ -4,11 +4,12 @@
 #include "core/wob.hpp"
 #include "core/color.hpp"
 #include "core/array.hpp"
+#include "core/string.hpp"
 #include "core/geometry.hpp"
 #include <variant>
 
 /*
- * AES Object Oriented ImGui implementation, heavly inspired by Dear ImGui and microUI
+ * Object Oriented ImGui implementation, heavly inspired by Dear ImGui and microUI
  */
 
 namespace wob
@@ -44,10 +45,10 @@ namespace wob
 
 	struct ImguiDrawCmd
 	{
-		using Arg_t = std::variant<TextArg, RectArg>;
+		//using Arg_t = std::variant<TextArg, RectArg>;
 
 		ImguiDrawCmdType type;
-		Arg_t arg;
+		//Arg_t arg;
 	};
 
 	struct InputData

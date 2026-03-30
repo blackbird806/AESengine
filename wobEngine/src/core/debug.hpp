@@ -2,6 +2,7 @@
 #define WOB_DEBUG_HPP
 
 #include "macro_helpers.hpp"
+//#include "format.hpp"
 #include <cstdio>
 
 // loging system should be completly revised

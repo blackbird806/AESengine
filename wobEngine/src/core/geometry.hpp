@@ -1,10 +1,10 @@
 #ifndef WOB_GEOMETRY_HPP
 #define WOB_GEOMETRY_HPP
 
-#include <array>
 #include "core/vec2.hpp"
 #include "core/vec3.hpp"
 #include "core/matrix.hpp"
+#include "core/staticArray.hpp"
 
 // undef windows shit
 #undef near
@@ -84,7 +84,7 @@ namespace wob {
 			return max - min;
 		}
 
-		std::array<vec3, 8> getVertices() const;
+		StaticArray<vec3, 8> getVertices() const;
 	};
 
 	bool AABB_AABBIntersect(AABB const& a, AABB const& b);

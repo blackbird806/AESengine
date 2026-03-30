@@ -12,6 +12,39 @@ namespace wob {
 
 	using nullptr_t = decltype(nullptr);
 
+	template <class... _Types>
+	using void_t = void;
+
+	template <class _Ty>
+	struct Add_reference_<_Ty, void_t<_Ty&>> { // (referenceable type)
+		using Lvalue_ = _Ty&;
+		using Rvalue_ = _Ty&&;
+	};
+
+	template <class _Ty>
+		struct add_lvalue_reference {
+		using type = typename Add_reference_<_Ty>::Lvalue_;
+	};
+
+	template <class _Ty>
+	using add_lvalue_reference_t = typename Add_reference_<_Ty>::Lvalue_;
+
+	template <class _Ty>
+		struct add_rvalue_reference {
+		using type = typename Add_reference_<_Ty>::Rvalue_;
+	};
+
+	template <class _Ty>
+	using add_rvalue_reference_t = typename Add_reference_<_Ty>::Rvalue_;
+
+	template <class _Ty>
+		add_rvalue_reference_t<_Ty> declval() noexcept {
+		static_assert(false, "Calling declval is ill-formed, see N4950 [declval]/2.");
+	}
+
+	template <class _From, class _To>
+	concept convertible_to = __is_convertible_to(_From, _To) && requires { static_cast<_To>(_STD declval<_From>()); };
+
 	template <class _Ty>
 		struct remove_cv { // remove top-level const and volatile qualifiers
 		using type = _Ty;
@@ -63,7 +96,7 @@ namespace wob {
 	};
 
 	 template <class _Ty>
-		using remove_reference_t = typename remove_reference<_Ty>::type;
+	using remove_reference_t = typename remove_reference<_Ty>::type;
 
 	template <class _Ty>
 	using _Const_thru_ref = typename remove_reference<_Ty>::_Const_thru_ref_type;
@@ -185,11 +218,6 @@ namespace wob {
 
 	template <class _Ty>
 	constexpr bool is_lvalue_reference_v<_Ty&> = true;
-
-	//String readFile(std::string_view file);
-	//std::vector<uint8_t> readFileBin(std::string_view file);
-
-	//std::vector<std::string> split(std::string_view a, char sep);
 
 	// see Game engine architecture 6.2.1.3 (p431)
 	constexpr uintptr_t align(uintptr_t x, uint32_t a)

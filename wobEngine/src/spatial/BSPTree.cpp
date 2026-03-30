@@ -92,7 +92,8 @@ namespace
 					case ObjectPlanePlacement::Straddling:
 						numStraddling++;
 						break;
-					default: WOB_UNREACHABLE();
+					default: 
+						WOB_UNREACHABLE();
 				}
 			}
 			// Compute score as a weighted combination (based on K, with K in range

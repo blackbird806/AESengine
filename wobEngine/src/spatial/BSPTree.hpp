@@ -1,7 +1,6 @@
 #ifndef BSPTREE_HPP
 #define BSPTREE_HPP
 
-#include <span>
 #include "core/wob.hpp"
 #include "core/geometry.hpp"
 #include "core/uniquePtr.hpp"

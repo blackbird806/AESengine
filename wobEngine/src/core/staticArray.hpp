@@ -2,8 +2,7 @@
 #define WOB_STATIC_ARRAY_HPP
 
 #include "wob.hpp"
-#include <utility>
-#include <concepts>
+#include "utility.hpp"
 
 namespace wob
 {
@@ -20,7 +19,7 @@ namespace wob
 
 		}
 
-		template<std::ranges::input_range Range>
+		template<typename Range>
 		constexpr StaticArray(Range const& range) noexcept
 		{
 			insert(begin(), range);
@@ -39,9 +38,7 @@ namespace wob
 		constexpr void copyFrom(StaticArray const& rhs) noexcept
 		{
 			clear();
-			alloc = rhs.alloc;
 			size_ = rhs.size_;
-			capacity_ = size_;
 
 			// @performance conditionaly use memcpy here ?
 			for (uint32_t i = 0; i < size_; i++)
@@ -63,7 +60,7 @@ namespace wob
 			{
 				if (n > capacity_)
 				{
-
+					WOB_ASSERT(false);
 				}
 				for (uint32_t i = size_; i < n; i++)
 					new (&buffer[i]) T;
@@ -78,30 +75,23 @@ namespace wob
 
 		constexpr void push(T const& e) noexcept
 		{
-			if (size_ == capacity_)
-			{
-			}
+			WOB_BOUNDS_CHECK(size_ < capacity_)
 			new (&buffer[size_++]) T(e);
 		}
 
 		constexpr void push(T&& e) noexcept
 		{
-			if (size_ == capacity_)
-			{
-			}
+			WOB_BOUNDS_CHECK(size_ < capacity_)
 			new (&buffer[size_++]) T(wob::move(e));
 		}
 
-		template<std::ranges::input_range Range>
+		template<typename Range>
 		constexpr void insert(Iterator_t pos, Range&& range) noexcept
 		{
 			uint32_t const rangeSize = std::ranges::size(range);
 			uint32_t const newSize = size_ + rangeSize;
 			T* workBuffer = buffer;
-			if (newSize >= capacity_)
-			{
-
-			}
+			WOB_BOUNDS_CHECK(newSize <= capacity_);
 
 			uint32_t ipos = end() - pos;
 
