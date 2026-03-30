@@ -1,13 +1,14 @@
 #include "engine.hpp"
 #include "core/debug.hpp"
+#include "core/uniquePtr.hpp"
+#include "core/time.hpp"
+#include "core/ranges.hpp"
 
 #ifdef _WIN32
 	#include "core/platformWindows/win_window.hpp"
 #else
 	#include "core/Window.hpp"
 #endif
-
-#include <chrono>
 
 using namespace wob;
 
@@ -60,7 +61,6 @@ void Engine::init()
 
 void Engine::run()
 {
-	using namespace std::chrono;
 	WOB_PROFILE_FUNCTION();
 
 	float deltaTime = 0.0;
@@ -69,7 +69,7 @@ void Engine::run()
 	while (!mainWindow->shouldClose())
 	{
 		WOB_PROFILE_FRAME();
-		auto const start = std::chrono::high_resolution_clock::now();
+		int64_t start = getPerfCount();
 
 		mainWindow->pollEvents();
 
@@ -78,9 +78,9 @@ void Engine::run()
 
 		keyJustPressed.clear();
 
-		auto const end = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<float> const deltaTimeInSec = end - start;
-		deltaTime = deltaTimeInSec.count();
+		int64_t const end = getPerfCount();
+		double const deltaTimeInSec = (static_cast<double>(end) - start) / getCPUFrequency();
+		deltaTime = deltaTimeInSec;
 		time += deltaTime;
 		frameCount++;
 	}
@@ -103,7 +103,7 @@ bool Engine::isKeyDown(Key k) noexcept
 
 bool Engine::isKeyPressed(Key k) noexcept
 {
-	return std::ranges::find(keyJustPressed, k) != keyJustPressed.end();
+	return wob::ranges::find(keyJustPressed, k) != keyJustPressed.end();
 }
 
 void Engine::getViewportMousePos(float& x, float& y) const noexcept

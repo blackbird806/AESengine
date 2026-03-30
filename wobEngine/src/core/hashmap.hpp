@@ -1,8 +1,6 @@
 #ifndef WOB_HASHMAP_HPP
 #define WOB_HASHMAP_HPP
 
-#include <concepts>
-
 #include "wob.hpp"
 #include "context.hpp"
 #include "array.hpp"
@@ -112,7 +110,7 @@ namespace wob
 			rehash(buckets.size() * 2);
 		}
 
-		constexpr void add(K const& key, V const& value) requires std::copy_constructible<V> && std::copy_constructible<K>
+		constexpr void add(K const& key, V const& value) requires wob::copy_constructible<V> && wob::copy_constructible<K>
 		{
 			add(buckets, key, value);
 			size_++;
@@ -137,7 +135,7 @@ namespace wob
 			size_--;
 		}
 
-		bool tryFind(K const& key, V& value) const requires std::copy_constructible<V>&& std::copy_constructible<K>
+		bool tryFind(K const& key, V& value) const requires wob::copy_constructible<V>&& wob::copy_constructible<K>
 		{
 			Bucket_t bucket;
 			auto const result = getKeyItAndBucketIndex(key);
@@ -198,7 +196,7 @@ namespace wob
 			buckets[index].add(wob::move(pair));
 		}
 
-		static constexpr void add(Array<Bucket_t>& buckets, K const& key, V const& value) requires std::copy_constructible<V> && std::copy_constructible<K>
+		static constexpr void add(Array<Bucket_t>& buckets, K const& key, V const& value) requires wob::copy_constructible<V> && wob::copy_constructible<K>
 		{
 			Pair<K, V> pair{ key, value };
 			auto const hash = Hash_t{}(pair.first);

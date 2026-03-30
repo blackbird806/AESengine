@@ -11,6 +11,7 @@ using uchar = unsigned char;
 #include "assert.hpp"
 #include "profiler.hpp"
 #include "debug.hpp"
+#include "format.hpp"
 
 #endif
 

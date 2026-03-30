@@ -1,5 +1,3 @@
-#include <iostream>
-#include <fstream>
 #include "core/wob.hpp"
 #include "core/debug.hpp"
 #include "core/uniquePtr.hpp"
@@ -12,7 +10,7 @@ using namespace wob::sbl;
 
 int main()
 {
-	auto streamSink = wob::makeUnique<wob::StreamSink>(std::cout);
+	auto streamSink = wob::makeUnique<wob::StreamSink>(stderr);
 	wob::Logger::instance().addSink(streamSink.get());
 #ifdef __vita__
 	//auto debugScreenSink = aes::makeUnique<aes::PsvDebugScreenSink>(file);

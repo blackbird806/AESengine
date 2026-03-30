@@ -4,6 +4,7 @@
 #include "vec2.hpp"
 #include "vec3.hpp"
 #include "vec4.hpp"
+#include "maths.hpp"
 
 namespace wob
 {

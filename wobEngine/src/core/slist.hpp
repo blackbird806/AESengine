@@ -107,7 +107,7 @@ namespace wob
 
 		constexpr void removeFront() noexcept
 		{
-			WOB_CHECK(first != nullptr);
+			WOB_BOUNDS_CHECK(first != nullptr);
 			Node* second = first->next;
 			deleteNode(first);
 			if (second)

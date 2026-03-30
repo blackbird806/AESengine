@@ -24,6 +24,30 @@ namespace wob
 	};
 
 	template<>
+	struct Hash<uint32_t>
+	{
+		constexpr uint64_t operator()(uint32_t x)
+		{
+			x = ((x >> 16) ^ x) * 0x45d9f3b;
+			x = ((x >> 16) ^ x) * 0x45d9f3b;
+			x = (x >> 16) ^ x;
+			return x;
+		}
+	};
+
+	template<>
+	struct Hash<uint64_t>
+	{
+		constexpr uint64_t operator()(uint64_t x)
+		{
+			x = ((x >> 16) ^ x) * 0x45d9f3b;
+			x = ((x >> 16) ^ x) * 0x45d9f3b;
+			x = (x >> 16) ^ x;
+			return x;
+		}
+	};
+
+	template<>
 	struct Hash<int64_t>
 	{
 		constexpr uint64_t operator()(int64_t x)

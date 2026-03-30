@@ -11,7 +11,6 @@ Octree::Node* Octree::build(vec3 const& center, float halfSize, int stopDepth, L
 	
 	if (stopDepth < 0)
 		return nullptr;
-	
 	nodes.add(locCode, Node{ center, halfSize, locCode, {}, false });
 	auto& val = nodes[locCode];
 
@@ -100,7 +99,7 @@ void Octree::testAllCollisions(Node const& node, void(* callback)(void*)) const
 	testAllCollisionsRec(node, callback, depth, ancestorStack);
 }
 
-void Octree::testAllCollisionsRec(Node const& node, void(* callback)(void*), uint& depth, std::span<Node const*> ancestorStack) const
+void Octree::testAllCollisionsRec(Node const& node, void(* callback)(void*), uint& depth, ArrayView<Node const*> ancestorStack) const
 {
 	WOB_PROFILE_FUNCTION();
 

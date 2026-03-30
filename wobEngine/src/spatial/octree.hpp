@@ -4,6 +4,7 @@
 #include "core/wob.hpp"
 #include "core/geometry.hpp"
 #include "core/array.hpp"
+#include "core/arrayView.hpp"
 #include "core/hashmap.hpp"
 
 namespace wob
@@ -47,7 +48,7 @@ namespace wob
 
 		// call callback on userdata carried by the colliding nodes
 		void testAllCollisions(Node const& node, void(*callback)(void*)) const;
-		void testAllCollisionsRec(Node const& node, void(*callback)(void*), uint& depth, std::span<Node const*> ancestorStack) const;
+		void testAllCollisionsRec(Node const& node, void(*callback)(void*), uint& depth, ArrayView<Node const*> ancestorStack) const;
 
 		// return null if tree wasn't built
 		Node* root();
@@ -55,12 +56,12 @@ namespace wob
 
 		// range interface
 		
-		auto begin() const
+		auto begin()
 		{
 			return nodes.begin();
 		}
 
-		auto end() const
+		auto end()
 		{
 			return nodes.end();
 		}

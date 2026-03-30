@@ -12,12 +12,12 @@ namespace wob::sbl
 	{
 		size_t line;
 		size_t column;
-		std::string_view filename;
+		StringView filename;
 	};
 
 	struct Atom
 	{
-		std::string_view src;
+		StringView src;
 		SourceLoc loc;
 	};
 
@@ -48,9 +48,9 @@ namespace wob::sbl
 		int c = 0;
 		int currentLine = 0;
 		int currentColumn = 0;
-		std::string_view source;
+		StringView source;
 
-		SBLLexer(std::string_view src) : source(src)
+		SBLLexer(StringView src) : source(src)
 		{
 
 		}
@@ -228,7 +228,7 @@ namespace wob::sbl
 		WhileStatement parseWhileStatement(List& lst);
 
 		static constexpr const char* getPrimitiveTypeName(Type type);
-		Type getTypeFromString(std::string_view str);
+		Type getTypeFromString(StringView str);
 
 		HashMap<String, StructDecl> structs;
 		HashMap<String, FuncDef> functions;

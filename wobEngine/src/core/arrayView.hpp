@@ -13,6 +13,10 @@ namespace wob
 
 		constexpr ArrayView() noexcept : data_(nullptr), size_(0) { }
 		constexpr ArrayView(ArrayView const& rhs) noexcept : data_(rhs.data_), size_(rhs.size_) { }
+		
+		template<long long N>
+		constexpr ArrayView(T(&array)[N]) noexcept : data_(array), size_(N) {}
+
 		constexpr ArrayView(T* str, size_t len) noexcept : data_(str), size_(len) { }
 		constexpr ArrayView(T* begin, T* end) noexcept : data_(begin), size_(end - begin) {}
 		constexpr ArrayView(wob::nullptr_t) = delete;

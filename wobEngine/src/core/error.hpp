@@ -102,8 +102,8 @@ namespace wob {
 	private:
 		TagType tag;
 		union {
-			ErrorCodeType error_,
-			ValueType value_
+			ErrorCodeType error_;
+			ValueType value_;
 		};
 	};
 

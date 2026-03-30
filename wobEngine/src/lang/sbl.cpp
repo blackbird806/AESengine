@@ -71,7 +71,7 @@ Atom SBLLexer::parseAtom()
 	}
 	int const wordLen = c - wordStart;
 	Atom atom;
-	atom.src = std::string_view(&source[wordStart], wordLen);
+	atom.src = StringView(&source[wordStart], wordLen);
 	WOB_ASSERT(!atom.src.empty());
 	atom.loc = getCurrentLoc();
 	return atom;
@@ -330,11 +330,11 @@ constexpr const char* SBLParser::getPrimitiveTypeName(Type type)
 	return primitiveTypeNames[(int)type];
 }
 
-Type SBLParser::getTypeFromString(std::string_view str)
+Type SBLParser::getTypeFromString(StringView str)
 {
 	// TODO clean primitives
-	static HashMap<std::string_view, Type> const primitiveTypeMap = []() {
-		HashMap<std::string_view, Type> map(16);
+	static HashMap<StringView, Type> const primitiveTypeMap = []() {
+		HashMap<StringView, Type> map(16);
 		map.add("char", Type::Char);
 		map.add("int", Type::Int);
 		map.add("uint", Type::Uint);

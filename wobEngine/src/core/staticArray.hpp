@@ -3,6 +3,7 @@
 
 #include "wob.hpp"
 #include "utility.hpp"
+#include "format.hpp"
 
 namespace wob
 {
@@ -88,7 +89,7 @@ namespace wob
 		template<typename Range>
 		constexpr void insert(Iterator_t pos, Range&& range) noexcept
 		{
-			uint32_t const rangeSize = std::ranges::size(range);
+			uint32_t const rangeSize = size(range);
 			uint32_t const newSize = size_ + rangeSize;
 			T* workBuffer = buffer;
 			WOB_BOUNDS_CHECK(newSize <= capacity_);
@@ -156,10 +157,9 @@ namespace wob
 			size_ = 0;
 		}
 
-		constexpr ~Array() noexcept
+		constexpr ~StaticArray() noexcept
 		{
-			if (buffer)
-				clear();
+			clear();
 		}
 
 	private:

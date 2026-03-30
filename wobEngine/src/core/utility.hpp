@@ -8,12 +8,41 @@
 #define WOB_SCOPE(code) ::wob::Scope WOB_CONCAT(WOB_scope_internal_, __COUNTER__) ([&](){code;});
 #define WOB_ONCE(code) static short const WOB_CONCAT(WOB_once_internal_, __COUNTER__) = [&]() {code; return 0;}();
 
-namespace wob {
-
+namespace wob 
+{
 	using nullptr_t = decltype(nullptr);
+
+	template <class _Ty>
+	concept destructible = __is_nothrow_destructible(_Ty);
+
+	template <class _Ty, class... _ArgTys>
+	concept constructible_from = destructible<_Ty> && __is_constructible(_Ty, _ArgTys...);
+
+	template <class _Ty>
+	concept default_initializable = constructible_from<_Ty> && requires {
+		_Ty{};
+		::new (static_cast<void*>(nullptr)) _Ty; // is-default-initializable<_Ty>
+	};
+
+	template <class _From, class _To>
+	concept convertible_to = __is_convertible_to(_From, _To) && requires { static_cast<_To>(declval<_From>()); };
+
+	template <class _Ty>
+	concept move_constructible = constructible_from<_Ty, _Ty>&& convertible_to<_Ty, _Ty>;
+
+	template <class _Ty>
+	concept copy_constructible = move_constructible<_Ty> && constructible_from<_Ty, _Ty&>&& convertible_to<_Ty&, _Ty>
+	&& constructible_from<_Ty, const _Ty&>&& convertible_to<const _Ty&, _Ty>
+	&& constructible_from<_Ty, const _Ty>&& convertible_to<const _Ty, _Ty>;
 
 	template <class... _Types>
 	using void_t = void;
+
+	template <class _Ty, class = void>
+	struct Add_reference_ { // add reference (non-referenceable type)
+		using Lvalue_ = _Ty;
+		using Rvalue_ = _Ty;
+	};
 
 	template <class _Ty>
 	struct Add_reference_<_Ty, void_t<_Ty&>> { // (referenceable type)
@@ -41,9 +70,6 @@ namespace wob {
 		add_rvalue_reference_t<_Ty> declval() noexcept {
 		static_assert(false, "Calling declval is ill-formed, see N4950 [declval]/2.");
 	}
-
-	template <class _From, class _To>
-	concept convertible_to = __is_convertible_to(_From, _To) && requires { static_cast<_To>(_STD declval<_From>()); };
 
 	template <class _Ty>
 		struct remove_cv { // remove top-level const and volatile qualifiers
@@ -219,14 +245,6 @@ namespace wob {
 	template <class _Ty>
 	constexpr bool is_lvalue_reference_v<_Ty&> = true;
 
-	// see Game engine architecture 6.2.1.3 (p431)
-	constexpr uintptr_t align(uintptr_t x, uint32_t a)
-	{
-		uint32_t const mask = a - 1;
-//		WOB_ASSERT((a & mask) == 0);
-		return (x + mask) & ~mask;
-	}
-
 	// from msvc stdlib
 	template <class T>
 	constexpr remove_reference_t<T>&& move(T&& _Arg) noexcept 
@@ -287,6 +305,14 @@ namespace wob {
 		_Ty _Tmp = move(_Left);
 		_Left = move(_Right);
 		_Right = move(_Tmp);
+	}
+
+	// see Game engine architecture 6.2.1.3 (p431)
+	constexpr uintptr_t align(uintptr_t x, uint32_t a)
+	{
+		uint32_t const mask = a - 1;
+		//		WOB_ASSERT((a & mask) == 0);
+		return (x + mask) & ~mask;
 	}
 
 	template<typename T>

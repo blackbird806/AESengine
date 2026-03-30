@@ -9,6 +9,7 @@
 #include "core/vec3.hpp"
 #include "core/vec4.hpp"
 #include "core/format.hpp"
+#include "core/stringView.hpp"
 
 #include <cctype>
 
@@ -20,10 +21,10 @@ namespace wob::phenix
 		void print() const
 		{
 			printf("Atom : ");
-			printf("%.*s\n", static_cast<int>(value.length()), value.data());
+			printf("%.*s\n", static_cast<int>(value.size()), value.data());
 		}
 
-		std::string_view value;
+		StringView value;
 	};
 
 	struct Pair
@@ -53,7 +54,7 @@ namespace wob::phenix
 			}
 		}
 
-		std::string_view getAtomValue()
+		StringView getAtomValue()
 		{
 			WOB_ASSERT(type == Type::Atom);
 			return atom.value;
@@ -90,15 +91,15 @@ namespace wob::phenix
 	struct PhenixFront
 	{
 		int c = 0;
-		std::string_view source;
+		StringView source;
 		StackAllocator parserAllocator;
 
-		PhenixFront(std::string_view src) : source(src), parserAllocator(*context.allocator, 32_kb)
+		PhenixFront(StringView src) : source(src), parserAllocator(*context.allocator, 32_kb)
 		{
 
 		}
 
-		Sexp* createAtom(std::string_view value)
+		Sexp* createAtom(StringView value)
 		{
 			Sexp* exp = parserAllocator.IAllocator::allocate<Sexp>();
 			exp->type = Sexp::Type::Atom;
@@ -157,7 +158,7 @@ namespace wob::phenix
 				{
 				}
 				int const wordLen = c - wordStart;
-				return createAtom(std::string_view(&source[wordStart], wordLen - 1));
+				return createAtom(StringView(&source[wordStart], wordLen - 1));
 			}
 			return nullptr;
 		}
@@ -241,7 +242,7 @@ namespace wob::phenix
 		UserDefined
 	};
 
-	constexpr TType stringToType(std::string_view str)
+	constexpr TType stringToType(StringView str)
 	{
 		if (str.size() == 3)
 			return TType::Int;
@@ -320,7 +321,7 @@ namespace wob::phenix
 		String name;
 	};
 
-	AttributeType stringToAttributeType(std::string_view str)
+	AttributeType stringToAttributeType(StringView str)
 	{
 		WOB_ASSERT(!str.empty());
 
@@ -366,7 +367,7 @@ namespace wob::phenix
 	};
 
 	// assuming that list is a list of at least index items 
-	bool assumeListElem(Sexp* list, std::string_view value)
+	bool assumeListElem(Sexp* list, StringView value)
 	{
 		return list->pair.car->type == Sexp::Type::Atom && list->pair.car->atom.value == value;
 	}
@@ -399,7 +400,7 @@ namespace wob::phenix
 			return current && current->type == Sexp::Type::Atom;
 		}
 
-		bool matchListElem(std::string_view value)
+		bool matchListElem(StringView value)
 		{
 			WOB_ASSERT(isPair());
 			bool const val = current->car()->type == Sexp::Type::Atom && current->car()->getAtomValue() == value;

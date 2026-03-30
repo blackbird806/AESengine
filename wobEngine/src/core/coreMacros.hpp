@@ -3,6 +3,18 @@
 
 #define WOB_UNUSED(x) ((void)(x))
 
+#if _MSC_VER
+#ifdef _M_X86
+#define WOB_ARCH_X86
+#endif
+#endif
+
+#if __GNUC__ || __clang__
+#ifdef __i386__
+#define WOB_ARCH_X86
+#endif
+#endif
+
 #ifdef _MSC_VER	
 #define WOB_ASSUME(x) __assume(x)
 #define WOB_RESTRICT(x) __restrict x

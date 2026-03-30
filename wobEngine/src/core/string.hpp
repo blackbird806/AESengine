@@ -2,11 +2,10 @@
 #define WOB_STRING_HPP
 
 #include <cstring>
-
+#include "coreMacros.hpp"
 #include "stringView.hpp"
 #include "array.hpp"
 #include "hash.hpp"
-#include "coreMacros.hpp"
 
 namespace wob
 {

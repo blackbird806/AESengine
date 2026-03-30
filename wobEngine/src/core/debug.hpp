@@ -25,8 +25,8 @@
 	#define WOB_LOG_ERROR(msg, ...) ::wob::Logger::instance().log(::wob::format("error: " __FUNCTION__ " : " WOB_STRINGIFY(__LINE__) ": " msg "\n", __VA_ARGS__).c_str())
 #endif
 
-#define WOB_CHECKR(r) if (!r) { WOB_LOG_ERROR("{}", r.error()); return r; };
-#define WOB_CHECK(r) if (!r) { WOB_LOG_ERROR("{}", r.error()); };
+#define WOB_CHECKR(r) if (!(r)) { WOB_LOG_ERROR("{}", r.error()); return r; };
+#define WOB_CHECK(r) if (!(r)) { WOB_LOG_ERROR("{}", r.error()); };
 
 namespace wob
 {

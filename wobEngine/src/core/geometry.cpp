@@ -17,15 +17,16 @@ StaticArray<vec3, 8> wob::AABB::getVertices() const
 {
 	WOB_PROFILE_FUNCTION();
 
-	return StaticArray<vec3, 8>
-		{ min, max,
-		{ min.x, min.y, max.z },
-		{ min.x, max.y, max.z },
-		{ max.x, min.y, max.z },
-		{ max.x, min.y, min.z },
-		{ max.x, max.y, min.z },
-		{ min.x, max.y, min.z},
-		};
+	StaticArray<vec3, 8> arr;
+	arr[0] = min;
+	arr[1] = max;
+	arr[2] = { min.x, min.y, max.z };
+	arr[3] = { min.x, max.y, max.z };
+	arr[4] = { max.x, min.y, max.z };
+	arr[5] = { max.x, min.y, min.z };
+	arr[6] = { max.x, max.y, min.z };
+	arr[7] = { min.x, max.y, min.z };
+	return arr;
 }
 
 bool wob::AABB_AABBIntersect(AABB const& a, AABB const& b)

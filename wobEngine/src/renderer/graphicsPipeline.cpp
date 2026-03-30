@@ -1,6 +1,7 @@
 #include "graphicsPipeline.hpp"
 #include "core/string.hpp"
 #include "RHI/RHIElements.hpp"
+#include "core/ranges.hpp"
 
 using namespace wob;
 
@@ -44,7 +45,7 @@ void GraphicsPipeline::registerVertexUniform(String const& name, BufferDescripti
 
 void GraphicsPipeline::setVertexUniform(String const& name, void* data, uint32_t size)
 {
-	auto bufferIt = std::ranges::find_if(vertexUniformBuffers, [name](auto const& e) {
+	auto bufferIt = wob::ranges::findIf(vertexUniformBuffers, [name](auto const& e) {
 			return e.name == name;
 	});
 	void* bufferData = device->mapBuffer(bufferIt->buffer);
@@ -57,15 +58,16 @@ void wob::GraphicsPipeline::registerFragmentUniform(String const& name, BufferDe
 	auto bufferVal = device->createBuffer(bufferDesc);
 	fragmentUniformBuffers.push(UniformBindPoint{ name, wob::move(bufferVal.value()), slot });
 }
-
+#include <utility>
 void wob::GraphicsPipeline::setFragmentUniform(String const& name, void* data, uint32_t size)
 {
-	auto bufferIt = std::ranges::find_if(fragmentUniformBuffers, [name](auto const& e) {
+	auto bufferIt = wob::ranges::findIf(fragmentUniformBuffers, [name](auto const& e) {
 		return e.name == name;
 		});
 	void* bufferData = device->mapBuffer(bufferIt->buffer);
 	memcpy(bufferData, data, size);
 	device->unmapBuffer(bufferIt->buffer);
+	std::move(5);
 }
 
 const VertexShaderDescription& wob::GraphicsPipeline::getVertexShaderDesc()
