@@ -3,7 +3,6 @@
 
 #include "wob.hpp"
 #include "utility.hpp"
-#include "format.hpp"
 
 namespace wob
 {
@@ -61,7 +60,7 @@ namespace wob
 			{
 				if (n > capacity_)
 				{
-					WOB_ASSERT(false);
+					WOB_BOUNDS_CHECK(false);
 				}
 				for (uint32_t i = size_; i < n; i++)
 					new (&buffer[i]) T;

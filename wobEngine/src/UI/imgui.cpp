@@ -31,7 +31,7 @@ bool ImguiContext::button(const char* name)
 {
 	Rect const btnRect{ vec2(-1, ny), vec2(-0.8, ny + 0.05) };
 
-	//bool ret = false;
+	bool ret = false;
 	//if (pointInRect(inputData.cursorPos, btnRect))
 	//{
 	//	ret = inputData.cursorPressed;

@@ -36,7 +36,7 @@
 #define WOB_UNREACHABLE() __builtin_unreachable()
 #endif
 #else
-#define WOB_UNREACHABLE() WOB_ASSERT(false);
+#define WOB_UNREACHABLE() WOB_ASSERT_CORE(false);
 #endif
 
 #endif

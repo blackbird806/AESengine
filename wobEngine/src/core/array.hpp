@@ -6,7 +6,6 @@
 #include "allocator.hpp"
 #include "context.hpp"
 #include "utility.hpp"
-#include <utility>
 
 namespace wob
 {
@@ -142,14 +141,14 @@ namespace wob
 			new (&buffer[size_++]) T(e);
 		}
 
-		//constexpr void push(T&& e) noexcept
-		//{
-		//	if (size_ == capacity_)
-		//	{
-		//		grow();
-		//	}
-		//	new (&buffer[size_++]) T(wob::move(e));
-		//}
+		constexpr void push(T&& e) noexcept
+		{
+			if (size_ == capacity_)
+			{
+				grow();
+			}
+			new (&buffer[size_++]) T(wob::move(e));
+		}
 
 		template<typename ...Args>
 		constexpr void emplace(Args&&... args)

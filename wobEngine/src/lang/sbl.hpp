@@ -37,7 +37,7 @@ namespace wob::sbl
 	{
 		void setType(NodeType type);
 		NodeType type;
-		std::variant<Atom, List> value;
+		//std::variant<Atom, List> value;
 
 		Atom& getAtom();
 		List& getList();

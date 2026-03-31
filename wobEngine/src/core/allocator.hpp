@@ -4,9 +4,18 @@
 #include "utility.hpp"
 
 using size_t = unsigned long long;
+
+// avoid msvc to declare it
+#define __PLACEMENT_NEW_INLINE
+// bruh C++, placement new decl
+inline void* __CRTDECL operator new(size_t _Size, void* _Where) noexcept
+{
+	(void)_Size;
+	return _Where;
+}
+
 namespace wob
 {
-
 	constexpr unsigned long long operator "" _kb(unsigned long long p)
 	{
 		return p * 1024;

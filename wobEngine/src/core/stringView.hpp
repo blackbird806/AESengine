@@ -57,7 +57,7 @@ namespace wob
 
 		[[nodiscard]] /*constexpr*/ bool operator==(StringView const& rhs) const noexcept
 		{
-			return strncmp(data_, rhs.data_, wob::min(size_, rhs.size_)) == 0;
+			return strncmp(data_, rhs.data_, min(size_, rhs.size_)) == 0;
 		}
 
 		[[nodiscard]] /*constexpr*/ bool operator!=(StringView const& rhs) const noexcept

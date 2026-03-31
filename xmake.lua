@@ -29,10 +29,11 @@ elseif is_mode("release") then
 end
 
 if is_os("windows") then
+	add_cxxflags("/NODEFAULTLIB")
 	if is_mode("debug") then
-		set_runtimes("MDd")
+--		set_runtimes("MDd")		
 	elseif is_mode("release") then
-		set_runtimes("MD")
+--		set_runtimes("MD")
 	end
 end
 

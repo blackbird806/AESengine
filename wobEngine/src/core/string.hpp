@@ -23,6 +23,7 @@ namespace wob
 	{
 		while (*dst++ = *src++) {}
 	}
+
 	/// General usage string class, for now just a wrapper over Array<Char>, we may want to implemet SSO in the future
 	// TODO try some optimisations details
 	// TODO constexpr functions that relies on cstring funcs
@@ -242,24 +243,24 @@ namespace wob
 		Array<Char_t> buffer;
 	};
 
-	inline/*constexpr*/ wob::Ordering operator<=>(String const& lhs, String const& rhs) noexcept
+	inline/*constexpr*/ Ordering operator<=>(String const& lhs, String const& rhs) noexcept
 	{
-		return wob::Ordering{ strcmp(lhs.data(), rhs.data()) };
+		return Ordering{ strcmp(lhs.data(), rhs.data()) };
 	}
 
-	inline/*constexpr*/ wob::Ordering operator<=>(String const& lhs, String::Char_t const* rhs) noexcept
+	inline/*constexpr*/ Ordering operator<=>(String const& lhs, String::Char_t const* rhs) noexcept
 	{
-		return wob::Ordering{ strcmp(lhs.data(), rhs) };
+		return Ordering{ strcmp(lhs.data(), rhs) };
 	}
 
 	inline bool operator==(String const& lhs, String const& rhs) noexcept
 	{
-		return (lhs <=> rhs) == wob::Ordering::equal;
+		return (lhs <=> rhs) == Ordering::equal;
 	}
 
 	inline bool operator==(String const& lhs, String::Char_t const* rhs) noexcept
 	{
-		return (lhs <=> rhs) == wob::Ordering::equal;
+		return (lhs <=> rhs) == Ordering::equal;
 	}
 
 	template<>
