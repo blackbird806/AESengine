@@ -1,6 +1,5 @@
 #include "renderer/RHI/D3D11/D3D11Texture.hpp"
 
-#include "renderer/RHI/D3D11/D3D11renderer.hpp"
 #include "renderer/RHI/D3D11/D3D11Elements.hpp"
 
 using namespace wob;

@@ -40,9 +40,9 @@ Result<void> Draw2D::init(RHIDevice& dev)
 
 #ifdef __vita__
 		auto const source_vs = readFileBin("app0:assets/shaders/vita/texture2d_vs.gxp");
-		vertexShaderDescription.source = source_vs.data();
+		vertexShaderDescription.sourceBinary = source_vs.data();
 #else
-		vertexShaderDescription.source = draw2dVSSource;
+		vertexShaderDescription.sourceCode = draw2dVSSource;
 #endif
 		vertexShaderDescription.verticesStride = sizeof(Vertex);
 
@@ -64,11 +64,11 @@ Result<void> Draw2D::init(RHIDevice& dev)
 		FragmentShaderDescription fragmentShaderDescription;
 #ifdef __vita__
 		auto const source_fs = readFileBin("app0:assets/shaders/vita/texture2d_fs.gxp");
-		fragmentShaderDescription.source = source_fs.data();
+		fragmentShaderDescription.sourceBinary = source_fs.data();
 		fragmentShaderDescription.gxpVertexProgram = textureVertexShader.getGxpShader();
 #else
-		fragmentShaderDescription.source = draw2dFSSource;
-		fragmentShaderDescription.blendInfo = blendInfo;
+		fragmentShaderDescription.sourceCode = draw2dFSSource;
+		fragmentShaderDescription.blendInfo = &blendInfo;
 #endif
 
 		auto result = device->createFragmentShader(fragmentShaderDescription);

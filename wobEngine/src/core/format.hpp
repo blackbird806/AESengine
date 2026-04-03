@@ -1,7 +1,6 @@
 #ifndef WOB_FORMAT_HPP
 #define WOB_FORMAT_HPP
 
-#include "wob.hpp"
 #include "string.hpp"
 #include "stringView.hpp"
 #include "core/maths.hpp"

@@ -2,14 +2,30 @@
 #define WOB_UTILITY_HPP
 
 #include "macro_helpers.hpp"
-#include <cstdarg>
 #include <cstdint>
+// I'll kill you windows 
+#undef min
+#undef max
 
 #define WOB_SCOPE(code) ::wob::Scope WOB_CONCAT(WOB_scope_internal_, __COUNTER__) ([&](){code;});
 #define WOB_ONCE(code) static short const WOB_CONCAT(WOB_once_internal_, __COUNTER__) = [&]() {code; return 0;}();
 
 namespace wob 
 {
+	struct Ordering {
+		int value; // -1, 0, 1
+
+		constexpr bool operator==(const Ordering&) const = default;
+
+		static const Ordering less;
+		static const Ordering equal;
+		static const Ordering greater;
+	};
+
+	inline constexpr Ordering Ordering::less{ -1 };
+	inline constexpr Ordering Ordering::equal{ 0 };
+	inline constexpr Ordering Ordering::greater{ 1 };
+
 	using nullptr_t = decltype(nullptr);
 
 	template <class _Ty>
@@ -121,7 +137,7 @@ namespace wob
 		using _Const_thru_ref_type = const _Ty&&;
 	};
 
-	 template <class _Ty>
+	template <class _Ty>
 	using remove_reference_t = typename remove_reference<_Ty>::type;
 
 	template <class _Ty>
@@ -131,15 +147,16 @@ namespace wob
 	using remove_cv_t = typename remove_cv<_Ty>::type;
 
 	template <class _Ty>
-	using _Remove_cvref_t _MSVC_KNOWN_SEMANTICS = remove_cv_t<remove_reference_t<_Ty>>;
+	using _Remove_cvref_t = remove_cv_t<remove_reference_t<_Ty>>;
 
 	 template <class _Ty>
-		using remove_cvref_t = _Remove_cvref_t<_Ty>;
+	using remove_cvref_t = _Remove_cvref_t<_Ty>;
 
-	 template <class _Ty>
-		struct remove_cvref {
+	template <class _Ty>
+	struct remove_cvref {
 		using type = remove_cvref_t<_Ty>;
 	};
+
 #ifdef __clang__
 		template <class _Ty1, class _Ty2>
 			constexpr bool is_same_v = __is_same(_Ty1, _Ty2);
@@ -148,7 +165,8 @@ namespace wob
 			struct is_same : bool_constant<__is_same(_Ty1, _Ty2)> {};
 #else // ^^^ Clang / not Clang vvv
 		template <class, class>
-			constexpr bool is_same_v = false; // determine whether arguments are the same type
+		constexpr bool is_same_v = false; // determine whether arguments are the same type
+		
 		template <class _Ty>
 		constexpr bool is_same_v<_Ty, _Ty> = true;
 #endif
@@ -160,8 +178,8 @@ namespace wob
 			is_same_v<_Ty1, _Ty2>;
 #endif // ^^^ no intrinsic ^^^
 
-		template <class _Ty, class... _Types>
-		constexpr bool _Is_any_of_v = (is_same_v<_Ty, _Types> || ...);
+	template <class _Ty, class... _Types>
+	constexpr bool _Is_any_of_v = (is_same_v<_Ty, _Types> || ...);
 
 	constexpr bool is_constant_evaluated() noexcept {
 		return __builtin_is_constant_evaluated();
@@ -177,7 +195,7 @@ namespace wob
 	template <class _Ty1, class _Ty2>
 	concept same_as = _Same_impl<_Ty1, _Ty2>&& _Same_impl<_Ty2, _Ty1>;
 
-	 template <class _Ty>
+	template <class _Ty>
 	concept integral = is_integral_v<_Ty>;
 
 	template <class _Ty>
@@ -186,34 +204,17 @@ namespace wob
 	template <class _Ty>
 	concept unsigned_integral = integral<_Ty> && !signed_integral<_Ty>;
 
-	template <class _Ty>
-	constexpr _Ty const& min(const _Ty& _Left, const _Ty& _Right) noexcept
+	template <typename T>
+	constexpr T const& min(T const& lhs, T const& rhs)
 	{
-		// return smaller of _Left and _Right
-		return _Right < _Left ? _Right : _Left;
+		return lhs < rhs ? lhs : rhs;
 	}
 
-	template <class _Ty>
-	constexpr const _Ty& //
-		max(const _Ty& _Left, const _Ty& _Right)
-		noexcept(noexcept(_Right > _Left)) /* strengthened */ {
-		// return smaller of _Left and _Right
-		return _Right > _Left ? _Right : _Left;
+	template <typename T>
+	constexpr T const& max(T const& lhs, T const& rhs)
+	{
+		return lhs > rhs ? lhs : rhs;
 	}
-
-	struct Ordering {
-		int value; // -1, 0, 1
-
-		constexpr bool operator==(const Ordering&) const = default;
-
-		static const Ordering less;
-		static const Ordering equal;
-		static const Ordering greater;
-	};
-
-	inline constexpr Ordering Ordering::less{ -1 };
-	inline constexpr Ordering Ordering::equal{ 0 };
-	inline constexpr Ordering Ordering::greater{ 1 };
 
 	template <class _Container>
 		constexpr auto size(const _Container& _Cont) noexcept(noexcept(_Cont.size())) /* strengthened */

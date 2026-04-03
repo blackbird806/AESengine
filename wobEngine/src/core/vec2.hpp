@@ -26,13 +26,13 @@ namespace wob
 
 		constexpr float operator[](uint i) const noexcept
 		{
-			WOB_ASSERT(i < 2);
+			WOB_BOUNDS_CHECK(i < 2);
 			return data[i];
 		}
 
 		constexpr float& operator[](uint i) noexcept
 		{
-			WOB_ASSERT(i < 2);
+			WOB_BOUNDS_CHECK(i < 2);
 			return data[i];
 		}
 

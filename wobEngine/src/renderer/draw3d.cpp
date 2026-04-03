@@ -13,7 +13,7 @@ void Draw3D::init(RHIDevice& device_)
 	pipeline.init(device);
 
 	VertexShaderDescription vertexShaderDesc;
-	vertexShaderDesc.source = draw3dVSSource;
+	vertexShaderDesc.sourceCode = draw3dVSSource;
 	vertexShaderDesc.verticesLayout.resize(2);
 
 	vertexShaderDesc.verticesLayout[0].semantic = SemanticType::Position;
@@ -44,8 +44,8 @@ void Draw3D::init(RHIDevice& device_)
 	blendInfo.colorSrc = BlendFactor::SrcAlpha;
 
 	FragmentShaderDescription fragmentShaderDesc;
-	fragmentShaderDesc.source = draw3dFSSource;
-	fragmentShaderDesc.blendInfo = blendInfo;
+	fragmentShaderDesc.sourceCode = draw3dFSSource;
+	fragmentShaderDesc.blendInfo = &blendInfo;
 	fragmentShaderDesc.multisampleMode = MultisampleMode::None;
 	//fragmentShaderDesc.gxpVertexProgram
 	pipeline.buildFragmentShader(fragmentShaderDesc);

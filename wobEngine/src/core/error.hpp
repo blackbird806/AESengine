@@ -1,7 +1,9 @@
 #ifndef WOB_ERROR_HPP
 #define WOB_ERROR_HPP
 
-#include "wob.hpp"
+#include "assert.hpp"
+#include "utility.hpp"
+#include "coreMacros.hpp"
 #include "errorCodes.hpp"
 
 namespace wob {
@@ -34,7 +36,7 @@ namespace wob {
 
 		}
 
-		Result(AESError err) noexcept : value_(static_cast<ErrorCodeType>(err)), tag(TagType::Error)
+		Result(AESError err) noexcept : error_(static_cast<ErrorCodeType>(err)), tag(TagType::Error)
 		{
 
 		}
@@ -55,30 +57,30 @@ namespace wob {
 
 		operator bool() const noexcept
 		{
-			return hasValue;
+			return hasValue();
 		}
 
 		ValueType const& value() const& noexcept
 		{
-			WOB_ASSERT(this->operator bool());
+			WOB_ASSERT_CORE(this->operator bool());
 			return value_;
 		}
 
 		ValueType& value() & noexcept
 		{
-			WOB_ASSERT(this->operator bool());
+			WOB_ASSERT_CORE(this->operator bool());
 			return value_;
 		}
 
 		ValueType const&& value() const&& noexcept
 		{
-			WOB_ASSERT(this->operator bool());
+			WOB_ASSERT_CORE(this->operator bool());
 			return value_;
 		}
 
 		ValueType&& value() && noexcept
 		{
-			WOB_ASSERT(this->operator bool());
+			WOB_ASSERT_CORE(this->operator bool());
 			return wob::move(value_);
 		}
 
@@ -94,7 +96,7 @@ namespace wob {
 
 		ErrorCodeType error() const noexcept
 		{
-			WOB_ASSERT(!this->operator bool());
+			WOB_ASSERT_CORE(!this->operator bool());
 			return error_;
 		}
 
@@ -108,7 +110,7 @@ namespace wob {
 	};
 
 	template<>
-	class Result<void>
+	class [[nodiscard]] Result<void>
 	{
 	public:
 		using ValueType = void;
@@ -138,7 +140,7 @@ namespace wob {
 
 		ErrorCodeType error() const noexcept
 		{
-			WOB_ASSERT(!this->operator bool());
+			WOB_ASSERT_CORE(!this->operator bool());
 			return error_;
 		}
 

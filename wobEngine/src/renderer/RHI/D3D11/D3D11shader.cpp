@@ -1,8 +1,6 @@
 #include "D3D11Shader.hpp"
 
-#include "D3D11Elements.hpp"
 #include "core/wob.hpp"
-#include "core/debug.hpp"
 
 using namespace wob;
 

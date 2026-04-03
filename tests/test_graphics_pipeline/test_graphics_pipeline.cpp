@@ -10,13 +10,11 @@
 #include "renderer/model.hpp"
 #include "renderer/RHI/RHIDevice.hpp"
 #include "renderer/RHI/RHIBuffer.hpp"
-#include "renderer/RHI/RHIRenderTarget.hpp"
-#include "renderer/RHI/RHIShader.hpp"
 #include "renderer/RHI/RHISwapchain.hpp"
 #include "renderer/graphicsPipeline.hpp"
-#include <iostream>
-#include <cmath>
+#include "renderer/RHI/inlineShaders/draw3dShader.hpp"
 #include "renderer/simpleMeshes.hpp"
+#include <cmath>
 
 using namespace wob;
 
@@ -81,9 +79,7 @@ public:
 			graphicsPipeline.init(&device);
 
 			wob::VertexShaderDescription vertexShaderDescription;
-			String vertexShaderPath = getEngineShaderPath();
-			vertexShaderPath.append("/HLSL/draw3d.vs");
-			vertexShaderDescription.source = readFile(vertexShaderPath);
+			vertexShaderDescription.sourceCode = draw3dVSSource;
 			vertexShaderDescription.verticesStride = sizeof(wob::Vertex);
 
 			vertexShaderDescription.verticesLayout.resize(2);
@@ -107,7 +103,7 @@ public:
 			wob::FragmentShaderDescription fragmentShaderDescription;
 			String fragmentShaderPath = getEngineShaderPath();
 			fragmentShaderPath.append("/HLSL/draw3d.fs");
-			fragmentShaderDescription.source = readFile(fragmentShaderPath);
+			fragmentShaderDescription.sourceCode = draw3dFSSource;
 			fragmentShaderDescription.multisampleMode = MultisampleMode::None;
 			graphicsPipeline.buildFragmentShader(fragmentShaderDescription);
 
@@ -262,7 +258,7 @@ public:
 
 int main()
 {
-	auto streamSink = wob::makeUnique<wob::StreamSink>(std::cerr);
+	auto streamSink = wob::makeUnique<wob::StreamSink>(stderr);
 	wob::Logger::instance().addSink(streamSink.get());
 	WOB_START_PROFILE_SESSION("test draw3d startup");
 	TestPipelineApp app({

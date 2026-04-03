@@ -9,15 +9,6 @@
 
 namespace wob
 {
-	constexpr size_t strlen(const char* start)
-	{
-		WOB_ASSERT_NOLOG(start);
-
-		const char* end = start;
-		while (*end != '\0')
-			++end;
-		return end - start;
-	}
 
 	constexpr void strcpy(char* WOB_RESTRICT(dst), const char* WOB_RESTRICT(src)) noexcept
 	{
@@ -36,11 +27,11 @@ namespace wob
 
 		constexpr String() noexcept = default;
 
-		constexpr String(const Char_t* cstr) noexcept
+		/*constexpr*/ String(const Char_t* cstr) noexcept
 		{
 			WOB_ASSERT_NOLOG(cstr);
 
-			buffer.resize(wob::strlen(cstr) + 1);
+			buffer.resize(strlen(cstr) + 1);
 			wob::strcpy(buffer.data(), cstr);
 		}
 

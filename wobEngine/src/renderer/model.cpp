@@ -1,7 +1,6 @@
 #include "model.hpp"
 #include "core/debug.hpp"
 #include "core/utility.hpp"
-#include "RHI/RHIRenderContext.hpp"
 #include "simpleMeshes.hpp"
 
 using namespace wob;
@@ -86,13 +85,14 @@ Result<Model> wob::createCube(vec4 const& col)
 	WOB_PROFILE_FUNCTION();
 
 	Model cube;
-	auto const result = cube.init(getCubeVertices(col), sm::cubeIndices);
+	Array<Vertex> vertices = getCubeVertices(col);
+	auto const result = cube.init(ArrayView<Vertex const>(vertices.begin(), vertices.end()), sm::cubeIndices);
 	if (!result)
 		return { AESError{ result.error() } };
 	return { wob::move(cube) };
 }
 
-Result<void> Model::init(std::span<Vertex const> vertices, std::span<uint32_t const> indices)
+Result<void> Model::init(ArrayView<Vertex const> vertices, ArrayView<uint32_t const> indices)
 {
 	WOB_PROFILE_FUNCTION();
 
@@ -103,7 +103,7 @@ Result<void> Model::init(std::span<Vertex const> vertices, std::span<uint32_t co
 	vertexBufferInfo.bindFlags = BindFlagBits::VertexBuffer;
 	vertexBufferInfo.usage = MemoryUsage::Immutable;
 	vertexBufferInfo.cpuAccessFlags = CPUAccessFlagBits::None;
-	vertexBufferInfo.sizeInBytes = vertices.size_bytes();
+	vertexBufferInfo.sizeInBytes = vertices.size() * sizeof(Vertex);
 	vertexBufferInfo.initialData = (void*)vertices.data();
 
 	/*auto err = vertexBuffer.init(vertexBufferInfo);
@@ -114,7 +114,7 @@ Result<void> Model::init(std::span<Vertex const> vertices, std::span<uint32_t co
 	indexBufferInfo.bindFlags = BindFlagBits::IndexBuffer;
 	indexBufferInfo.usage = MemoryUsage::Immutable;
 	indexBufferInfo.cpuAccessFlags = CPUAccessFlagBits::None;
-	indexBufferInfo.sizeInBytes = indices.size_bytes();
+	indexBufferInfo.sizeInBytes = indices.size() * sizeof(uint32_t);
 	indexBufferInfo.initialData = (void*)indices.data();
 
 	//err = indexBuffer.init(indexBufferInfo);
@@ -140,9 +140,4 @@ void Model::draw()
 
 	//modelBuffer.setDataFromPOD(glm::transpose(toWorld));
 
-	RHIRenderContext& renderContext = RHIRenderContext::instance();
-	renderContext.setDrawPrimitiveMode(DrawPrimitiveType::TrianglesFill);
-	renderContext.bindVertexBuffer(vertexBuffer, sizeof(Vertex));
-	renderContext.bindIndexBuffer(indexBuffer, IndexTypeFormat::Uint32);
-	renderContext.drawIndexed(indexCount);
 }

@@ -1,7 +1,6 @@
 #ifndef WOB_STRING_VIEW_HPP
 #define WOB_STRING_VIEW_HPP
 
-#include "wob.hpp"
 #include "utility.hpp"
 #include <cstring>
 

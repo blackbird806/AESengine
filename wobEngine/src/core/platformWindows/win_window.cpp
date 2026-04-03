@@ -8,14 +8,14 @@
 
 #include "core/maths.hpp"
 
-#define WOB_CLASSNAME L"WOB_CLASS"
-#define WINDOW_HANDLE_PROP_NAME L"WOB_WinHandle"
+#define WOB_CLASSNAME "WOB_CLASS"
+#define WINDOW_HANDLE_PROP_NAME "WOB_WinHandle"
 
 using namespace wob;
 
 LRESULT Win_Window::windowProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	Win_Window* self = (Win_Window*)GetPropW(hwnd, WINDOW_HANDLE_PROP_NAME);
+	Win_Window* self = (Win_Window*)GetPropA(hwnd, WINDOW_HANDLE_PROP_NAME);
 	switch (msg)
 	{
 		case WM_CREATE:
@@ -158,13 +158,12 @@ Win_Window::Win_Window(const char* name)
 	
 	WOB_ASSERT(name);
 
-	std::wstring const windowName = to_wstring(std::string(name));
 
-	WNDCLASSEX wc = { };
+	WNDCLASSEXA wc = { };
 	
 	HINSTANCE const hInstance = GetModuleHandle(NULL);
 	WNDPROC const winPRoc = (WNDPROC)windowProcess;
-	wc.cbSize = sizeof(WNDCLASSEX);
+	wc.cbSize = sizeof(WNDCLASSEXA);
 	wc.lpfnWndProc = winPRoc;
 	wc.hInstance = hInstance;
 	wc.lpszClassName = WOB_CLASSNAME;
@@ -172,12 +171,12 @@ Win_Window::Win_Window(const char* name)
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
 
-	RegisterClassEx(&wc);
+	RegisterClassExA(&wc);
 	
-	handle = CreateWindowEx(
+	handle = CreateWindowExA(
 		0,                          // Optional window styles.
 		WOB_CLASSNAME,				// Window class
-		windowName.c_str(),			// Window text
+		name,						// Window text
 		WS_OVERLAPPEDWINDOW,        // Window style
 
 		// Size and position
@@ -189,7 +188,7 @@ Win_Window::Win_Window(const char* name)
 		NULL        // Additional application data
 	);
 
-	SetPropW(handle, WINDOW_HANDLE_PROP_NAME, this);
+	SetPropA(handle, WINDOW_HANDLE_PROP_NAME, this);
 	WOB_ASSERT(handle != NULL);
 	
 	RECT rect;

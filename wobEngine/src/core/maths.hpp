@@ -17,6 +17,7 @@ namespace wob {
 	}
 
 	constexpr double degToRad = M_PI / 180.0;
+	constexpr double tau = M_PI * 2.0f;
 
 	// https://stackoverflow.com/a/1489873
 	// '-' count as a digit
