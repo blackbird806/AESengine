@@ -1,36 +1,37 @@
--- define toolchain
-toolchain("vita")
-	
-	set_description("ps vita target with VITA SDK")
-
-	--set_kind("cross")
+-- vitatoolchain.lua
+toolchain("vitasdk-clang")
     set_kind("standalone")
---	set_sdkdir("/usr/local/vitasdk")
---	set_bindir("/usr/local/vitasdk/bin")
+
+    local sdk = os.getenv("VITASDK")
+    set_sdkdir(sdk)
+    set_bindir(path.join(sdk, "bin"))
+
+    -- Compiler
+    set_toolset("cc", "clang-20")
+    set_toolset("cxx", "clang++-20")
 	add_defines("__vita__")
 
-	use_vita_toolchain = true
---	if use_vita_toolchain then
---		set_toolset("cxx", "arm-vita-eabi-g++")
---		set_toolset("ld", "arm-vita-eabi-g++")
---		set_toolset("ar", "arm-vita-eabi-g++")
---		set_toolset("cc", "arm-vita-eabi-gcc")
---	else
-		set_toolset("cxx", "clang++")
-		set_toolset("ld", "clang++")
-		set_toolset("ar", "clang+++")
-		set_toolset("cc", "clang")
---	end
+    -- Linker
+    set_toolset("ld", "arm-vita-eabi-g++")
+    -- OR: set_toolset("ld", "clang++")
+
+    set_toolset("ar", "llvm-ar")
+    set_toolset("strip", "llvm-strip")
 
     on_load(function (toolchain)
-		-- add flags for arch
-		--https://github.com/psvsdk/psvsdk/blob/master/src/psv-gcc.sh
-        toolchain:add("cxflags", "-march=armv7-a", "-mfloat-abi=hard", 
-						"-mtune=cortex-a9", "-mfpu=neon", "-mthumb" , {force = true})
-        toolchain:add("cxxflags", "-march=armv7-a", "-msoft-float", {force = true})
-        toolchain:add("ldflags", "-march=armv7-a", "-msoft-float", {force = true})
---        toolchain:add("ldflags", "--static", {force = true})
---        toolchain:add("syslinks", "gcc", "c")
-    end)
+        local sysroot = path.join(sdk, "arm-vita-eabi")
 
+        -- Target CPU / FPU
+        toolchain:add("cxflags", "--target=armv7a-none-eabi")
+        toolchain:add("cxflags", "-march=armv7-a")
+        toolchain:add("cxflags", "-mfpu=neon")
+        toolchain:add("cxflags", "-mfloat-abi=softfp")
+        toolchain:add("cxflags", "--sysroot=" .. sysroot)
+
+        -- Linker flags
+        toolchain:add("ldflags", "--sysroot=" .. sysroot)
+        toolchain:add("ldflags", "-Wl,-q")
+
+        -- toolchain:add("cxflags", "-fno-builtin")
+    end)
 toolchain_end()

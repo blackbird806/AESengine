@@ -2,7 +2,7 @@
 #define WOB_UTILITY_HPP
 
 #include "macro_helpers.hpp"
-#include <cstdint>
+#include <stdint.h>
 // I'll kill you windows 
 #undef min
 #undef max
@@ -161,8 +161,8 @@ namespace wob
 		template <class _Ty1, class _Ty2>
 			constexpr bool is_same_v = __is_same(_Ty1, _Ty2);
 
-		template <class _Ty1, class _Ty2>
-			struct is_same : bool_constant<__is_same(_Ty1, _Ty2)> {};
+		//template <class _Ty1, class _Ty2>
+		//struct is_same : bool_constant<__is_same(_Ty1, _Ty2)> {};
 #else // ^^^ Clang / not Clang vvv
 		template <class, class>
 		constexpr bool is_same_v = false; // determine whether arguments are the same type

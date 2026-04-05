@@ -1,7 +1,7 @@
 #ifndef WOB_ASSERT_HPP
 #define WOB_ASSERT_HPP
 
-#include <cstdlib>
+#include <stdlib.h>
 
 #define WOB_ASSERT_NOLOG(x) WOB_ASSERT_CORE(x) // legacy
 

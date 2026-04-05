@@ -3,7 +3,7 @@
 #include "context.hpp"
 #include "format.hpp"
 #include "utility.hpp"
-#include <cstdio>
+#include <stdio.h>
 
 #ifdef __vita__
 #include "psvDebugScreen/debugScreen.h"

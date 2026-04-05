@@ -1,7 +1,7 @@
 #ifndef WOB_HASH_HPP
 #define WOB_HASH_HPP
 
-#include <cstdint>
+#include <stdint.h>
 
 namespace wob
 {

@@ -1,8 +1,6 @@
 #ifndef WOB_SBL
 #define WOB_SBL
 
-#include <string_view>
-#include <variant>
 #include "core/array.hpp"
 #include "core/hashmap.hpp"
 
@@ -147,12 +145,12 @@ namespace wob::sbl
 	struct Statement
 	{
 		StatementType type;
-		std::variant<CompoundStatement, 
-					IfStatement, 
-					WhileStatement,
-					VarDecl, 
-					StructDecl, 
-					FuncDef> data;
+		//std::variant<CompoundStatement, 
+		//			IfStatement, 
+		//			WhileStatement,
+		//			VarDecl, 
+		//			StructDecl, 
+		//			FuncDef> data;
 	};
 
 	struct Symbol

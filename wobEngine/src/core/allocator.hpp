@@ -1,14 +1,12 @@
 #ifndef WOB_ALLOCATOR_HPP
 #define WOB_ALLOCATOR_HPP
-#include <cstdint>
+#include <stdint.h>
 #include "utility.hpp"
-
-using size_t = unsigned long long;
 
 #ifndef __PLACEMENT_NEW_INLINE
 #define __PLACEMENT_NEW_INLINE
 // bruh C++, placement new decl
-inline void* __CRTDECL operator new(size_t _Size, void* _Where) noexcept
+inline void* operator new(size_t _Size, void* _Where) noexcept
 {
 	(void)_Size;
 	return _Where;
@@ -16,17 +14,17 @@ inline void* __CRTDECL operator new(size_t _Size, void* _Where) noexcept
 #endif
 namespace wob
 {
-	constexpr unsigned long long operator "" _kb(unsigned long long p)
+	constexpr unsigned long long operator ""_kb(unsigned long long p)
 	{
 		return p * 1024;
 	}
 
-	constexpr unsigned long long operator "" _mb(unsigned long long p)
+	constexpr unsigned long long operator ""_mb(unsigned long long p)
 	{
 		return p * 1024_kb;
 	}
 
-	constexpr unsigned long long operator "" _gb(unsigned long long p)
+	constexpr unsigned long long operator ""_gb(unsigned long long p)
 	{
 		return p * 1024_mb;
 	}

@@ -1,8 +1,8 @@
 #ifndef WOB_DRAGON4_HPP
 #define WOB_DRAGON4_HPP
 
-#include <cstdint>
-#include <cstddef>
+#include <stdint.h>
+#include <stddef.h>
 
 // implementation from https://github.com/ahaldane/Dragon4
 // algo and original code from https://www.ryanjuckett.com/printing-floating-point-numbers/
@@ -59,8 +59,8 @@ namespace wob::d4
     typedef double      tF64;
 
     // Size types
-    typedef std::size_t	    Size;
-    typedef std::ptrdiff_t	tPtrDiff;
+    typedef size_t	    Size;
+    typedef ptrdiff_t	tPtrDiff;
 
     // TODO make this constexpr
 

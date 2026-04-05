@@ -7,6 +7,7 @@
 #include "core/utility.hpp"
 #include "core/coreMacros.hpp"
 #include "core/dragon4.hpp"
+#include <stdio.h>
 
 #define WOB_FMT_CONSTEXPR_OR_INLINE inline
 
@@ -104,14 +105,28 @@ namespace wob
 	// assume that dst have enough space for src
 	constexpr void strcpy_fmtinternal(char* WOB_RESTRICT(dst), const char* WOB_RESTRICT(src)) noexcept
 	{
-		while (*dst++ = *src++) {}
+		if (is_constant_evaluated())
+		{
+			while (*dst++ = *src++) {}
+		}
+		else
+		{
+			strcpy(dst, src);
+		}
 	}
 
 	constexpr void zeroMemory_fmtinternal(char* ptr, size_t n)
 	{
-		for (size_t i = 0; i < n; i++)
+		if (is_constant_evaluated())
 		{
-			ptr[i] = 0;
+			for (size_t i = 0; i < n; i++)
+			{
+				ptr[i] = 0;
+			}
+		}
+		else
+		{
+			memset(ptr, 0, n);
 		}
 	}
 
@@ -285,6 +300,14 @@ namespace wob
 		str.resizeNoInit(charsNeededForT(arg));
 		stringifyToBuff(arg, str.data());
 		return str;
+	}
+
+	template<typename ...Args>
+	String cFormat(const char* fmt, Args&&... args)
+	{
+		char buffer[2048];
+		int n = snprintf(buffer, size(buffer), fmt, forward<Args>(args)...);
+		return String(buffer);
 	}
 
 	template<typename ...Args>

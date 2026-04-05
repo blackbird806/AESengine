@@ -66,6 +66,7 @@ int main()
 			printf("%s %d\n", k.c_str(), v);
 		}
 
+		puts(cFormat("hey %s %d", "coincoin", 5).c_str());
 	}
 	return 0;
 }

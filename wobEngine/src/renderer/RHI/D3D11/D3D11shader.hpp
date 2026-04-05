@@ -1,6 +1,7 @@
 #ifndef WOB_D3D11SHADER_HPP
 #define WOB_D3D11SHADER_HPP
 
+// beware d3d headers include windows.h
 #include <d3d11.h>
 #include <d3d11shader.h>
 #include "core/error.hpp"

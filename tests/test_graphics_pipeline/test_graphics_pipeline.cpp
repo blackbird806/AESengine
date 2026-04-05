@@ -246,7 +246,7 @@ public:
 		
 		// draw
 		device.beginRenderPass(swapchain);
-		device.drawIndexed(std::size(sm::cubeIndices));
+		device.drawIndexed(wob::size(sm::cubeIndices));
 		device.endRenderPass();
 
 		device.swapBuffers(swapchain);

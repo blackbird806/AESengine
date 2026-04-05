@@ -2,8 +2,7 @@
 #define WOB_RHIBUFFER_HPP
 
 #include "renderer/RHI/RHI.hpp"
-#include <cstddef>
-#include <span>
+#include <stddef.h>
 
 #ifdef WOB_GRAPHIC_API_D3D11
 	#include "renderer/RHI/D3D11/D3D11Buffer.hpp"

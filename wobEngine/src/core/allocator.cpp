@@ -1,11 +1,11 @@
-#include <cstdlib>
+#include <stdlib.h>
 
 #include "wob.hpp"
 #include "allocator.hpp"
 #include "profiler.hpp"
 #include "utility.hpp"
 #include "context.hpp"
-#include <cstdio>
+#include <stdio.h>
 
 #ifdef WOB_ENABLE_PROFILING
 

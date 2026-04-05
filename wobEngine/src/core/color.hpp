@@ -1,7 +1,7 @@
 #ifndef WOB_COLOR_HPP
 #define WOB_COLOR_HPP
 
-#include <cstdint>
+#include <stdint.h>
 
 #include "vec4.hpp"
 

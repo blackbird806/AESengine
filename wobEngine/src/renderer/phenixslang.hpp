@@ -11,7 +11,7 @@
 #include "core/format.hpp"
 #include "core/stringView.hpp"
 
-#include <cctype>
+#include <ctype.h>
 
 namespace wob::phenix
 {
@@ -149,12 +149,12 @@ namespace wob::phenix
 				c++;
 				return parseList();
 			}
-			else if (std::isalnum(source[c]))
+			else if (isalnum(source[c]))
 			{
 				// parse atom
 				// get atom value
 				int const wordStart = c;
-				while (std::isalnum(source[c++]) && c < source.size())
+				while (isalnum(source[c++]) && c < source.size())
 				{
 				}
 				int const wordLen = c - wordStart;

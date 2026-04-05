@@ -1,7 +1,7 @@
 #ifndef WOB_ERROR_CODES
 #define WOB_ERROR_CODES
 
-#include <cstdint>
+#include <stdint.h>
 namespace wob {
 
 	using UnderlyingError_t = int32_t;

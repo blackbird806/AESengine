@@ -1,7 +1,7 @@
 #ifndef WOB_MATH_HPP
 #define WOB_MATH_HPP
 
-#include <cstdint>
+#include <stdint.h>
 
 #define _USE_MATH_DEFINES
 #include <math.h>

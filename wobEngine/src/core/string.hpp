@@ -1,7 +1,7 @@
 #ifndef WOB_STRING_HPP
 #define WOB_STRING_HPP
 
-#include <cstring>
+#include <string.h>
 #include "coreMacros.hpp"
 #include "stringView.hpp"
 #include "array.hpp"

@@ -15,7 +15,7 @@ add_rules("mode.debug", "mode.release")
 add_defines("WOB_DEFAULT_ENGINE_SHADER_PATH=" .. "R\"(" .. path.translate("$(scriptdir)/wobEngine/assets/shaders/)\""))
 
 if is_plat("vita") then
-	set_toolchains("vita")
+	set_toolchains("vitasdk-clang")
 end
 
 if is_mode("debug") then
@@ -25,16 +25,11 @@ if is_mode("debug") then
 	set_warnings("all")
 elseif is_mode("release") then
 	add_defines("NDEBUG", "WOB_RELEASE")
---	set_optimize("faster")
+	set_optimize("faster")
 end
 
-if is_os("windows") then
-	add_cxxflags("/NODEFAULTLIB")
-	if is_mode("debug") then
---		set_runtimes("MDd")		
-	elseif is_mode("release") then
---		set_runtimes("MD")
-	end
+if is_plat("windows") then
+	add_cxxflags("/NODEFAULTLIB") 
 end
 
 add_includedirs("wobEngine/src")
@@ -46,7 +41,7 @@ target("wobEngine")
 	add_headerfiles("wobEngine/thirdParty/**.hpp|wobEngine/thirdParty/**.h")
 	add_files("wobEngine/src/**.cpp|renderer/RHI/D3D11/*.cpp|renderer/RHI/SceGxm/*.cpp|core/platformWindows/*.cpp")
 	add_headerfiles("wobEngine/src/**.hpp|renderer/RHI/D3D11/*.hpp|renderer/RHI/SceGxm/*.hpp|core/platformWindows/*.hpp")
-	if is_os("windows") then
+	if is_plat("windows") then
 		add_files("wobEngine/src/renderer/RHI/D3D11/*.cpp")
 		add_files("wobEngine/src/core/platformWindows/*.cpp")
 		add_headerfiles("wobEngine/src/renderer/RHI/D3D11/*.hpp")

@@ -2,7 +2,7 @@
 #define WOB_STRING_VIEW_HPP
 
 #include "utility.hpp"
-#include <cstring>
+#include <string.h>
 
 namespace wob
 {

@@ -1,7 +1,7 @@
 #ifndef WOB_HPP
 #define WOB_HPP
 
-#include <cstdlib>
+#include <stdlib.h>
 
 #include "coreMacros.hpp"
 

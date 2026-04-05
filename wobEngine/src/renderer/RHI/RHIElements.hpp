@@ -1,8 +1,8 @@
 #ifndef WOB_RHIELEMENTS_HPP
 #define WOB_RHIELEMENTS_HPP
 
-#include <cstddef>
-#include <cstdint>
+#include <stddef.h>
+#include <stdint.h>
 
 #include "core/wob.hpp"
 #include "core/string.hpp"

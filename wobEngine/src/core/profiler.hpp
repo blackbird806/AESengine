@@ -2,7 +2,7 @@
 #define WOB_PROFILER_HPP
 
 #include "macro_helpers.hpp"
-#include <cstdint>
+#include <stdint.h>
 
 #ifdef WOB_ENABLE_PROFILINGs
 
@@ -37,7 +37,7 @@ namespace wob
 #ifdef _WIN32
 		size_t count = 1;
 #else
-		std::size_t count = 1;
+		size_t count = 1;
 #endif
 	};
 
