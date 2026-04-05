@@ -1,6 +1,5 @@
 #include "profiler.hpp"
 
-#include <chrono>
 #include "wob.hpp"
 #include "hashmap.hpp"
 
@@ -27,7 +26,7 @@ namespace wob
 
 	private:
 		ProfileSession currentSession;
-		std::chrono::time_point<std::chrono::high_resolution_clock> sessionStartPoint;
+		//std::chrono::time_point<std::chrono::high_resolution_clock> sessionStartPoint;
 	};
 
 	void startInstrumentorSession(const char* name) noexcept
@@ -68,13 +67,13 @@ namespace wob
 void Instrumentor::startSession(const char* name)
 {
 	currentSession = ProfileSession(name, 0.0);
-	sessionStartPoint = std::chrono::high_resolution_clock::now();
+	//sessionStartPoint = std::chrono::high_resolution_clock::now();
 }
 
 ProfileSession Instrumentor::stopSession()
 {
-	std::chrono::duration<ProfileTime_t, std::milli> const elapsed = std::chrono::high_resolution_clock::now() - sessionStartPoint;
-	currentSession.elapsedSessionTime = elapsed.count();
+	//std::chrono::duration<ProfileTime_t, std::milli> const elapsed = std::chrono::high_resolution_clock::now() - sessionStartPoint;
+	//currentSession.elapsedSessionTime = elapsed.count();
 	return currentSession;
 }
 

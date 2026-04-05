@@ -17,13 +17,10 @@ namespace wob
 		GxmBuffer& operator=(GxmBuffer&& rhs) noexcept;
 		~GxmBuffer();
 
-		Result<void> init(BufferDescription const& desc);
-		Result<void*> map();
-		Result<void> unmap();
-		
+		void destroy() noexcept;
+
 		bool isValid() const;
 		size_t getSize() const;
-		Result<void> copyTo(GxmBuffer& dest);
 
 		void* getHandle();
 

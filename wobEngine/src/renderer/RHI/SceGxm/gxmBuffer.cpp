@@ -29,14 +29,14 @@ GxmBuffer& GxmBuffer::operator=(GxmBuffer&& rhs) noexcept
 
 Result<void> GxmBuffer::init(BufferDescription const& desc)
 {
-	AES_ASSERT(desc.sizeInBytes > 0);
+	WOB_ASSERT(desc.sizeInBytes > 0);
 	// @TODO vram memory manager
 	buffer = aes::graphicsAlloc(SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE /* @Review */,
 		desc.sizeInBytes,
 		0 /* alignement */,
 		rhiMemoryUsageToApi(desc.usage),
 		&memID);
-	AES_ASSERT(buffer);
+	WOB_ASSERT(buffer);
 	if (desc.initialData != nullptr)
 	{
 		memcpy(buffer, desc.initialData, desc.sizeInBytes);
@@ -55,13 +55,20 @@ Result<void> GxmBuffer::unmap()
 	return { };
 }
 
-GxmBuffer::~GxmBuffer()
+
+void GxmBuffer::destroy()
 {
+
 	if (memID != SCE_UID_INVALID_UID)
 	{
 		aes::graphicsFree(memID);
 		memID = SCE_UID_INVALID_UID;
 	}
+}
+
+GxmBuffer::~GxmBuffer()
+{
+	destroy();
 }
 
 void* GxmBuffer::getHandle()
@@ -81,8 +88,8 @@ size_t GxmBuffer::getSize() const
 
 Result<void> GxmBuffer::copyTo(GxmBuffer& dest)
 {
-	AES_ASSERT(dest.isValid());
-	AES_ASSERT(dest.size <= size);
+	WOB_ASSERT(dest.isValid());
+	WOB_ASSERT(dest.size <= size);
 
 	memcpy(dest.buffer, buffer, size);
 
