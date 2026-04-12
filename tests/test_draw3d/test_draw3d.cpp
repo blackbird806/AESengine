@@ -161,7 +161,7 @@ public:
 int main()
 {
 	auto streamSink = wob::makeUnique<wob::StreamSink>(stderr);
-	wob::Logger::instance().addSink(streamSink.get());
+	wob::Logger::instance().addSink(*streamSink);
 	WOB_START_PROFILE_SESSION("test draw3d startup");
 	TestDraw3dApp app({
 		.appName = "aes draw3d test"

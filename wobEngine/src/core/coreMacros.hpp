@@ -10,10 +10,11 @@
 #endif
 
 #if __GNUC__ || __clang__
-#ifdef __i386__
-#define WOB_ARCH_X86
+	#define WOB_PRINTF_FORMAT(x, y)  __attribute__((format(printf, x, y)))
+#else
+	#define WOB_PRINTF_FORMAT(x, y)
 #endif
-#endif
+
 
 #ifdef _MSC_VER	
 #define WOB_ASSUME(x) __assume(x)

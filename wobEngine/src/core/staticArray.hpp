@@ -121,6 +121,12 @@ namespace wob
 			buffer[--size_].~T();
 		}
 
+		constexpr T popValue() noexcept
+		{
+			WOB_BOUNDS_CHECK(size_ > 0);
+			return move(buffer[--size_]);
+		}
+
 		constexpr T const& operator[](uint32_t i) const noexcept
 		{
 			WOB_BOUNDS_CHECK(i < size_);

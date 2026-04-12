@@ -9,15 +9,9 @@
 
 namespace wob
 {
-
-	constexpr void strcpy(char* WOB_RESTRICT(dst), const char* WOB_RESTRICT(src)) noexcept
-	{
-		while (*dst++ = *src++) {}
-	}
-
 	/// General usage string class, for now just a wrapper over Array<Char>, we may want to implemet SSO in the future
 	// TODO try some optimisations details
-	// TODO constexpr functions that relies on cstring funcs
+	// TODO constexpr functions that relies on cstring funcs ?
 	class String
 	{
 
@@ -32,7 +26,7 @@ namespace wob
 			WOB_ASSERT_NOLOG(cstr);
 
 			buffer.resize(strlen(cstr) + 1);
-			wob::strcpy(buffer.data(), cstr);
+			strcpy(buffer.data(), cstr);
 		}
 
 		/*constexpr*/ String(const Char_t* cstr, uint32_t count) noexcept

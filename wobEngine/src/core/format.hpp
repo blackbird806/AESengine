@@ -8,6 +8,7 @@
 #include "core/coreMacros.hpp"
 #include "core/dragon4.hpp"
 #include <stdio.h>
+#include <stdarg.h>
 
 #define WOB_FMT_CONSTEXPR_OR_INLINE inline
 
@@ -302,16 +303,18 @@ namespace wob
 		return str;
 	}
 
-	template<typename ...Args>
-	String cFormat(const char* fmt, Args&&... args)
+	String cFormat(const char* fmt, ...) WOB_PRINTF_FORMAT(1, 2)
 	{
 		char buffer[2048];
-		int n = snprintf(buffer, size(buffer), fmt, forward<Args>(args)...);
+		va_list args;
+		va_start(args, fmt);
+		vsnprintf(buffer, sizeof(buffer), fmt, args);
+		va_end(args);
 		return String(buffer);
 	}
 
 	template<typename ...Args>
-	WOB_FMT_CONSTEXPR_OR_INLINE String format(StringView fmt, Args&&... args)
+	WOB_FMT_CONSTEXPR_OR_INLINE String format(StringView fmt, Args&&... args) 
 	{
 		// maybe use static array here to avoid alloc ?
 		FormatedArgs formatedArgs;

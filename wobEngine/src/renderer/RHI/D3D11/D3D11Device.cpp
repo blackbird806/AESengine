@@ -386,7 +386,7 @@ Result<RHIBuffer> D3D11Device::createBuffer(BufferDescription const& desc)
 	if (FAILED(result))
 	{
 		WOB_LOG_ERROR("Failed to create GPU buffer");
-		return { AESError::GPUBufferCreationFailed };
+		return { ErrorCode::GPUBufferCreationFailed };
 	}
 
 	return { wob::move(buffer) };
@@ -444,7 +444,7 @@ Result<RHITexture> wob::D3D11Device::createTexture(TextureDescription const& inf
 	if (FAILED(err))
 	{
 		WOB_LOG_ERROR("D3D11 CreateTexture2D failed, err: {}", err);
-		return { AESError::GPUTextureCreationFailed };
+		return { ErrorCode::GPUTextureCreationFailed };
 	}
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
@@ -459,7 +459,7 @@ Result<RHITexture> wob::D3D11Device::createTexture(TextureDescription const& inf
 	if (FAILED(err))
 	{
 		WOB_LOG_ERROR("D3D11 CreateShaderResourceView failed !");
-		return { AESError::GPUTextureCreationFailed };
+		return { ErrorCode::GPUTextureCreationFailed };
 	}
 	deviceContext->GenerateMips(tex.textureView);
 
@@ -480,7 +480,7 @@ Result<RHIVertexShader> D3D11Device::createVertexShader(VertexShaderDescription 
 	if (FAILED(result))
 	{
 		WOB_LOG_ERROR("failed to compile vertex shader : {}", (char*)errorMessage->GetBufferPointer());
-		return { AESError::ShaderCompilationFailed };
+		return { ErrorCode::ShaderCompilationFailed };
 	}
 
 	// Create the vertex shader from the buffer.
@@ -488,7 +488,7 @@ Result<RHIVertexShader> D3D11Device::createVertexShader(VertexShaderDescription 
 	if (FAILED(result))
 	{
 		WOB_LOG_ERROR("failed to create vertex shader");
-		return { AESError::ShaderCreationFailed };
+		return { ErrorCode::ShaderCreationFailed };
 	}
 
 	D3DReflect(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&vert.reflector);
@@ -521,7 +521,7 @@ Result<RHIVertexShader> D3D11Device::createVertexShader(VertexShaderDescription 
 	if (FAILED(result))
 	{
 		WOB_LOG_ERROR("failed to create InputLayout");
-		return { AESError::ShaderCreationFailed };
+		return { ErrorCode::ShaderCreationFailed };
 	}
 
 	vertexShaderBuffer->Release();
@@ -543,14 +543,14 @@ Result<RHIFragmentShader> D3D11Device::createFragmentShader(FragmentShaderDescri
 	if (FAILED(result))
 	{
 		WOB_LOG_ERROR("failed to compile pixed shader : {}", (char*)errorMessage->GetBufferPointer());
-		return { AESError::ShaderCompilationFailed };
+		return { ErrorCode::ShaderCompilationFailed };
 	}
 
 	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), nullptr, &frag.pixelShader);
 	if (FAILED(result))
 	{
 		WOB_LOG_ERROR("failed to create pixel shader");
-		return { AESError::ShaderCreationFailed };
+		return { ErrorCode::ShaderCreationFailed };
 	}
 
 	result = D3DReflect(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&frag.reflector);
@@ -594,7 +594,7 @@ Result<RHISampler> D3D11Device::createSampler(SamplerDescription const& desc)
 
 	auto result = device->CreateSamplerState(&samplerDesc, &sampler.samplerState);
 	if (FAILED(result))
-		return { AESError::SamplerCreationFailed };
+		return { ErrorCode::SamplerCreationFailed };
 
 	return {wob::move(sampler)};
 }
@@ -641,7 +641,7 @@ Result<D3D11BlendState> D3D11Device::createBlendState(BlendInfo const& info)
 	if (FAILED(err))
 	{
 		WOB_LOG_ERROR("failed to create D3D11 Blendstate");
-		return { AESError::BlendStateCreationFailed };
+		return { ErrorCode::BlendStateCreationFailed };
 	}
 
 	return {wob::move(blend)};

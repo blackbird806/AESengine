@@ -88,7 +88,7 @@ Result<Model> wob::createCube(vec4 const& col)
 	Array<Vertex> vertices = getCubeVertices(col);
 	auto const result = cube.init(ArrayView<Vertex const>(vertices.begin(), vertices.end()), sm::cubeIndices);
 	if (!result)
-		return { AESError{ result.error() } };
+		return { ErrorCode{ result.error() } };
 	return { wob::move(cube) };
 }
 

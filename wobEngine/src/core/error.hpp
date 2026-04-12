@@ -18,7 +18,7 @@ namespace wob {
 	{
 	public:
 		using ValueType = T;
-		using ErrorCodeType = AESError;
+		using ErrorCodeType = ErrorCode;
 
 		enum class TagType
 		{
@@ -36,7 +36,7 @@ namespace wob {
 
 		}
 
-		Result(AESError err) noexcept : error_(static_cast<ErrorCodeType>(err)), tag(TagType::Error)
+		Result(ErrorCode err) noexcept : error_(static_cast<ErrorCodeType>(err)), tag(TagType::Error)
 		{
 
 		}
@@ -128,7 +128,7 @@ namespace wob {
 
 		}
 
-		Result(AESError err) noexcept : error_(static_cast<ErrorCodeType>(err)), tag(TagType::Error)
+		Result(ErrorCode err) noexcept : error_(static_cast<ErrorCodeType>(err)), tag(TagType::Error)
 		{
 
 		}
@@ -149,25 +149,6 @@ namespace wob {
 		ErrorCodeType error_;
 	};
 
-	inline const char* to_string(AESError err)
-	{
-#define CASE(X) case AESError::X: return #X;
-		switch (err)
-		{
-			CASE(Undefined)
-			CASE(MemoryAllocationFailed)
-			CASE(GPUBufferCreationFailed)
-			CASE(GPUTextureCreationFailed)
-			CASE(GPUBufferMappingFailed)
-			CASE(SamplerCreationFailed)
-			CASE(ShaderCompilationFailed)
-			CASE(ShaderCreationFailed)
-			CASE(FontInitFailed)
-			CASE(BlendStateCreationFailed)
-		}
-#undef CASE
-		WOB_UNREACHABLE();
-	}
 }
 
 #endif

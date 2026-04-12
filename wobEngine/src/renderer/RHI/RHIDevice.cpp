@@ -11,7 +11,7 @@ Result<void> RHIDevice::setBufferData(RHIBuffer const& buffer, void* data, size_
 	else
 	{
 		WOB_LOG_ERROR("failed to map unform buffer");
-		return { AESError{ AESError::GPUBufferMappingFailed } };
+		return { ErrorCode{ ErrorCode::GPUBufferMappingFailed } };
 	}
 	return unmapBuffer(buffer);
 }

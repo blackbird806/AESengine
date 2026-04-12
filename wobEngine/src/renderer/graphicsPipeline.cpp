@@ -58,16 +58,15 @@ void wob::GraphicsPipeline::registerFragmentUniform(String const& name, BufferDe
 	auto bufferVal = device->createBuffer(bufferDesc);
 	fragmentUniformBuffers.push(UniformBindPoint{ name, wob::move(bufferVal.value()), slot });
 }
-#include <utility>
+
 void wob::GraphicsPipeline::setFragmentUniform(String const& name, void* data, uint32_t size)
 {
 	auto bufferIt = wob::ranges::findIf(fragmentUniformBuffers, [name](auto const& e) {
 		return e.name == name;
 		});
 	void* bufferData = device->mapBuffer(bufferIt->buffer);
-	memcpy(bufferData, data, size);
+		memcpy(bufferData, data, size);
 	device->unmapBuffer(bufferIt->buffer);
-	std::move(5);
 }
 
 const VertexShaderDescription& wob::GraphicsPipeline::getVertexShaderDesc()

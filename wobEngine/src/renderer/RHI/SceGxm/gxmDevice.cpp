@@ -10,9 +10,9 @@
 #include <psp2/razor_hud.h> 
 #include <psp2/sysmodule.h> 
 
-using namespace aes;
-#define AES_ENABLE_RAZOR_HUD
-#define AES_ENABLE_RAZOR_GPU_CAPTURE
+using namespace wob;
+#define WOB_ENABLE_RAZOR_HUD
+#define WOB_ENABLE_RAZOR_GPU_CAPTURE
 struct DisplayData
 {
 	void* address;
@@ -51,16 +51,16 @@ static void* fragmentUsseAlloc(uint32_t size, SceUID* uid, uint32_t* usseOffset)
 
 	// allocate some memory
 	*uid = sceKernelAllocMemBlock("fragmentUsse", SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE, size, nullptr);
-	AES_ASSERT(*uid >= SCE_OK);
+	WOB_ASSERT(*uid >= SCE_OK);
 
 	// grab the base address
 	void* mem = nullptr;
 	uint32_t err = sceKernelGetMemBlockBase(*uid, &mem);
-	AES_ASSERT(err == SCE_OK);
+	WOB_ASSERT(err == SCE_OK);
 
 	// map as fragment USSE code for the GPU
 	err = sceGxmMapFragmentUsseMemory(mem, size, usseOffset);
-	AES_ASSERT(err == SCE_OK);
+	WOB_ASSERT(err == SCE_OK);
 
 	// done
 	return mem;
@@ -73,16 +73,16 @@ static void* vertexUsseAlloc(uint32_t size, SceUID* uid, uint32_t* usseOffset)
 
 	// allocate some memory
 	*uid = sceKernelAllocMemBlock("vertexUsse", SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE, size, nullptr);
-	AES_ASSERT(*uid >= SCE_OK);
+	WOB_ASSERT(*uid >= SCE_OK);
 
 	// grab the base address
 	void* mem = nullptr;
 	auto err = sceKernelGetMemBlockBase(*uid, &mem);
-	AES_ASSERT(err == SCE_OK);
+	WOB_ASSERT(err == SCE_OK);
 
 	// map as vertex USSE code for the GPU
 	err = sceGxmMapVertexUsseMemory(mem, size, usseOffset);
-	AES_ASSERT(err == SCE_OK);
+	WOB_ASSERT(err == SCE_OK);
 
 	return mem;
 }
@@ -92,15 +92,15 @@ static void vertexUsseFree(SceUID uid)
 	// grab the base address
 	void* mem = nullptr;
 	uint32_t err = sceKernelGetMemBlockBase(uid, &mem);
-	AES_ASSERT(err == SCE_OK);
+	WOB_ASSERT(err == SCE_OK);
 
 	// unmap memory
 	err = sceGxmUnmapVertexUsseMemory(mem);
-	AES_ASSERT(err == SCE_OK);
+	WOB_ASSERT(err == SCE_OK);
 
 	// free the memory block
 	err = sceKernelFreeMemBlock(uid);
-	AES_ASSERT(err == SCE_OK);
+	WOB_ASSERT(err == SCE_OK);
 }
 
 static void fragmentUsseFree(SceUID uid)
@@ -108,26 +108,26 @@ static void fragmentUsseFree(SceUID uid)
 	// grab the base address
 	void* mem = nullptr;
 	uint32_t err = sceKernelGetMemBlockBase(uid, &mem);
-	AES_ASSERT(err == SCE_OK);
+	WOB_ASSERT(err == SCE_OK);
 
 	// unmap memory
 	err = sceGxmUnmapFragmentUsseMemory(mem);
-	AES_ASSERT(err == SCE_OK);
+	WOB_ASSERT(err == SCE_OK);
 
 	// free the memory block
 	err = sceKernelFreeMemBlock(uid);
-	AES_ASSERT(err == SCE_OK);
+	WOB_ASSERT(err == SCE_OK);
 }
 
 static void* patcherHostAlloc(void* userData, uint32_t size)
 {
-	AES_UNUSED(userData);
+	WOB_UNUSED(userData);
 	return globalAllocator.allocate(size);
 }
 
 static void patcherHostFree(void* userData, void* mem)
 {
-	AES_UNUSED(userData);
+	WOB_UNUSED(userData);
 	globalAllocator.deallocate(mem);
 }
 
@@ -140,17 +140,17 @@ void aes::initializeGraphicsAPI()
 	// @TODO clean this
 	auto constexpr vita_display_max_pending_swaps = 2;
 
-	#ifdef AES_ENABLE_RAZOR_HUD
+	#ifdef WOB_ENABLE_RAZOR_HUD
 	// Initialize the Razor HUD system.
 	// This should be done before the call to sceGxmInitialize().
 	// auto erra = sceSysmoduleLoadModule( SCE_SYSMODULE_RAZOR_HUD );
-	// AES_ASSERT(erra == SCE_OK);
+	// WOB_ASSERT(erra == SCE_OK);
 	#endif
-	#ifdef AES_ENABLE_RAZOR_GPU_CAPTURE
+	#ifdef WOB_ENABLE_RAZOR_GPU_CAPTURE
 	// Initialize the Razor capture system.
 	// This should be done before the call to sceGxmInitialize().
 	auto erra = sceSysmoduleLoadModule( SCE_SYSMODULE_RAZOR_CAPTURE );
-	AES_ASSERT(erra == SCE_OK);
+	WOB_ASSERT(erra == SCE_OK);
 
 	// Trigger a capture after 1 frames.
 	// sceRazorGpuCaptureSetTriggerNextFrame("ux0:/log/basic.sgx" );
@@ -168,7 +168,7 @@ void aes::initializeGraphicsAPI()
 
 	// Start libgxm
 	auto err = sceGxmInitialize(&initializeParams);
-	AES_ASSERT(err == SCE_OK);
+	WOB_ASSERT(err == SCE_OK);
 
 	// @Review buffer sizes
 	uint32_t const patcherBufferSize 		= 64 * 1024;
@@ -216,7 +216,7 @@ void aes::initializeGraphicsAPI()
 	patcherParams.fragmentUsseOffset = patcherFragmentUsseOffset;
 
 	err = sceGxmShaderPatcherCreate(&patcherParams, &gxmShaderPatcher);
-	AES_ASSERT(err == SCE_OK);
+	WOB_ASSERT(err == SCE_OK);
 }
 
 void aes::terminateGraphicsAPI()
@@ -228,20 +228,20 @@ void aes::terminateGraphicsAPI()
 
 	sceGxmTerminate();
 
-#ifdef AES_ENABLE_RAZOR_GPU_CAPTURE
+#ifdef WOB_ENABLE_RAZOR_GPU_CAPTURE
 	// Terminate Razor capture.
 	// This should be done after the call to sceGxmTerminate().
 	sceSysmoduleUnloadModule( SCE_SYSMODULE_RAZOR_CAPTURE );
 #endif
 
-#ifdef AES_ENABLE_RAZOR_HUD
+#ifdef WOB_ENABLE_RAZOR_HUD
 	// Terminate Razor HUD.
 	// This should be done after the call to sceGxmTerminate().
 	// sceSysmoduleUnloadModule( SCE_SYSMODULE_RAZOR_HUD );
 #endif
 
 
-	AES_LOG("GXM terminated successfully");
+	WOB_LOG("GXM terminated successfully");
 }
 
 
@@ -270,7 +270,7 @@ GxmDevice::~GxmDevice()
 
 Result<void> GxmDevice::init()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	// allocate ring buffers with default sizes
 	void* vdmRingBuffer = graphicsAlloc(
@@ -318,7 +318,7 @@ Result<void> GxmDevice::init()
 	auto err = sceGxmCreateContext(&contextParams, &context);
 	if (err != SCE_OK)
 	{
-		AES_LOG_ERROR("GXM failed to create render context, code : {}", err);
+		WOB_LOG_ERROR("GXM failed to create render context, code : {}", err);
 		return { AESError::RHIDeviceCreationFailed };
 	}
 	return {};
@@ -326,22 +326,22 @@ Result<void> GxmDevice::init()
 
 void GxmDevice::swapBuffers(RHIRenderTarget const& oldBuffer, RHIRenderTarget const& newBuffer)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	// PA heartbeat to notify end of frame
 	auto err = sceGxmPadHeartbeat(&newBuffer.colorSurface, newBuffer.syncObject);
-	AES_GXM_CHECK(err);
+	WOB_GXM_CHECK(err);
 
 	// queue the display swap for this frame
 	DisplayData displayData;
 	displayData.address = newBuffer.colorSurfaceData;
 	err = sceGxmDisplayQueueAddEntry(oldBuffer.syncObject, newBuffer.syncObject, &displayData);
-	AES_GXM_CHECK(err);
+	WOB_GXM_CHECK(err);
 }
 
 void GxmDevice::destroy()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	if (context == nullptr)
 		return;
@@ -360,7 +360,7 @@ void GxmDevice::destroy()
 
 void GxmDevice::drawIndexed(uint indexCount, uint indexOffset)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 
 	if (currentState.indexBufferInfo.typeFormat == IndexTypeFormat::Uint16)
 	{
@@ -368,20 +368,20 @@ void GxmDevice::drawIndexed(uint indexCount, uint indexOffset)
 				rhiIndexFormatToApi(currentState.indexBufferInfo.typeFormat),
 				((uint16_t*)currentState.indexBufferInfo.buffer) + indexOffset,
 				(uint32_t)indexCount);
-		AES_GXM_CHECK(err);
+		WOB_GXM_CHECK(err);
 	}
 	else {
 		auto err = sceGxmDraw(context, rhiPrimitiveTypeToApi(currentState.primitiveType),
 					rhiIndexFormatToApi(currentState.indexBufferInfo.typeFormat),
 					((uint32_t*)currentState.indexBufferInfo.buffer) + indexOffset,
 					(uint32_t)indexCount);
-		AES_GXM_CHECK(err);
+		WOB_GXM_CHECK(err);
 	}
 }
 
 void GxmDevice::beginRenderPass(RHIRenderTarget& rt)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	auto err = sceGxmBeginScene(
 		context,
 		0,
@@ -395,19 +395,19 @@ void GxmDevice::beginRenderPass(RHIRenderTarget& rt)
 
 void GxmDevice::endRenderPass()
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	sceGxmEndScene(context, NULL, NULL);
 }
 
 void GxmDevice::setCullMode(CullMode mode)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	sceGxmSetCullMode(context, rhiCullModeToApi(mode));
 }
 
 void GxmDevice::setDrawPrimitiveMode(DrawPrimitiveType mode)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	currentState.primitiveType = mode;
 	// @Review I'm still not sure of what this function is doing since sceGxmDraw has a PrimitiveType parameter
 	sceGxmSetFrontPolygonMode(context, rhiPolygonModeToApi(mode));
@@ -415,23 +415,23 @@ void GxmDevice::setDrawPrimitiveMode(DrawPrimitiveType mode)
 
 void GxmDevice::setFragmentShader(RHIFragmentShader& fs)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	sceGxmSetFragmentProgram(context, fs.getHandle());
 }
 
 void GxmDevice::setVertexShader(RHIVertexShader& vs)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	sceGxmSetVertexProgram(context, vs.getHandle());
 }
 
 Result<void> GxmDevice::setVertexBuffer(RHIBuffer& buffer, uint stride, uint offset)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	auto const err = sceGxmSetVertexStream(context, 0, buffer.getHandle());
 	if (err != SCE_OK)
 	{
-		AES_LOG_ERROR("failed to set gxm vertex stream err : {}", err);
+		WOB_LOG_ERROR("failed to set gxm vertex stream err : {}", err);
 		// @Review error code
 		return { AESError::Undefined };
 	}
@@ -440,7 +440,7 @@ Result<void> GxmDevice::setVertexBuffer(RHIBuffer& buffer, uint stride, uint off
 
 Result<void> GxmDevice::setIndexBuffer(RHIBuffer& buffer, IndexTypeFormat typeFormat, uint offset)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	currentState.indexBufferInfo.typeFormat = typeFormat;
 	currentState.indexBufferInfo.buffer = buffer.getHandle();
 	return {};
@@ -448,12 +448,12 @@ Result<void> GxmDevice::setIndexBuffer(RHIBuffer& buffer, IndexTypeFormat typeFo
 
 Result<void> GxmDevice::bindFragmentUniformBuffer(RHIBuffer& buffer, uint slot)
 {
-	AES_PROFILE_FUNCTION();
-	AES_ASSERT(slot < SCE_GXM_MAX_UNIFORM_BUFFERS);
+	WOB_PROFILE_FUNCTION();
+	WOB_ASSERT(slot < SCE_GXM_MAX_UNIFORM_BUFFERS);
 	auto const err = sceGxmSetFragmentUniformBuffer(context, slot, buffer.getHandle());
 	if (err != SCE_OK)
 	{
-		AES_LOG_ERROR("failed to set gxm fragment uniform buffer error : {}", err);
+		WOB_LOG_ERROR("failed to set gxm fragment uniform buffer error : {}", err);
 		// @Review error code
 		return { AESError::Undefined };
 	}
@@ -462,12 +462,12 @@ Result<void> GxmDevice::bindFragmentUniformBuffer(RHIBuffer& buffer, uint slot)
 
 Result<void> GxmDevice::bindVertexUniformBuffer(RHIBuffer& buffer, uint slot)
 {
-	AES_PROFILE_FUNCTION();
-	AES_ASSERT(slot < SCE_GXM_MAX_UNIFORM_BUFFERS);
+	WOB_PROFILE_FUNCTION();
+	WOB_ASSERT(slot < SCE_GXM_MAX_UNIFORM_BUFFERS);
 	auto const err = sceGxmSetVertexUniformBuffer(context, slot, buffer.getHandle());
 	if (err != SCE_OK)
 	{
-		AES_LOG_ERROR("failed to set gxm vertex uniform buffer error : {}", err);
+		WOB_LOG_ERROR("failed to set gxm vertex uniform buffer error : {}", err);
 		// @Review error code
 		return { AESError::Undefined };
 	}
@@ -476,11 +476,11 @@ Result<void> GxmDevice::bindVertexUniformBuffer(RHIBuffer& buffer, uint slot)
 
 Result<void> GxmDevice::bindFragmentTexture(RHITexture& tex, uint slot)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	auto const err = sceGxmSetFragmentTexture(context, slot, tex.getHandle());
 	if (err != SCE_OK)
 	{
-		AES_LOG_ERROR("failed to set gxm fragment texture error : {}", err);
+		WOB_LOG_ERROR("failed to set gxm fragment texture error : {}", err);
 		// @Review error code
 		return { AESError::Undefined };
 	}
@@ -489,11 +489,11 @@ Result<void> GxmDevice::bindFragmentTexture(RHITexture& tex, uint slot)
 
 Result<void> GxmDevice::bindVertexTexture(RHITexture& tex, uint slot)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	auto const err = sceGxmSetVertexTexture(context, slot, tex.getHandle());
 	if (err != SCE_OK)
 	{
-		AES_LOG_ERROR("failed to set gxm vertex texture error : {}", err);
+		WOB_LOG_ERROR("failed to set gxm vertex texture error : {}", err);
 		// @Review error code
 		return { AESError::Undefined };
 	}

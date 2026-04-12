@@ -49,7 +49,7 @@ public:
 int main()
 {
 	auto streamSink = wob::makeUnique<wob::StreamSink>(std::cerr);
-	wob::Logger::instance().addSink(streamSink.get());
+	wob::Logger::instance().addSink(*streamSink);
 	//WOB_START_PROFILE_SESSION("test draw2d startup");
 	TestDraw2dApp app({
 		.appName = "aes draw2d test"

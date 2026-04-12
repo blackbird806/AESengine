@@ -22,11 +22,10 @@ Logger& Logger::instance() noexcept
 	return context.logger;
 }
 
-void Logger::addSink(Sink* sink) noexcept
+void Logger::addSink(Sink& sink) noexcept
 {
-	WOB_ASSERT(sink);
 	WOB_ASSERT(sinkCount < wob::size(sinks));
-	sinks[sinkCount++] = sink;
+	sinks[sinkCount++] = &sink;
 }
 
 void Logger::log(const char* message) noexcept

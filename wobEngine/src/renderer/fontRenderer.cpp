@@ -19,7 +19,7 @@ Result<Glyph> FontRessource::getGlyph(char c) const
 		}
 	}
 
-	return { AESError::Undefined };
+	return { ErrorCode::Undefined };
 }
 
 Result<FontRessource> wob::createFontRessource(FontParams const& params)
@@ -31,7 +31,7 @@ Result<FontRessource> wob::createFontRessource(FontParams const& params)
 	if (stbtt_InitFont(&info, params.fontData.data(), 0) == 0)
 	{
 		WOB_LOG_ERROR("failed to init default font");
-		return { AESError::FontInitFailed };
+		return { ErrorCode::FontInitFailed };
 	}
 	FontRessource fontRessource;
 

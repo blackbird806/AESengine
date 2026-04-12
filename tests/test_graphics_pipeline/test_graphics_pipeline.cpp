@@ -14,7 +14,6 @@
 #include "renderer/graphicsPipeline.hpp"
 #include "renderer/RHI/inlineShaders/draw3dShader.hpp"
 #include "renderer/simpleMeshes.hpp"
-#include <cmath>
 
 using namespace wob;
 
@@ -259,7 +258,7 @@ public:
 int main()
 {
 	auto streamSink = wob::makeUnique<wob::StreamSink>(stderr);
-	wob::Logger::instance().addSink(streamSink.get());
+	wob::Logger::instance().addSink(*streamSink);
 	WOB_START_PROFILE_SESSION("test draw3d startup");
 	TestPipelineApp app({
 		.appName = "aes draw3d test"
