@@ -4,6 +4,7 @@
 #include "macro_helpers.hpp"
 //#include "format.hpp"
 #include <stdio.h>
+#include <stdint.h>
 
 // loging system should be completly revised
 // we may want to get rif of macros and use 
@@ -34,7 +35,7 @@ namespace wob
 	{
 		static consteval source_location current(const uint32_t _Line_ = __builtin_LINE(),
 			const uint32_t _Column_ = __builtin_COLUMN(), const char* const _File_ = __builtin_FILE(),
-#if _USE_DETAILED_FUNCTION_NAME_IN_SOURCE_LOCATION
+#if 0
 			const char* const _Function_ = __builtin_FUNCSIG()
 #else // ^^^ detailed / basic vvv
 			const char* const _Function_ = __builtin_FUNCTION()

@@ -1,6 +1,7 @@
 #ifndef WOB_STRING_VIEW_HPP
 #define WOB_STRING_VIEW_HPP
 
+#include "assert.hpp"
 #include "utility.hpp"
 #include <string.h>
 

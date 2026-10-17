@@ -303,7 +303,7 @@ namespace wob
 		return str;
 	}
 
-	String cFormat(const char* fmt, ...) WOB_PRINTF_FORMAT(1, 2)
+	WOB_FMT_CONSTEXPR_OR_INLINE String cFormat(const char* fmt, ...) WOB_PRINTF_FORMAT(1, 2)
 	{
 		char buffer[2048];
 		va_list args;

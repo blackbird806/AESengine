@@ -15,7 +15,6 @@
 #endif
 #include "core/hashmap.hpp"
 
-#include "renderer/RHI/RefCounted.hpp"
 
 using namespace wob;
 
@@ -152,12 +151,12 @@ public:
 		{
 			wob::VertexShaderDescription vertexShaderDescription;
 #ifdef __vita__
-			static auto const geoShaderData_vs = aes::readFileBin("app0:assets/shaders/vita/basic2d_vs.gxp");
-			vertexShaderDescription.source = geoShaderData_vs.data();
+			static auto const geoShaderData_vs = wob::readFileBin("app0:assets/shaders/vita/basic2d_vs.gxp");
+			vertexShaderDescription.sourceBinary = geoShaderData_vs.data();
 #else
 			String path(shaderPath);
 			path.append("draw2d.vs");
-			vertexShaderDescription.source = wob::readFile(path.c_str());
+			vertexShaderDescription.sourceCode = wob::readFile(path.c_str());
 #endif
 			vertexShaderDescription.verticesStride = sizeof(wob::vec2);
 			wob::VertexInputLayout vertexInputLayout[2];
@@ -181,7 +180,7 @@ public:
 			wob::FragmentShaderDescription fragmentShaderDescription;
 #ifdef __vita__
 			// shader binary source must be keep into memory
-			static auto const geoShaderData_fs = aes::readFileBin("app0:assets/shaders/vita/basic2d_fs.gxp");
+			static auto const geoShaderData_fs = wob::readFileBin("app0:assets/shaders/vita/basic2d_fs.gxp");
 			fragmentShaderDescription.source = geoShaderData_fs.data();
 			fragmentShaderDescription.gxpVertexProgram = geoVertexShader.getGxpShader();
 #else
