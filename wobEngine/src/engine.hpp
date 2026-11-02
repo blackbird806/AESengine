@@ -56,7 +56,7 @@ namespace wob {
 
 		UniquePtr<Window> mainWindow;
 
-	private:
+	protected:
 
 		virtual void onKeyPressed(Key k) {};
 		virtual void onKeyReleased(Key k) {};

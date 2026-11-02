@@ -1,7 +1,5 @@
 #include "win_window.hpp"
-#include "core/string_converter.hpp"
 
-#include <string>
 #include <windowsx.h>
 #define NEAR 
 #include <dwmapi.h>
@@ -138,8 +136,14 @@ LRESULT Win_Window::windowProcess(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPa
 			WOB_LOG("Window resize : {} x {}", self->width, self->height);
 
 			// do not call callback onMinimize
-			if (self->resizeCallback && self->width > 0 && self->height > 0)
-				self->resizeCallback(self->width, self->height);
+			if (self->width > 0 && self->height > 0)
+			{
+				for (auto& callback : self->resizeCallbacks)
+				{
+					callback(self->width, self->height);
+				}
+
+			}
 		}
 			break;
 		case WM_DESTROY: {
@@ -157,7 +161,6 @@ Win_Window::Win_Window(const char* name)
 	WOB_PROFILE_FUNCTION();
 	
 	WOB_ASSERT(name);
-
 
 	WNDCLASSEXA wc = { };
 	

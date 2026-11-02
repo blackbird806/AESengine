@@ -11,6 +11,7 @@ using namespace wob;
 
 void wob::initializeGraphicsAPI()
 {
+	WOB_LOG("graphics api initialized");
 }
 
 void wob::terminateGraphicsAPI()
@@ -194,7 +195,7 @@ Result<RHISwapchain> D3D11Device::createSwapchain(SwapchainDescription const& de
 	swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 
-	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 
 	swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH; // allow full-screen switching
 
@@ -426,7 +427,7 @@ Result<RHITexture> wob::D3D11Device::createTexture(TextureDescription const& inf
 	textureDesc.Usage = rhiMemoryUsageToApi(info.usage);
 	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;  // @Review
 	textureDesc.CPUAccessFlags = rhiCPUAccessFlagsToApi(info.cpuAccess);
-	textureDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
+	textureDesc.MiscFlags = 0;//D3D11_RESOURCE_MISC_GENERATE_MIPS; need renderTarget flag for D3D11_RESOURCE_MISC_GENERATE_MIPS
 
 	HRESULT err;
 	if (info.initialData)

@@ -1,29 +1,24 @@
-#include "core/allocator.hpp"
-#include "engine.hpp"
+#include "renderEngine.hpp"
 #include "renderer/draw2d.hpp"
 #include "core/color.hpp"
 #include "core/vec2.hpp"
-#include "renderer/RHI/RHIDevice.hpp"
-#include <iostream>
 
 using namespace wob;
 
-class TestDraw2dApp : public Engine
+class TestDraw2dApp : public RenderEngine
 {
 public:
 
-	RHIDevice device;
-	wob::Draw2D draw2d;
+	Draw2D draw2d;
 
-	TestDraw2dApp(InitInfo const& info) : Engine(info)
+	TestDraw2dApp(InitInfo const& info) : RenderEngine(info)
 	{
 		WOB_LOG("[TEST] DRAW2D");
 	}
 
 	void start() override
 	{
-		initializeGraphicsAPI();
-		device.init();
+		RenderEngine::start();
 		if (!draw2d.init(device))
 			WOB_FATAL_ERROR("draw2d creation failed");
 	}
@@ -40,7 +35,7 @@ public:
 		draw2d.drawFillRect({ {0, 0}, {0.4, 0.4} });
 	}
 
-	void draw() override
+	void mainDrawPass() override
 	{
 		draw2d.executeDrawCommands();
 	}
@@ -48,7 +43,7 @@ public:
 
 int main()
 {
-	auto streamSink = wob::makeUnique<wob::StreamSink>(std::cerr);
+	auto streamSink = wob::makeUnique<wob::StreamSink>(stderr);
 	wob::Logger::instance().addSink(*streamSink);
 	//WOB_START_PROFILE_SESSION("test draw2d startup");
 	TestDraw2dApp app({

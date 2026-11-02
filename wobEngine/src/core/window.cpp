@@ -3,9 +3,9 @@
 
 using namespace wob;
 
-void Window::setResizeCallback(ResizeCallbackT func)
+void Window::addResizeCallback(ResizeCallbackT func)
 {
-	resizeCallback = func;
+	resizeCallbacks.push(func);
 }
 
 void Window::setKeyCallback(KeyCallbackT func)

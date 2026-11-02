@@ -48,21 +48,21 @@ public:
 		device.setCullMode(CullMode::CounterClockwise);
 		device.setDrawPrimitiveMode(DrawPrimitiveType::TrianglesFill);
 
-		static TestPipelineApp* gApp = this;
-
-		mainWindow->setResizeCallback([](uint w, uint h) {
+		mainWindow->addResizeCallback({ [](uint w, uint h, void* app) {
+			TestPipelineApp* engine = (TestPipelineApp*)app;
 			SwapchainDescription swDesc = {};
 			swDesc.count = 2;
 			swDesc.width = w;
 			swDesc.height = h;
 			swDesc.multisampleMode = MultisampleMode::None;
-			swDesc.window = gApp->mainWindow->getHandle();
+			swDesc.window = engine->mainWindow->getHandle();
 			swDesc.format = RHIFormat::R8G8B8A8_Uint;
 			swDesc.depthFormat = RHIFormat::D24_S8_Uint;
-			gApp->swapchain = gApp->device.createSwapchain(swDesc).value();
-			gApp->cameraBuffer.proj = mat4::makePerspectiveProjectionMatD3D(60 * degToRad, float(w) / float(h), 0.01f, 100.0f);
-			gApp->graphicsPipeline.setVertexUniform("camera", gApp->cameraBuffer);
-		});
+			engine->swapchain = engine->device.createSwapchain(swDesc).value();
+			engine->cameraBuffer.proj = mat4::makePerspectiveProjectionMatD3D(60 * degToRad, float(w) / float(h), 0.01f, 100.0f);
+			engine->graphicsPipeline.setVertexUniform("camera", engine->cameraBuffer);
+			}, this });
+
 
 		{
 			SwapchainDescription swDesc = {};

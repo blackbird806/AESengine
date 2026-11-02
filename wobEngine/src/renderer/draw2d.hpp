@@ -52,7 +52,7 @@ namespace wob
 		{
 			vec2 pos;
 			vec4 color;
-			vec2 uv;
+			vec2 uv = {0, 0};
 		};
 
 		struct UniformBuffer
@@ -80,7 +80,7 @@ namespace wob
 			RHITexture* texture = nullptr;
 		};
 		
-		RHIDevice* device;
+		RHIDevice* device = nullptr;
 		State currentState;
 		Array<State> statesStack;
 
@@ -93,6 +93,7 @@ namespace wob
 		RHIVertexShader vertexShader;
 		RHIFragmentShader fragmentShader;
 		RHISampler sampler;
+		RHITexture defaultTexture; // texture used when no texture is specified only render state color
 
 		RHIBuffer vertexBuffer;
 		RHIBuffer indexBuffer;

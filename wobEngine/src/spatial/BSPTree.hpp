@@ -1,5 +1,5 @@
-#ifndef BSPTREE_HPP
-#define BSPTREE_HPP
+#ifndef WOB_BSPTREE_HPP
+#define WOB_BSPTREE_HPP
 
 #include "core/wob.hpp"
 #include "core/geometry.hpp"

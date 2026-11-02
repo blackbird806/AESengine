@@ -49,7 +49,7 @@ namespace wob
 
 		float4 main(VS_OUTPUT input) : SV_TARGET
 		{
-			return input.color * texture0.Sample(samplerState, input.uv);
+			return texture0.Sample(samplerState, input.uv) * input.color;
 		}
 	)";
 }

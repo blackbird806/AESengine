@@ -37,21 +37,21 @@ public:
 		device.setCullMode(CullMode::None);
 		draw3d.init(device);
 
-		static TestDraw3dApp* gApp = this;
 
-		mainWindow->setResizeCallback([](uint w, uint h) {
+		mainWindow->addResizeCallback({ [](uint w, uint h, void* app) {
+			TestDraw3dApp* engine = (TestDraw3dApp*)app;
 			SwapchainDescription swDesc = {};
 			swDesc.count = 2;
 			swDesc.width = w;
 			swDesc.height = h;
 			swDesc.multisampleMode = MultisampleMode::None;
-			swDesc.window = gApp->mainWindow->getHandle();
+			swDesc.window = engine->mainWindow->getHandle();
 			swDesc.format = RHIFormat::R8G8B8A8_Uint;
 			swDesc.depthFormat = RHIFormat::D24_S8_Uint;
-			gApp->swapchain = gApp->device.createSwapchain(swDesc).value();
-			gApp->cameraBuffer.proj = mat4::makePerspectiveProjectionMatD3D(60 * degToRad, float(w) / float(h), 0.01f, 100.0f);
-			gApp->draw3d.pipeline.setVertexUniform("camera", gApp->cameraBuffer);
-			});
+			engine->swapchain = engine->device.createSwapchain(swDesc).value();
+			engine->cameraBuffer.proj = mat4::makePerspectiveProjectionMatD3D(60 * degToRad, float(w) / float(h), 0.01f, 100.0f);
+			engine->draw3d.pipeline.setVertexUniform("camera", engine->cameraBuffer);
+			}, this });
 
 		{
 			SwapchainDescription swDesc = {};
@@ -168,7 +168,7 @@ int main()
 		});
 	app.init();
 	auto startupSession = WOB_STOP_PROFILE_SESSION();
-	printf("init time: %f", startupSession.elapsedSessionTime);
+	printf("init time: %f\n", startupSession.elapsedSessionTime);
 
 	//WOB_START_PROFILE_SESSION("test draw3d running");
 	app.run();

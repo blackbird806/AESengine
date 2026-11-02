@@ -22,6 +22,15 @@ namespace wob {
 			return fn(wob::forward<Args>(args)..., userData);
 		}
 
+		template<typename ...Args>
+		auto safeCall(Args&&... args)
+		{
+			if (fn)
+			{
+				return operator()(wob::forward<Args>(args)...);
+			}
+		}
+
 		F fn = nullptr;
 		void* userData = nullptr;
 	};
@@ -31,14 +40,14 @@ namespace wob {
 
 	public:
 
-		using ResizeCallbackT = void(*)(uint, uint);
+		using ResizeCallbackT = ContextCallback<void(*)(uint, uint, void* userData)>;
 		using KeyCallbackT = ContextCallback<void(*)(InputAction action, int key, void* userData)>;
 		using MouseMoveCallbackT = void(*)(int mouseX, int mouseY);
 		using MouseWheelMoveCallbackT = void(*)(int directionY);
 		
 		virtual ~Window() {};
 
-		void setResizeCallback(ResizeCallbackT func);
+		void addResizeCallback(ResizeCallbackT func);
 		void setKeyCallback(KeyCallbackT func);
 		void setMouseMoveCallback(MouseMoveCallbackT func);
 		void setMouseWheelMoveCallback(MouseWheelMoveCallbackT func);
@@ -56,7 +65,7 @@ namespace wob {
 
 		bool shouldClose_ = false;
 		KeyCallbackT keyCallback;
-		ResizeCallbackT resizeCallback = nullptr;
+		Array<ResizeCallbackT> resizeCallbacks;
 		MouseMoveCallbackT mouseMoveCallback = nullptr;
 		MouseWheelMoveCallbackT mouseWheelMoveCallback = nullptr;
 		uint width, height;

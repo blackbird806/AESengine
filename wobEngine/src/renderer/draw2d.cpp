@@ -80,8 +80,8 @@ Result<void> Draw2D::init(RHIDevice& dev)
 	// init default sampler
 	{
 		SamplerDescription samplerDesc{};
-		samplerDesc.addressU = TextureAddressMode::Repeat;
-		samplerDesc.addressV = TextureAddressMode::Repeat;
+		samplerDesc.addressU = TextureAddressMode::Clamp;
+		samplerDesc.addressV = TextureAddressMode::Clamp;
 		samplerDesc.filter = TextureFilter::Linear;
 		samplerDesc.lodMin = 0;
 		samplerDesc.lodBias = 0;
@@ -104,6 +104,20 @@ Result<void> Draw2D::init(RHIDevice& dev)
 		if (!result)
 			return result.error();
 		viewProjBuffer = wob::move(result.value());
+	}
+
+	// init default texture
+	{
+		TextureDescription textureDesc = {};
+		textureDesc.cpuAccess = CPUAccessFlagBits::None;
+		textureDesc.usage = MemoryUsage::Immutable;
+		textureDesc.format = RHIFormat::R8G8B8A8_Uint;
+		textureDesc.height = 1;
+		textureDesc.width = 1;
+		textureDesc.mipsLevel = 1;
+		Color baseColor = Color::White;
+		textureDesc.initialData = &baseColor;
+		defaultTexture = device->createTexture(textureDesc).value();
 	}
 
 	ensureVertexBufferCapacity(200 * sizeof(Vertex));
@@ -280,6 +294,7 @@ void Draw2D::executeDrawCommands()
 	device->bindVertexUniformBuffer(viewProjBuffer, 0);
 
 	device->bindFragmentSampler(sampler, 0);
+	device->bindFragmentTexture(defaultTexture, 0);
 	device->setVertexShader(vertexShader);
 	device->setFragmentShader(fragmentShader);
 

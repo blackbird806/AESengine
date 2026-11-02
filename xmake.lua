@@ -30,6 +30,7 @@ end
 
 if is_plat("windows") then
 	add_cxxflags("/NODEFAULTLIB") 
+	add_cxflags("/UUNICODE", "/U_UNICODE") -- undef unicode
 end
 
 add_includedirs("wobEngine/src")
