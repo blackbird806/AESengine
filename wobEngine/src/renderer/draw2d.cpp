@@ -91,21 +91,6 @@ Result<void> Draw2D::init(RHIDevice& dev)
 		sampler = wob::move(result.value());
 	}
 
-	// init uniform buffer
-	{
-		BufferDescription bufferDesc{};
-		bufferDesc.usage = MemoryUsage::Dynamic;
-		bufferDesc.bindFlags = BindFlagBits::UniformBuffer;
-		bufferDesc.cpuAccessFlags = CPUAccessFlagBits::Write;
-		bufferDesc.sizeInBytes = sizeof(UniformBuffer);
-		UniformBuffer defaultContent{};
-		bufferDesc.initialData = &defaultContent;
-		auto result = device->createBuffer(bufferDesc);
-		if (!result)
-			return result.error();
-		viewProjBuffer = wob::move(result.value());
-	}
-
 	// init default texture
 	{
 		TextureDescription textureDesc = {};
@@ -122,6 +107,9 @@ Result<void> Draw2D::init(RHIDevice& dev)
 
 	ensureVertexBufferCapacity(200 * sizeof(Vertex));
 	ensureIndexBufferCapacity(400 * sizeof(Index_t));
+
+	// ensure at least one batch
+	batches.emplace();
 
 	WOB_LOG("draw2d initialized");
 	return {};
@@ -150,16 +138,41 @@ void Draw2D::popState()
 	statesStack.pop();
 }
 
-void Draw2D::drawLine(Line2D const& line)
+// TODO
+void Draw2D::drawLine(Line2D const& line, float thickness)
 {
 	WOB_PROFILE_FUNCTION();
-	commands.push(Command{ DrawCommandType::Line, currentState.color });
 	vec4 const col = currentState.color.toVec4();
-	vertices.push({ line.p1, col });
-	vertices.push({ line.p2, col });
+	
+	vec2 const a = currentState.transformationMatrix * line.p1;
+	vec2 const b = currentState.transformationMatrix * line.p2;
+
+	float const dx = b.x - a.x;
+	float const dy = b.y - a.y;
+	float len = sqrt(dx * dx + dy * dy);
+	if (len == 0.f)
+		return;               // degenerate line
+
+	float const h = thickness * 0.5f / len;
+	vec2 const n = { -dy * h, dx * h };         // perpendicular, half thickness
+
+	vec2 const p0 = { a.x + n.x, a.y + n.y };
+	vec2 const p1 = { a.x - n.x, a.y - n.y };
+	vec2 const p2 = { b.x - n.x, b.y - n.y };
+	vec2 const p3 = { b.x + n.x, b.y + n.y };
+
+	vertices.push({ p0, col });
+	vertices.push({ p1, col });
+	vertices.push({ p2, col });
+	vertices.push({ p3, col });
+
 	indices.push(offset + 0);
 	indices.push(offset + 1);
-	offset += 2;
+	indices.push(offset + 2);
+	indices.push(offset + 0);
+	indices.push(offset + 2);
+	indices.push(offset + 3);
+	getCurrentBatch().indexCount += 6;
 }
 
 void Draw2D::drawPoint(vec2 p, float size)
@@ -172,21 +185,28 @@ void Draw2D::drawPoint(vec2 p, float size)
 void Draw2D::drawFillRect(Rect const& rect)
 {
 	WOB_PROFILE_FUNCTION();
-	commands.push(Command{ DrawCommandType::FillRect, currentState.color });
 
 	RectBounds const bounds = rect.getBounds();
 	vec4 const col = currentState.color.toVec4();
-	// uv can be omitted since we don't use texture
-	vertices.push({ bounds.minL, col });
-	vertices.push({ bounds.minR, col });
-	vertices.push({ bounds.topL, col });
-	vertices.push({ bounds.topR, col });
 
+	const vec2 v0 = currentState.transformationMatrix * bounds.minL;
+	const vec2 v1 = currentState.transformationMatrix * bounds.minR;
+	const vec2 v2 = currentState.transformationMatrix * bounds.topL;
+	const vec2 v3 = currentState.transformationMatrix * bounds.topR;
+
+	vertices.push({ v0, col, { 0, 1 } });
+	vertices.push({ v1, col, { 1, 1 } });
+	vertices.push({ v2, col, { 0, 0 } });
+	vertices.push({ v3, col, { 1, 0 } });
+
+	indices.push(offset + 0);
 	indices.push(offset + 3);
 	indices.push(offset + 1);
-	indices.push(offset + 2);
 	indices.push(offset + 0);
-	offset += 4;
+	indices.push(offset + 2);
+	indices.push(offset + 3);
+
+	getCurrentBatch().indexCount += 6;
 }
 
 void Draw2D::drawRect(Rect const& rect)
@@ -202,20 +222,10 @@ void Draw2D::drawRect(Rect const& rect)
 void Draw2D::drawImage(RHITexture& texture, Rect const& rect)
 {
 	WOB_PROFILE_FUNCTION();
-
-	commands.push(Command{ DrawCommandType::Image, currentState, &texture });
-
-	RectBounds const bounds = rect.getBounds();
-	vertices.push({ bounds.minL, {0, 1} });
-	vertices.push({ bounds.minR, {1, 1} });
-	vertices.push({ bounds.topL, {0, 0} });
-	vertices.push({ bounds.topR, {1, 0} });
-
-	indices.push(offset + 3);
-	indices.push(offset + 1);
-	indices.push(offset + 2);
-	indices.push(offset + 0);
-	offset += 4;
+	batches.emplace();
+	getCurrentBatch().texture = &texture;
+	getCurrentBatch().firstIndex = indices.size();
+	drawFillRect(rect);
 }
 
 // check https://github.com/ocornut/imgui/blob/master/imgui_draw.cpp#L3542
@@ -245,7 +255,8 @@ void Draw2D::drawText(FontRessource& font, StringView str, vec2 pos)
 			continue;
 		}
 
-		commands.push(Command{ DrawCommandType::Image, currentState, &font.texture });
+	//	currentState.texture = &font.texture;
+	//	commands.push(Command{ DrawCommandType::Image, currentState });
 
 		auto const glyph = font.getGlyph(c).value();
 		vec2 const gsize = { glyph.u[1] - glyph.u[0], glyph.v[1] - glyph.v[0] };
@@ -282,16 +293,11 @@ void Draw2D::executeDrawCommands()
 
 	ensureVertexBufferCapacity(vertices.size() * sizeof(Vertex));
 	ensureIndexBufferCapacity(indices.size() * sizeof(Index_t));
-	//vertexBuffer.setData(textureVertices.data(), textureVertices.size() * sizeof(TextureVertex));
-	//indexBuffer.setData(textureIndices.data(), textureIndices.size() * sizeof(Index_t));
 	device->setBufferData(vertexBuffer, vertices.data(), vertices.size() * sizeof(Vertex));
 	device->setBufferData(indexBuffer, indices.data(), indices.size() * sizeof(uint16_t));
 
 	uint colorIndicesOffset = 0;
 	uint textureIndicesOffset = 0;
-	uint indicesCount;
-
-	device->bindVertexUniformBuffer(viewProjBuffer, 0);
 
 	device->bindFragmentSampler(sampler, 0);
 	device->bindFragmentTexture(defaultTexture, 0);
@@ -300,35 +306,28 @@ void Draw2D::executeDrawCommands()
 
 	device->bindVertexBuffer(vertexBuffer, 0, sizeof(Vertex));
 	device->bindIndexBuffer(indexBuffer, IndexTypeFormat::Uint16);
+	device->setCullMode(CullMode::CounterClockwise);
+	device->setDrawPrimitiveMode(DrawPrimitiveType::TrianglesFill);
 
-	for (auto const& cmd : commands)
+	for (auto const& batch : batches)
 	{
-		//uniformBuffer.setDataFromPOD(mat4(cmd.state.transformationMatrix));
-
-		// @Review only draw triangles ?
-		if (cmd.type == DrawCommandType::Line)
-		{
-			device->setDrawPrimitiveMode(DrawPrimitiveType::Lines);
-			indicesCount = 2;
-		}
-		else
-		{
-			device->setDrawPrimitiveMode(DrawPrimitiveType::TriangleStrip);
-			indicesCount = 4;
-		}
-
-		if (cmd.type == DrawCommandType::Image)
-		{
-			device->bindFragmentTexture(*cmd.texture, 0);
-		}
-
-		device->drawIndexed(indicesCount, textureIndicesOffset);
-		textureIndicesOffset += indicesCount;
+		RHITexture& text = batch.texture != nullptr ? *batch.texture : defaultTexture;
+		device->bindFragmentTexture(text, 0);
+		device->drawIndexed(batch.indexCount, batch.firstIndex);
 	}
 
 	indices.clear();
 	vertices.clear();
-	commands.clear();
+	batches.resize(1); // we want to keep the initial batch
+}
+
+void Draw2D::addVertex(vec2 pos, vec2 uv)
+{
+	Vertex vtx;
+	vtx.pos = pos;
+	vtx.uv = uv;
+	vtx.color = currentState.color.toVec4();
+	vertices.push(vtx);
 }
 
 // @Review
@@ -359,6 +358,11 @@ Result<void> Draw2D::ensureIndexBufferCapacity(size_t sizeInBytes)
 	indexBufferDesc.sizeInBytes = sizeInBytes;
 
 	return device->ensureBufferCapacity(indexBuffer, indexBufferDesc);
+}
+
+Draw2D::Batch& Draw2D::getCurrentBatch()
+{
+	return batches.back();
 }
 
 

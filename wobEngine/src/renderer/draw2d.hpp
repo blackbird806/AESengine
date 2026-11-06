@@ -32,7 +32,7 @@ namespace wob
 		void setMatrix(mat3 const&);
 		void pushState();
 		void popState();
-		void drawLine(Line2D const& line);
+		void drawLine(Line2D const& line, float thickness = 1);
 		void drawPoint(vec2 p, float size = 0.05f);
 		void drawFillRect(Rect const& rect);
 		void drawRect(Rect const& rect);
@@ -41,6 +41,8 @@ namespace wob
 
 		void executeDrawCommands();
 		
+		void addVertex(vec2 pos, vec2 uv = vec2(0, 0));
+
 	private:
 
 		using Index_t = uint16_t;
@@ -55,36 +57,26 @@ namespace wob
 			vec2 uv = {0, 0};
 		};
 
-		struct UniformBuffer
-		{
-			mat4 transformMtr = mat4::identity();
-		};
-
-		enum class DrawCommandType
-		{
-			Line,
-			FillRect,
-			Image
-		};
-
 		struct State
 		{
 			Color color = Color::Blue;
 			mat3 transformationMatrix = mat3::identity();
 		};
 
-		struct Command
+		struct Batch
 		{
-			DrawCommandType type;
-			State state;
+			uint32_t firstIndex = 0;
+			uint32_t indexCount = 0;
 			RHITexture* texture = nullptr;
 		};
 		
+		Batch& getCurrentBatch();
+
 		RHIDevice* device = nullptr;
 		State currentState;
 		Array<State> statesStack;
 
-		Array<Command> commands;
+		Array<Batch> batches;
 
 		Array<Vertex> vertices;
 		Array<Index_t> indices;
@@ -97,8 +89,6 @@ namespace wob
 
 		RHIBuffer vertexBuffer;
 		RHIBuffer indexBuffer;
-
-		RHIBuffer viewProjBuffer;
 	};
 }
 

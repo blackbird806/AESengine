@@ -28,11 +28,11 @@ public:
 		draw2d.setColor(wob::Color::Red);
 		draw2d.drawPoint({ 0, 0 });
 		draw2d.drawPoint({ 0.4, 0 });
-		draw2d.setColor(wob::Color::Blue);
-		draw2d.drawPoint({ 0, 0.4 });
-		draw2d.drawPoint({ 0.4, 0.4 });
-		draw2d.setColor(wob::Color::White);
-		draw2d.drawFillRect({ {0, 0}, {0.4, 0.4} });
+		//draw2d.setColor(wob::Color::Blue);
+		//draw2d.drawPoint({ 0, 0.4 });
+		//draw2d.drawPoint({ 0.4, 0.4 });
+		//draw2d.setColor(wob::Color::White);
+		//draw2d.drawFillRect({ {0, 0}, {0.4, 0.4} });
 	}
 
 	void mainDrawPass() override

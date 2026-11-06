@@ -71,6 +71,22 @@ namespace wob
 			return self.data[i * 3 + j];
 		}
 
+		constexpr auto operator*(vec2 const& rhs) const
+		{
+			vec2 r;
+			r.x = v[0].x * rhs.x + v[0].y * rhs.y + v[0].z;
+			r.y = v[1].x * rhs.x + v[1].y * rhs.y + v[1].z;
+			return r;
+		}
+
+		constexpr auto operator*(vec3 const& rhs) const
+		{
+			vec2 r;
+			r.x = v[0].x * rhs.x + v[0].y * rhs.y + rhs.z * v[0].z;
+			r.y = v[1].x * rhs.x + v[1].y * rhs.y + rhs.z * v[1].z;
+			return r;
+		}
+
 		union
 		{
 			vec3 v[3];

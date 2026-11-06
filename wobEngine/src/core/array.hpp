@@ -254,7 +254,7 @@ namespace wob
 		// return first element of the array
 		constexpr T& front() noexcept { WOB_BOUNDS_CHECK(size_ > 0); return buffer[0]; }
 
-		// returnlast element of the array
+		// return last element of the array
 		constexpr T& back() noexcept { WOB_BOUNDS_CHECK(size_ > 0); return buffer[size_ - 1]; }
 
 		constexpr T const* data() const noexcept { return buffer; }

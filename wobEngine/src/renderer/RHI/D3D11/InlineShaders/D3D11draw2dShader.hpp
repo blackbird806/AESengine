@@ -20,15 +20,10 @@ namespace wob
 			float2 uv : TEXCOORD0;
 		};
 
-		cbuffer uniformBuffer
-		{
-			float4x4 transformMatrix;
-		};
-
 		VS_OUTPUT main(VS_INPUT input)
 		{
 			VS_OUTPUT output;
-			output.position = mul(transformMatrix, float4(input.position.xy, 0.f, 1.f));
+			output.position = float4(input.position.xy, 0.f, 1.f);
 			output.color = input.color;
 			output.uv = input.uv;
 			return output;
