@@ -70,12 +70,92 @@ void Draw3D::setColor(Color col)
 	currentState.color = col;
 }
 
-void Draw3D::drawWireCube(Cube cube)
+void Draw3D::drawWireAABB(AABB aabb)
 {
-	WOB_NOT_IMPLEMENTED();
+	vec3 const pos = aabb.center();
+	vec3 const halfSize = aabb.halfSize();
+	{
+		Line3D l1, l2, l3;
+		l1.p1 = pos - halfSize;
+		l1.p2 = l1.p1;
+		l1.p2.z = pos.z + halfSize.z;
+
+		l2.p1 = pos - halfSize;
+		l2.p2 = l2.p1;
+		l2.p2.y = pos.y + halfSize.y;
+
+		l3.p1 = pos - halfSize;
+		l3.p2 = l3.p1;
+		l3.p2.x = pos.x + halfSize.x;
+
+		drawLine(l1);
+		drawLine(l2);
+		drawLine(l3);
+	}
+	{
+		Line3D l1, l2, l3;
+		l1.p1 = pos + halfSize;
+		l1.p2 = l1.p1;
+		l1.p2.z = pos.z - halfSize.z;
+
+		l2.p1 = pos + halfSize;
+		l2.p2 = l2.p1;
+		l2.p2.y = pos.y - halfSize.y;
+
+		l3.p1 = pos + halfSize;
+		l3.p2 = l3.p1;
+		l3.p2.x = pos.x - halfSize.x;
+
+		drawLine(l1);
+		drawLine(l2);
+		drawLine(l3);
+	}
+	{
+		Line3D l1, l2, l3;
+		l1.p1 = pos + halfSize;
+		l1.p1.z = pos.z - halfSize.z;
+		l1.p2 = l1.p1;
+		l1.p2.x = pos.x - halfSize.x;
+
+		l2.p1 = pos + halfSize;
+		l2.p1.x = pos.x - halfSize.x;
+		l2.p2 = l2.p1;
+		l2.p2.y = pos.y - halfSize.y;
+
+		l3.p1 = pos + halfSize;
+		l3.p1.x = pos.x - halfSize.x;
+		l3.p2 = l3.p1;
+		l3.p2.z = pos.z - halfSize.z;
+
+		drawLine(l1);
+		drawLine(l2);
+		drawLine(l3);
+	}
+	{
+		Line3D l1, l2, l3;
+		l1.p1 = pos + halfSize;
+		l1.p1.y = pos.y - halfSize.y;
+		l1.p2 = l1.p1;
+		l1.p2.x = pos.x - halfSize.x;
+
+		l2.p1 = pos + halfSize;
+		l2.p1.y = pos.y - halfSize.y;
+		l2.p2 = l2.p1;
+		l2.p2.z = pos.z - halfSize.z;
+
+		l3.p1.x = pos.x + halfSize.x;
+		l3.p1.y = pos.y - halfSize.y;
+		l3.p1.z = pos.z - halfSize.z;
+		l3.p2 = l3.p1;
+		l3.p2.y = pos.y + halfSize.y;
+
+		drawLine(l1);
+		drawLine(l2);
+		drawLine(l3);
+	}
 }
 
-void Draw3D::drawFillCube(Cube cube)
+void Draw3D::drawFillAABB(AABB aabb)
 {
 	WOB_NOT_IMPLEMENTED();
 }

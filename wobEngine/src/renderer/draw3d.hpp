@@ -16,8 +16,8 @@ namespace wob
 		void init(RHIDevice& device);
 
 		void setColor(Color col);
-		void drawWireCube(Cube cube);
-		void drawFillCube(Cube cube);
+		void drawWireAABB(AABB aabb);
+		void drawFillAABB(AABB aabb);
 		void drawLine(Line3D line);
 		void drawTriangle(Triangle3D tri);
 		void drawPlane(Plane plane);

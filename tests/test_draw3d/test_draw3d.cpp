@@ -148,6 +148,8 @@ public:
 		draw3d.drawLine(Line3D{ vec3(0.0f), vec3(10.0f, 0.0f, 0.0f) });
 		draw3d.setColor(Color::Green);
 		draw3d.drawLine(Line3D{ vec3(0.0f), vec3(0.0f, 10.0f, 0.0f) });
+		draw3d.drawWireAABB(AABB::createHalfCenter(vec3(2, 2, 2), vec3(2.5, 3, 1)));
+
 		draw3d.executeDrawCommands();
 		device.endRenderPass();
 
