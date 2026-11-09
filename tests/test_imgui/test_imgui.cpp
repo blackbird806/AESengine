@@ -99,7 +99,7 @@ public:
 			{
 				auto arg = std::get<RectArg>(cmd.arg);
 				draw2d.setColor(arg.col);
-				draw2d.drawFillRect(arg.rect);
+				draw2d.drawFillAABBRect(arg.rect);
 			}
 				break;
 			case ImguiDrawCmdType::Image: 

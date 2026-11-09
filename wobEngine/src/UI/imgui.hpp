@@ -39,7 +39,7 @@ namespace wob
 
 	struct RectArg
 	{
-		Rect rect;
+		AABBRect rect;
 		Color col;
 	};
 

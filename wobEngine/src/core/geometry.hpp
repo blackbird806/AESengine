@@ -30,14 +30,14 @@ namespace wob {
 	{
 		vec2 topL, topR, minL, minR;
 	};
-	
-	struct Rect
+
+	struct AABBRect
 	{
 		vec2 min, max;
 
-		static Rect createHalfCenter(vec2 center, vec2 halfSize)
+		static AABBRect createHalfCenter(vec2 center, vec2 halfSize)
 		{
-			return Rect{ center - halfSize, center + halfSize };
+			return AABBRect{ center - halfSize, center + halfSize };
 		}
 		
 		RectBounds getBounds() const
@@ -51,7 +51,12 @@ namespace wob {
 		}
 	};
 
-	bool pointInRect(vec2 p, Rect const& r);
+	struct Rect
+	{
+		vec2 p1, p2, p3, p4;
+	};
+
+	bool pointInRect(vec2 p, AABBRect const& r);
 
 	struct Triangle2D
 	{

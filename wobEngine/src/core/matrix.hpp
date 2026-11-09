@@ -10,10 +10,22 @@ namespace wob
 {
 	struct mat2x2
 	{
+		constexpr mat2x2() noexcept
+		{
+			v[0] = vec2();
+			v[1] = vec2();
+		}
+
 		constexpr mat2x2(float x1, float x2, float x3, float x4) noexcept
 			: data{ x1, x2, x3, x4 }
 		{
 
+		}
+
+		constexpr mat2x2(mat2x2 const& rhs) noexcept
+		{
+			v[0] = rhs.v[0];
+			v[1] = rhs.v[1];
 		}
 
 		static constexpr mat2x2 identity() noexcept
@@ -25,6 +37,29 @@ namespace wob
 		constexpr decltype(auto) operator[](this auto& self, unsigned i)
 		{
 			return self.data[i];
+		}
+
+		constexpr decltype(auto) operator[](this auto& self, unsigned i, unsigned j)
+		{
+			return self.data[i * 2 + j];
+		}
+
+		static mat2x2 rotateMat(float a)
+		{
+			mat2x2 result = mat2x2::identity();
+			result[0, 0] = cosf(a);
+			result[0, 1] = -sinf(a);
+			result[1, 0] = sinf(a);
+			result[1, 1] = cosf(a);
+			return result;
+		}
+
+		constexpr auto operator*(vec2 const& rhs) const
+		{
+			vec2 r;
+			r.x = v[0].x * rhs.x + v[0].y * rhs.y;
+			r.y = v[1].x * rhs.x + v[1].y * rhs.y;
+			return r;
 		}
 
 		union

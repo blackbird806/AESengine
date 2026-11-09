@@ -1,5 +1,6 @@
 #include "draw2d.hpp"
 
+#include "core/maths.hpp"
 #include "core/utility.hpp"
 #include "fontRenderer.hpp"
 #include "RHI/inlineShaders/draw2dShader.hpp"
@@ -138,41 +139,38 @@ void Draw2D::popState()
 	statesStack.pop();
 }
 
-// TODO
+void Draw2D::addVertex(vec2 pos, vec2 uv)
+{
+	Vertex vtx;
+	vtx.pos = currentState.transformationMatrix * pos;
+	vtx.uv = uv;
+	vtx.color = currentState.color.toVec4();
+	vertices.push(vtx);
+}
+
 void Draw2D::drawLine(Line2D const& line, float thickness)
 {
 	WOB_PROFILE_FUNCTION();
-	vec4 const col = currentState.color.toVec4();
-	
-	vec2 const a = currentState.transformationMatrix * line.p1;
-	vec2 const b = currentState.transformationMatrix * line.p2;
 
-	float const dx = b.x - a.x;
-	float const dy = b.y - a.y;
-	float len = sqrt(dx * dx + dy * dy);
-	if (len == 0.f)
-		return;               // degenerate line
+	vec2 const p1 = line.p1;
+	vec2 const p2 = line.p2;
 
-	float const h = thickness * 0.5f / len;
-	vec2 const n = { -dy * h, dx * h };         // perpendicular, half thickness
+	vec2 dir = p2 - p1;
+	float const len = dir.length();
+	if (len < 1e-6f)
+		return; // degenerate line
 
-	vec2 const p0 = { a.x + n.x, a.y + n.y };
-	vec2 const p1 = { a.x - n.x, a.y - n.y };
-	vec2 const p2 = { b.x - n.x, b.y - n.y };
-	vec2 const p3 = { b.x + n.x, b.y + n.y };
+	dir = dir * (1.0f / len);
 
-	vertices.push({ p0, col });
-	vertices.push({ p1, col });
-	vertices.push({ p2, col });
-	vertices.push({ p3, col });
+	float const halfSize = thickness * 0.5f;
+	vec2 const normal = vec2(-dir.y, dir.x) * halfSize; // perpendicular
 
-	indices.push(offset + 0);
-	indices.push(offset + 1);
-	indices.push(offset + 2);
-	indices.push(offset + 0);
-	indices.push(offset + 2);
-	indices.push(offset + 3);
-	getCurrentBatch().indexCount += 6;
+	vec2 const a = p1 + normal;
+	vec2 const b = p1 - normal;
+	vec2 const c = p2 - normal;
+	vec2 const d = p2 + normal;
+
+	drawQuad(a, b, c, d);
 }
 
 void Draw2D::drawPoint(vec2 p, float size)
@@ -182,17 +180,17 @@ void Draw2D::drawPoint(vec2 p, float size)
 	drawLine({ {p.x, p.y - size}, {p.x, p.y + size} });
 }
 
-void Draw2D::drawFillRect(Rect const& rect)
+void Draw2D::drawFillAABBRect(AABBRect const& rect)
 {
 	WOB_PROFILE_FUNCTION();
 
 	RectBounds const bounds = rect.getBounds();
 	vec4 const col = currentState.color.toVec4();
 
-	const vec2 v0 = currentState.transformationMatrix * bounds.minL;
-	const vec2 v1 = currentState.transformationMatrix * bounds.minR;
-	const vec2 v2 = currentState.transformationMatrix * bounds.topL;
-	const vec2 v3 = currentState.transformationMatrix * bounds.topR;
+	vec2 const v0 = currentState.transformationMatrix * bounds.minL;
+	vec2 const v1 = currentState.transformationMatrix * bounds.minR;
+	vec2 const v2 = currentState.transformationMatrix * bounds.topL;
+	vec2 const v3 = currentState.transformationMatrix * bounds.topR;
 
 	vertices.push({ v0, col, { 0, 1 } });
 	vertices.push({ v1, col, { 1, 1 } });
@@ -209,23 +207,73 @@ void Draw2D::drawFillRect(Rect const& rect)
 	getCurrentBatch().indexCount += 6;
 }
 
-void Draw2D::drawRect(Rect const& rect)
+void Draw2D::drawQuad(vec2 const& a, vec2 const& b, vec2 const& c, vec2 const& d)
 {
 	WOB_PROFILE_FUNCTION();
-	RectBounds const b = rect.getBounds();
-	drawLine({ b.minL, b.minR });
-	drawLine({ b.minL, b.topL });
-	drawLine({ b.topL, b.topR });
-	drawLine({ b.minR, b.topR });
+
+	// Corners must be given in counterclockwise order (y-up).
+	addVertex(a);
+	addVertex(b);
+	addVertex(c);
+	addVertex(d);
+
+	indices.push(offset + 0);
+	indices.push(offset + 1);
+	indices.push(offset + 2);
+	indices.push(offset + 0);
+	indices.push(offset + 2);
+	indices.push(offset + 3);
+
+	getCurrentBatch().indexCount += 6;
 }
 
-void Draw2D::drawImage(RHITexture& texture, Rect const& rect)
+void Draw2D::drawRect(Rect const& rect)
+{
+	drawQuad(rect.p1, rect.p2, rect.p3, rect.p4);
+}
+
+void Draw2D::drawWireRect(Rect const& rect)
+{
+
+}
+
+void Draw2D::drawTriangle(vec2 const& a, vec2 const& b, vec2 const& c)
+{
+	WOB_PROFILE_FUNCTION();
+
+	// Signed area (2x). > 0 means counterclockwise in a y-up coordinate system.
+	float const cross = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+
+	if (cross == 0.0f)
+		return; // degenerate triangle, nothing to draw
+
+	addVertex(a);
+	addVertex(b);
+	addVertex(c);
+
+	// Force counterclockwise order so culling never discards it
+	if (cross > 0.0f)
+	{
+		indices.push(0);
+		indices.push(1);
+		indices.push(2);
+	}
+	else
+	{
+		indices.push(0);
+		indices.push(2);
+		indices.push(1);
+	}
+	getCurrentBatch().indexCount += 3;
+}
+
+void Draw2D::drawImage(RHITexture& texture, AABBRect const& rect)
 {
 	WOB_PROFILE_FUNCTION();
 	batches.emplace();
 	getCurrentBatch().texture = &texture;
 	getCurrentBatch().firstIndex = indices.size();
-	drawFillRect(rect);
+	drawFillAABBRect(rect);
 }
 
 // check https://github.com/ocornut/imgui/blob/master/imgui_draw.cpp#L3542
@@ -321,14 +369,6 @@ void Draw2D::executeDrawCommands()
 	batches.resize(1); // we want to keep the initial batch
 }
 
-void Draw2D::addVertex(vec2 pos, vec2 uv)
-{
-	Vertex vtx;
-	vtx.pos = pos;
-	vtx.uv = uv;
-	vtx.color = currentState.color.toVec4();
-	vertices.push(vtx);
-}
 
 // @Review
 

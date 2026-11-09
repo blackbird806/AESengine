@@ -7,7 +7,7 @@
 
 using namespace wob;
 
-bool wob::pointInRect(vec2 p, Rect const& r)
+bool wob::pointInRect(vec2 p, AABBRect const& r)
 {
 	return p.x > r.min.x && p.x < r.max.x&&
 		p.y > r.min.y && p.y < r.max.y;

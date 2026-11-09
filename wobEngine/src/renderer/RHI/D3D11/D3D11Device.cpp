@@ -756,7 +756,7 @@ void D3D11Device::setRasterizerState()
 	rasterStateDesc.DepthBiasClamp = 0.0f;
 	rasterStateDesc.DepthClipEnable = true;
 	rasterStateDesc.FillMode = D3D11_FILL_SOLID;
-	rasterStateDesc.FrontCounterClockwise = false;
+	rasterStateDesc.FrontCounterClockwise = true;
 	rasterStateDesc.MultisampleEnable = false;
 	rasterStateDesc.ScissorEnable = false;
 	rasterStateDesc.SlopeScaledDepthBias = 0.0f;

@@ -32,11 +32,14 @@ namespace wob
 		void setMatrix(mat3 const&);
 		void pushState();
 		void popState();
-		void drawLine(Line2D const& line, float thickness = 1);
+		void drawTriangle(vec2 const& a, vec2 const& b, vec2 const& c);
+		void drawLine(Line2D const& line, float thickness = 0.01);
 		void drawPoint(vec2 p, float size = 0.05f);
-		void drawFillRect(Rect const& rect);
+		void drawFillAABBRect(AABBRect const& rect);
+		void drawQuad(vec2 const& a, vec2 const& b, vec2 const& c, vec2 const& d);
 		void drawRect(Rect const& rect);
-		void drawImage(RHITexture& texture, Rect const& rect);
+		void drawWireRect(Rect const& rect);
+		void drawImage(RHITexture& texture, AABBRect const& rect);
 		void drawText(FontRessource& font, StringView str, vec2 pos);
 
 		void executeDrawCommands();

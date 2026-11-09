@@ -16,6 +16,11 @@ namespace wob {
 		return val > 0 ? val : -val;
 	}
 
+	template <typename T> constexpr T clamp(T val, T min, T max) noexcept {
+		T const t = val < min ? min : val;
+		return val > max ? max : val;
+	}
+
 	constexpr double degToRad = M_PI / 180.0;
 	constexpr double tau = M_PI * 2.0f;
 
