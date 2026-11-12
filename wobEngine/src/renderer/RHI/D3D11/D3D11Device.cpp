@@ -130,6 +130,7 @@ void D3D11Device::destroy()
 	WOB_ASSERT(debugInterface != nullptr);
 #endif
 
+	rasterState->Release();
 	deviceContext->Release();
 	factory->Release();
 	device->Release();
@@ -760,6 +761,11 @@ void D3D11Device::setRasterizerState()
 	rasterStateDesc.MultisampleEnable = false;
 	rasterStateDesc.ScissorEnable = false;
 	rasterStateDesc.SlopeScaledDepthBias = 0.0f;
+	
+	if (rasterState != nullptr)
+	{
+		rasterState->Release();
+	}
 	HRESULT const result = device->CreateRasterizerState(&rasterStateDesc, &rasterState);
 	if (FAILED(result))
 	{

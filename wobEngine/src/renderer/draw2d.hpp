@@ -25,6 +25,7 @@ namespace wob
 	class Draw2D
 	{
 	public:
+		using Index_t = uint16_t;
 
 		Result<void> init(RHIDevice& device);
 		
@@ -32,7 +33,7 @@ namespace wob
 		void setMatrix(mat3 const&);
 		void pushState();
 		void popState();
-		void drawTriangle(vec2 const& a, vec2 const& b, vec2 const& c);
+		void drawTriangle(vec2 a, vec2 b, vec2 c);
 		void drawLine(Line2D const& line, float thickness = 0.01);
 		void drawPoint(vec2 p, float size = 0.05f);
 		void drawQuad(vec2 const& a, vec2 const& b, vec2 const& c, vec2 const& d);
@@ -44,10 +45,10 @@ namespace wob
 		void executeDrawCommands();
 		
 		void addVertex(vec2 pos, vec2 uv = vec2(0, 0));
+		void addIndex(Index_t idx);
 
 	private:
 
-		using Index_t = uint16_t;
 		
 		Result<void> ensureVertexBufferCapacity(size_t sizeInBytes);
 		Result<void> ensureIndexBufferCapacity(size_t sizeInBytes);
@@ -69,6 +70,7 @@ namespace wob
 		{
 			uint32_t firstIndex = 0;
 			uint32_t indexCount = 0;
+			uint32_t offset = 0;
 			RHITexture* texture = nullptr;
 		};
 		

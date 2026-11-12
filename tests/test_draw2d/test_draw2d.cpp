@@ -25,11 +25,13 @@ public:
 
 	void update(float deltaTime) override
 	{
-		draw2d.setColor(wob::Color::Red);
+		draw2d.setColor(wob::Color::Green);
 	//	draw2d.drawQuad({ 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, 1 });
-	//	draw2d.drawTriangle({ 0, 0 }, { 1, 0 }, { 1, 1 });
+		draw2d.drawTriangle({ 1, 0 }, { 0, 0 }, { 1, 1 });
+		draw2d.setColor(wob::Color::Blue);
+//		draw2d.drawTriangle({ 0, 0 }, { 1, 0 }, { 1, 1 });
 		//draw2d.drawPoint({ 0, 0 });
-		draw2d.drawPoint({ 0.4, 0 });
+//		draw2d.drawPoint({ 0.4, 0 });
 		//draw2d.drawLine({ { 0, 0 }, {0.5, 0.5} }, 0.01);
 		//draw2d.setColor(wob::Color::Blue);
 		//draw2d.drawPoint({ 0, 0.4 });

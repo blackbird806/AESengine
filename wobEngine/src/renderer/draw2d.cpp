@@ -148,6 +148,12 @@ void Draw2D::addVertex(vec2 pos, vec2 uv)
 	vertices.push(vtx);
 }
 
+void Draw2D::addIndex(Index_t idx)
+{
+	indices.push(getCurrentBatch().offset + idx);
+	getCurrentBatch().indexCount++;
+}
+
 void Draw2D::drawLine(Line2D const& line, float thickness)
 {
 	WOB_PROFILE_FUNCTION();
@@ -170,7 +176,7 @@ void Draw2D::drawLine(Line2D const& line, float thickness)
 	vec2 const c = p2 - normal;
 	vec2 const d = p2 + normal;
 
-	drawQuad(a, b, c, d);
+	drawQuad(a, d, c, b);
 }
 
 void Draw2D::drawPoint(vec2 p, float size)
@@ -190,14 +196,14 @@ void Draw2D::drawQuad(vec2 const& a, vec2 const& b, vec2 const& c, vec2 const& d
 	addVertex(c, vec2(1, 0));
 	addVertex(d, vec2(1, 1));
 
-	indices.push(offset + 0);
-	indices.push(offset + 1);
-	indices.push(offset + 2);
-	indices.push(offset + 0);
-	indices.push(offset + 2);
-	indices.push(offset + 3);
+	addIndex(0);
+	addIndex(1);
+	addIndex(2);
+	addIndex(0);
+	addIndex(2);
+	addIndex(3);
 
-	getCurrentBatch().indexCount += 6;
+	getCurrentBatch().offset += 6;
 }
 
 void Draw2D::drawRect(Rect const& rect)
@@ -210,7 +216,7 @@ void Draw2D::drawWireRect(Rect const& rect)
 
 }
 
-void Draw2D::drawTriangle(vec2 const& a, vec2 const& b, vec2 const& c)
+void Draw2D::drawTriangle(vec2 a, vec2 b, vec2 c)
 {
 	WOB_PROFILE_FUNCTION();
 
@@ -220,24 +226,25 @@ void Draw2D::drawTriangle(vec2 const& a, vec2 const& b, vec2 const& c)
 	if (cross == 0.0f)
 		return; // degenerate triangle, nothing to draw
 
+
 	addVertex(a, vec2(0, 0));
 	addVertex(b, vec2(0, 1));
 	addVertex(c, vec2(1, 1));
 
-	// Force counterclockwise order so culling never discards it
-	if (cross > 0.0f)
+	// ensure indices are always clockwise
+	if (cross < 0.0f)
 	{
-		indices.push(0);
-		indices.push(1);
-		indices.push(2);
+		addIndex(0);
+		addIndex(1);
+		addIndex(2);
 	}
 	else
 	{
-		indices.push(0);
-		indices.push(2);
-		indices.push(1);
+		addIndex(0);
+		addIndex(2);
+		addIndex(1);
 	}
-	getCurrentBatch().indexCount += 3;
+	getCurrentBatch().offset += 3;
 }
 
 void Draw2D::drawImage(RHITexture& texture, Rect const& rect)
@@ -327,7 +334,6 @@ void Draw2D::executeDrawCommands()
 
 	device->bindVertexBuffer(vertexBuffer, 0, sizeof(Vertex));
 	device->bindIndexBuffer(indexBuffer, IndexTypeFormat::Uint16);
-	device->setCullMode(CullMode::CounterClockwise);
 	device->setDrawPrimitiveMode(DrawPrimitiveType::TrianglesFill);
 
 	for (auto const& batch : batches)
@@ -339,7 +345,8 @@ void Draw2D::executeDrawCommands()
 
 	indices.clear();
 	vertices.clear();
-	batches.resize(1); // we want to keep the initial batch
+	batches.clear();
+	batches.resize(1);
 }
 
 
