@@ -29,7 +29,7 @@ namespace wob
 			virtual ~BSPElement() = default;
 		};
 		
-		struct Leaf final : BSPElement
+		struct Leaf final : public BSPElement
 		{
 			Leaf(Array<Object>&& obj) : objects(wob::move(obj))
 			{
@@ -43,7 +43,7 @@ namespace wob
 			Array<Object> objects;
 		};
 
-		struct Node final : BSPElement
+		struct Node final : public BSPElement
 		{
 			Node(Plane const& p, UniquePtr<BSPElement> f, UniquePtr<BSPElement> b)
 				: plane(p), front(wob::move(f)), back(wob::move(b))

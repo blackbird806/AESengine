@@ -180,42 +180,15 @@ void Draw2D::drawPoint(vec2 p, float size)
 	drawLine({ {p.x, p.y - size}, {p.x, p.y + size} });
 }
 
-void Draw2D::drawFillAABBRect(AABBRect const& rect)
-{
-	WOB_PROFILE_FUNCTION();
-
-	RectBounds const bounds = rect.getBounds();
-	vec4 const col = currentState.color.toVec4();
-
-	vec2 const v0 = currentState.transformationMatrix * bounds.minL;
-	vec2 const v1 = currentState.transformationMatrix * bounds.minR;
-	vec2 const v2 = currentState.transformationMatrix * bounds.topL;
-	vec2 const v3 = currentState.transformationMatrix * bounds.topR;
-
-	vertices.push({ v0, col, { 0, 1 } });
-	vertices.push({ v1, col, { 1, 1 } });
-	vertices.push({ v2, col, { 0, 0 } });
-	vertices.push({ v3, col, { 1, 0 } });
-
-	indices.push(offset + 0);
-	indices.push(offset + 3);
-	indices.push(offset + 1);
-	indices.push(offset + 0);
-	indices.push(offset + 2);
-	indices.push(offset + 3);
-
-	getCurrentBatch().indexCount += 6;
-}
-
 void Draw2D::drawQuad(vec2 const& a, vec2 const& b, vec2 const& c, vec2 const& d)
 {
 	WOB_PROFILE_FUNCTION();
 
 	// Corners must be given in counterclockwise order (y-up).
-	addVertex(a);
-	addVertex(b);
-	addVertex(c);
-	addVertex(d);
+	addVertex(a, vec2(0, 0));
+	addVertex(b, vec2(0, 1));
+	addVertex(c, vec2(1, 0));
+	addVertex(d, vec2(1, 1));
 
 	indices.push(offset + 0);
 	indices.push(offset + 1);
@@ -247,9 +220,9 @@ void Draw2D::drawTriangle(vec2 const& a, vec2 const& b, vec2 const& c)
 	if (cross == 0.0f)
 		return; // degenerate triangle, nothing to draw
 
-	addVertex(a);
-	addVertex(b);
-	addVertex(c);
+	addVertex(a, vec2(0, 0));
+	addVertex(b, vec2(0, 1));
+	addVertex(c, vec2(1, 1));
 
 	// Force counterclockwise order so culling never discards it
 	if (cross > 0.0f)
@@ -267,13 +240,13 @@ void Draw2D::drawTriangle(vec2 const& a, vec2 const& b, vec2 const& c)
 	getCurrentBatch().indexCount += 3;
 }
 
-void Draw2D::drawImage(RHITexture& texture, AABBRect const& rect)
+void Draw2D::drawImage(RHITexture& texture, Rect const& rect)
 {
 	WOB_PROFILE_FUNCTION();
 	batches.emplace();
 	getCurrentBatch().texture = &texture;
 	getCurrentBatch().firstIndex = indices.size();
-	drawFillAABBRect(rect);
+	drawRect(rect);
 }
 
 // check https://github.com/ocornut/imgui/blob/master/imgui_draw.cpp#L3542
