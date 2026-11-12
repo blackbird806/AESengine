@@ -1,7 +1,4 @@
-#include "core/wob.hpp"
 #include "renderer/RHI/D3D11/D3D11Buffer.hpp"
-
-#include "D3D11Elements.hpp"
 
 using namespace wob;
 
@@ -39,7 +36,6 @@ ID3D11Buffer* D3D11Buffer::getHandle() noexcept
 	return apiBuffer;
 }
 
-
 size_t D3D11Buffer::getSize() const
 {
 	return size;
@@ -47,5 +43,5 @@ size_t D3D11Buffer::getSize() const
 
 bool D3D11Buffer::isValid() const
 {
-	return size != 0;
+	return apiBuffer != nullptr;
 }

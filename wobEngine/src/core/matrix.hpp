@@ -228,7 +228,7 @@ namespace wob
 			result[0, 0] = cosf(a);
 			result[0, 2] = sinf(a);
 			result[2, 0] = -sinf(a);
-			result[3, 3] = cosf(a);
+			result[2, 2] = cosf(a);
 			return result;
 		}
 

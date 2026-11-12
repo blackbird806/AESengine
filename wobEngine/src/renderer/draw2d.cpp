@@ -226,7 +226,6 @@ void Draw2D::drawTriangle(vec2 a, vec2 b, vec2 c)
 	if (cross == 0.0f)
 		return; // degenerate triangle, nothing to draw
 
-
 	addVertex(a, vec2(0, 0));
 	addVertex(b, vec2(0, 1));
 	addVertex(c, vec2(1, 1));
