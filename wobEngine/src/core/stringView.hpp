@@ -39,7 +39,7 @@ namespace wob
 
 		[[nodiscard]] constexpr bool empty() const noexcept
 		{
-			return size_ > 0;
+			return size_ == 0;
 		}
 
 		[[nodiscard]] constexpr StringView substr(size_t start) const noexcept

@@ -33,6 +33,22 @@ if is_plat("windows") then
 	add_cxflags("/UUNICODE", "/U_UNICODE") -- undef unicode
 end
 
+-- vita code visible for visual solution gen
+--if is_plat("windows") then
+--target("wobEngine-vita-intellisense")
+--	set_kind("static")
+--	set_default(false)
+--	on_build(function () end) -- no-op, évite l'échec de "Build Solution"
+--	add_files("wobEngine/src/renderer/RHI/SceGxm/*.cpp")
+--	add_headerfiles("wobEngine/src/renderer/RHI/SceGxm/*.hpp")
+--	add_headerfiles("wobEngine/src/renderer/RHI/SceGxm/*.h")
+--	add_defines("__vita__", "WOB_GRAPHIC_API_GXM")
+--	local sdk = os.getenv("VITASDK")
+--	if sdk then
+--		add_includedirs(path.join(sdk, "include"))
+--	end
+--end
+
 add_includedirs("wobEngine/src")
 add_includedirs("wobEngine/thirdParty")
 

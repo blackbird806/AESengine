@@ -1,5 +1,5 @@
-#ifndef AES_GXMDEVICE_HPP
-#define AES_GXMDEVICE_HPP
+#ifndef WOB_GXMDEVICE_HPP
+#define WOB_GXMDEVICE_HPP
 
 #include "core/wob.hpp"
 #include "core/error.hpp"

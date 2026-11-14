@@ -2,7 +2,6 @@
 #define WOB_GXMMEMORY_HPP
 
 #include <psp2/kernel/sysmem.h>  // for SceKernelMemBlockType
-#include <psp2/gxm.h>
 
 namespace wob
 {

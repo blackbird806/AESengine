@@ -1,34 +1,82 @@
-<?xml version="1.0" encoding="utf-8"?> 
+<?xml version="1.0" encoding="utf-8"?>
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
-	<!-- Array Visualization -->
+
+	<!-- ===================================================================== -->
+	<!-- Containers                                                            -->
+	<!-- ===================================================================== -->
+
+	<!-- core/array.hpp : members alloc, buffer, size_, capacity_ -->
 	<Type Name="wob::Array&lt;*&gt;">
-		<DisplayString>{{ size={size_}, ptr={buffer} }}</DisplayString>
+		<DisplayString Condition="size_ == 0">{{ empty, capacity={capacity_} }}</DisplayString>
+		<DisplayString>{{ size={size_}, capacity={capacity_} }}</DisplayString>
 		<Expand>
 			<Item Name="[size]" ExcludeView="simple">size_</Item>
 			<Item Name="[capacity]" ExcludeView="simple">capacity_</Item>
+			<Item Name="[allocator]" ExcludeView="simple">alloc</Item>
 			<ArrayItems>
 				<Size>size_</Size>
 				<ValuePointer>buffer</ValuePointer>
 			</ArrayItems>
 		</Expand>
 	</Type>
-	
-	<Type Name="aes::String">
-	    <DisplayString>{buffer.buffer,[buffer.size_]}</DisplayString>
-		<StringView>buffer.buffer,[buffer.size_]</StringView>
+
+	<!-- core/arrayView.hpp : members data_, size_ -->
+	<Type Name="wob::ArrayView&lt;*&gt;">
+		<DisplayString>{{ size={size_} }}</DisplayString>
+		<Expand>
+			<Item Name="[size]" ExcludeView="simple">size_</Item>
+			<ArrayItems>
+				<Size>size_</Size>
+				<ValuePointer>data_</ValuePointer>
+			</ArrayItems>
+		</Expand>
 	</Type>
 
-	<!-- SList Visualization -->
+	<!-- core/staticArray.hpp : T buffer[capacity_] and size_ ; capacity_ is the 2nd template parameter ($T2) -->
+	<Type Name="wob::StaticArray&lt;*,*&gt;">
+		<DisplayString>{{ size={size_}, capacity={$T2} }}</DisplayString>
+		<Expand>
+			<Item Name="[size]" ExcludeView="simple">size_</Item>
+			<Item Name="[capacity]" ExcludeView="simple">$T2</Item>
+			<ArrayItems>
+				<Size>size_</Size>
+				<ValuePointer>buffer</ValuePointer>
+			</ArrayItems>
+		</Expand>
+	</Type>
+
+	<!-- core/string.hpp : String wraps Array<char> and the buffer INCLUDES the null terminator,
+	     so the real length is buffer.size_ - 1 (and 0 for a default constructed string) -->
+	<Type Name="wob::String">
+		<DisplayString Condition="buffer.size_ == 0">""</DisplayString>
+		<DisplayString>{buffer.buffer,na}</DisplayString>
+		<StringView Condition="buffer.size_ != 0">buffer.buffer,na</StringView>
+		<Expand>
+			<Item Name="[size]" ExcludeView="simple">buffer.size_ == 0 ? 0 : buffer.size_ - 1</Item>
+			<Item Name="[capacity]" ExcludeView="simple">buffer.capacity_ == 0 ? 0 : buffer.capacity_ - 1</Item>
+		</Expand>
+	</Type>
+
+	<!-- core/stringView.hpp : members data_, size_ (not null terminated) -->
+	<Type Name="wob::StringView">
+		<DisplayString Condition="size_ == 0">""</DisplayString>
+		<DisplayString>{data_,[size_]na}</DisplayString>
+		<StringView Condition="size_ != 0">data_,[size_]na</StringView>
+		<Expand>
+			<Item Name="[size]" ExcludeView="simple">size_</Item>
+		</Expand>
+	</Type>
+
+	<!-- core/slist.hpp : members allocator, first ; Node has data and next -->
 	<Type Name="wob::SList&lt;*&gt;">
-		<DisplayString>SList[{first}]</DisplayString>
-		<Expand HideRawView="true">
-			<CustomListItems>
+		<DisplayString Condition="first == nullptr">{{ empty }}</DisplayString>
+		<DisplayString>{{ first={first->data} }}</DisplayString>
+		<Expand>
+			<CustomListItems MaxItemsPerView="1000">
 				<Variable Name="node" InitialValue="first" />
 				<Variable Name="index" InitialValue="0" />
 				<Loop>
-					<If Condition="node == nullptr">
-						<Break />
-					</If>
+					<Break Condition="node == nullptr" />
 					<Item Name="[{index}]">node->data</Item>
 					<Exec>node = node->next</Exec>
 					<Exec>index++</Exec>
@@ -37,18 +85,229 @@
 		</Expand>
 	</Type>
 
-	<!-- HashMap Visualization -->
-	<Type Name="wob::HashMap&lt;*,*,*&gt;">
-		<DisplayString>HashMap[size={size_}]</DisplayString>
-		<Expand HideRawView="true">
-			<Item Name="[size]">size_</Item>
-			<Item Name="[buckets]">buckets</Item>
-		</Expand>
-	</Type>
-	
-	<!-- Pair Visualization -->
+	<!-- core/pair.hpp -->
 	<Type Name="wob::Pair&lt;*,*&gt;">
 		<DisplayString>({first}, {second})</DisplayString>
+		<Expand>
+			<Item Name="first">first</Item>
+			<Item Name="second">second</Item>
+		</Expand>
+	</Type>
+
+	<!-- core/hashmap.hpp : members allocator, buckets (Array of SList of Pair<K,V>), size_
+	     buckets is never empty after construction (the ctor resizes it), so buckets.buffer[0] is valid -->
+	<Type Name="wob::HashMap&lt;*,*,*&gt;">
+		<DisplayString>{{ size={size_}, buckets={buckets.size_} }}</DisplayString>
+		<Expand>
+			<Item Name="[size]" ExcludeView="simple">size_</Item>
+			<Item Name="[bucket count]" ExcludeView="simple">buckets.size_</Item>
+			<Item Name="[load factor]" ExcludeView="simple">(float)size_ / (float)buckets.size_</Item>
+			<CustomListItems MaxItemsPerView="1000">
+				<Variable Name="bucket" InitialValue="0" />
+				<Variable Name="node" InitialValue="buckets.buffer[0].first" />
+				<Variable Name="index" InitialValue="0" />
+				<Loop>
+					<Break Condition="bucket &gt;= buckets.size_" />
+					<Loop>
+						<Break Condition="node == nullptr" />
+						<Item Name="[{index}]">node->data</Item>
+						<Exec>node = node->next</Exec>
+						<Exec>index++</Exec>
+					</Loop>
+					<Exec>bucket++</Exec>
+					<If Condition="bucket &lt; buckets.size_">
+						<Exec>node = buckets.buffer[bucket].first</Exec>
+					</If>
+				</Loop>
+			</CustomListItems>
+		</Expand>
+	</Type>
+
+	<!-- ===================================================================== -->
+	<!-- Smart pointers / error handling / flags                               -->
+	<!-- ===================================================================== -->
+
+	<!-- core/uniquePtr.hpp : members ptr, deleter -->
+	<Type Name="wob::UniquePtr&lt;*,*&gt;">
+		<SmartPointer Usage="Minimal">ptr</SmartPointer>
+		<DisplayString Condition="ptr == nullptr">nullptr</DisplayString>
+		<DisplayString>UniquePtr {*ptr}</DisplayString>
+		<Expand>
+			<ExpandedItem Condition="ptr != nullptr">ptr</ExpandedItem>
+		</Expand>
+	</Type>
+
+	<!-- core/error.hpp : Result<T>, tag is TagType { Error = 0, Value = 1 } -->
+	<Type Name="wob::Result&lt;*&gt;">
+		<DisplayString Condition="(int)tag == 1">Value: {value_}</DisplayString>
+		<DisplayString>Error: {error_}</DisplayString>
+		<Expand>
+			<Item Name="[value]" Condition="(int)tag == 1">value_</Item>
+			<Item Name="[error]" Condition="(int)tag != 1">error_</Item>
+		</Expand>
+	</Type>
+
+	<!-- core/error.hpp : Result<void> specialisation, tag is TagType { Error = 0, Valid = 1 } -->
+	<Type Name="wob::Result&lt;void&gt;" Priority="MediumHigh">
+		<DisplayString Condition="(int)tag == 1">OK</DisplayString>
+		<DisplayString>Error: {(wob::ErrorCode)error_}</DisplayString>
+	</Type>
+
+	<!-- core/utility.hpp -->
+	<Type Name="wob::Flags&lt;*&gt;">
+		<DisplayString>{mask,x}</DisplayString>
+		<Expand>
+			<Item Name="[mask]">mask</Item>
+		</Expand>
+	</Type>
+
+	<Type Name="wob::Ordering">
+		<DisplayString Condition="value &lt; 0">less</DisplayString>
+		<DisplayString Condition="value == 0">equal</DisplayString>
+		<DisplayString>greater</DisplayString>
+	</Type>
+
+	<!-- ===================================================================== -->
+	<!-- Allocators (core/allocator.hpp)                                       -->
+	<!-- ===================================================================== -->
+
+	<Type Name="wob::StackAllocator">
+		<DisplayString>{{ used={offset} / {totalSize} bytes }}</DisplayString>
+		<Expand>
+			<Item Name="[used]">offset</Item>
+			<Item Name="[total]">totalSize</Item>
+			<Item Name="[base]">baseAllocator</Item>
+		</Expand>
+	</Type>
+
+	<Type Name="wob::AllocatorProfiler">
+		<DisplayString>{{ live allocations={allocationCount} }}</DisplayString>
+	</Type>
+
+	<!-- ===================================================================== -->
+	<!-- Math (core/vec*.hpp, core/matrix.hpp, core/color.hpp)                 -->
+	<!-- Matrices are matched on their real names (mat4 / mat3 / mat2 are      -->
+	<!-- only aliases and natvis cannot match an alias).                       -->
+	<!-- ===================================================================== -->
+
+	<Type Name="wob::vec2">
+		<DisplayString>{{ x={x}, y={y} }}</DisplayString>
+		<Expand>
+			<Item Name="x">x</Item>
+			<Item Name="y">y</Item>
+		</Expand>
+	</Type>
+
+	<Type Name="wob::vec3">
+		<DisplayString>{{ x={x}, y={y}, z={z} }}</DisplayString>
+		<Expand>
+			<Item Name="x">x</Item>
+			<Item Name="y">y</Item>
+			<Item Name="z">z</Item>
+		</Expand>
+	</Type>
+
+	<Type Name="wob::vec4">
+		<DisplayString>{{ x={x}, y={y}, z={z}, w={w} }}</DisplayString>
+		<Expand>
+			<Item Name="x">x</Item>
+			<Item Name="y">y</Item>
+			<Item Name="z">z</Item>
+			<Item Name="w">w</Item>
+		</Expand>
+	</Type>
+
+	<!-- quat.hpp (global namespace, not wob) -->
+	<Type Name="quat">
+		<DisplayString>{{ x={x}, y={y}, z={z}, w={w} }}</DisplayString>
+	</Type>
+
+	<!-- element [i,j] is data[i * 4 + j], so v[i] is "row i" (translation lives in row 3) -->
+	<Type Name="wob::mat4x4">
+		<DisplayString>mat4 {{ {v[0]} | {v[1]} | {v[2]} | {v[3]} }}</DisplayString>
+		<Expand>
+			<Item Name="row 0">v[0]</Item>
+			<Item Name="row 1">v[1]</Item>
+			<Item Name="row 2">v[2]</Item>
+			<Item Name="row 3">v[3]</Item>
+		</Expand>
+	</Type>
+
+	<Type Name="wob::mat3x3">
+		<DisplayString>mat3 {{ {v[0]} | {v[1]} | {v[2]} }}</DisplayString>
+		<Expand>
+			<Item Name="row 0">v[0]</Item>
+			<Item Name="row 1">v[1]</Item>
+			<Item Name="row 2">v[2]</Item>
+		</Expand>
+	</Type>
+
+	<Type Name="wob::mat2x2">
+		<DisplayString>mat2 {{ {v[0]} | {v[1]} }}</DisplayString>
+		<Expand>
+			<Item Name="row 0">v[0]</Item>
+			<Item Name="row 1">v[1]</Item>
+		</Expand>
+	</Type>
+
+	<Type Name="wob::mat3x4">
+		<DisplayString>mat3x4 {{ {v[0]} | {v[1]} | {v[2]} }}</DisplayString>
+		<Expand>
+			<Item Name="row 0">v[0]</Item>
+			<Item Name="row 1">v[1]</Item>
+			<Item Name="row 2">v[2]</Item>
+		</Expand>
+	</Type>
+
+	<!-- r,g,b,a are uint8_t, cast to int so they don't display as characters -->
+	<Type Name="wob::Color">
+		<DisplayString>{{ r={(int)r}, g={(int)g}, b={(int)b}, a={(int)a} }}</DisplayString>
+	</Type>
+
+	<!-- ===================================================================== -->
+	<!-- Geometry (core/geometry.hpp)                                          -->
+	<!-- ===================================================================== -->
+
+	<Type Name="wob::Line2D">
+		<DisplayString>{{ p1={p1}, p2={p2} }}</DisplayString>
+	</Type>
+
+	<Type Name="wob::Line3D">
+		<DisplayString>{{ p1={p1}, p2={p2} }}</DisplayString>
+	</Type>
+
+	<Type Name="wob::AABBRect">
+		<DisplayString>{{ min={min}, max={max} }}</DisplayString>
+	</Type>
+
+	<Type Name="wob::AABB">
+		<DisplayString>{{ min={min}, max={max} }}</DisplayString>
+	</Type>
+
+	<Type Name="wob::Plane">
+		<DisplayString>{{ dir={dir}, dist={dist} }}</DisplayString>
+	</Type>
+
+	<Type Name="wob::Ray">
+		<DisplayString>{{ start={start}, dir={dir} }}</DisplayString>
+	</Type>
+
+	<Type Name="wob::Sphere">
+		<DisplayString>{{ pos={pos}, size={size} }}</DisplayString>
+	</Type>
+
+	<Type Name="wob::Triangle3D">
+		<DisplayString>{{ a={a}, b={b}, c={c} }}</DisplayString>
+	</Type>
+
+	<!-- ===================================================================== -->
+	<!-- RHI (D3D11 backend)                                                   -->
+	<!-- ===================================================================== -->
+
+	<!-- renderer/RHI/D3D11/D3D11Buffer.hpp : members apiBuffer, size -->
+	<Type Name="wob::D3D11Buffer">
+		<DisplayString Condition="apiBuffer == nullptr">{{ invalid }}</DisplayString>
+		<DisplayString>{{ size={size} bytes }}</DisplayString>
 	</Type>
 
 </AutoVisualizer>

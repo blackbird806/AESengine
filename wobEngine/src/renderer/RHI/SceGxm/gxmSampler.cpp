@@ -1,7 +1,8 @@
 #include "gxmSampler.hpp"
 #include "gxmElements.hpp"
+#include <core/assert.hpp>
 
-using namespace aes;
+using namespace wob;
 
 GxmSampler::GxmSampler(GxmSampler&& rhs) noexcept
 {
@@ -10,7 +11,7 @@ GxmSampler::GxmSampler(GxmSampler&& rhs) noexcept
 
 Result<void> GxmSampler::init(SamplerDescription const& desc)
 {
-	AES_PROFILE_FUNCTION();
+	WOB_PROFILE_FUNCTION();
 	description.filter = rhiTextureFilterToApi(desc.filter);
 	description.addressU = rhiTextureAddressModeToApi(desc.addressU);
 	description.addressV = rhiTextureAddressModeToApi(desc.addressV);
@@ -27,8 +28,8 @@ GxmSampler& GxmSampler::operator=(GxmSampler&& rhs) noexcept
 
 Result<void> GxmSampler::apply(SceGxmTexture* tex)
 {
-	AES_PROFILE_FUNCTION();
-	AES_ASSERT(tex);
+	WOB_PROFILE_FUNCTION();
+	WOB_ASSERT(tex);
 
 	auto err = sceGxmTextureSetLodBias(tex, description.lodBias);
 
@@ -48,8 +49,8 @@ Result<void> GxmSampler::apply(SceGxmTexture* tex)
 	
 	if (err != SCE_OK)
 	{
-		AES_LOG_ERROR("failed to apply GXM sampler err {}", err);
-		return { AESError::SamplerApplicationFailed };
+		WOB_LOG_ERROR("failed to apply GXM sampler err {}", err);
+		return { ErrorCode::SamplerApplicationFailed };
 	}
 
 	return {};

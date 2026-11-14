@@ -1,5 +1,5 @@
-#ifndef AES_GXMRENDERTARGET_HPP
-#define AES_GXMRENDERTARGET_HPP
+#ifndef WOB_GXMRENDERTARGET_HPP
+#define WOB_GXMRENDERTARGET_HPP
 
 #include "core/wob.hpp"
 #include "core/error.hpp"

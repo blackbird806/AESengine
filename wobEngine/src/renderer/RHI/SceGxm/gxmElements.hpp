@@ -1,11 +1,11 @@
-#ifndef AES_GXMELEMENTS_HPP
-#define AES_GXMELEMENTS_HPP
+#ifndef WOB_GXMELEMENTS_HPP
+#define WOB_GXMELEMENTS_HPP
 
 #include "renderer/RHI/RHIElements.hpp"
 
 #include <psp2/gxm.h>
 
-namespace aes
+namespace wob
 {
 	SceGxmPrimitiveType rhiPrimitiveTypeToApi(DrawPrimitiveType type);
 	SceGxmIndexFormat rhiIndexFormatToApi(IndexTypeFormat format);

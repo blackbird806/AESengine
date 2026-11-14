@@ -1,10 +1,10 @@
 #include "gxmElements.hpp"
 
-#include "core/aes.hpp"
+#include "core/wob.hpp"
 
-using namespace aes;
+using namespace wob;
 
-SceGxmPrimitiveType aes::rhiPrimitiveTypeToApi(DrawPrimitiveType type)
+SceGxmPrimitiveType wob::rhiPrimitiveTypeToApi(DrawPrimitiveType type)
 {
 	switch (type)
 	{
@@ -14,12 +14,12 @@ SceGxmPrimitiveType aes::rhiPrimitiveTypeToApi(DrawPrimitiveType type)
 		case DrawPrimitiveType::Lines: return SCE_GXM_PRIMITIVE_LINES; 
 		case DrawPrimitiveType::LineStrip: // Linestrip not supported by vita
 		default:
-			AES_ASSERTF(false, "DrawPrimitiveType not supported {}", type);
+			WOB_ASSERTF(false, "DrawPrimitiveType not supported {}", type);
 	}
-	AES_UNREACHABLE();
+	WOB_UNREACHABLE();
 }
 
-SceGxmIndexFormat aes::rhiIndexFormatToApi(IndexTypeFormat format)
+SceGxmIndexFormat wob::rhiIndexFormatToApi(IndexTypeFormat format)
 {
 	if (format == IndexTypeFormat::Uint32)
 		return SCE_GXM_INDEX_FORMAT_U32;
@@ -28,7 +28,7 @@ SceGxmIndexFormat aes::rhiIndexFormatToApi(IndexTypeFormat format)
 	AES_ASSERT(false); // unsupported format type
 }
 
-uint8_t aes::rhiMemoryUsageToApi(MemoryUsage usage)
+uint8_t wob::rhiMemoryUsageToApi(MemoryUsage usage)
 {
 	switch(usage)
 	{
@@ -39,10 +39,10 @@ uint8_t aes::rhiMemoryUsageToApi(MemoryUsage usage)
 		case MemoryUsage::Immutable:
 			return SCE_GXM_MEMORY_ATTRIB_READ;
 	}
-	AES_UNREACHABLE();
+	WOB_UNREACHABLE();
 }
 
-SceGxmParameterSemantic aes::rhiSemanticTypeToApi(SemanticType type)
+SceGxmParameterSemantic wob::rhiSemanticTypeToApi(SemanticType type)
 {
 	switch (type)
 	{
@@ -55,10 +55,10 @@ SceGxmParameterSemantic aes::rhiSemanticTypeToApi(SemanticType type)
 	case SemanticType::TexCoord:
 		return SCE_GXM_PARAMETER_SEMANTIC_TEXCOORD;
 	}
-	AES_UNREACHABLE();
+	WOB_UNREACHABLE();
 }
 
-SceGxmTextureFormat aes::rhiFormatToApiTextureFormat(RHIFormat format)
+SceGxmTextureFormat wob::rhiFormatToApiTextureFormat(RHIFormat format)
 {
 	switch(format)
 	{
@@ -66,10 +66,10 @@ SceGxmTextureFormat aes::rhiFormatToApiTextureFormat(RHIFormat format)
 		case RHIFormat::R16G16_Float: return SCE_GXM_TEXTURE_FORMAT_F16F16_RGGG; // @review
 		case RHIFormat::R16G16B16A16_Float: return SCE_GXM_TEXTURE_FORMAT_F16F16F16F16_RGBA;
 	}
-	AES_ASSERT(false); // unsupported format type
+	WOB_ASSERT(false); // unsupported format type
 }
 
-SceGxmColorFormat aes::rhiFormatToApiColorFormat(RHIFormat format)
+SceGxmColorFormat wob::rhiFormatToApiColorFormat(RHIFormat format)
 {
 	switch(format)
 	{
@@ -77,10 +77,10 @@ SceGxmColorFormat aes::rhiFormatToApiColorFormat(RHIFormat format)
 		case RHIFormat::R16G16_Float: return SCE_GXM_COLOR_FORMAT_F16F16_RG; // @review
 		case RHIFormat::R16G16B16A16_Float: return SCE_GXM_COLOR_FORMAT_F16F16F16F16_RGBA;
 	}
-	AES_ASSERT(false); // unsupported format type
+	WOB_ASSERT(false); // unsupported format type
 }
 
-SceGxmTextureFilter aes::rhiTextureFilterToApi(TextureFilter filter)
+SceGxmTextureFilter wob::rhiTextureFilterToApi(TextureFilter filter)
 {
 	switch(filter)
 	{
@@ -89,10 +89,10 @@ SceGxmTextureFilter aes::rhiTextureFilterToApi(TextureFilter filter)
 		case TextureFilter::Linear:
 			return SCE_GXM_TEXTURE_FILTER_LINEAR;
 	}
-	AES_UNREACHABLE();
+	WOB_UNREACHABLE();
 }
 
-SceGxmTextureAddrMode aes::rhiTextureAddressModeToApi(TextureAddressMode mode)
+SceGxmTextureAddrMode wob::rhiTextureAddressModeToApi(TextureAddressMode mode)
 {
 	switch(mode)
 	{
@@ -103,10 +103,10 @@ SceGxmTextureAddrMode aes::rhiTextureAddressModeToApi(TextureAddressMode mode)
 		case TextureAddressMode::Clamp:
 			return SCE_GXM_TEXTURE_ADDR_CLAMP;
 	}
-	AES_UNREACHABLE();
+	WOB_UNREACHABLE();
 }
 
-uint8_t aes::rhiBlendOpToApi(BlendOp blendop)
+uint8_t wob::rhiBlendOpToApi(BlendOp blendop)
 {
 	switch(blendop)
 	{
@@ -122,10 +122,10 @@ uint8_t aes::rhiBlendOpToApi(BlendOp blendop)
     // SCE_GXM_BLEND_FUNC_MIN,
     // SCE_GXM_BLEND_FUNC_MAX
 
-	AES_UNREACHABLE();
+	WOB_UNREACHABLE();
 }
 
-uint8_t aes::rhiBlendFactorToApi(BlendFactor blendfactor)
+uint8_t wob::rhiBlendFactorToApi(BlendFactor blendfactor)
 {
 	switch (blendfactor)
 	{
@@ -143,16 +143,16 @@ uint8_t aes::rhiBlendFactorToApi(BlendFactor blendfactor)
 	// SCE_GXM_BLEND_FACTOR_SRC_ALPHA_SATURATE,
     // SCE_GXM_BLEND_FACTOR_DST_ALPHA_SATURATE
 
-	AES_UNREACHABLE();
+	WOB_UNREACHABLE();
 }
 
-uint8_t aes::rhiColorMaskToApi(ColorMaskFlags colorMask)
+uint8_t wob::rhiColorMaskToApi(ColorMaskFlags colorMask)
 {
 	// rhi maps directly to gxm
 	return (uint8_t)colorMask;
 }
 
-SceGxmCullMode aes::rhiCullModeToApi(CullMode mode)
+SceGxmCullMode wob::rhiCullModeToApi(CullMode mode)
 {
 	switch (mode)
 	{
@@ -160,10 +160,10 @@ SceGxmCullMode aes::rhiCullModeToApi(CullMode mode)
 		case CullMode::Clockwise:			return SCE_GXM_CULL_CW;
 		case CullMode::CounterClockwise:	return SCE_GXM_CULL_CCW;
 	}
-	AES_UNREACHABLE();
+	WOB_UNREACHABLE();
 }
 
-SceGxmMultisampleMode aes::rhiMultisampleModeToApi(MultisampleMode mode)
+SceGxmMultisampleMode wob::rhiMultisampleModeToApi(MultisampleMode mode)
 {
 	switch (mode)
 	{
@@ -171,10 +171,10 @@ SceGxmMultisampleMode aes::rhiMultisampleModeToApi(MultisampleMode mode)
 		case MultisampleMode::X2: return SCE_GXM_MULTISAMPLE_2X;
 		case MultisampleMode::X4: return SCE_GXM_MULTISAMPLE_4X;
 	}
-	AES_UNREACHABLE();
+	WOB_UNREACHABLE();
 }
 
-SceGxmPolygonMode aes::rhiPolygonModeToApi(DrawPrimitiveType type)
+SceGxmPolygonMode wob::rhiPolygonModeToApi(DrawPrimitiveType type)
 {
 	switch(type)
 	{
@@ -188,9 +188,9 @@ SceGxmPolygonMode aes::rhiPolygonModeToApi(DrawPrimitiveType type)
 		case DrawPrimitiveType::TrianglesLine:
 			return SCE_GXM_POLYGON_MODE_TRIANGLE_LINE;
 		default:
-	AES_ASSERT(false); // unsupported polygon type
+			WOB_ASSERT(false); // unsupported polygon type
 	}
 
-	AES_UNREACHABLE();
+	WOB_UNREACHABLE();
 }
 

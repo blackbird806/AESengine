@@ -4,12 +4,12 @@
 #include "core/window.hpp"
 #include "renderer/RHI/RHIElements.hpp"
 #include "renderer/RHI/RHIBuffer.hpp"
+#include "core/vec2.hpp"
 
 #include "../RHIBuffer.hpp"
 #include "../RHITexture.hpp"
 #include "../RHIShader.hpp"
 #include "../RHISampler.hpp"
-#include <glm/glm.hpp>
 #include <vitasdk.h>
 #include "gxmCompatibilty.h"
 #include "gxmMemory.hpp"
@@ -104,7 +104,7 @@ namespace wob
 			SceUID clearVerticesUid;
 			SceUID clearIndicesUid;
 
-			glm::vec2* clearVertices;
+			vec2* clearVertices;
 			uint16_t* clearIndices;
 
 			uint32_t backBufferIndex = 0;

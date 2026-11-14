@@ -41,7 +41,7 @@ namespace wob
 
 		[[nodiscard]] constexpr bool empty() const noexcept
 		{
-			return size_ > 0;
+			return size_ == 0;
 		}
 
 		[[nodiscard]] constexpr ArrayView subView(size_t start) const noexcept

@@ -3,9 +3,9 @@
 #include "core/wob.hpp"
 #include "core/utility.hpp"
 
-using namespace aes;
+using namespace wob;
 
-void* aes::graphicsAlloc(SceKernelMemBlockType type, uint32_t size, uint32_t alignement, uint32_t attribs, SceUID* uid, const char* name)
+void* wob::graphicsAlloc(SceKernelMemBlockType type, uint32_t size, uint32_t alignement, uint32_t attribs, SceUID* uid, const char* name)
 {
 	WOB_ASSERT(uid != nullptr);
 	
@@ -14,13 +14,13 @@ void* aes::graphicsAlloc(SceKernelMemBlockType type, uint32_t size, uint32_t ali
 	{
 		// 	CDRAM memblock must be 256Kib aligned
 		WOB_ASSERT(alignement <= 256 * 1024);
-		size = aes::align(size, 256 * 1024);
+		size = wob::align(size, 256 * 1024);
 	} 
 	else
 	{
 		// LPDDR memblocks must be 4KiB aligned
 		WOB_ASSERT(alignement <= 4 * 1024);
-		size = aes::align(size, 4 * 1024);
+		size = wob::align(size, 4 * 1024);
 	}
 	
 	uint32_t err = SCE_OK;
@@ -38,7 +38,7 @@ void* aes::graphicsAlloc(SceKernelMemBlockType type, uint32_t size, uint32_t ali
 	return mem;
 }
 
-void aes::graphicsFree(SceUID uid)
+void wob::graphicsFree(SceUID uid)
 {
 	// grab the base address
 	void* mem = nullptr;

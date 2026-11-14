@@ -11,8 +11,10 @@
 #include <psp2/sysmodule.h> 
 
 using namespace wob;
+
 #define WOB_ENABLE_RAZOR_HUD
 #define WOB_ENABLE_RAZOR_GPU_CAPTURE
+
 struct DisplayData
 {
 	void* address;
@@ -43,11 +45,10 @@ static void displayCallback(void const* callbackData)
 	sceDisplayWaitVblankStart();
 }
 
-
 static void* fragmentUsseAlloc(uint32_t size, SceUID* uid, uint32_t* usseOffset)
 {
 	// align to memblock alignment for LPDDR
-	size = aes::align(size, 4096);
+	size = wob::align(size, 4096);
 
 	// allocate some memory
 	*uid = sceKernelAllocMemBlock("fragmentUsse", SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE, size, nullptr);
@@ -69,7 +70,7 @@ static void* fragmentUsseAlloc(uint32_t size, SceUID* uid, uint32_t* usseOffset)
 static void* vertexUsseAlloc(uint32_t size, SceUID* uid, uint32_t* usseOffset)
 {
 	// align to memblock alignment for LPDDR
-	size = aes::align(size, 4096);
+	size = wob::align(size, 4096);
 
 	// allocate some memory
 	*uid = sceKernelAllocMemBlock("vertexUsse", SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE, size, nullptr);
@@ -135,7 +136,7 @@ SceUID patcherBufferUid;
 SceUID patcherVertexUsseUid;
 SceUID patcherFragmentUsseUid;
 
-void aes::initializeGraphicsAPI()
+void wob::initializeGraphicsAPI()
 {
 	// @TODO clean this
 	auto constexpr vita_display_max_pending_swaps = 2;
@@ -143,15 +144,18 @@ void aes::initializeGraphicsAPI()
 	#ifdef WOB_ENABLE_RAZOR_HUD
 	// Initialize the Razor HUD system.
 	// This should be done before the call to sceGxmInitialize().
-	// auto erra = sceSysmoduleLoadModule( SCE_SYSMODULE_RAZOR_HUD );
-	// WOB_ASSERT(erra == SCE_OK);
+	{
+		auto erra = sceSysmoduleLoadModule(SCE_SYSMODULE_RAZOR_HUD);
+		WOB_ASSERT(erra == SCE_OK);
+	}
 	#endif
 	#ifdef WOB_ENABLE_RAZOR_GPU_CAPTURE
 	// Initialize the Razor capture system.
 	// This should be done before the call to sceGxmInitialize().
-	auto erra = sceSysmoduleLoadModule( SCE_SYSMODULE_RAZOR_CAPTURE );
-	WOB_ASSERT(erra == SCE_OK);
-
+	{
+		auto erra = sceSysmoduleLoadModule(SCE_SYSMODULE_RAZOR_CAPTURE);
+		WOB_ASSERT(erra == SCE_OK);
+	}
 	// Trigger a capture after 1 frames.
 	// sceRazorGpuCaptureSetTriggerNextFrame("ux0:/log/basic.sgx" );
 	// sceRazorGpuCaptureEnableSalvage("ux0:/log/crash.sgx");
@@ -219,7 +223,7 @@ void aes::initializeGraphicsAPI()
 	WOB_ASSERT(err == SCE_OK);
 }
 
-void aes::terminateGraphicsAPI()
+void wob::terminateGraphicsAPI()
 {
 	sceGxmShaderPatcherDestroy(gxmShaderPatcher);
 	fragmentUsseFree(patcherFragmentUsseUid);
@@ -237,7 +241,7 @@ void aes::terminateGraphicsAPI()
 #ifdef WOB_ENABLE_RAZOR_HUD
 	// Terminate Razor HUD.
 	// This should be done after the call to sceGxmTerminate().
-	// sceSysmoduleUnloadModule( SCE_SYSMODULE_RAZOR_HUD );
+	sceSysmoduleUnloadModule( SCE_SYSMODULE_RAZOR_HUD );
 #endif
 
 
@@ -319,7 +323,7 @@ Result<void> GxmDevice::init()
 	if (err != SCE_OK)
 	{
 		WOB_LOG_ERROR("GXM failed to create render context, code : {}", err);
-		return { AESError::RHIDeviceCreationFailed };
+		return { ErrorCode::RHIDeviceCreationFailed };
 	}
 	return {};
 }
@@ -433,7 +437,7 @@ Result<void> GxmDevice::setVertexBuffer(RHIBuffer& buffer, uint stride, uint off
 	{
 		WOB_LOG_ERROR("failed to set gxm vertex stream err : {}", err);
 		// @Review error code
-		return { AESError::Undefined };
+		return { ErrorCode::Undefined };
 	}
 	return {};
 }
@@ -455,7 +459,7 @@ Result<void> GxmDevice::bindFragmentUniformBuffer(RHIBuffer& buffer, uint slot)
 	{
 		WOB_LOG_ERROR("failed to set gxm fragment uniform buffer error : {}", err);
 		// @Review error code
-		return { AESError::Undefined };
+		return { ErrorCode::Undefined };
 	}
 	return {};
 }
@@ -469,7 +473,7 @@ Result<void> GxmDevice::bindVertexUniformBuffer(RHIBuffer& buffer, uint slot)
 	{
 		WOB_LOG_ERROR("failed to set gxm vertex uniform buffer error : {}", err);
 		// @Review error code
-		return { AESError::Undefined };
+		return { ErrorCode::Undefined };
 	}
 	return {};
 }
@@ -482,7 +486,7 @@ Result<void> GxmDevice::bindFragmentTexture(RHITexture& tex, uint slot)
 	{
 		WOB_LOG_ERROR("failed to set gxm fragment texture error : {}", err);
 		// @Review error code
-		return { AESError::Undefined };
+		return { ErrorCode::Undefined };
 	}
 	return {};
 }
@@ -495,7 +499,7 @@ Result<void> GxmDevice::bindVertexTexture(RHITexture& tex, uint slot)
 	{
 		WOB_LOG_ERROR("failed to set gxm vertex texture error : {}", err);
 		// @Review error code
-		return { AESError::Undefined };
+		return { ErrorCode::Undefined };
 	}
 	return {};
 }
